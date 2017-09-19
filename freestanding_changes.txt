@@ -1,0 +1,215 @@
+C++17:
+<cstdlib> (partial)
+<ciso646>
+21.2 Types <cstddef>
+21.3 Implementation properties <cfloat> <limits> <climits>
+21.4 Integer types <cstdint>
+21.5 Start and termination <cstdlib>
+21.6 Dynamic memory management <new>
+21.7 Type identification <typeinfo>
+21.8 Exception handling <exception>
+21.9 Initializer lists <initializer_list>
+21.10 Other runtime support <cstdarg>
+23.15 Type traits <type_traits>
+Clause 32 Atomics <atomic>
+D.4.2, D.4.3 Deprecated headers <cstdalign> <cstdbool>
+
+
+Proposed:
+*<cstddef>
+-<cfloat>
+<limits>
+	-numeric_limits<float>
+	-numeric_limits<double>
+	-numeric_limits<long double>
+*<climits>
+*<cstdint>
+<cstdlib>
+	+size_t
+	+div_t
+	+ldiv_t
+	+lldiv_t
+	+NULL
+	+EXIT_FAILURE
+	+EXIT_SUCCESS
+	#RAND_MAX
+	#MB_CUR_MAX
+	*abort
+	-atexit
+	-at_quick_exit
+	-exit
+	+_Exit
+	-quick_exit
+	#getenv
+	#system
+	
+	#aligned_alloc
+	#calloc
+	#free
+	#malloc
+	#realloc
+	
+	#atof
+	+atoi
+	+atol
+	+atoll
+	#strtod
+	#strtof
+	+strtold
+	+strtol
+	+strtoll
+	+strtoul
+	+strtoull
+	
+	#mblen
+	#mbtowc
+	#wctomb
+	#mbstowcs
+	#wcstombs
+	
+	+bsearch
+	+qsort
+	#rand
+	#srand
+	
+	+abs(int)
+	+abs(long int)
+	+abs(long long int)
+	+labs
+	+div
+	+ldiv
+	+lldiv
+<new>
+	-bad_alloc
+	-bad_array_new_length
+	?align_val_t
+	-nothrow_t
+	-nothrow
+	-new_handler
+	-get_new_handler
+	-set_new_handler
+	*launder
+	*hardware_destructive_interference_size
+	*hardware_constructive_interference_size
+	-[new.delete.single]
+	-[new.delete.array]
+	*[new.delete.placement]
+-<typeinfo>
+-<exception>
+	TODO: see what stuff calls terminate
+		parallel algorithms... but only when exceptions are on
+*<initializer_list>
+*<cstdarg>
+#<csetjmp>
+#<csignal>
+#<stdexcept>
+#<cassert>
+	Because assert requires a stderror stream
+?<cerrno>
+	-errno
+?<system_error>
+	-operator<<(basic_ostream & const error_code &)
+	-error_code::message
+	-error_condition::message
+	-system_error
++<utility>
++<tuple>
+#<optional>
+#<variant>
+#<any>
+#<bitset>
+	lots of string ops (could be blacklisted)
+	indexed operations throw out_of_range
+	-string ctors
+	-operator>>
+	-operator<<
+	-to_string
+	"bitset2" would be pretty straightforward given a starting point of bitset.
+<memory>
+	+pointer_traits
+	+align
+	&&& default allocator may start static_asserting
+	+addressof
+	+specialized algorithms
+	+unique_ptr
+	&&& default_delete
+	# make_unique
+	? hash<unique_ptr>
+#<memory_resource>
+#<scoped_allocator>
++<functional>
+	- polymorphic function wrappers
+*<type_traits>
++<ratio>
+#<chrono>
+#<type_index>
+	RTTI and typeinfo requirement
++<execution>
+	why not?
+?<charconv>
+	+to_chars(int)
+		this will pull in error_code
+	+from_chars(int)
++<string>
+	+char_traits
++<string_view>
+	- operator<<
+	+string_view
+		-at
+		-copy
+		-substr
+		-compare
+		+compare(string_view)
+		+compare(const charT*)
+#<cctype>
+#<cwtype>
+	avoiding locales
++<cstring>
+	+memcpy
+	+memmove
+	+strcpy
+	+strncpy
+	+strcat
+	+strncat
+	+memcpm
+	+strcmp
+	-strcoll
+	+strncmp
+	-strxfrm
+	+memchr
+	+strchr
+	+strcspn
+	+strpbrk
+	+strpbrk
+	+strrchr
+	+strspn
+	+strstr
+	-strtok
+	+memset
+	-strerror
+	+strlen
++<cwchar>
+	+wcscpy
+	+wcsncpy
+	+wmemcpy
+	+wmemmove
+	+wcscat
+	+wcsncat
+	+wcscmp
+	+wcsncmp
+	+wmemcmp
+	+wcschr
+	+wcscspn
+	+wcxpbrk
+	+wcsrchr
+	+wcsspn
+	+wcsstr
+	+wcstok
+	+wmemchr
+	+wcslen
+	+wmemset
+#<locale>
+#<clocale>
+<array>
+	-std::array::at
+pick back up at 26 [containers] p851
