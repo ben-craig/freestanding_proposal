@@ -220,10 +220,28 @@ Proposed:
 	-back_insert_iterator
 	-front_insert_iterator
 +<algorithm>
-	-ExecutionPolicy overloads?
+	?ExecutionPolicy overloads?
 	See Meyers Eff STL for list of stable sorting algorithms
-	-stable_partition (internal heap alloc?)
-	-stable_sort
-	-inplace_merge (has provisions for oom, so maybe keep it?)
-pick back up at 29, Numerics library, 1071
-	-partial_sort
+	?stable_partition (internal heap alloc?)
+	?stable_sort
+	?inplace_merge (has provisions for oom, so maybe keep it?)
+#<cfenv>
+#<complex>
++<random>
+	-random_device
+	-uniform_real_distribution
+	-exponential_distribution
+	-gamma_distribution
+	-weibull_distribution
+	-extreme_value_distribution
+	-normal_distribution
+	-lognormal_distribution
+	-chi_squared_distribution
+	-cauchy_distribution
+	-fisher_f_distribution
+	-student_t_distribution
+	-piecewise_constant_distribution
+	-piecewise_linear_distribution
+Pick up at 29.6.3, pg 1094.  Look for float / RealType.
+#<valarray>
++<numeric>
