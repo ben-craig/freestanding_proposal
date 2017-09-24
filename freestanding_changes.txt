@@ -210,6 +210,20 @@ Proposed:
 	+wmemset
 #<locale>
 #<clocale>
-<array>
++<array>
 	-std::array::at
-pick back up at 26 [containers] p851
++<iterator>
+	-istream_iterator
+	-istreambuf_iterator
+	-ostream_iterator
+	-ostreambuf_iterator
+	-back_insert_iterator
+	-front_insert_iterator
++<algorithm>
+	-ExecutionPolicy overloads?
+	See Meyers Eff STL for list of stable sorting algorithms
+	-stable_partition (internal heap alloc?)
+	-stable_sort
+	-inplace_merge (has provisions for oom, so maybe keep it?)
+pick back up at 29, Numerics library, 1071
+	-partial_sort
