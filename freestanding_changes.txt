@@ -89,8 +89,8 @@ Proposed:
 	-get_new_handler
 	-set_new_handler
 	*launder
-	*hardware_destructive_interference_size
-	*hardware_constructive_interference_size
+	-hardware_destructive_interference_size
+	-hardware_constructive_interference_size
 	-[new.delete.single]
 	-[new.delete.array]
 	*[new.delete.placement]
