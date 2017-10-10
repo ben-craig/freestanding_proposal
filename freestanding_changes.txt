@@ -55,11 +55,12 @@ Proposed:
 	+atoll
 	#strtod
 	#strtof
-	+strtold
-	+strtol
-	+strtoll
-	+strtoul
-	+strtoull
+	#strtold
+	?locale and errno usage in strtoxxx
+	#strtol
+	#strtoll
+	#strtoul
+	#strtoull
 	
 	#mblen
 	#mbtowc
@@ -83,16 +84,18 @@ Proposed:
 	-bad_alloc
 	-bad_array_new_length
 	?align_val_t
-	-nothrow_t
-	-nothrow
+	*nothrow_t
+	*nothrow
 	-new_handler
 	-get_new_handler
 	-set_new_handler
 	*launder
 	-hardware_destructive_interference_size
 	-hardware_constructive_interference_size
-	-[new.delete.single]
-	-[new.delete.array]
+	-[new.delete.single] (throwing)
+	-[new.delete.array] (throwing)
+	*[new.delete.single] (nothrow)
+	*[new.delete.array] (nothrow)
 	*[new.delete.placement]
 -<typeinfo>
 -<exception>
@@ -105,9 +108,9 @@ Proposed:
 #<stdexcept>
 #<cassert>
 	Because assert requires a stderror stream
-?<cerrno>
++<cerrno>
 	-errno
-?<system_error>
++<system_error>
 	-operator<<(basic_ostream & const error_code &)
 	-error_code::message
 	-error_condition::message
@@ -242,6 +245,33 @@ Proposed:
 	-student_t_distribution
 	-piecewise_constant_distribution
 	-piecewise_linear_distribution
-Pick up at 29.6.3, pg 1094.  Look for float / RealType.
 #<valarray>
 +<numeric>
+#<cmath>
+	Almost entirely full of floating point math
+	+abs(int)
+	+abs(long int)
+	+abs(long long int)
+#<iosfwd>
+#<iostream>
+#<ios>
+#<streambuf>
+#<istreadm>
+#<ostream>
+#<iomanip>
+#<sstream>
+#<fstream>
+#<filesystem>
+#<cstdio>
+#<cinttypes>
+	+imaxabs
+	+imaxdiv
+	+abs(intmax_t)
+	+div(intmax_t, intmax_t)
+#<regex>
+*<atomic>
+#<thread>
+#<mutex>
+#<shared_mutex>
+#<condition_variable>
+#<future>
