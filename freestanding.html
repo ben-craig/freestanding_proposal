@@ -270,6 +270,8 @@ The default allocator should be allowed to invoke implementation defined behavio
 <p/>
 default_delete should be allowed to invoke implementation defined behavior in a freestanding implementation.  The intent is to allow unique_ptr with custom deleters, while still providing good diagnositics with a static assert in freestanding mode.
 <h1>VII. Acknowledgements</h1>
+Thanks to Brandon Streiff for reviewing this proposal.
+<p/>
 Similar work was done in the C++11 timeframe by Lawrence Crowl and Alberto Ganesh Barbati in <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3256.html">N3256</a>.
 <p/>
 CppCon talks on getting C++ support in various unusual environments:
