@@ -53,8 +53,6 @@ There are a few classes that mostly work in a systems programming environment, b
 <p/>
 For the &lt;algorithms&gt; header, we could support the parallel algorithms, but we would only be able to support sequential execution.  That doesn't seem worthwhile enough to keep, so the execution policy overloads will be omitted.
 <p/>
-As a quality-of-implementation issue, algorithms that can operate faster when provided with an extra buffer need to take care not to cause an exception to be thrown when memory is exhausted.  Implementations should support a "return nullptr;" implementation of nothrow new.
-<p/>
 This proposal doesn't remove problematic features from the language… but it does make it so that the freestanding standard library doesn't require those features.  Users that disable the problematic features (as is existing practice) will still have portable portions of the standard library at their disposal.
 <h1>VI. Technical Specifications</h1>
 <h2>Facilities no longer required for freestanding implementations</h2>
@@ -203,7 +201,10 @@ All of &lt;array&gt; except for array::at.
 <p/>
 All of &lt;iterator&gt; except for the stream iterators and the insert iterators.
 <p/>
-Most of &lt;algorithm&gt; and &lt;numeric&gt;.  The ExecutionPolicy overloads will not be included.  Temporary buffers will be required to use nothrow new.
+Most of &lt;algorithm&gt; and &lt;numeric&gt;.  The ExecutionPolicy overloads will not be included.  The following functions will be <b>omitted</b> due to the usage of temporary buffers:
+<ul>
+<li>TODO</li>
+</ul>
 <p/>
 Portions of &lt;random&gt;.  The following portions will be <b>omitted</b>:
 <ul>
@@ -242,11 +243,7 @@ Most of &lt;limits&gt;
 <p/>
 Portions of &lt;new&gt;
 <ul>
-<li>nothrow_t</li>
-<li>nothrow</li>
 <li>launder</li>
-<li>[new.delete.single] (nothrow overloads)</li>
-<li>[new.delete.array] (nothrow overloads)</li>
 <li>[new.delete.placement]</li>
 </ul>
 abort from &lt;cstdlib&gt;
@@ -263,9 +260,9 @@ assert is not included as it requires a stderror stream.
 <p/>
 &lt;cctype&gt; and &lt;cwctype&gt; rely heavily on global locale data.
 <h2>Changes to shared hosted / freestanding areas</h2>
-Functions in &lt;algorithm&gt; and &lt;numeric&gt; should be required to use nothrow new as the source of memory for temporary buffers.
+The default allocator should be allowed to invoke implementation defined behavior for freestanding implementations.  The intent is for freestanding implementations without a heap to static_assert.  This will improve diagnostics when a user instantiates a template that is in the STL, but isn't supported in the current freestanding mode.
 <p/>
-The default allocator and default_delete should be allowed to invoke implementation defined behavior for freestanding implementations.  The intent is for freestanding implementations without a heap to static_assert.  This will improve diagnostics when a user instantiates a template that is in the STL, but isn't supported in the current freestanding mode.
+default_delete should be allowed to invoke implementation defined behavior in a freestanding implementation.  The intent is to allow unique_ptr with custom deleters, while still providing good diagnositics with a static assert in freestanding mode.
 <h1>VII. Acknowledgements</h1>
 Similar work was done in the C++11 timeframe by Lawrence Crowl and Alberto Ganesh Barbati in <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3256.html">N3256</a>.
 <p/>
