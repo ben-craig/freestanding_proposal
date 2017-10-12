@@ -6,7 +6,7 @@ Date:	2017-09-04<br/>
 Project:	Programming Language C++, Library Working Group<br/>
 Reply-to:	Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 <h1>I. Introduction</h1>
-C++ defines a “freestanding” implementation that is intended to be used on systems with limited operating system support.  The standard has a small set of headers and functionality that are required to be present in a freestanding implementation.
+C++ defines a "freestanding" implementation that is intended to be used on systems with limited operating system support.  The standard has a small set of headers and functionality that are required to be present in a freestanding implementation.
 <p/>
 Some features are problematic in system programming.  Exceptions, RTTI, heap management, global state, thread-local storage, and floating point support are all problematic.
 <p/>
@@ -42,7 +42,7 @@ Even more so than for a hosted implementation, systems and embedded programmers 
 <li>The heap is a big set of global state.  In addition, heap exhaustion is typically expressed via exception.  Some embedded systems don’t even have a heap.</li>
 <li>Thread-local storage requires extra code in the operating system for support.  In addition, if one thread uses thread local storage, that cost is imposed on other threads.</li>
 <li>Many embedded systems don’t have floating point hardware, and software emulated floating point can drag in large runtimes that are difficult to optimize away.</li>
-<li>Some functions require global or thread-local storage.  These functions have been omitted or removed from the freestanding library.  Examples are the locale aware functions, many of the “exit” functions, and the C random number functions.</li>
+<li>Some functions require global or thread-local storage.  These functions have been omitted or removed from the freestanding library.  Examples are the locale aware functions, many of the "exit" functions, and the C random number functions.</li>
 </ul>
 <p/>
 There are a few classes that mostly work in a systems programming environment, but have a few member functions that are troublesome.  In these situations, the member function may be omitted while keeping the rest.
@@ -53,7 +53,7 @@ There are a few classes that mostly work in a systems programming environment, b
 <p/>
 For the &lt;algorithms&gt; header, we could support the parallel algorithms, but we would only be able to support sequential execution.  That doesn’t seem worthwhile enough to keep, so the execution policy overloads will be omitted.
 <p/>
-As a quality-of-implementation issue, algorithms that can operate faster when provided with an extra buffer need to take care not to cause an exception to be thrown when memory is exhausted.  Implementations should support a “return nullptr;” implementation of nothrow new.
+As a quality-of-implementation issue, algorithms that can operate faster when provided with an extra buffer need to take care not to cause an exception to be thrown when memory is exhausted.  Implementations should support a "return nullptr;" implementation of nothrow new.
 <p/>
 This proposal doesn’t remove problematic features from the language… but it does make it so that the freestanding standard library doesn’t require those features.  Users that disable the problematic features (as is existing practice) will still have portable portions of the standard library at their disposal.
 <h1>VI. Technical Specifications</h1>
@@ -268,9 +268,9 @@ Similar work was done in the C++11 timeframe by Lawrence Crowl and Alberto Ganes
 <p/>
 CppCon talks on getting C++ support in various unusual environments:
 <p/>
-[Baker2017] CppCon 2017: Billy Baker “Almost Unlimited Modern C++ in Kernel-Mode Applications”
+[Baker2017] CppCon 2017: Billy Baker "Almost Unlimited Modern C++ in Kernel-Mode Applications"
 <p/>
-[Quinn2016] CppCon 2016: Rian Quinn “Making C++ and the STL Work in the Linux / Windows Kernels"
+[Quinn2016] CppCon 2016: Rian Quinn "Making C++ and the STL Work in the Linux / Windows Kernels"
 <p/>
 </body>
 </html>
