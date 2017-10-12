@@ -258,6 +258,10 @@ errno is not included as it is global state.
 Many string functions (strtol and family) rely on errno.
 <p/>
 assert is not included as it requires a stderror stream.
+<p/>
+&lt;variant&gt; and &lt;optional&gt; could work in a freestanding environment if their interfaces didn't rely on exceptions.
+<p/>
+&lt;cctype&gt; and &lt;cwctype&gt; rely heavily on global locale data.
 <h2>Changes to shared hosted / freestanding areas</h2>
 Functions in &lt;algorithm&gt; and &lt;numeric&gt; should be required to use nothrow new as the source of memory for temporary buffers.
 <p/>
