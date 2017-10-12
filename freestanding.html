@@ -10,14 +10,14 @@ C++ defines a "freestanding" implementation that is intended to be used on syste
 <p/>
 Some features don't work well, or at least work differently, in system programming.  Exceptions, RTTI, heap management, global state, thread-local storage, and floating point support are all problematic.
 <p/>
-This proposal seeks to expand the list of headers and functionality to include all parts of the hosted C++ implementation that don't use problematic features, while simultaneously attempting to remove headers and functionality from the freestanding requirements that do require the problematic features.  
+This proposal seeks to expand the list of headers and functionality to include all parts of the hosted C++ implementation that don't use problematic features, while simultaneously attempting to remove headers and functionality from the freestanding requirements that do require the problematic features.
 <p/>
 This is intended as an early paper to seek general direction and opinions.
 <p/>
 <h1>II. Motivation</h1>
 Systems programmers want to sort things.  They want to use move semantics.  They may even want to bundle the arguments of a variadic template function into a tuple.  These are all reasonable things to do on a system with no operating system and kilobytes of storage.  The C++ standard even has reasonable specifications for these operations in the context of a tiny, OS-less system.  However, systems programmers must currently rely on either hand-rolled code or implementer extensions in order to get these facilities.
 <p/>
-Systems programmers don't have a guide as to what C++ library facilities will work without trying them.  The standard says atomic_load will work; memcpy will probably work; but will stable_sort?  Standardizing the subset of implementable C++ that is usable in a freestanding environment would provide clarity here, and help to educate systems programmers.
+Systems programmers don't have a guide as to what C++ library facilities will work without trying them.  The standard says <code>atomic_load</code> will work; <code>memcpy</code> will probably work; but will <code>stable_sort</code>?  Standardizing the subset of implementable C++ that is usable in a freestanding environment would provide clarity here, and help to educate systems programmers.
 <p/>
 There were some presentations at recent CppCon where others made a more full featured C++ work in the Linux and Windows kernels [Quinn2016] [Baker2017].  In both of these cases, C++ was being used in a sandboxed / pseudo-virtualized way.  C++ code (with exceptions and RTTI) was being run in the kernel context, but very few calls were made between the C++ code and the operating system kernel.  The C++ code was in a guest operating system.  This proposal should make it reasonable to have C++ code interact closely with the host operating system, perhaps in the context of a driver.
 <p/>
@@ -47,56 +47,56 @@ Even more so than for a hosted implementation, systems and embedded programmers 
 <p/>
 There are a few classes that mostly work in a systems programming environment, but have a few member functions that are troublesome.  In these situations, the member function may be omitted while keeping the rest.
 <ul>
-<li>array::at()'s whole reason of existing is to provide a throwing operator[].  array will be supported, but without the at() member function.</li>
-<li>error_code and error_condition will be supported in general, but the non-member operator&lt;&lt;, and the member message() functions will not, as they require the usage of classes that won't be supported in a freestanding environment.</li>
+<li><code>array::at()</code>'s whole reason of existing is to provide a throwing operator[].  array will be supported, but without the at() member function.</li>
+<li><code>error_code</code> and <code>error_condition</code> will be supported in general, but the non-member <code>operator&lt;&lt;</code>, and the member <code>message()</code> functions will not, as they require the usage of classes that won't be supported in a freestanding environment.</li>
 </ul>
 <p/>
-For the &lt;algorithms&gt; header, we could support the parallel algorithms, but we would only be able to support sequential execution.  That doesn't seem worthwhile enough to keep, so the execution policy overloads will be omitted.
+For the <code>&lt;algorithms&gt;</code> header, we could support the parallel algorithms, but we would only be able to support sequential execution.  That doesn't seem worthwhile enough to keep, so the execution policy overloads will be omitted.
 <p/>
 This proposal doesn't remove problematic features from the language… but it does make it so that the freestanding standard library doesn't require those features.  Users that disable the problematic features (as is existing practice) will still have portable portions of the standard library at their disposal.
 <h1>VI. Technical Specifications</h1>
 <h2>Facilities no longer required for freestanding implementations</h2>
 Usages of floats
 <ul>
-<li>&lt;cfloat&gt; entire header</li>
-<li>&lt;limits&gt; numeric_limits&lt;float&gt;</li>
-<li>&lt;limits&gt; numeric_limits&lt;double&gt;</li>
-<li>&lt;limits&gt; numeric_limits&lt;long double&gt;</li>
+<li><code>&lt;cfloat&gt;</code> entire header</li>
+<li><code>&lt;limits&gt; numeric_limits&lt;float&gt;</code></li>
+<li><code>&lt;limits&gt; numeric_limits&lt;double&gt;</code></li>
+<li><code>&lt;limits&gt; numeric_limits&lt;long double&gt;</code></li>
 </ul>
 Usages of global state
 <ul>
-<li>&lt;cstdlib&gt; atexit</li>
-<li>&lt;cstdlib&gt; at_quick_exit</li>
-<li>&lt;cstdlib&gt; exit</li>
-<li>&lt;cstdlib&gt; quick_exit</li>
+<li><code>&lt;cstdlib&gt; atexit</code></li>
+<li><code>&lt;cstdlib&gt; at_quick_exit</code></li>
+<li><code>&lt;cstdlib&gt; exit</code></li>
+<li><code>&lt;cstdlib&gt; quick_exit</code></li>
 </ul>
 Usages of exceptions and RTTI
 <ul>
-<li>&lt;new&gt; bad_alloc</li>
-<li>&lt;new&gt; bad_array_new_length</li>
-<li>&lt;typeinfo&gt; entire header</li>
-<li>&lt;exception&gt; entire header</li>
+<li><code>&lt;new&gt; bad_alloc</code></li>
+<li><code>&lt;new&gt; bad_array_new_length</code></li>
+<li><code>&lt;typeinfo&gt;</code> entire header</li>
+<li><code>&lt;exception&gt;</code> entire header</li>
 </ul>
 The heap
 <ul>
-<li>&lt;new&gt; nothrow_t</li>
-<li>&lt;new&gt; nothrow</li>
-<li>&lt;new&gt; [new.delete.single]</li>
-<li>&lt;new&gt; [new.delete.array]</li>
-<li>&lt;new&gt; new_handler</li>
-<li>&lt;new&gt; get_new_handler</li>
-<li>&lt;new&gt; set_new_handler</li>
+<li><code>&lt;new&gt; nothrow_t</code></li>
+<li><code>&lt;new&gt; nothrow</code></li>
+<li><code>&lt;new&gt;</code> [new.delete.single]</li>
+<li><code>&lt;new&gt;</code> [new.delete.array]</li>
+<li><code>&lt;new&gt; new_handler</code></li>
+<li><code>&lt;new&gt; get_new_handler</code></li>
+<li><code>&lt;new&gt; set_new_handler</code></li>
 </ul>
 Usages of the operating system
 <ul>
-<li>&lt;new&gt; hardware_destructive_interference_size</li>
-<li>&lt;new&gt; hardware_constructive_interference_size</li>
+<li><code>&lt;new&gt; hardware_destructive_interference_size</code></li>
+<li><code>&lt;new&gt; hardware_constructive_interference_size</code></li>
 </ul>
 
 <h2>Facilities newly required for freestanding implementations</h2>
-Portions of &lt;cstdlib&gt;
+Portions of <code>&lt;cstdlib&gt;</code>
 <ul>
-<li>div_t</li>
+<code><li>div_t</li>
 <li>ldiv_t</li>
 <li>lldiv_t</li>
 <li>EXIT_FAILURE</li>
@@ -113,41 +113,41 @@ Portions of &lt;cstdlib&gt;
 <li>labs</li>
 <li>div</li>
 <li>ldiv</li>
-<li>lldiv</li>
+<li>lldiv</li></code>
 </ul>
-All the error #defines in &lt;cerrno&gt;, but not errno.
+All the error <code>#defines</code> in <code>&lt;cerrno&gt;</code>, but not <code>errno</code>.
 <p/>
-All of &lt;system_error&gt; except for the operator&lt;&lt; stream overloads, error_code::message, error_condition:message, and the system_error class.
+All of <code>&lt;system_error&gt;</code> except for the <code>operator&lt;&lt;</code> stream overloads, <code>error_code::message</code>, <code>error_condition:message</code>, and the <code>system_error</code> class.
 <p/>
-All of &lt;utility&gt; and &lt;tuple&gt;.
+All of <code>&lt;utility&gt;</code> and <code>&lt;tuple&gt;</code>.
 <p/>
-Portions of &lt;memory&gt;.
+Portions of <code>&lt;memory&gt;</code>.
 <ul>
-<li>pointer_traits</li>
-<li>align</li>
+<li><code>pointer_traits</code></li>
+<li><code>align</code></li>
 <li>23.10.10, specialized algorithms</li>
-<li>unique_ptr</li>
-<li>default_delete (with implementation defined behavior)</li>
-<li>hash&lt;unique_ptr&gt;</li>
+<li><code>unique_ptr</code></li>
+<li><code>default_delete</code> (with implementation defined behavior)</li>
+<li><code>hash&lt;unique_ptr&gt;</code></li>
 </ul>
-All of &lt;functional&gt; except for 23.14.13, polymorphic function wrappers (i.e. std::function and friends).
+All of <code>&lt;functional&gt;</code> except for 23.14.13, polymorphic function wrappers (i.e. <code>std::function</code> and friends).
 <p/>
-All of &lt;ratio&gt;.
+All of <code>&lt;ratio&gt;</code>.
 <p/>
-All of &lt;execution&gt;.
+All of <code>&lt;execution&gt;</code>.
 <p/>
-Portions of &lt;charconv&gt;.
+Portions of <code>&lt;charconv&gt;</code>.
 <ul>
-<li>to_chars_result</li>
-<li>from_chars_result</li>
-<li>to_chars(integral)</li>
-<li>from_chars(integral)</li>
+<li><code>to_chars_result</code></li>
+<li><code>from_chars_result</code></li>
+<li><code>to_chars</code>(integral)</li>
+<li><code>from_chars</code>(integral)</li>
 </ul>
-The char_traits class from &lt;string&gt;.
+The <code>char_traits</code> class from <code>&lt;string&gt;</code>.
 <p/>
-Most of &lt;string_view&gt;.  These functions will be <b>omitted</b>:
+Most of <code>&lt;string_view&gt;</code>.  These functions will be <b>omitted</b>:
 <ul>
-<li>operator&lt;&lt;</li>
+<code><li>operator&lt;&lt;</li>
 <li>basic_string_view::at</li>
 <li>basic_string_view::copy</li>
 <li>basic_string_view::substr</li>
@@ -157,10 +157,10 @@ size_type pos2, size_type n2);
 <li>basic_string_view::compare(size_type pos1, size_type n1, const charT* s);
 <li>basic_string_view::compare(size_type pos1, size_type n1, const charT* s,
 size_type n2);
-</ul>
-Portions of &lt;cstring&gt;.
+</code></ul>
+Portions of <code>&lt;cstring&gt;</code>.
 <ul>
-<li>memcpy</li>
+<code><li>memcpy</li>
 <li>memmove</li>
 <li>strcpy</li>
 <li>strncpy</li>
@@ -178,10 +178,10 @@ Portions of &lt;cstring&gt;.
 <li>strstr</li>
 <li>memset</li>
 <li>strlen</li>
-</ul>
-Portions of &lt;cwchar&gt;.
+</code></ul>
+Portions of <code>&lt;cwchar&gt;</code>.
 <ul>
-<li>wcscpy</li>
+<code><li>wcscpy</li>
 <li>wcsncpy</li>
 <li>wmemcpy</li>
 <li>wmemmove</li>
@@ -200,21 +200,21 @@ Portions of &lt;cwchar&gt;.
 <li>wmemchr</li>
 <li>wcslen</li>
 <li>wmemset</li>
-</ul>
-All of &lt;array&gt; except for array::at.
+</code></ul>
+All of <code>&lt;array&gt;</code> except for <code>array::at</code>.
 <p/>
-All of &lt;iterator&gt; except for the stream iterators and the insert iterators.
+All of <code>&lt;iterator&gt;</code> except for the stream iterators and the insert iterators.
 <p/>
-Most of &lt;algorithm&gt; and &lt;numeric&gt;.  The ExecutionPolicy overloads will not be included.  The following functions will be <b>omitted</b> due to the usage of temporary buffers:
+Most of <code>&lt;algorithm&gt;</code> and <code>&lt;numeric&gt;</code>.  The ExecutionPolicy overloads will not be included.  The following functions will be <b>omitted</b> due to the usage of temporary buffers:
 <ul>
-<li>stable_sort</li>
+<code><li>stable_sort</li>
 <li>stable_partition</li>
 <li>inplace_merge</li>
-</ul>
+</code></ul>
 <p/>
-Portions of &lt;random&gt;.  The following portions will be <b>omitted</b>:
+Portions of <code>&lt;random&gt;</code>.  The following portions will be <b>omitted</b>:
 <ul>
-<li>random_device</li>
+<code><li>random_device</li>
 <li>uniform_real_distribution</li>
 <li>exponential_distribution</li>
 <li>gamma_distribution</li>
@@ -228,47 +228,47 @@ Portions of &lt;random&gt;.  The following portions will be <b>omitted</b>:
 <li>student_t_distribution</li>
 <li>piecewise_constant_distribution</li>
 <li>piecewise_linear_distribution</li>
-</ul>
-A small portion of &lt;cmath&gt; will be present.
+</code></ul>
+A small portion of <code>&lt;cmath&gt;</code> will be present.
 <ul>
-<li>abs(int)</li>
+<code><li>abs(int)</li>
 <li>abs(long int)</li>
 <li>abs(long long int)</li>
-</ul>
-A portion of &lt;cinttypes&gt; will be present.
+</code></ul>
+A portion of <code>&lt;cinttypes&gt;</code> will be present.
 <ul>
-<li>imaxabs</li>
+<code><li>imaxabs</li>
 <li>imaxdiv</li>
 <li>abs(intmax_t)</li>
 <li>div(intmax_t, intmax_t)</li>
-</ul>
+</code></ul>
 <h2>Facilities that remain required for freestanding implementations</h2>
-All of &lt;cstddef&gt;, &lt;climits&gt;, &lt;cstdint&gt;, &lt;initializer_list&gt;, &lt;cstdarg&gt;, &lt;type_traits&gt;, &lt;atomic&gt;, &lt;cstdalign&gt;, and &lt;cstdbool&gt;.
+All of <code>&lt;cstddef&gt;</code>, <code>&lt;climits&gt;</code>, <code>&lt;cstdint&gt;</code>, <code>&lt;initializer_list&gt;</code>, <code>&lt;cstdarg&gt;</code>, <code>&lt;type_traits&gt;</code>, <code>&lt;atomic&gt;</code>, <code>&lt;cstdalign&gt;</code>, and <code>&lt;cstdbool&gt;</code>.
 <p/>
-Most of &lt;limits&gt;
+Most of <code>&lt;limits&gt;</code>
 <p/>
-Portions of &lt;new&gt;
+Portions of <code>&lt;new&gt;</code>
 <ul>
-<li>launder</li>
+<li><code>launder</code></li>
 <li>[new.delete.placement]</li>
 </ul>
-abort from &lt;cstdlib&gt;
+<code>abort</code> from <code>&lt;cstdlib&gt;</code>
 <h2>Notable omissions</h2>
-bitset is not included because many of its functions throw as part of a range check.
+<code>bitset</code> is not included because many of its functions throw as part of a range check.
 <p/>
-errno is not included as it is global state.
+<code>errno</code> is not included as it is global state.
 <p/>
-Many string functions (strtol and family) rely on errno.
+Many string functions (<code>strtol</code> and family) rely on <code>errno</code>.
 <p/>
-assert is not included as it requires a stderror stream.
+<code>assert</code> is not included as it requires a stderror stream.
 <p/>
-&lt;variant&gt; and &lt;optional&gt; could work in a freestanding environment if their interfaces didn't rely on exceptions.
+<code>&lt;variant&gt;</code> and <code>&lt;optional&gt;</code> could work in a freestanding environment if their interfaces didn't rely on exceptions.
 <p/>
-&lt;cctype&gt; and &lt;cwctype&gt; rely heavily on global locale data.
+<code>&lt;cctype&gt;</code> and <code>&lt;cwctype&gt;</code> rely heavily on global locale data.
 <h2>Changes to shared hosted / freestanding areas</h2>
-The default allocator should be allowed to invoke implementation defined behavior for freestanding implementations.  The intent is for freestanding implementations without a heap to static_assert.  This will improve diagnostics when a user instantiates a template that is in the STL, but isn't supported in the current freestanding mode.
+The default allocator should be allowed to invoke implementation defined behavior for freestanding implementations.  The intent is for freestanding implementations without a heap to <code>static_assert</code>.  This will improve diagnostics when a user instantiates a template that is in the STL, but isn't supported in the current freestanding mode.
 <p/>
-default_delete should be allowed to invoke implementation defined behavior in a freestanding implementation.  The intent is to allow unique_ptr with custom deleters, while still providing good diagnositics with a static assert in freestanding mode.
+<code>default_delete</code> should be allowed to invoke implementation defined behavior in a freestanding implementation.  The intent is to allow <code>unique_ptr</code> with custom deleters, while still providing good diagnositics with a <code>static_assert</code> in freestanding mode.
 <h1>VII. Acknowledgements</h1>
 Thanks to Brandon Streiff for reviewing this proposal.
 <p/>
