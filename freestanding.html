@@ -47,7 +47,7 @@ Even more so than for a hosted implementation, systems and embedded programmers 
 <p/>
 There are a few classes that mostly work in a systems programming environment, but have a few member functions that are troublesome.  In these situations, the member function may be omitted while keeping the rest.
 <ul>
-<li><code>array::at()</code>'s whole reason of existing is to provide a throwing operator[].  array will be supported, but without the at() member function.</li>
+<li><code>array::at()</code>'s whole reason of existing is to provide a throwing <code>operator[]</code>.  array will be supported, but without the at() member function.</li>
 <li><code>error_code</code> and <code>error_condition</code> will be supported in general, but the non-member <code>operator&lt;&lt;</code>, and the member <code>message()</code> functions will not, as they require the usage of classes that won't be supported in a freestanding environment.</li>
 </ul>
 <p/>
