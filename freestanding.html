@@ -13,12 +13,9 @@ The current definition of the freestanding implementation is not very useful.  H
 hosted implementation, this document defines the set of available libraries. A freestanding implementation is
 one in which execution may take place without the benefit of an operating system, and has an implementation defined
 set of libraries that includes certain language-support libraries (20.5.1.3).</blockquote>
-   
-
+The current set of freestanding libraries asks too much of toolchain vendors, and provides too little to kernel and embedded programmers.  What should the library do when asked to <code>std::exit()</code> from a kernel?  From a microprocessor in an OS-less elevator control system?  Why should a systems programmer need to rewrite <code>std::sort()</code> or <code>std::memcpy()</code>?
 </p><p>
-Some language features don't work well, or at least work differently, in system programming.  Exceptions, RTTI, heap management, global state, thread-local storage, and floating point operations are all problematic.
-</p><p>
-This proposal seeks to refine the list of headers and declarations to include all parts of the hosted implementation that don't use problematic features.  This includes additions, modifications, and removals from the current set of freestanding headers and declarations.
+Rather than provide the (nearly) minimal subset of the library needed to support all the language features, I propose we provide the (nearly) maximal subset of the library that does not require an OS or space overhead.
 </p><p>
 This is intended as an early paper to seek general direction and opinions.
 </p>
