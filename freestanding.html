@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <html>
 <body>
+<h1>Freestanding Proposal</h1>
 Document number: P0829R0<br/>
 Date: 2017-10-14<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: Library Evolution Working Group
 <h1>I. Introduction</h1>
 <p>
-C++ defines a "freestanding" implementation that is intended to be used on systems with limited operating system support [intro.compliance].  The standard has a small set of headers and declarations that are required to be present in a freestanding implementation.
+The current definition of the freestanding implementation is not very useful.  Here is the current high level definition from [intro.compliance]:
+<blockquote>7 Two kinds of implementations are defined: a hosted implementation and a freestanding implementation. For a
+hosted implementation, this document defines the set of available libraries. A freestanding implementation is
+one in which execution may take place without the benefit of an operating system, and has an implementation defined
+set of libraries that includes certain language-support libraries (20.5.1.3).</blockquote>
+   
+
 </p><p>
 Some language features don't work well, or at least work differently, in system programming.  Exceptions, RTTI, heap management, global state, thread-local storage, and floating point operations are all problematic.
 </p><p>
