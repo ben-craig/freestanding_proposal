@@ -68,7 +68,7 @@ I could see the scope increasing to the standard library availability on GPUs.  
 </p><p>
 <h1>IV. Impact on the standard</h1>
 <p>
-Rather than list all of the facilities available to a freestanding implementation in one place, as is currently done in [compliance], the standard would tag each header, class, or function that is available in a freestanding implementation.  I expect this to be a large number of small edits, but the edits.  I expect the edits would have easy to understand ramifications throughout the standard.
+Rather than list all of the facilities available to a freestanding implementation in one place, as is currently done in [compliance], the standard would tag each header, class, or function that is available in a freestanding implementation.  I expect this to be a large number of small edits, but the edits would have easy to understand ramifications throughout the standard.
 </p><p>
 There is precedent for this kind of tagging in other specification documents.  The ECMAScript Language Specification has optional support for ECMA-402 (internationalization).  The impact of ECMA-402 is called out explicitly in several places.  POSIX tags functions as supported in base, XSI, or in one of many option groups.
 </p>
@@ -85,50 +85,12 @@ Even more so than for a hosted implementation, systems and embedded programmers 
 <li>Some functions require global or thread-local storage.  These functions have been omitted or removed from the freestanding library.  Examples are the locale aware functions, many of the "exit" functions, and the C random number functions.</li>
 </ul>
 <p>
-There are a few classes that mostly work in a systems programming environment, but have a few member functions that are troublesome.  In these situations, the member function may be omitted while keeping the rest.
-</p>
-<ul>
-<li><code>array::at()</code>'s whole reason of existing is to provide a throwing <code>operator[]</code>.  array will be supported, but without the at() member function.</li>
-<li><code>error_code</code> and <code>error_condition</code> will be supported in general, but the non-member <code>operator&lt;&lt;</code>, and the member <code>message()</code> functions will not, as they require the usage of classes that won't be supported in a freestanding environment.</li>
-</ul>
-<p>
 For the <code>&lt;algorithms&gt;</code> header, we would only be able to support sequential execution of parallel algorithms.  Since this adds little value, the execution policy overloads will be omitted.
 </p><p>
 This proposal doesn't remove problematic features from the language, but it does make it so that the freestanding standard library doesn't require those features.  Users that disable the problematic features (as is existing practice) will still have portable portions of the standard library at their disposal.
 </p>
 <h1>VI. Technical Specifications</h1>
 <h2>Facilities no longer required for freestanding implementations</h2>
-Usages of floats
-<ul>
-<li><code>&lt;cfloat&gt;</code> entire header</li>
-<li><code>&lt;limits&gt; numeric_limits&lt;float&gt;</code></li>
-<li><code>&lt;limits&gt; numeric_limits&lt;double&gt;</code></li>
-<li><code>&lt;limits&gt; numeric_limits&lt;long double&gt;</code></li>
-</ul>
-Usages of global state
-<ul>
-<li><code>&lt;cstdlib&gt; atexit</code></li>
-<li><code>&lt;cstdlib&gt; at_quick_exit</code></li>
-<li><code>&lt;cstdlib&gt; exit</code></li>
-<li><code>&lt;cstdlib&gt; quick_exit</code></li>
-</ul>
-Usages of exceptions and RTTI
-<ul>
-<li><code>&lt;new&gt; bad_alloc</code></li>
-<li><code>&lt;new&gt; bad_array_new_length</code></li>
-<li><code>&lt;typeinfo&gt;</code> entire header</li>
-<li><code>&lt;exception&gt;</code> entire header</li>
-</ul>
-The heap
-<ul>
-<li><code>&lt;new&gt; nothrow_t</code></li>
-<li><code>&lt;new&gt; nothrow</code></li>
-<li><code>&lt;new&gt;</code> [new.delete.single]</li>
-<li><code>&lt;new&gt;</code> [new.delete.array]</li>
-<li><code>&lt;new&gt; new_handler</code></li>
-<li><code>&lt;new&gt; get_new_handler</code></li>
-<li><code>&lt;new&gt; set_new_handler</code></li>
-</ul>
 Usages of the operating system
 <ul>
 <li><code>&lt;new&gt; hardware_destructive_interference_size</code></li>
@@ -160,27 +122,33 @@ Portions of <code>&lt;cstdlib&gt;</code>
 <p>
 All the error <code>#defines</code> in <code>&lt;cerrno&gt;</code>, but not <code>errno</code>.
 </p><p>
-All of <code>&lt;system_error&gt;</code> except for the <code>operator&lt;&lt;</code> stream overloads, <code>error_code::message</code>, <code>error_condition:message</code>, and the <code>system_error</code> class.
+The <code>errc</code> enum from <code>&lt;system_error&gt;</code>.
 </p><p>
 All of <code>&lt;utility&gt;</code> and <code>&lt;tuple&gt;</code>.
 </p><p>
 Portions of <code>&lt;memory&gt;</code>.
 </p>
 <ul>
+<li><b>TODO: put std::allocator here in constexpr contexts only?</b></li>
 <li><code>pointer_traits</code></li>
 <li><code>align</code></li>
 <li>23.10.10, specialized algorithms</li>
-<li><code>unique_ptr</code></li>
+<li><code>unique_ptr</code> <b>TODO: replace with unique_resource pending scope_exit paper completion?</b></li>
 <li><code>default_delete</code> (with implementation defined behavior)</li>
 <li><code>hash&lt;unique_ptr&gt;</code></li>
 </ul>
 <p>
-All of <code>&lt;functional&gt;</code> except for 23.14.13, polymorphic function wrappers (i.e. <code>std::function</code> and friends).
+Most of <code>&lt;functional&gt;</code>.  <b>Omit</b> the following.
+<ul>
+<li>23.14.13, polymorphic function wrappers (i.e. <code>std::function</code> and friends).</li>
+<li>23.14.14.2, <code>boyer_moore_searcher</code></li>
+<li>23.14.14.3, <code>boyer_moore_horspool_searcher</code></li>
+</ul>
 </p><p>
 All of <code>&lt;ratio&gt;</code>.
 </p><p>
-All of <code>&lt;execution&gt;</code>.
-</p><p>
+Most of <code>&lt;chrono&gt;</code>.  <b>Omit</b> 23.17.7, Clocks.
+</p><p>   
 Portions of <code>&lt;charconv&gt;</code>.
 </p>
 <ul>
@@ -192,20 +160,6 @@ Portions of <code>&lt;charconv&gt;</code>.
 <p>
 The <code>char_traits</code> class from <code>&lt;string&gt;</code>.
 </p><p>
-Most of <code>&lt;string_view&gt;</code>.  These functions will be <b>omitted</b>:
-</p>
-<ul>
-<code><li>operator&lt;&lt;</li>
-<li>basic_string_view::at</li>
-<li>basic_string_view::copy</li>
-<li>basic_string_view::substr</li>
-<li>basic_string_view::compare(size_type pos1, size_type n1, basic_string_view s);
-<li>basic_string_view::compare(size_type pos1, size_type n1, basic_string_view s,
-size_type pos2, size_type n2);
-<li>basic_string_view::compare(size_type pos1, size_type n1, const charT* s);
-<li>basic_string_view::compare(size_type pos1, size_type n1, const charT* s,
-size_type n2);
-</code></ul>
 Portions of <code>&lt;cstring&gt;</code>.
 <ul>
 <code><li>memcpy</li>
@@ -250,8 +204,6 @@ Portions of <code>&lt;cwchar&gt;</code>.
 <li>wmemset</li>
 </code></ul>
 <p>
-All of <code>&lt;array&gt;</code> except for <code>array::at</code>.
-</p><p>
 All of <code>&lt;iterator&gt;</code> except for the stream iterators and the insert iterators.
 </p><p>
 Most of <code>&lt;algorithm&gt;</code> and <code>&lt;numeric&gt;</code>.  The ExecutionPolicy overloads will not be included.  The following functions will be <b>omitted</b> due to the usage of temporary buffers:
@@ -293,27 +245,18 @@ A portion of <code>&lt;cinttypes&gt;</code> will be present.
 <li>abs(intmax_t)</li>
 <li>div(intmax_t, intmax_t)</li>
 </code></ul>
-<h2>Facilities that remain required for freestanding implementations</h2>
-<p>
-All of <code>&lt;cstddef&gt;</code>, <code>&lt;climits&gt;</code>, <code>&lt;cstdint&gt;</code>, <code>&lt;initializer_list&gt;</code>, <code>&lt;cstdarg&gt;</code>, <code>&lt;type_traits&gt;</code>, <code>&lt;atomic&gt;</code>, <code>&lt;cstdalign&gt;</code>, and <code>&lt;cstdbool&gt;</code>.
-</p><p>
-Most of <code>&lt;limits&gt;</code>
-</p><p>
-Portions of <code>&lt;new&gt;</code>
-</p>
-<ul>
-<li><code>launder</code></li>
-<li>[new.delete.placement]</li>
-</ul>
-<code>abort</code> from <code>&lt;cstdlib&gt;</code>
 <h2>Notable omissions</h2>
 <p>
 <code>bitset</code> is not included because many of its functions throw as part of a range check.
 </p><p>
-<code>errno</code> is not included as it is global state.
+<code>errno</code> is not included as it is global state.  In addition, errno is best implemented as a thread_local variable.
+</p><p>
+<code>error_code</code>, <code>error_condition</code>, and <code>error_condition</code> all have <code>string</code> in the interface.
 </p><p>
 Many string functions (<code>strtol</code> and family) rely on <code>errno</code>.
 </p><p>
+<code>string_view</code> and <code>array</code> have methods that can throw exceptions.
+</p><p>   
 <code>assert</code> is not included as it requires a stderror stream.
 <p/>
 <code>&lt;variant&gt;</code> and <code>&lt;optional&gt;</code> could work in a freestanding environment if their interfaces didn't rely on exceptions.
