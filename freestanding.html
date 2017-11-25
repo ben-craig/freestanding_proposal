@@ -22,9 +22,9 @@ Rather than provide the (nearly) minimal subset of the library needed to support
 Systems programmers want to sort things.  They want to use move semantics.  They may even want to bundle the arguments of a variadic template function into a tuple.  These are all reasonable things to do on a system with no operating system and kilobytes of storage.  The C++ standard even has reasonable specifications for these operations in the context of a tiny, OS-less system.  However, systems programmers must currently rely on either hand-rolled code or implementer extensions in order to get these facilities.
 </p><p>
 Systems programmers don't have a guide as to what C++ library facilities will work without trying them.  The standard says <code>atomic_load</code> will work; <code>memcpy</code> will probably work; but will <code>stable_sort</code>?  Standardizing the subset of implementable C++ that is usable in a freestanding environment would provide clarity here, and help to educate systems programmers.
-</p><p>
-There were some presentations at recent CppCon where others made a more full featured C++ work in the Linux and Windows kernels [Quinn2016] [Baker2017].  In both of these cases, C++ was being used in a sandboxed / pseudo-virtualized way.  C++ code (with exceptions and RTTI) was being run in the kernel context, but very few calls were made between the C++ code and the operating system kernel.  The C++ code was in a guest operating system.  This proposal should make it reasonable to have C++ code interact closely with the internals of a host operating system, perhaps in the context of a driver.
-</p><p>
+</p>
+<h1>III. Current State</h1>
+<p>
 The current state of freestanding implementations is rather sad.  Of the "big three" standard libraries (libstdc++, libc++, and Microsoft's Visual Studio STL), only libstdc++ has any relevant mention of "freestanding" or "hosted".  In practice, users take a hosted implementation of C++ and use it as-is in situations where it was never intended.  This means that all the headers tend to be available, but only a few of the headers actually work.  The parts that "should" work in a freestanding system, as specified by the C++17 standard, don't always work, while parts that aren't specified work fine.  For example, just creating an instance of <code>std::bad_alloc</code> (without even throwing it!) causes linker errors in the Windows kernel with Visual Studio 2017, and it causes linker errors on a bare metal ARMv5 target with gcc 4.8.
 </p>
 <pre>Visual Studio 2017, x64 Kernel
@@ -57,8 +57,14 @@ libc.a(lib_a-readr.o): In function `_read_r':
    readr.c:(.text+0x20): undefined reference to `_read'</pre>
 <p>
 <code>std::sort</code> works just fine on both targets though.
+</p><p>
+The Microsoft Windows kernel and Apple Mac OSX kernel both currently support limited, non-compliant subsets of C++ for driver writers.  The Linux kernel does not support C++ officially, though with a fair amount of work on the part of the driver developer, C++ can be made to work.  Drivers written in C++ are highly unlikely to be accepted in the upstream Linux source repositories.
+</p><p>
+There were some presentations at recent CppCons where others made a more full featured C++ work in the Linux and Windows kernels [Quinn2016] [Baker2017].  In both of these cases, C++ was being used in a sandboxed / pseudo-virtualized way.  C++ code (with exceptions and RTTI) was being run in the kernel context, but very few calls were made between the C++ code and the operating system kernel.  The C++ code was in a guest operating system.  This proposal should make it reasonable to have C++ code interact closely with the internals of a host operating system, perhaps in the context of a driver.
+</p><p>
+IncludeOS [Bratterud2017] is an OS primarily intended for running in VMs (though some bare metal support has been tested).  One might expect such a project to use a freestanding implementation as a base, but instead, it starts with a hosted implmentation of C++ and drops support for the impractical parts (threads and filestreams in particular).
 </p>
-<h1>III. Scope</h1>
+<h1>IV. Scope</h1>
 <p>
 The current scope of this proposal is limited to the freestanding standard library available to systems and embedded programming.
 </p><p>
@@ -66,13 +72,14 @@ This paper is currently concerned with the divisions of headers and library func
 </p><p>
 I could see the scope increasing to the standard library availability on GPUs.  It also occurs to me that the list of standard library functions suitable for a freestanding implementation is likely a large subset of the list of functions that could be marked constexpr, and conditionally noexcept.  This paper will not attempt to address those items though.
 </p><p>
-<h1>IV. Impact on the standard</h1>
+<h1>V. Impact on the standard</h1>
 <p>
 Rather than list all of the facilities available to a freestanding implementation in one place, as is currently done in [compliance], the standard would tag each header, class, or function that is available in a freestanding implementation.  I expect this to be a large number of small edits, but the edits would have easy to understand ramifications throughout the standard.
 </p><p>
 There is precedent for this kind of tagging in other specification documents.  The ECMAScript Language Specification has optional support for ECMA-402 (internationalization).  The impact of ECMA-402 is called out explicitly in several places.  POSIX tags functions as supported in base, XSI, or in one of many option groups.
 </p>
-<h1>V. Design decisions</h1>
+<h1>VI. Impact on implementations</h1>
+<h1>VII. Design decisions</h1>
 <p>
 Even more so than for a hosted implementation, systems and embedded programmers do not want to pay for what they don't use.  As a consequence, I am avoiding all features that require global storage, even if that storage is immutable.
 </p>
@@ -89,7 +96,7 @@ For the <code>&lt;algorithms&gt;</code> header, we would only be able to support
 </p><p>
 This proposal doesn't remove problematic features from the language, but it does make it so that the freestanding standard library doesn't require those features.  Users that disable the problematic features (as is existing practice) will still have portable portions of the standard library at their disposal.
 </p>
-<h1>VI. Technical Specifications</h1>
+<h1>VIII. Technical Specifications</h1>
 <h2>Facilities no longer required for freestanding implementations</h2>
 Usages of the operating system
 <ul>
@@ -269,7 +276,7 @@ The default allocator should be allowed to invoke implementation defined behavio
 </p><p>
 <code>default_delete</code> should be allowed to invoke implementation defined behavior in a freestanding implementation.  The intent is to allow <code>unique_ptr</code> with custom deleters, while still providing good diagnositics with a <code>static_assert</code> in freestanding mode.
 </p>
-<h1>VII. Acknowledgements</h1>
+<h1>IX. Acknowledgements</h1>
 <p>
 Thanks to Brandon Streiff, Joshua Cannon, Phil Hindman, and Irwan Djajadi for reviewing this proposal.
 </p><p>
@@ -280,6 +287,8 @@ CppCon talks on getting C++ support in various unusual environments:
 [Baker2017] CppCon 2017: Billy Baker "Almost Unlimited Modern C++ in Kernel-Mode Applications"
 </p><p>
 [Quinn2016] CppCon 2016: Rian Quinn "Making C++ and the STL Work in the Linux / Windows Kernels"
+</p><p>
+[Bratterud2017] CppCon 2017: Alfred Bratterud "Deconstructing the OS: The devil's In the side effects"
 </p>
 </body>
 </html>
