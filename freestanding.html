@@ -62,7 +62,7 @@ The Microsoft Windows kernel and Apple Mac OSX kernel both currently support lim
 </p><p>
 There were some presentations at recent CppCons where others made a more full featured C++ work in the Linux and Windows kernels [Quinn2016] [Baker2017].  In both of these cases, C++ was being used in a sandboxed / pseudo-virtualized way.  C++ code (with exceptions and RTTI) was being run in the kernel context, but very few calls were made between the C++ code and the operating system kernel.  The C++ code was in a guest operating system.  This proposal should make it reasonable to have C++ code interact closely with the internals of a host operating system, perhaps in the context of a driver.
 </p><p>
-IncludeOS [Bratterud2017] is an OS primarily intended for running in VMs (though some bare metal support has been tested).  One might expect such a project to use a freestanding implementation as a base, but instead, it starts with a hosted implmentation of C++ and drops support for the impractical parts (threads and filestreams in particular).
+IncludeOS [Bratterud2017] is an OS primarily intended for running in VMs, though some bare metal support has been tested.  One might expect such a project to use a freestanding implementation as a base, but instead, it starts with a hosted implmentation of C++ and drops support for the impractical parts (threads and filestreams in particular).
 </p>
 <h1>IV. Scope</h1>
 <p>
