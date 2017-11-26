@@ -147,9 +147,6 @@ Portions of <code>&lt;memory&gt;</code>.
 <li><code>pointer_traits</code></li>
 <li><code>align</code></li>
 <li>23.10.10, specialized algorithms</li>
-<li><code>unique_ptr</code> <b>TODO: replace with unique_resource pending scope_exit paper completion?</b></li>
-<li><code>default_delete</code> (with implementation defined behavior)</li>
-<li><code>hash&lt;unique_ptr&gt;</code></li>
 </ul>
 <p>
 Most of <code>&lt;functional&gt;</code>.  <b>Omit</b> the following.
@@ -162,7 +159,7 @@ Most of <code>&lt;functional&gt;</code>.  <b>Omit</b> the following.
 All of <code>&lt;ratio&gt;</code>.
 </p><p>
 Most of <code>&lt;chrono&gt;</code>.  <b>Omit</b> 23.17.7, Clocks.
-</p><p>   
+</p><p>
 Portions of <code>&lt;charconv&gt;</code>.
 </p>
 <ul>
@@ -270,12 +267,14 @@ A portion of <code>&lt;cinttypes&gt;</code> will be present.
 Many string functions (<code>strtol</code> and family) rely on <code>errno</code>.
 </p><p>
 <code>string_view</code> and <code>array</code> have methods that can throw exceptions.
-</p><p>   
+</p><p>
 <code>assert</code> is not included as it requires a stderror stream.
-<p/>
+</p><p>
 <code>&lt;variant&gt;</code> and <code>&lt;optional&gt;</code> could work in a freestanding environment if their interfaces didn't rely on exceptions.
 </p><p>
 <code>&lt;cctype&gt;</code> and <code>&lt;cwctype&gt;</code> rely heavily on global locale data.
+</p><p>
+<code>unique_ptr</code> is generally used for heap management, but is occasionally used as a makeshift RAII object for other resources.  The use of the <code>default_delete</code> class in the template parameters is what dooms this class.  In the future, <a href="http://wg21.link/p0052"><code>unique_resource</code> and <code>scope_exit</code></a> may satisfy the non-deleting use cases that <code>unique_ptr</code> currently fills.
 </p>
 <h1>IX. Acknowledgements</h1>
 <p>
