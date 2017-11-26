@@ -79,6 +79,11 @@ Rather than list all of the facilities available to a freestanding implementatio
 There is precedent for this kind of tagging in other specification documents.  The ECMAScript Language Specification has optional support for ECMA-402 (internationalization).  The impact of ECMA-402 is called out explicitly in several places.  POSIX tags functions as supported in base, XSI, or in one of many option groups.
 </p>
 <h1>VI. Impact on implementations</h1>
+<p>
+C++ standard library headers will likely need to add preprocessor feature toggles to portions of headers that would emit warning or errors in freestanding mode.  The precision and timeliness (compile time vs. link time) of errors remains a quality-of-implementation detail.
+</p><p>
+A minimal freestanding C11 standard library will not be sufficient to provide the C portions of the C++ standard library.  <code>std::char_traits</code> and many of the function specializations in <code>&lt;algorithm&gt;</code> are implemented in terms of non-freestanding C functions.  In practice, most C libraries are not minimal freestanding C11 libraries.  The optimized versions of the <code>&lt;cstring&gt;</code> and <code>&lt;cwchar&gt;</code> functions will typically be the same for both hosted and freestanding environments.
+</p>
 <h1>VII. Design decisions</h1>
 <p>
 Even more so than for a hosted implementation, systems and embedded programmers do not want to pay for what they don't use.  As a consequence, I am avoiding all features that require global storage, even if that storage is immutable.
