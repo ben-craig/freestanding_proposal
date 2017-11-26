@@ -87,6 +87,8 @@ A minimal freestanding C11 standard library will not be sufficient to provide th
 <h1>VII. Design decisions</h1>
 <p>
 Even more so than for a hosted implementation, systems and embedded programmers do not want to pay for what they don't use.  As a consequence, I am avoiding all features that require global storage, even if that storage is immutable.
+</p><p>
+Note that these are not concerns revolving around execution time performance.  These are generally concerns about space overhead and correctness.
 </p>
 <ul>
 <li>Exceptions either require external jump tables or extra bookkeeping instructions.</li>
@@ -274,12 +276,6 @@ Many string functions (<code>strtol</code> and family) rely on <code>errno</code
 <code>&lt;variant&gt;</code> and <code>&lt;optional&gt;</code> could work in a freestanding environment if their interfaces didn't rely on exceptions.
 </p><p>
 <code>&lt;cctype&gt;</code> and <code>&lt;cwctype&gt;</code> rely heavily on global locale data.
-</p>
-<h2>Changes to shared hosted / freestanding areas</h2>
-<p>
-The default allocator should be allowed to invoke implementation defined behavior for freestanding implementations.  The intent is for freestanding implementations without a heap to <code>static_assert</code>.  This will improve diagnostics when a user instantiates a template that is in the STL, but isn't supported in the current freestanding mode.
-</p><p>
-<code>default_delete</code> should be allowed to invoke implementation defined behavior in a freestanding implementation.  The intent is to allow <code>unique_ptr</code> with custom deleters, while still providing good diagnositics with a <code>static_assert</code> in freestanding mode.
 </p>
 <h1>IX. Acknowledgements</h1>
 <p>
