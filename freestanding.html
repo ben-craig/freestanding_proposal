@@ -88,13 +88,13 @@ Even more so than for a hosted implementation, systems and embedded programmers 
 <li>RTTI requires extra data in vtables and extra classes that are difficult to optimize away.</li>
 <li>The heap is a big set of global state.  In addition, heap exhaustion is typically expressed via exception.  Some embedded systems don't even have a heap.</li>
 <li>Thread-local storage requires extra code in the operating system for support.  In addition, if one thread uses thread local storage, that cost is imposed on other threads.</li>
-<li>Many embedded systems don't have floating point hardware, and software emulated floating point can drag in large runtimes that are difficult to optimize away.</li>
-<li>Some functions require global or thread-local storage.  These functions have been omitted or removed from the freestanding library.  Examples are the locale aware functions, many of the "exit" functions, and the C random number functions.</li>
+<li>Many embedded systems don't have floating point hardware, and software emulated floating point can drag in large runtimes that are difficult to optimize away.  Also, most operating systems speed up system calls by not saving and restoring floating point state.  That means that kernel uses of floating point operations require extra care to avoid corrupting user state.</li>
+<li>Some functions require global or thread-local storage.  These functions have been omitted or removed from the freestanding library.  Examples are the locale aware functions and the C random number functions.</li>
 </ul>
 <p>
 For the <code>&lt;algorithms&gt;</code> header, we would only be able to support sequential execution of parallel algorithms.  Since this adds little value, the execution policy overloads will be omitted.
 </p><p>
-This proposal doesn't remove problematic features from the language, but it does make it so that the freestanding standard library doesn't require those features.  Users that disable the problematic features (as is existing practice) will still have portable portions of the standard library at their disposal.
+This proposal doesn't remove problematic features from the language, but it does make it so that the bulk of the freestanding standard library doesn't require those features.  Users that disable the problematic features (as is existing practice) will still have portable portions of the standard library at their disposal.
 </p>
 <h1>VIII. Technical Specifications</h1>
 <h2>Facilities no longer required for freestanding implementations</h2>
