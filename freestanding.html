@@ -80,6 +80,8 @@ I could see the scope increasing to the standard library availability on GPUs.  
 Rather than list all of the facilities available to a freestanding implementation in one place, as is currently done in [compliance], the standard would tag each header, class, or function that is available in a freestanding implementation.  I expect this to be a large number of small edits, but the edits would have easy to understand ramifications throughout the standard.
 </p><p>
 There is precedent for this kind of tagging in other specification documents.  The ECMAScript Language Specification has optional support for ECMA-402 (internationalization).  The impact of ECMA-402 is called out explicitly in several places.  POSIX tags functions as supported in base, XSI, or in one of many option groups.
+</p><p>
+There were some conversations in the 2017 Albuquerque meeting around adding another class of conforming implementation.  I believe that such an action would be a mistake.  Maintaining two classifications is difficult enough as is, and freestanding is often neglected.  Adding another classification would magnify these problems.  I also feel that the freestanding classification should be removed if no action is taken to make it more useful.
 </p>
 <h3>Naming alternatives</h3>
 <p>
@@ -166,7 +168,6 @@ All of <code>&lt;utility&gt;</code> and <code>&lt;tuple&gt;</code>.
 Portions of <code>&lt;memory&gt;</code>.
 </p>
 <ul>
-<li><b>TODO: put std::allocator here in constexpr contexts only?</b></li>
 <li><code>pointer_traits</code></li>
 <li><code>align</code></li>
 <li>23.10.10, specialized algorithms</li>
