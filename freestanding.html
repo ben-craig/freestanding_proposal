@@ -22,7 +22,7 @@ I propose we provide the (nearly) maximal subset of the library that does not re
 </p>
 <h1>II. Motivation</h1>
 <p>
-Systems programmers want to sort things.  They want to use move semantics.  They may even want to bundle the arguments of a variadic template function into a tuple.  These are all reasonable things to do on a system with no operating system and kilobytes of storage.  The C++ standard even has reasonable specifications for these operations in the context of a tiny, OS-less system.  However, systems programmers must currently rely on either hand-rolled code or implementer extensions in order to get these facilities.
+Systems programmers want to sort things.  They want to use move semantics.  They may even want to bundle the arguments of a variadic template function into a <code>std::tuple</code>.  These are all reasonable things to do on a system with no operating system and kilobytes of storage.  The C++ standard even has reasonable specifications for these operations in the context of a tiny, OS-less system.  However, systems programmers must currently rely on either hand-rolled code or implementer extensions in order to get these facilities.
 </p><p>
 Systems programmers don't have a guide as to what C++ library facilities will work without trying them.  The standard says <code>atomic_load</code> will work; <code>memcpy</code> will probably work; but will <code>stable_sort</code>?  Standardizing the subset of implementable C++ that is usable in a freestanding environment would provide clarity here, and help to educate systems programmers.
 </p>
