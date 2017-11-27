@@ -78,6 +78,26 @@ Rather than list all of the facilities available to a freestanding implementatio
 </p><p>
 There is precedent for this kind of tagging in other specification documents.  The ECMAScript Language Specification has optional support for ECMA-402 (internationalization).  The impact of ECMA-402 is called out explicitly in several places.  POSIX tags functions as supported in base, XSI, or in one of many option groups.
 </p>
+<h3>Naming alternatives</h3>
+<p>
+There was some desire to come up with a new name for "freestanding" in the 2017 Albuquerque meeting.  This new name could better express the intended audience of such an implementation.  My current recommendation will be to keep the name "freestanding", but I will suggest some alternatives just the same.
+</p>
+<ul>
+<li>barebones</li>
+<li>basic</li>
+<li>embedded</li>
+<li>freestanding</li>
+<li>kernel</li>
+<li>minimal</li>
+<li>OS-free</li>
+<li>OS-less</li>
+<li>skeleton</li>
+<li>standalone</li>
+<li>stripped</li>
+<li>system-free</li>
+<li>unsupported</li>
+</ul>
+
 <h1>VI. Impact on implementations</h1>
 <p>
 C++ standard library headers will likely need to add preprocessor feature toggles to portions of headers that would emit warning or errors in freestanding mode.  The precision and timeliness (compile time vs. link time) of errors remains a quality-of-implementation detail.
