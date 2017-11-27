@@ -13,9 +13,12 @@ The current definition of the freestanding implementation is not very useful.  H
 hosted implementation, this document defines the set of available libraries. A freestanding implementation is
 one in which execution may take place without the benefit of an operating system, and has an implementation defined
 set of libraries that includes certain language-support libraries (20.5.1.3).</blockquote>
+<p>
+The main people served by the current freestanding definition are people writing their own hosted C++ standard library to sit atop the compiler author's freestanding implementation.  The freestanding portions contain all the functions and types known to the compiler that can't easily be authored in a cross-compiler manner.
+</p><p>
 The current set of freestanding libraries provides too little to kernel and embedded programmers.  Why should a systems programmer need to rewrite <code>std::sort()</code> or <code>std::memcpy()</code>?
 </p><p>
-Rather than provide the (nearly) minimal subset of the library needed to support all the language features, I propose we also provide the (nearly) maximal subset of the library that does not require an OS or space overhead.
+I propose we provide the (nearly) maximal subset of the library that does not require an OS or space overhead.  In order to continue supporting the "layered" C++ standard library users, we will continue to provide the (nearly) minimal subset of the library needed to support all the language features, even if these features have space overhead.  Freestanding library features requiring OS support will be removed.
 </p>
 <h1>II. Motivation</h1>
 <p>
