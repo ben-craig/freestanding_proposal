@@ -14,7 +14,7 @@ hosted implementation, this document defines the set of available libraries. A f
 one in which execution may take place without the benefit of an operating system, and has an implementation defined
 set of libraries that includes certain language-support libraries (20.5.1.3).</blockquote>
 <p>
-The main people served by the current freestanding definition are people writing their own hosted C++ standard library to sit atop the compiler author's freestanding implementation (i.e. the STLPort use case).  The freestanding portions contain all the functions and types known to the compiler that can't easily be authored in a cross-compiler manner.
+The main people served by the current freestanding definition are people writing their own hosted C++ standard library to sit atop the compiler author's freestanding implementation (i.e. the STLport use case).  The freestanding portions contain all the functions and types known to the compiler that can't easily be authored in a cross-compiler manner.
 </p><p>
 The current set of freestanding libraries provides too little to kernel and embedded programmers.  Why should a systems programmer need to rewrite <code>std::sort()</code> or <code>std::memcpy()</code>?
 </p><p>
