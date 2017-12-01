@@ -28,45 +28,13 @@ Systems programmers don't have a guide as to what C++ library facilities will wo
 </p>
 <h1>III. Current State</h1>
 <p>
-<b>TODO: provide an example that I actually plan to address</b>
-The current state of freestanding implementations is rather sad.  Out of libstdc++, libc++, and Microsoft's Visual Studio STL, only libstdc++ has any relevant mention of "freestanding" or "hosted".  In practice, users take a hosted implementation of C++ and use it as-is in situations where it was never intended.  This means that all the headers tend to be available, but only a few of the headers actually work.  The parts that "should" work in a freestanding system, as specified by the C++17 standard, don't always work, while parts that aren't specified work fine.  For example, just creating an instance of <code>std::bad_alloc</code> (without even throwing it!) causes linker errors in the Windows kernel with Visual Studio 2017, and it causes linker errors on a bare metal ARMv5 target with gcc 4.8.
-</p>
-<pre>Visual Studio 2017, x64 Kernel
-cppCode.obj : error LNK2019: unresolved external symbol "void __cdecl operator delete(void *,unsigned __int64)" (??3@YAXPEAX_K@Z) referenced in function "public: virtual void * __cdecl std::bad_alloc::`scalar deleting destructor'(unsigned int)" (??_Gbad_alloc@std@@UEAAPEAXI@Z)
-cppCode.obj : error LNK2019: unresolved external symbol __std_exception_destroy referenced in function "public: virtual __cdecl std::exception::~exception(void)" (??1exception@std@@UEAA@XZ)
-
-gcc-4.8, ARMv5 bare metal
-libgcc.a(unwind-arm.o): In function `get_eit_entry':
-   unwind-arm.c:(.text+0x20c): undefined reference to `__exidx_end'
-   unwind-arm.c:(.text+0x210): undefined reference to `__exidx_start'
-libc.a(lib_a-abort.o): In function `abort':
-   abort.c:(.text+0x10): undefined reference to `_exit'
-libc.a(lib_a-sbrkr.o): In function `_sbrk_r':
-   sbrkr.c:(.text+0x18): undefined reference to `_sbrk'
-libc.a(lib_a-signalr.o): In function `_kill_r':
-   signalr.c:(.text+0x1c): undefined reference to `_kill'
-libc.a(lib_a-signalr.o): In function `_getpid_r':
-   signalr.c:(.text+0x44): undefined reference to `_getpid'
-libc.a(lib_a-writer.o): In function `_write_r':
-   writer.c:(.text+0x20): undefined reference to `_write'
-libc.a(lib_a-closer.o): In function `_close_r':
-   closer.c:(.text+0x18): undefined reference to `_close'
-libc.a(lib_a-fstatr.o): In function `_fstat_r':
-   fstatr.c:(.text+0x1c): undefined reference to `_fstat'
-libc.a(lib_a-isattyr.o): In function `_isatty_r':
-   isattyr.c:(.text+0x18): undefined reference to `_isatty'
-libc.a(lib_a-lseekr.o): In function `_lseek_r':
-   lseekr.c:(.text+0x20): undefined reference to `_lseek'
-libc.a(lib_a-readr.o): In function `_read_r':
-   readr.c:(.text+0x20): undefined reference to `_read'</pre>
-<p>
-<code>std::sort</code> works just fine on both targets though.
-</p><p>
 The Microsoft Windows kernel and Apple Mac OSX kernel both currently support limited, non-compliant subsets of C++ for driver writers.  The Linux kernel does not support C++ officially, though with a fair amount of work on the part of the driver developer, C++ can be made to work.  Drivers written in C++ are highly unlikely to be accepted in the upstream Linux source repositories.
 </p><p>
 There were some presentations at recent CppCons where others made a more full featured C++ work in the Linux and Windows kernels [Quinn2016] [Baker2017].  In both of these cases, C++ was being used in a sandboxed / pseudo-virtualized way.  C++ code (with exceptions and RTTI) was being run in the kernel context, but very few calls were made between the C++ code and the operating system kernel.  The C++ code was in a guest operating system.  This proposal should make it reasonable to have C++ code interact closely with the internals of a host operating system, perhaps in the context of a driver.
 </p><p>
 IncludeOS [Bratterud2017] is an OS primarily intended for running in VMs, though some bare metal support has been tested.  One might expect such a project to use a freestanding implementation as a base, but instead, it starts with a hosted implmentation of C++ and drops support for the impractical parts (threads and filestreams in particular).
+</p><p>
+Out of libstdc++, libc++, and Microsoft's Visual Studio STL, only libstdc++ has any relevant mention of "freestanding" or "hosted".  In practice, users take a hosted implementation of C++ and use it as-is in situations where it was never intended.  This means that all the headers tend to be available, but only a few of the headers actually work.  Many of the headers that work aren't marked freestanding.  Some headers have parts that could work, except they are mixed with other parts that won't work.  For example, <code>iterator_traits</code> in <code>&lt;iterator&gt;</code> is fine, but the implementation details of the stream iterators cause build errors with the /kernel flag in Microsoft Visual Studio 2017.
 </p>
 <h1>IV. Scope</h1>
 <p>
