@@ -268,7 +268,7 @@ A portion of <code>&lt;cinttypes&gt;</code> will be present.
 </p><p>
 <code>errno</code> is not included as it is global state.  In addition, errno is best implemented as a thread-local variable.
 </p><p>
-<code>error_code</code>, <code>error_condition</code>, and <code>error_condition</code> all have <code>string</code> in the interface.
+<code>error_code</code>, <code>error_condition</code>, and <code>error_category</code> all have <code>string</code> in the interface.
 </p><p>
 Many string functions (<code>strtol</code> and family) rely on <code>errno</code>.
 </p><p>
@@ -285,19 +285,19 @@ Many string functions (<code>strtol</code> and family) rely on <code>errno</code
 <h2>Potential removals</h2>
 Here are some things that I am currently requiring, but could be convinced to remove.
 <ul><li><code>&lt;cwchar&gt;</code></li></ul>
-These functions are implementable, but infrequently used for systems programming.  They do not exist in freestanding C11 implementations.
+The <code>&lt;cwchar&gt;</code> functions are implementable for freestanding environments, but infrequently used for systems programming.  They do not exist in freestanding C11 implementations.
 <ul><li><code>&lt;random&gt;</code></li></ul>
-I am not confident that the remaining distributions are implementable without using floating point.  These classes also carry a high implementer burden.
+I am not confident that the remaining distributions in <code>&lt;random&gt;</code> are implementable without using floating point.  These classes also carry a high implementer burden.
 <h2>Potential additions</h2>
 Here are some things that I am not currently requiring, but could be convinced to add.
 <ul><li><code>complex&lt;integer&gt;</code></li></ul>
-I currently omit the <code>complex</code> class entirely, but in theory, the integer version of <code>complex</code> are fine.  I am unsure how many of the associated functions are implementable without floating point access though.  I do not believe that <code>complex</code> for integer types is a widely used class though.
+I currently omit the <code>complex</code> class entirely, but in theory, the integer version of <code>complex</code> are fine.  I am unsure how many of the associated functions are implementable without floating point access though.  I do not believe that <code>complex</code> for integer types is a widely used class.
 <ul><li>Floating point support</li></ul>
 Perhaps we don't worry about library portability in all cases.  Just because kernel modes can't easily use floating point doesn't mean that we should deny floating point to the embedded space.  Do note that most of <code>&lt;cmath&gt;</code> has a dependency on <code>errno</code>.
 <ul><li><code>errno</code> and string functions like <code>strtol</code></li></ul>
 While <code>errno</code> is global data, it isn't much global data.  Thread safety is a concern for those platforms that have threading, but don't have thread-local storage.
 <ul><li><code>unique_ptr</code></li></ul>
-There are uses for <code>unique_ptr</code> that don't require the heap, and can be made to work.    Since we still require new and delete to exist, <code>default_delete</code> shouldn't have any problems compiling.
+There are uses for <code>unique_ptr</code> that don't require the heap, and can be made to work.  Since we still require <code>new</code> and <code>delete</code> to exist, <code>default_delete</code> shouldn't have any problems compiling.
 
 <h1>IX. Acknowledgements</h1>
 <p>
