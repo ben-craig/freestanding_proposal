@@ -52,7 +52,7 @@ There is precedent for this kind of tagging in other specification documents.  T
 </p><p>
 There were some conversations in the 2017 Albuquerque meeting around adding another class of conforming implementation.  I believe that such an action would be a mistake.  Maintaining two classifications is difficult enough as is, and freestanding is often neglected.  Adding another classification would magnify these problems.  I also feel that the freestanding classification should be removed if no action is taken to make it more useful.
 </p>
-<h3>Naming alternatives</h3>
+<h2>Naming alternatives</h2>
 <p>
 There was some desire to come up with a new name for "freestanding" in the 2017 Albuquerque meeting.  This new name could better express the intended audience of such an implementation.  My current recommendation will be to keep the name "freestanding", but I will suggest some alternatives just the same.
 </p>
@@ -86,11 +86,7 @@ Note that the following concerns are not revolving around execution time perform
 </p><p>
 This proposal doesn't remove problematic features from the language, but it does make it so that the bulk of the freestanding standard library doesn't require those features.  Users that disable the problematic features (as is existing practice) will still have portable portions of the standard library at their disposal.
 </p>
-<ul><li>RTTI</li></ul>
-RTTI requires extra data in vtables and extra classes that are difficult to optimize away, consuming program storage space.
-<ul><li>Thread-local storage</li></ul>
-Thread-local storage requires extra code in the operating system for support.  In addition, if one thread uses thread local storage, that cost is imposed on other threads.
-<ul><li>Exceptions</li></ul>
+<h2>Exceptions</h2>
 <p>
 Exceptions either require external jump tables or extra bookkeeping instructions.  This consumes program storage space.
 </p><p>
@@ -98,17 +94,21 @@ In the Itanium ABI, throwing an exception requires a heap allocation.  In the Mi
 </p><p>
 In environments with threads, exception handling requires the use of thread-local storage.
 </p>
-<ul><li>The heap</li></ul>
+<h2>RTTI</h2>
+RTTI requires extra data in vtables and extra classes that are difficult to optimize away, consuming program storage space.
+<h2>Thread-local storage</h2>
+Thread-local storage requires extra code in the operating system for support.  In addition, if one thread uses thread local storage, that cost is imposed on other threads.
+<h2>The heap</h2>
 The heap is a big set of global state.  In addition, heap exhaustion is typically expressed via exception.  Some embedded systems don't even have a heap.
-<ul><li>Floating point</li></ul>
+<h2>Floating point</h2>
 <p>
 Many embedded systems don't have floating point hardware.  Software emulated floating point can drag in large runtimes that are difficult to optimize away.
 </p><p>
 Most operating systems speed up system calls by not saving and restoring floating point state.  That means that kernel uses of floating point operations require extra care to avoid corrupting user state.
 </p>
-<ul><li>Functions requiring global or thread-local storage</li></ul>
+<h2>Functions requiring global or thread-local storage</h2>
 These functions have been omitted or removed from the freestanding library.  Examples are the locale aware functions and the C random number functions.</li>
-<ul><li>Parallel algorithms</li></ul>
+<h2>Parallel algorithms</h2>
 For the <code>&lt;algorithms&gt;</code> header, we would only be able to support sequential execution of parallel algorithms.  Since this adds little value, the execution policy overloads will be omitted.
 <h1>VIII. Technical Specifications</h1>
 <h2>Facilities no longer required for freestanding implementations</h2>
