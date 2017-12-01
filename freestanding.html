@@ -97,9 +97,9 @@ In environments with threads, exception handling requires the use of thread-loca
 <h2>RTTI</h2>
 RTTI requires extra data in vtables and extra classes that are difficult to optimize away, consuming program storage space.
 <h2>Thread-local storage</h2>
-Thread-local storage requires extra code in the operating system for support.  In addition, if one thread uses thread local storage, that cost is imposed on other threads.
+Thread-local storage requires extra code in the operating system for support.  In addition, if one thread uses thread-local storage, that cost is imposed on other threads.
 <h2>The heap</h2>
-The heap is a big set of global state.  In addition, heap exhaustion is typically expressed via exception.  Some embedded systems don't even have a heap.
+The heap is a big set of global state.  In addition, heap exhaustion is typically expressed via exception.  Some embedded systems don't have a heap.  In kernel environments, there is typically a heap, but there isn't a reasonable choice of <i>which</i> heap to use as the default.  In the Windows kernel, the two best candidates for a default heap are the paged pool (plentiful available memory, but unsafe to use in many contexts), and the non-paged pool (safe to use, but limited capacity).  The C++ implementation in the Windows kernel forces users to implement their own global <code>operator new</code> to make this decision.
 <h2>Floating point</h2>
 <p>
 Many embedded systems don't have floating point hardware.  Software emulated floating point can drag in large runtimes that are difficult to optimize away.
@@ -266,7 +266,7 @@ A portion of <code>&lt;cinttypes&gt;</code> will be present.
 <p>
 <code>bitset</code> is not included because many of its functions throw as part of a range check.
 </p><p>
-<code>errno</code> is not included as it is global state.  In addition, errno is best implemented as a thread_local variable.
+<code>errno</code> is not included as it is global state.  In addition, errno is best implemented as a thread-local variable.
 </p><p>
 <code>error_code</code>, <code>error_condition</code>, and <code>error_condition</code> all have <code>string</code> in the interface.
 </p><p>
@@ -295,7 +295,7 @@ I currently omit the <code>complex</code> class entirely, but in theory, the int
 <ul><li>Floating point support</li></ul>
 Perhaps we don't worry about library portability in all cases.  Just because kernel modes can't easily use floating point doesn't mean that we should deny floating point to the embedded space.  Do note that most of <code>&lt;cmath&gt;</code> has a dependency on <code>errno</code>.
 <ul><li><code>errno</code> and string functions like <code>strtol</code></li></ul>
-While <code>errno</code> is global data, it isn't much global data.  Thread safety is a concern for those platforms that have threading, but don't have thread local storage.
+While <code>errno</code> is global data, it isn't much global data.  Thread safety is a concern for those platforms that have threading, but don't have thread-local storage.
 <ul><li><code>unique_ptr</code></li></ul>
 There are uses for <code>unique_ptr</code> that don't require the heap, and can be made to work.    Since we still require new and delete to exist, <code>default_delete</code> shouldn't have any problems compiling.
 
