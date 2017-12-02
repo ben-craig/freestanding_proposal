@@ -2,10 +2,17 @@
 <html>
 <body>
 <h1>Freestanding Proposal</h1>
-Document number: D0829R1<br/>
+Document number: D0829R1.1<br/>
 Date: 2017-10-14<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: SG14, Library Evolution Working Group
+<h1>Change history</h1>
+<h2> R0 -&gt; R1 </h2>
+R1 no longer removes any existing freestanding libraries.<br/>
+R1 no longer adds portions of classes to freestanding.  It is now the entirety of a class or none of it.  Related functions (like <code>operator&lt;&lt;</code>) may still be omitted even when the associated class is included.<br/>
+R1 no longer gives implementations freedom to add <code>static_assert</code>s to allocation functions in freestanding mode.<br/>
+<code>unique_ptr</code> is no longer included in freestanding, with the hopes that <code>unique_resource</code> and <code>scope_exit</code> will fill the void<br/>
+R1 adds naming alternatives for freestanding.<br/>
 <h1>I. Introduction</h1>
 <p>
 The current definition of the freestanding implementation is not very useful.  Here is the current high level definition from [intro.compliance]:
@@ -18,7 +25,7 @@ The main people served by the current freestanding definition are people writing
 </p><p>
 The current set of freestanding libraries provides too little to kernel and embedded programmers.  Why should a systems programmer need to rewrite <code>std::sort()</code> or <code>std::memcpy()</code>?
 </p><p>
-I propose we provide the (nearly) maximal subset of the library that does not require an OS or space overhead.  In order to continue supporting the "layered" C++ standard library users, we will continue to provide the (nearly) minimal subset of the library needed to support all the language features, even if these features have space overhead.  Freestanding library features requiring OS support will be removed.  Language features requiring space overhead or OS support will remain intact.
+I propose we provide the (nearly) maximal subset of the library that does not require an OS or space overhead.  In order to continue supporting the "layered" C++ standard library users, we will continue to provide the (nearly) minimal subset of the library needed to support all the language features, even if these features have space overhead.  Language features requiring space overhead or OS support will remain intact.
 </p>
 <h1>II. Motivation</h1>
 <p>
@@ -111,13 +118,6 @@ These functions have been omitted or removed from the freestanding library.  Exa
 <h2>Parallel algorithms</h2>
 For the <code>&lt;algorithms&gt;</code> header, we would only be able to support sequential execution of parallel algorithms.  Since this adds little value, the execution policy overloads will be omitted.
 <h1>VIII. Technical Specifications</h1>
-<h2>Facilities no longer required for freestanding implementations</h2>
-Usages of the operating system
-<ul>
-<li><code>&lt;new&gt; hardware_destructive_interference_size</code></li>
-<li><code>&lt;new&gt; hardware_constructive_interference_size</code></li>
-</ul>
-
 <h2>Facilities newly required for freestanding implementations</h2>
 Portions of <code>&lt;cstdlib&gt;</code>
 <ul>
