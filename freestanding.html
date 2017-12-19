@@ -13,6 +13,7 @@ R1 no longer adds portions of classes to freestanding.  It is now the entirety o
 R1 no longer gives implementations freedom to add <code>static_assert</code>s to allocation functions in freestanding mode.<br/>
 <code>unique_ptr</code> is no longer included in freestanding, with the hopes that <code>unique_resource</code> and <code>scope_exit</code> will fill the void<br/>
 R1 adds naming alternatives for freestanding.<br/>
+R1 includes substantially less of &lt;random&gt;, and white-lists inclusions rather than black-lists omissions.<br/>
 <h1>I. Introduction</h1>
 <p>
 The current definition of the freestanding implementation is not very useful.  Here is the current high level definition from [intro.compliance]:
@@ -231,23 +232,19 @@ Most of <code>&lt;algorithm&gt;</code> and <code>&lt;numeric&gt;</code>.  The Ex
 <li>inplace_merge</li>
 </code></ul>
 <p>
-Portions of <code>&lt;random&gt;</code>.  The following portions will be <b>omitted</b>:
+Portions of <code>&lt;random&gt;</code>.  The following portions will be included:
 </p>
 <ul>
-<code><li>random_device</li>
-<li>uniform_real_distribution</li>
-<li>exponential_distribution</li>
-<li>gamma_distribution</li>
-<li>weibull_distribution</li>
-<li>extreme_value_distribution</li>
-<li>normal_distribution</li>
-<li>lognormal_distribution</li>
-<li>chi_squared_distribution</li>
-<li>cauchy_distribution</li>
-<li>fisher_f_distribution</li>
-<li>student_t_distribution</li>
-<li>piecewise_constant_distribution</li>
-<li>piecewise_linear_distribution</li>
+<code>
+<li>linear_congruential_engine</li>
+<li>mersenne_twister_engine</li>
+<li>subtract_with_carry_engine</li>
+<li>discard_block_engine</li>
+<li>discard_block_engine</li>
+<li>shuffle_order_engine</li>
+<li>[rand.predef]</li>
+<li>seed_seq</li>
+<li>uniform_int_distribution</li>
 </code></ul>
 A small portion of <code>&lt;cmath&gt;</code> will be present.
 <ul>
