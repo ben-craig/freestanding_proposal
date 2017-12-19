@@ -231,8 +231,23 @@ Proposed:
 #<cfenv>
 #<complex>
 +<random>
-	-random_device
-	-uniform_real_distribution
+	+linear_congruential_engine [rand.eng.lcong]
+	+mersenne_twister_engine [rand.eng.mers]
+	+subtract_with_carry_engine [rand.eng.sub]
+	+discard_block_engine [rand.adapt.disc]
+	+independent_bits_engine [rand.adapt.ibits]
+	+shuffle_order_engine [rand.adapt.shuf]
+	+ [rand.predef]
+	-random_device [rand.device]
+	+seed_seq [rand.util.seedseq]
+	-generate_canonical [rand.util.canonical] ***
+	+uniform_int_distribution [rand.dist.uni.int]
+	-uniform_real_distribution [rand.dist.uni.real]
+	-bernoulli_distribution [rand.dist.bern.bernoulli] ***
+	-binomial_distribution ***
+	-geometric_distribution ***
+	-negative_binomial_distribution ***
+	-poisson_distribution ***
 	-exponential_distribution
 	-gamma_distribution
 	-weibull_distribution
@@ -243,6 +258,7 @@ Proposed:
 	-cauchy_distribution
 	-fisher_f_distribution
 	-student_t_distribution
+	-discrete_distribution ***
 	-piecewise_constant_distribution
 	-piecewise_linear_distribution
 #<valarray>
