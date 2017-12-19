@@ -279,7 +279,7 @@ Many string functions (<code>strtol</code> and family) rely on <code>errno</code
 </p><p>
 <code>&lt;cctype&gt;</code> and <code>&lt;cwctype&gt;</code> rely heavily on global locale data.
 </p><p>
-<code>unique_ptr</code> is generally used for heap management, but is occasionally used as a makeshift RAII object for other resources.  The use of the <code>default_delete</code> class in the template parameters is what dooms this class.  In the future, <a href="http://wg21.link/p0052"><code>unique_resource</code> and <code>scope_exit</code></a> may satisfy the non-deleting use cases that <code>unique_ptr</code> currently fills.
+<code>unique_ptr</code> is generally used for heap management, but is occasionally used as a makeshift RAII object for other resources.  The use of the <code>default_delete</code> class in the template parameters is what dooms this class, as default_delete is very involved with the heap.  In the future, <a href="http://wg21.link/p0052"><code>unique_resource</code> and <code>scope_exit</code></a> may satisfy the non-deleting use cases that <code>unique_ptr</code> currently fills.
 </p>
 <h2>Potential removals</h2>
 Here are some things that I am currently requiring, but could be convinced to remove.
