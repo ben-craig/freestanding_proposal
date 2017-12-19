@@ -13,7 +13,7 @@ R1 no longer adds portions of classes to freestanding.  It is now the entirety o
 R1 no longer gives implementations freedom to add <code>static_assert</code>s to allocation functions in freestanding mode.<br/>
 <code>unique_ptr</code> is no longer included in freestanding, with the hopes that <code>unique_resource</code> and <code>scope_exit</code> will fill the void<br/>
 R1 adds naming alternatives for freestanding.<br/>
-R1 includes substantially less of &lt;random&gt;, and white-lists inclusions rather than black-lists omissions.<br/>
+R1 includes substantially less of <code>&lt;random&gt;</code>, and white-lists inclusions rather than black-lists omissions.<br/>
 <h1>I. Introduction</h1>
 <p>
 The current definition of the freestanding implementation is not very useful.  Here is the current high level definition from [intro.compliance]:
