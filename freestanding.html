@@ -14,6 +14,7 @@ R1 no longer gives implementations freedom to add <code>static_assert</code>s to
 <code>unique_ptr</code> is no longer included in freestanding, with the hopes that <code>unique_resource</code> and <code>scope_exit</code> will fill the void<br/>
 R1 adds naming alternatives for freestanding.<br/>
 R1 includes substantially less of <code>&lt;random&gt;</code>, and white-lists inclusions rather than black-lists omissions.<br/>
+R1 adds <code>&lt;compare&gt;</code>, as it seems to have been accidentally omitted from the freestanding headers list.<br/>
 <h1>I. Introduction</h1>
 <p>
 The current definition of the freestanding implementation is not very useful.  Here is the current high level definition from [intro.compliance]:
@@ -261,6 +262,7 @@ A portion of <code>&lt;cinttypes&gt;</code> will be present.
 <li>abs(intmax_t)</li>
 <li>div(intmax_t, intmax_t)</li>
 </code></ul>
+All of <code>&lt;compare&gt;</code> will be added.
 <h2>Notable omissions</h2>
 <p>
 <code>bitset</code> is not included because many of its functions throw as part of a range check.
