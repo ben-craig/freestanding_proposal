@@ -149,7 +149,14 @@ These functions have been omitted or removed from the freestanding library.  Exa
 <h2>Parallel algorithms</h2>
 For the <code>&lt;algorithms&gt;</code> header, we would only be able to support sequential execution of parallel algorithms.  Since this adds little value, the execution policy overloads will be omitted.
 <h1>VIII. Technical Specifications</h1>
-<h2>Facilities newly required for freestanding implementations</h2>
+<h2>Complete headers newly required for freestanding implementations</h2>
+<code><ul>
+<li>&lt;utility&gt;</li>
+<li>&lt;tuple&gt;</li>
+<li>&lt;ratio&gt;</li>
+<li>&lt;compare&gt;</li>
+</ul></code>
+<h2>Partial headers newly required for freestanding implementations</h2>
 Portions of <code>&lt;cstdlib&gt;</code>
 <ul>
 <code><li>div_t</li>
@@ -176,8 +183,6 @@ All the error <code>#defines</code> in <code>&lt;cerrno&gt;</code>, but not <cod
 </p><p>
 The <code>errc</code> enum from <code>&lt;system_error&gt;</code>.
 </p><p>
-All of <code>&lt;utility&gt;</code> and <code>&lt;tuple&gt;</code>.
-</p><p>
 Portions of <code>&lt;memory&gt;</code>.
 </p>
 <ul>
@@ -192,8 +197,6 @@ Most of <code>&lt;functional&gt;</code>.  <b>Omit</b> the following.
 <li>23.14.14.2, <code>boyer_moore_searcher</code></li>
 <li>23.14.14.3, <code>boyer_moore_horspool_searcher</code></li>
 </ul>
-</p><p>
-All of <code>&lt;ratio&gt;</code>.
 </p><p>
 Most of <code>&lt;chrono&gt;</code>.  <b>Omit</b> 23.17.7, Clocks.
 </p><p>
@@ -270,7 +273,7 @@ Portions of <code>&lt;random&gt;</code>.  The following portions will be include
 <li>mersenne_twister_engine</li>
 <li>subtract_with_carry_engine</li>
 <li>discard_block_engine</li>
-<li>discard_block_engine</li>
+<li>independent_bits_engine</li>
 <li>shuffle_order_engine</li>
 <li>[rand.predef]</li>
 <li>uniform_int_distribution</li>
@@ -288,7 +291,6 @@ A portion of <code>&lt;cinttypes&gt;</code> will be present.
 <li>abs(intmax_t)</li>
 <li>div(intmax_t, intmax_t)</li>
 </code></ul>
-All of <code>&lt;compare&gt;</code> will be added.
 <h2>Notable omissions</h2>
 <p>
 <code>bitset</code> is not included because many of its functions throw as part of a range check.
@@ -308,6 +310,8 @@ Many string functions (<code>strtol</code> and family) rely on <code>errno</code
 <code>&lt;cctype&gt;</code> and <code>&lt;cwctype&gt;</code> rely heavily on global locale data.
 </p><p>
 <code>unique_ptr</code> is generally used for heap management, but is occasionally used as a makeshift RAII object for other resources.  The use of the <code>default_delete</code> class in the template parameters is what dooms this class, as default_delete is very involved with the heap.  In the future, <a href="http://wg21.link/p0052"><code>unique_resource</code> and <code>scope_exit</code></a> may satisfy the non-deleting use cases that <code>unique_ptr</code> currently fills.
+</p><p>
+<code>seed_seq</code> uses the heap.  Users can create their own classes satisfying the seed sequence requirements if they wish to use the Sseq constructors on the engine templates.
 </p>
 <h2>Potential removals</h2>
 Here are some things that I am currently requiring, but could be convinced to remove.
