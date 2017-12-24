@@ -42,7 +42,7 @@ R1 no longer gives implementations freedom to add <code>static_assert</code>s to
 R1 adds naming alternatives for freestanding.<br/>
 R1 includes substantially less of <code>&lt;random&gt;</code>, and white-lists inclusions rather than black-lists omissions.<br/>
 R1 adds <code>&lt;compare&gt;</code>, as it seems to have been accidentally omitted from the freestanding headers list.<br/>
-<h1>I. Introduction</h1>
+<h1>Introduction</h1>
 <p>
 The current definition of the freestanding implementation is not very useful.  Here is the current high level definition from [intro.compliance]:
 <blockquote>7 Two kinds of implementations are defined: a hosted implementation and a freestanding implementation. For a
@@ -56,13 +56,13 @@ The current set of freestanding libraries provides too little to kernel and embe
 </p><p>
 I propose we provide the (nearly) maximal subset of the library that does not require an OS or space overhead.  In order to continue supporting the "layered" C++ standard library users, we will continue to provide the (nearly) minimal subset of the library needed to support all the language features, even if these features have space overhead.  Language features requiring space overhead or OS support will remain intact.
 </p>
-<h1>II. Motivation</h1>
+<h1>Motivation</h1>
 <p>
 Systems programmers want to sort things.  They want to use move semantics.  They may even want to bundle the arguments of a variadic template function into a <code>std::tuple</code>.  These are all reasonable things to do on a system with no operating system and kilobytes of storage.  The C++ standard even has reasonable specifications for these operations in the context of a tiny, OS-less system.  However, systems programmers must currently rely on either hand-rolled code or implementer extensions in order to get these facilities.
 </p><p>
 Systems programmers don't have a guide as to what C++ library facilities will work without trying them.  The standard says <code>atomic_load</code> will work; <code>memcpy</code> will probably work; but will <code>stable_sort</code>?  Standardizing the subset of implementable C++ that is usable in a freestanding environment would provide clarity here, and help to educate systems programmers.
 </p>
-<h1>III. Current State</h1>
+<h1>Current State</h1>
 <p>
 There were some presentations at recent CppCons where others made a more full featured C++ work in the Linux and Windows kernels [Quinn2016] [Baker2017].  In both of these cases, C++ was being used in a sandboxed / pseudo-virtualized way.  C++ code (with exceptions and RTTI) was being run in the kernel context, but very few calls were made between the C++ code and the operating system kernel.  The C++ code was in a guest operating system.  This proposal should make it reasonable to have C++ code interact closely with the internals of a host operating system, perhaps in the context of a driver.
 </p><p>
@@ -72,7 +72,7 @@ IncludeOS [Bratterud2017] is an OS primarily intended for running in VMs, though
 </p><p>
 Out of libstdc++, libc++, and Microsoft's Visual Studio STL, only libstdc++ has any relevant mention of "freestanding" or "hosted".  In practice, users take a hosted implementation of C++ and use it as-is in situations where it was never intended.  This means that all the headers tend to be available, but only a few of the headers actually work.  Many of the headers that work aren't marked freestanding.  Some headers have parts that could work, except they are mixed with other parts that won't work.  For example, <code>iterator_traits</code> in <code>&lt;iterator&gt;</code> is fine, but the implementation details of the stream iterators cause build errors with the <code>/kernel</code> flag in Microsoft Visual Studio 2017.
 </p>
-<h1>IV. Scope</h1>
+<h1>Scope</h1>
 <p>
 The current scope of this proposal is limited to the freestanding standard library available to systems and embedded programming.
 </p><p>
@@ -80,7 +80,7 @@ This paper is currently concerned with the divisions of headers and library func
 </p><p>
 I could see the scope increasing to the availability of the standard library on GPUs.
 </p><p>
-<h1>V. Impact on the standard</h1>
+<h1>Impact on the standard</h1>
 <p>
 Rather than list all of the facilities available to a freestanding implementation in one place, as is currently done in [compliance], the standard would tag each header, class, or function that is available in a freestanding implementation.  I expect this to be a large number of small edits, but the edits would have easy to understand ramifications throughout the standard.
 </p><p>
@@ -108,13 +108,13 @@ There was some desire to come up with a new name for "freestanding" in the 2017 
 <li>unsupported</li>
 </ul>
 
-<h1>VI. Impact on implementations</h1>
+<h1>Impact on implementations</h1>
 <p>
 C++ standard library headers will likely need to add preprocessor feature toggles to portions of headers that would emit warnings or errors in freestanding mode.  The precision and timeliness (compile time vs. link time) of errors remains a quality-of-implementation detail.
 </p><p>
 A minimal freestanding C11 standard library will not be sufficient to provide the C portions of the C++ standard library.  <code>std::char_traits</code> and many of the function specializations in <code>&lt;algorithm&gt;</code> are implemented in terms of non-freestanding C functions.  In practice, most C libraries are not minimal freestanding C11 libraries.  The optimized versions of the <code>&lt;cstring&gt;</code> and <code>&lt;cwchar&gt;</code> functions will typically be the same for both hosted and freestanding environments.
 </p>
-<h1>VII. Design decisions</h1>
+<h1>Design decisions</h1>
 <p>
 Even more so than for a hosted implementation, systems and embedded programmers do not want to pay for what they don't use.  As a consequence, I am not adding features that require global storage, even if that storage is immutable.
 </p><p>
@@ -148,7 +148,7 @@ Most operating systems speed up system calls by not saving and restoring floatin
 These functions have been omitted or removed from the freestanding library.  Examples are the locale aware functions and the C random number functions.</li>
 <h2>Parallel algorithms</h2>
 For the <code>&lt;algorithms&gt;</code> header, we would only be able to support sequential execution of parallel algorithms.  Since this adds little value, the execution policy overloads will be omitted.
-<h1>VIII. Technical Specifications</h1>
+<h1>Technical Specifications</h1>
 <h2>Complete headers newly required for freestanding implementations</h2>
 <code><ul>
 <li>&lt;utility&gt;</li>
@@ -327,8 +327,8 @@ Perhaps we don't worry about library portability in all cases.  Just because ker
 While <code>errno</code> is global data, it isn't much global data.  Thread safety is a concern for those platforms that have threading, but don't have thread-local storage.
 <ul><li><code>unique_ptr</code></li></ul>
 There are uses for <code>unique_ptr</code> that don't require the heap, and can be made to work.  Since we still require <code>new</code> and <code>delete</code> to exist, <code>default_delete</code> shouldn't have any problems compiling.
-
-<h1>IX. Acknowledgements</h1>
+<h1>Wording</h1>
+<h1>Acknowledgements</h1>
 <p>
 Thanks to Brandon Streiff, Joshua Cannon, Phil Hindman, and Irwan Djajadi for reviewing this proposal.
 </p><p>
