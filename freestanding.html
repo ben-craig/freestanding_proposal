@@ -617,9 +617,11 @@ For the <code>&lt;algorithms&gt;</code> header, we would only be able to support
 <h2>Partial headers newly required for freestanding implementations</h2>
 Portions of <code>&lt;cstdlib&gt;</code>
 <ul>
-<code><li>div_t</li>
+<code><li>size_t</li>
+<li>div_t</li>
 <li>ldiv_t</li>
 <li>lldiv_t</li>
+<li>NULL</li>
 <li>EXIT_FAILURE</li>
 <li>EXIT_SUCCESS</li>
 <li>_Exit</li>
@@ -632,6 +634,7 @@ Portions of <code>&lt;cstdlib&gt;</code>
 <li>abs(long int)</li>
 <li>abs(long long int)</li>
 <li>labs</li>
+<li>llabs</li>
 <li>div</li>
 <li>ldiv</li>
 <li>lldiv</li></code>
@@ -929,9 +932,94 @@ Change in [cstdlib.syn] (21.2.2):
 <blockquote class="std">
 <h3 ><a class='secnum' style='min-width:103pt'>21.2.2</a> Header <span class='texttt'>&lt;cstdlib&gt;</span> synopsis <a class='abbr_ref'>[cstdlib.syn]</a></h3>
 <pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 namespace std {
-</pre>
+  using size_t = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  using div_t = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  using ldiv_t = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  using lldiv_t = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+}
+
+#define NULL <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EXIT_FAILURE <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EXIT_SUCCESS <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define RAND_MAX <span class='textit'><span class='texttt'>see below</span></span>
+#define MB_CUR_MAX <span class='textit'><span class='texttt'>see below</span></span>
+
+namespace std {
+  <span class='comment'>// Exposition-only function type aliases
+</span>  extern "C" using <span class='textit'>c-atexit-handler</span> = void();                        <span class='comment'>// <span class='textit'>exposition only</span>
+</span>  extern "C++" using <span class='textit'>atexit-handler</span> = void();                        <span class='comment'>// <span class='textit'>exposition only</span>
+</span>  extern "C" using <span class='textit'>c-compare-pred</span> = int(const void*, const void*);   <span class='comment'>// <span class='textit'>exposition only</span>
+</span>  extern "C++" using <span class='textit'>compare-pred</span> = int(const void*, const void*);   <span class='comment'>// <span class='textit'>exposition only</span>
+</span>
+  <span class='comment'>// [support.start.term], start and termination
+</span>  [[noreturn]] void abort() noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  int atexit(<span class='textit'>c-atexit-handler</span>* func) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  int atexit(<span class='textit'>atexit-handler</span>* func) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  int at_quick_exit(<span class='textit'>c-atexit-handler</span>* func) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  int at_quick_exit(<span class='textit'>atexit-handler</span>* func) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  [[noreturn]] void exit(int status); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  [[noreturn]] void _Exit(int status) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  [[noreturn]] void quick_exit(int status) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  char* <span id='lib:getenv'><span class='tcode_in_codeblock'>getenv</span></span>(const char* name);
+  int system(const char* string);
+
+  <span class='comment'>// [c.malloc], C library memory allocation
+</span>  void* aligned_alloc(size_t alignment, size_t size);
+  void* calloc(size_t nmemb, size_t size);
+  void free(void* ptr);
+  void* malloc(size_t size);
+  void* realloc(void* ptr, size_t size);
+
+  double atof(const char* nptr);
+  int atoi(const char* nptr); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  long int atol(const char* nptr); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  long long int atoll(const char* nptr); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  double strtod(const char* nptr, char** endptr);
+  float strtof(const char* nptr, char** endptr);
+  long double strtold(const char* nptr, char** endptr);
+  long int strtol(const char* nptr, char** endptr, int base);
+  long long int strtoll(const char* nptr, char** endptr, int base);
+  unsigned long int strtoul(const char* nptr, char** endptr, int base);
+  unsigned long long int strtoull(const char* nptr, char** endptr, int base);
+
+  <span class='comment'>// [c.mb.wcs], multibyte / wide string and character conversion functions
+</span>  int mblen(const char* s, size_t n);
+  int mbtowc(wchar_t* pwc, const char* s, size_t n);
+  int wctomb(char* s, wchar_t wchar);
+  size_t mbstowcs(wchar_t* pwcs, const char* s, size_t n);
+  size_t wcstombs(char* s, const wchar_t* pwcs, size_t n);
+
+  <span class='comment'>// [alg.c.library], C standard library algorithms
+</span>  void* bsearch(const void* key, const void* base, size_t nmemb, size_t size,
+                <span class='textit'>c-compare-pred</span>* compar); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  void* bsearch(const void* key, const void* base, size_t nmemb, size_t size,
+                <span class='textit'>compare-pred</span>* compar); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  void qsort(void* base, size_t nmemb, size_t size, <span class='textit'>c-compare-pred</span>* compar); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  void qsort(void* base, size_t nmemb, size_t size, <span class='textit'>compare-pred</span>* compar); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// [c.math.rand], low-quality random number generation
+</span>  int rand();
+  void srand(unsigned int seed);
+
+  <span class='comment'>// [c.math.abs], absolute values
+</span>  int abs(int j); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  long int abs(long int j); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  long long int abs(long long int j); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  float abs(float j);
+  double abs(double j);
+  long double abs(long double j);
+
+  long int labs(long int j); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  long long int llabs(long long int j); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  div_t div(int numer, int denom); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  ldiv_t div(long int numer, long int denom);             <span class='comment'>// see [library.c]<ins>, <span class='textit'>freestanding</span></ins>
+</span>  lldiv_t div(long long int numer, long long int denom);  <span class='comment'>// see [library.c]<ins>, <span class='textit'>freestanding</span></ins>
+</span>  ldiv_t ldiv(long int numer, long int denom); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  lldiv_t lldiv(long long int numer, long long int denom); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+}</pre>
 </blockquote>
 
 Change in [limits.syn] (21.3.2):
