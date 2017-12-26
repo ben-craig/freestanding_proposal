@@ -1116,6 +1116,100 @@ namespace std {
 </pre>
 </blockquote>
 
+Change in [cerrno.syn] (22.4.1):
+<blockquote class="std">
+<h3 ><a class='secnum' style='min-width:103pt'>22.4.1</a> Header <span class='texttt'>&lt;cerrno&gt;</span> synopsis <a class='abbr_ref'>[cerrno.syn]</a></h3>
+<pre class='codeblock'>
+#define errno <span class='textit'><span class='texttt'>see below</span></span>
+
+#define E2BIG <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EACCES <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EADDRINUSE <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EADDRNOTAVAIL <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EAFNOSUPPORT <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EAGAIN <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EALREADY <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EBADF <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EBADMSG <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EBUSY <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ECANCELED <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ECHILD <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ECONNABORTED <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ECONNREFUSED <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ECONNRESET <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EDEADLK <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EDESTADDRREQ <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EDOM <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EEXIST <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EFAULT <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EFBIG <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EHOSTUNREACH <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EIDRM <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EILSEQ <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EINPROGRESS <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EINTR <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EINVAL <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EIO <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EISCONN <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EISDIR <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ELOOP <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EMFILE <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EMLINK <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EMSGSIZE <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENAMETOOLONG <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENETDOWN <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENETRESET <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENETUNREACH <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENFILE <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENOBUFS <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENODATA <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENODEV <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENOENT <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENOEXEC <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENOLCK <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENOLINK <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENOMEM <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENOMSG <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENOPROTOOPT <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENOSPC <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENOSR <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENOSTR <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENOSYS <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENOTCONN <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENOTDIR <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENOTEMPTY <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENOTRECOVERABLE <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENOTSOCK <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENOTSUP <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENOTTY <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ENXIO <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EOPNOTSUPP <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EOVERFLOW <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EOWNERDEAD <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EPERM <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EPIPE <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EPROTO <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EPROTONOSUPPORT <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EPROTOTYPE <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ERANGE <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EROFS <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ESPIPE <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ESRCH <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ETIME <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ETIMEDOUT <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define ETXTBSY <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EWOULDBLOCK <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EXDEV <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+</pre>
+
+<div class='para'>
+	<div class='marginalizedparent'><a class='marginalized'>1</a></div>
+	<div class='sentence'>The meaning of the macros in this header is defined by the POSIX standard.</div>
+	<div style='height:0.6em;display:block'></div>
+	<div class='sentence'><span class='textsc'>See also:</span> ISO C 7.5</div>
+</div>
+</blockquote>
+
 <h1>Acknowledgements</h1>
 <p>
 Thanks to Brandon Streiff, Joshua Cannon, Phil Hindman, and Irwan Djajadi for reviewing this proposal.
