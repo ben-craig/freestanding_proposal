@@ -786,6 +786,9 @@ While <code>errno</code> is global data, it isn't much global data.  Thread safe
 <ul><li><code>unique_ptr</code></li></ul>
 There are uses for <code>unique_ptr</code> that don't require the heap, and can be made to work.  Since we still require <code>new</code> and <code>delete</code> to exist, <code>default_delete</code> shouldn't have any problems compiling.
 <h1>Wording</h1>
+<p>
+Wording is based off of Working Draft, Standard for Programming Language C++, N4713.
+</p>
 Rework Table 19 referenced from 20.5.1.3 [compliance]
 <del>
 <div class='numberedTable'>Table 19 — C++ headers for freestanding implementations<br><table ><tr class='rowsep'><td colspan='2' class='center'><div class='sentence'><b>Subclause</b></div></td><td class='left'><div class='sentence'><b>Header(s)</b></div></td></tr><tr class='capsep'><td class='left'></td><td class='left'></td><td class='left'><div class='sentence'>
