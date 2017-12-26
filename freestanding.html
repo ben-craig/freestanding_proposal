@@ -789,6 +789,32 @@ There are uses for <code>unique_ptr</code> that don't require the heap, and can 
 <p>
 Wording is based off of Working Draft, Standard for Programming Language C++, N4713.
 </p>
+Add a new subclause [freestanding.membership] after [objects.within.classes]:
+<blockquote class="stdins">
+<h4 ><a class='secnum' style='min-width:118pt'>20.4.2.5</a> Freestanding membership <a class='abbr_ref'>[freestanding.membership]</a></h4>
+<div class='para'>
+	<div class='marginalizedparent'><a class='marginalized'>1</a></div>
+	<div class='sentence'>Several headers are required to be implemented in a freestanding implementation.</div> 
+	<div class='sentence'>The synopsis for these headers will start with a comment that ends with <span class='textit'>freestanding</span>, as in:</div> 
+<pre class='codeblock'>
+<span class='comment'>// <span class='textit'>freestanding</span></span>
+namespace std {
+</pre>
+</div>
+<div class='para'>
+	<div class='marginalizedparent'><a class='marginalized'>2</a></div>
+	<div class='sentence'>Several macros, values, types, classes, class templates, functions, function templates, and objects are required to be implemented in a freestanding implementation, even when the entirety of the containing header is not required to be implemented in a freestanding environment.</div>
+	<div class='sentence'>The declarations for such entities will be followed with a comment that ends with <span class='textit'>freestanding</span>, as in:</div> 
+<pre class='codeblock'>
+#define E2BIG <span class='textit'><span class='texttt'>see below</span></span> <span class='comment'>// <span class='textit'>freestanding</span></span>
+</pre>
+</div>
+<div class='para'>
+	<div class='marginalizedparent'><a class='marginalized'>3</a></div>
+	<div class='sentence'>Classes and class templates that are required to be implemented in a freestanding implementation shall be implemented in their entirety.</div>
+</div>
+</blockquote>
+
 Rework Table 19 referenced from 20.5.1.3 [compliance]
 <del>
 <div class='numberedTable'>Table 19 — C++ headers for freestanding implementations<br><table ><tr class='rowsep'><td colspan='2' class='center'><div class='sentence'><b>Subclause</b></div></td><td class='left'><div class='sentence'><b>Header(s)</b></div></td></tr><tr class='capsep'><td class='left'></td><td class='left'></td><td class='left'><div class='sentence'>
