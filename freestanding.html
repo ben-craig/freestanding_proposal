@@ -820,62 +820,137 @@ namespace std {
 
 Rework Table 19 referenced from 20.5.1.3 [compliance]:
 <del>
-<div class='numberedTable'>Table 19 — C++ headers for freestanding implementations<br><table ><tr class='rowsep'><td colspan='2' class='center'><div class='sentence'><b>Subclause</b></div></td><td class='left'><div class='sentence'><b>Header(s)</b></div></td></tr><tr class='capsep'><td class='left'></td><td class='left'></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;ciso646&gt;</span></div></td></tr><tr class='rowsep'><td class='left'><div class='sentence'>[support.types]</div></td><td class='left'><div class='sentence'>Types</div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;cstddef&gt;</span></div></td></tr><tr class='rowsep'><td class='left'><div class='sentence'>[support.limits]</div></td><td class='left'><div class='sentence'>Implementation properties</div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;cfloat&gt;</span> 
-<span class='texttt'>&lt;limits&gt;</span> 
-<span class='texttt'>&lt;climits&gt;</span></div></td></tr><tr class='rowsep'><td class='left'><div class='sentence'>[cstdint]</div></td><td class='left'><div class='sentence'>Integer types</div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;cstdint&gt;</span></div></td></tr><tr class='rowsep'><td class='left'><div class='sentence'>[support.start.term]</div></td><td class='left'><div class='sentence'>Start and termination</div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;cstdlib&gt;</span></div></td></tr><tr class='rowsep'><td class='left'><div class='sentence'>[support.dynamic]</div></td><td class='left'><div class='sentence'>Dynamic memory management</div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;new&gt;</span></div></td></tr><tr class='rowsep'><td class='left'><div class='sentence'>[support.rtti]</div></td><td class='left'><div class='sentence'>Type identification</div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;typeinfo&gt;</span></div></td></tr><tr class='rowsep'><td class='left'><div class='sentence'>[support.exception]</div></td><td class='left'><div class='sentence'>Exception handling</div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;exception&gt;</span></div></td></tr><tr class='rowsep'><td class='left'><div class='sentence'>[support.initlist]</div></td><td class='left'><div class='sentence'>Initializer lists</div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;initializer_&shy;list&gt;</span></div></td></tr><tr class='rowsep'><td class='left'><div class='sentence'>[support.runtime]</div></td><td class='left'><div class='sentence'>Other runtime support</div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;cstdarg&gt;</span></div></td></tr><tr class='rowsep'><td class='left'><div class='sentence'>[meta]</div></td><td class='left'><div class='sentence'>Type traits</div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;type_&shy;traits&gt;</span></div></td></tr><tr class='rowsep'><td class='left'><div class='sentence'>[atomics]</div></td><td class='left'><div class='sentence'>Atomics</div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;atomic&gt;</span></div></td></tr><tr class='rowsep'><td class='left'><div class='sentence'>[depr.cstdalign.syn], [depr.cstdbool.syn]</div></td><td class='left'><div class='sentence'>Deprecated headers</div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;cstdalign&gt;</span> 
-<span class='texttt'>&lt;cstdbool&gt;</span></div></td></tr></table></div></div>
+<div class='numberedTable'>Table 19 — C++ headers for freestanding implementations<br><table >
+<tr class='rowsep'><td colspan='2' class='center'><div class='sentence'><b>Subclause</b></div></td><td class='left'><div class='sentence'><b>Header(s)</b></div></td></tr>
+<tr class='capsep'>
+	<td class='left'></td>
+	<td class='left'></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;ciso646&gt;</span></div></td>
+</tr>
+<tr class='rowsep'>
+	<td class='left'><div class='sentence'>21.2</div></td>
+	<td class='left'><div class='sentence'>Types</div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstddef&gt;</span></div></td>
+</tr>
+<tr class='rowsep'>
+	<td class='left'><div class='sentence'>21.3</div></td>
+	<td class='left'><div class='sentence'>Implementation properties</div></td>
+	<td class='left'><div class='sentence'>
+		<span class='texttt'>&lt;cfloat&gt;</span> 
+		<span class='texttt'>&lt;limits&gt;</span> 
+		<span class='texttt'>&lt;climits&gt;</span></div>
+	</td>
+</tr>
+<tr class='rowsep'>
+	<td class='left'><div class='sentence'>21.4</div></td>
+	<td class='left'><div class='sentence'>Integer types</div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstdint&gt;</span></div></td>
+</tr>
+<tr class='rowsep'>
+	<td class='left'><div class='sentence'>21.5</div></td>
+	<td class='left'><div class='sentence'>Start and termination</div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstdlib&gt;</span></div></td>
+</tr>
+<tr class='rowsep'>
+	<td class='left'><div class='sentence'>21.6</div></td>
+	<td class='left'><div class='sentence'>Dynamic memory management</div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;new&gt;</span></div></td>
+</tr>
+<tr class='rowsep'>
+	<td class='left'><div class='sentence'>21.7</div></td>
+	<td class='left'><div class='sentence'>Type identification</div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;typeinfo&gt;</span></div></td>
+</tr>
+<tr class='rowsep'>
+	<td class='left'><div class='sentence'>21.8</div></td>
+	<td class='left'><div class='sentence'>Exception handling</div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;exception&gt;</span></div></td>
+</tr>
+<tr class='rowsep'>
+	<td class='left'><div class='sentence'>21.9</div></td>
+	<td class='left'><div class='sentence'>Initializer lists</div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;initializer_&shy;list&gt;</span></div></td>
+</tr>
+<tr class='rowsep'>
+	<td class='left'><div class='sentence'>21.11</div></td>
+	<td class='left'><div class='sentence'>Other runtime support</div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstdarg&gt;</span></div></td>
+</tr>
+<tr class='rowsep'>
+	<td class='left'><div class='sentence'>23.15</div></td>
+	<td class='left'><div class='sentence'>Type traits</div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;type_&shy;traits&gt;</span></div></td>
+</tr>
+<tr class='rowsep'>
+	<td class='left'><div class='sentence'>Clause 32</div></td>
+	<td class='left'><div class='sentence'>Atomics</div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;atomic&gt;</span></div></td>
+</tr>
+<tr class='rowsep'>
+	<td class='left'><div class='sentence'>D.4.2, D.4.3</div></td>
+	<td class='left'><div class='sentence'>Deprecated headers</div></td>
+	<td class='left'><div class='sentence'>
+		<span class='texttt'>&lt;cstdalign&gt;</span> 
+		<span class='texttt'>&lt;cstdbool&gt;</span></div>
+	</td>
+</tr></table></div></div>
 </del>
 <ins>
-<div class='numberedTable'>Table 19 — C++ headers for freestanding implementations<br><table ><tr class='rowsep'><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;algorithm&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;cmath&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;cwchar&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;random&gt;</span></div></td></tr><tr ><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;atomic&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;compare&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;exception&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;ratio&gt;</span></div></td></tr><tr ><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;cerrno&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;cstdalign&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;functional&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;string&gt;</span></div></td></tr><tr ><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;cfloat&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;cstdarg&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;initializer_list&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;system_error&gt;</span></div></td></tr><tr ><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;charconv&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;cstdbool&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;iterator&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;tuple&gt;</span></div></td></tr><tr ><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;chrono&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;cstddef&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;limits&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;type_traits&gt;</span></div></td></tr><tr ><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;cinttypes&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;cstdint&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;memory&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;typeinfo&gt;</span></div></td></tr><tr ><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;ciso646&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;cstdlib&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;new&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;utility&gt;</span></div></td></tr><tr ><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;climits&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;cstring&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'>&lt;numeric&gt;</span></div></td><td class='left'><div class='sentence'>
-<span class='texttt'></span></div></td></tr></table></div></div></ins>
+<div class='numberedTable'>Table 19 — C++ headers for freestanding implementations<br><table >
+<tr class='rowsep'>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;algorithm&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cmath&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cwchar&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;random&gt;</span></div></td>
+</tr>
+<tr >
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;atomic&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;compare&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;exception&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;ratio&gt;</span></div></td>
+</tr>
+<tr>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cerrno&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstdalign&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;functional&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;string&gt;</span></div></td>
+</tr>
+<tr>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cfloat&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstdarg&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;initializer_list&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;system_error&gt;</span></div></td>
+</tr>
+<tr>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;charconv&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstdbool&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;iterator&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;tuple&gt;</span></div></td>
+</tr>
+<tr>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;chrono&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstddef&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;limits&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;type_traits&gt;</span></div></td>
+</tr>
+<tr>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cinttypes&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstdint&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;memory&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;typeinfo&gt;</span></div></td>
+</tr>
+<tr>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;ciso646&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstdlib&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;new&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;utility&gt;</span></div></td>
+</tr>
+<tr>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;climits&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstring&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;numeric&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'></span></div></td>
+</tr></table></div></ins>
 Change in [compliance] (20.5.1.3) paragraph 3:
 <blockquote class="std">
 <div class='para'>
@@ -888,7 +963,7 @@ Change in [compliance] (20.5.1.3) paragraph 3:
 	<span class='texttt'>at_&shy;quick_&shy;exit</span>,
 	<span class='texttt'>exit</span>,
 	and
-	<span class='texttt'>quick_&shy;exit</span> ([support.start.term]).</div>
+	<span class='texttt'>quick_&shy;exit</span> (21.5).</div>
 	<div class='sentence'>The other headers listed in this table shall meet the same requirements as for a hosted implementation.</div>
 </del>
 
@@ -952,7 +1027,7 @@ namespace std {
 </span>  extern "C" using <span class='textit'>c-compare-pred</span> = int(const void*, const void*);   <span class='comment'>// <span class='textit'>exposition only</span>
 </span>  extern "C++" using <span class='textit'>compare-pred</span> = int(const void*, const void*);   <span class='comment'>// <span class='textit'>exposition only</span>
 </span>
-  <span class='comment'>// [support.start.term], start and termination
+  <span class='comment'>// 21.5, start and termination
 </span>  [[noreturn]] void abort() noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   int atexit(<span class='textit'>c-atexit-handler</span>* func) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   int atexit(<span class='textit'>atexit-handler</span>* func) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -965,7 +1040,7 @@ namespace std {
   char* <span id='lib:getenv'><span class='tcode_in_codeblock'>getenv</span></span>(const char* name);
   int system(const char* string);
 
-  <span class='comment'>// [c.malloc], C library memory allocation
+  <span class='comment'>// 23.10.12, C library memory allocation
 </span>  void* aligned_alloc(size_t alignment, size_t size);
   void* calloc(size_t nmemb, size_t size);
   void free(void* ptr);
@@ -984,14 +1059,14 @@ namespace std {
   unsigned long int strtoul(const char* nptr, char** endptr, int base);
   unsigned long long int strtoull(const char* nptr, char** endptr, int base);
 
-  <span class='comment'>// [c.mb.wcs], multibyte / wide string and character conversion functions
+  <span class='comment'>// 24.5.6, multibyte / wide string and character conversion functions
 </span>  int mblen(const char* s, size_t n);
   int mbtowc(wchar_t* pwc, const char* s, size_t n);
   int wctomb(char* s, wchar_t wchar);
   size_t mbstowcs(wchar_t* pwcs, const char* s, size_t n);
   size_t wcstombs(char* s, const wchar_t* pwcs, size_t n);
 
-  <span class='comment'>// [alg.c.library], C standard library algorithms
+  <span class='comment'>// 28.8, C standard library algorithms
 </span>  void* bsearch(const void* key, const void* base, size_t nmemb, size_t size,
                 <span class='textit'>c-compare-pred</span>* compar); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   void* bsearch(const void* key, const void* base, size_t nmemb, size_t size,
@@ -999,11 +1074,11 @@ namespace std {
   void qsort(void* base, size_t nmemb, size_t size, <span class='textit'>c-compare-pred</span>* compar); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   void qsort(void* base, size_t nmemb, size_t size, <span class='textit'>compare-pred</span>* compar); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// [c.math.rand], low-quality random number generation
+  <span class='comment'>// 29.6.9, low-quality random number generation
 </span>  int rand();
   void srand(unsigned int seed);
 
-  <span class='comment'>// [c.math.abs], absolute values
+  <span class='comment'>// 29.9.2, absolute values
 </span>  int abs(int j); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   long int abs(long int j); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   long long int abs(long long int j); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -1015,8 +1090,8 @@ namespace std {
   long long int llabs(long long int j); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
   div_t div(int numer, int denom); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  ldiv_t div(long int numer, long int denom);             <span class='comment'>// see [20.2]<ins>, <span class='textit'>freestanding</span></ins>
-</span>  lldiv_t div(long long int numer, long long int denom);  <span class='comment'>// see [20.2]<ins>, <span class='textit'>freestanding</span></ins>
+  ldiv_t div(long int numer, long int denom);             <span class='comment'>// see 20.2<ins>, <span class='textit'>freestanding</span></ins>
+</span>  lldiv_t div(long long int numer, long long int denom);  <span class='comment'>// see 20.2<ins>, <span class='textit'>freestanding</span></ins>
 </span>  ldiv_t ldiv(long int numer, long int denom); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   lldiv_t lldiv(long long int numer, long long int denom); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 }</pre>
@@ -1317,6 +1392,24 @@ namespace std {
   error_code make_error_code(errc e) noexcept;
 </pre>
 </div>
+</blockquote>
+
+Change in [utility.syn] (23.2.1):
+<blockquote class="std">
+<h3 ><a class='secnum' style='min-width:103pt'>23.2.1</a> Header <span class='texttt'>&lt;utility&gt;</span> synopsis <a class='abbr_ref'>[utility.syn]</a></h3>
+<pre class='codeblock'>
+<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+namespace std {
+</pre>
+</blockquote>
+
+Change in [tuple.syn] (23.5.2):
+<blockquote class="std">
+<h3 ><a class='secnum' style='min-width:103pt'>23.5.2</a> Header <span class='texttt'>&lt;tuple&gt;</span> synopsis <a class='abbr_ref'>[tuple.syn]</a></h3>
+<pre class='codeblock'>
+<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+namespace std {
+</pre>
 </blockquote>
 
 <h1>Acknowledgements</h1>
