@@ -1728,6 +1728,143 @@ namespace std {
 }</pre></div>
 </blockquote>
 
+Change in [functional.syn] (23.14.1):
+<blockquote class="std">
+<h3 ><a class='secnum' style='min-width:103pt'>23.14.1</a> Header <span class='texttt'>&lt;functional&gt;</span> synopsis <a class='abbr_ref'>[functional.syn]</a></h3>
+<pre class='codeblock'>
+namespace std {
+  <span class='comment'>// 23.14.4, invoke
+</span>  template&lt;class F, class... Args&gt;
+    invoke_result_t&lt;F, Args...&gt; invoke(F&amp;&amp; f, Args&amp;&amp;... args)
+      noexcept(is_nothrow_invocable_v&lt;F, Args...&gt;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.14.5, <span class='tcode_in_codeblock'>reference_&shy;wrapper</span>
+</span>  template&lt;class T&gt; class reference_wrapper; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  template&lt;class T&gt; reference_wrapper&lt;T&gt; ref(T&amp;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; reference_wrapper&lt;const T&gt; cref(const T&amp;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; void ref(const T&amp;&amp;) = delete; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; void cref(const T&amp;&amp;) = delete; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  template&lt;class T&gt; reference_wrapper&lt;T&gt; ref(reference_wrapper&lt;T&gt;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; reference_wrapper&lt;const T&gt; cref(reference_wrapper&lt;T&gt;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.14.6, arithmetic operations
+</span>  template&lt;class T = void&gt; struct plus; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct minus; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct multiplies; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct divides; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct modulus; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct negate; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct plus&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct minus&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct multiplies&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct divides&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct modulus&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct negate&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.14.7, comparisons
+</span>  template&lt;class T = void&gt; struct equal_to; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct not_equal_to; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct greater; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct less; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct greater_equal; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct less_equal; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct equal_to&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct not_equal_to&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct greater&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct less&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct greater_equal&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct less_equal&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.14.8, logical operations
+</span>  template&lt;class T = void&gt; struct logical_and; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct logical_or; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct logical_not; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct logical_and&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct logical_or&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct logical_not&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.14.9, bitwise operations
+</span>  template&lt;class T = void&gt; struct bit_and; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct bit_or; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct bit_xor; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct bit_not; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct bit_and&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct bit_or&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct bit_xor&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct bit_not&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.14.10, function template <span class='tcode_in_codeblock'>not_&shy;fn</span>
+</span>  template&lt;class F&gt; <span class='textit'><span class='texttt'>unspecified</span></span> not_fn(F&amp;&amp; f); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.14.11, bind
+</span>  template&lt;class T&gt; struct is_bind_expression; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; struct is_placeholder; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  template&lt;class F, class... BoundArgs&gt;
+    <span class='textit'><span class='texttt'>unspecified</span></span> bind(F&amp;&amp;, BoundArgs&amp;&amp;...); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class R, class F, class... BoundArgs&gt;
+    <span class='textit'><span class='texttt'>unspecified</span></span> bind(F&amp;&amp;, BoundArgs&amp;&amp;...); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  namespace placeholders {
+    <span class='comment'>// <span class='tcode_in_codeblock'><span class='textit'>M</span></span> is the <span class='indexparent'><a class='index'></a></span>implementation-defined number of placeholders
+</span>    <span class='textit'><span class='texttt'>see below</span></span> _1; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='textit'><span class='texttt'>see below</span></span> _2; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+               .
+               .
+               .
+    <span class='textit'><span class='texttt'>see below</span></span> _<span class='textit'>M</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  }
+
+  <span class='comment'>// 23.14.12, member function adaptors
+</span>  template&lt;class R, class T&gt;
+    <span class='textit'><span class='texttt'>unspecified</span></span> mem_fn(R T::*) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.14.13, polymorphic function wrappers
+</span>  class bad_function_call;
+
+  template&lt;class&gt; class function; <span class='comment'>// not defined
+</span>  template&lt;class R, class... ArgTypes&gt; class function&lt;R(ArgTypes...)&gt;;
+
+  template&lt;class R, class... ArgTypes&gt;
+    void swap(function&lt;R(ArgTypes...)&gt;&amp;, function&lt;R(ArgTypes...)&gt;&amp;) noexcept;
+
+  template&lt;class R, class... ArgTypes&gt;
+    bool operator==(const function&lt;R(ArgTypes...)&gt;&amp;, nullptr_t) noexcept;
+  template&lt;class R, class... ArgTypes&gt;
+    bool operator==(nullptr_t, const function&lt;R(ArgTypes...)&gt;&amp;) noexcept;
+  template&lt;class R, class... ArgTypes&gt;
+    bool operator!=(const function&lt;R(ArgTypes...)&gt;&amp;, nullptr_t) noexcept;
+  template&lt;class R, class... ArgTypes&gt;
+    bool operator!=(nullptr_t, const function&lt;R(ArgTypes...)&gt;&amp;) noexcept;
+
+  <span class='comment'>// 23.14.14, searchers
+</span>  template&lt;class ForwardIterator, class BinaryPredicate = equal_to&lt;&gt;&gt;
+    class default_searcher; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  template&lt;class RandomAccessIterator,
+           class Hash = hash&lt;typename iterator_traits&lt;RandomAccessIterator&gt;::value_type&gt;,
+           class BinaryPredicate = equal_to&lt;&gt;&gt;
+    class boyer_moore_searcher;
+
+  template&lt;class RandomAccessIterator,
+           class Hash = hash&lt;typename iterator_traits&lt;RandomAccessIterator&gt;::value_type&gt;,
+           class BinaryPredicate = equal_to&lt;&gt;&gt;
+    class boyer_moore_horspool_searcher;
+
+  <span class='comment'>// 23.14.15, hash function primary template
+</span>  template&lt;class T&gt;
+    struct hash; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.14.11, function object binders
+</span>  template&lt;class T&gt;
+    inline constexpr bool is_bind_expression_v = is_bind_expression&lt;T&gt;::value; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt;
+    inline constexpr int is_placeholder_v = is_placeholder&lt;T&gt;::value; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+}</pre>
+</blockquote>
+
 <h1>Acknowledgements</h1>
 <p>
 Thanks to Brandon Streiff, Joshua Cannon, Phil Hindman, and Irwan Djajadi for reviewing this proposal.
