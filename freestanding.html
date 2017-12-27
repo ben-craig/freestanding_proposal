@@ -2056,6 +2056,60 @@ namespace std {
 }</pre>
 </blockquote>
 
+Change in [charconv.syn] (23.20.1):
+<blockquote class="std">
+<h3 ><a class='secnum' style='min-width:103pt'>23.20.1</a> Header <span class='texttt'>&lt;charconv&gt;</span> synopsis <a class='abbr_ref'>[charconv.syn]</a></h3>
+<pre class='codeblock'>
+namespace std {
+  <span class='comment'>// floating-point format for primitive numerical conversion
+</span>  enum class <span><span class='tcode_in_codeblock'>chars_&shy;format</span></span> {
+    <span><span><span class='tcode_in_codeblock'>scientific</span></span></span> = <span class='textit'><span class='texttt'>unspecified</span></span>,
+    <span><span><span class='tcode_in_codeblock'>fixed</span></span></span> = <span class='textit'><span class='texttt'>unspecified</span></span>,
+    <span><span><span class='tcode_in_codeblock'>hex</span></span></span> = <span class='textit'><span class='texttt'>unspecified</span></span>,
+    <span><span><span class='tcode_in_codeblock'>general</span></span></span> = fixed | scientific
+  };
+
+  <span class='comment'>// 23.20.2, primitive numerical output conversion
+</span>  struct <span><span class='tcode_in_codeblock'>to_&shy;chars_&shy;result</span></span> {
+    char* <span><span><span class='tcode_in_codeblock'>ptr</span></span></span>;
+    errc <span><span><span class='tcode_in_codeblock'>ec</span></span></span>;
+  }; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  to_chars_result to_chars(char* first, char* last, <span class='textit'><span class='texttt'>see below</span></span> value, int base = 10); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  to_chars_result to_chars(char* first, char* last, float value);
+  to_chars_result to_chars(char* first, char* last, double value);
+  to_chars_result to_chars(char* first, char* last, long double value);
+
+  to_chars_result to_chars(char* first, char* last, float value, chars_format fmt);
+  to_chars_result to_chars(char* first, char* last, double value, chars_format fmt);
+  to_chars_result to_chars(char* first, char* last, long double value, chars_format fmt);
+
+  to_chars_result to_chars(char* first, char* last, float value,
+                           chars_format fmt, int precision);
+  to_chars_result to_chars(char* first, char* last, double value,
+                           chars_format fmt, int precision);
+  to_chars_result to_chars(char* first, char* last, long double value,
+                           chars_format fmt, int precision);
+
+  <span class='comment'>// 23.20.3, primitive numerical input conversion
+</span>  struct <span><span class='tcode_in_codeblock'>from_&shy;chars_&shy;result</span></span> {
+    const char* <span><span><span class='tcode_in_codeblock'>ptr</span></span></span>;
+    errc <span><span><span class='tcode_in_codeblock'>ec</span></span></span>;
+  }; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  from_chars_result from_chars(const char* first, const char* last,
+                               <span class='textit'><span class='texttt'>see below</span></span>&amp; value, int base = 10); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  from_chars_result from_chars(const char* first, const char* last, float&amp; value,
+                               chars_format fmt = chars_format::general);
+  from_chars_result from_chars(const char* first, const char* last, double&amp; value,
+                               chars_format fmt = chars_format::general);
+  from_chars_result from_chars(const char* first, const char* last, long double&amp; value,
+                               chars_format fmt = chars_format::general);
+}</pre>
+</blockquote>
+
 <h1>Acknowledgements</h1>
 <p>
 Thanks to Brandon Streiff, Joshua Cannon, Phil Hindman, and Irwan Djajadi for reviewing this proposal.
