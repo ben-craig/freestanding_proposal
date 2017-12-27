@@ -497,6 +497,7 @@ R1 no longer gives implementations freedom to add <code>static_assert</code>s to
 <code>unique_ptr</code> is no longer included in freestanding, with the hopes that <code>unique_resource</code> and <code>scope_exit</code> will fill the void<br/>
 R1 adds naming alternatives for freestanding.<br/>
 R1 includes substantially less of <code>&lt;random&gt;</code>, and white-lists inclusions rather than black-lists omissions.<br/>
+R1 adds some allocator machinery, though it does not add the default allocator.<br/>
 R1 adds <code>&lt;compare&gt;</code>, as it seems to have been accidentally omitted from the freestanding headers list.<br/>
 <h1>Abstract</h1>
 Add everything to the freestanding implementation that can be implemented without OS calls and space overhead.
@@ -648,8 +649,14 @@ Portions of <code>&lt;memory&gt;</code>.
 </p>
 <ul>
 <li><code>pointer_traits</code></li>
+<li><code>to_address</code></li>
 <li><code>align</code></li>
-<li>23.10.10, specialized algorithms</li>
+<li><code>allocator_arg_t</code></li>
+<li><code>allocator_arg</code></li>
+<li><code>uses_allocator</code></li>
+<li><code>allocator_traits</code></li>
+<li>23.10.11, specialized algorithms, except for the ExecutionPolicy overloads</li>
+<li><code>uses_allocator_v</code></li>
 </ul>
 <p>
 Most of <code>&lt;functional&gt;</code>.  <b>Omit</b> the following.
@@ -1410,6 +1417,315 @@ Change in [tuple.syn] (23.5.2):
 <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 namespace std {
 </pre>
+</blockquote>
+
+Change in [memory.syn] (23.10.2):
+<blockquote class="std">
+<h3 ><a class='secnum' style='min-width:103pt'>23.10.2</a> Header <span class='texttt'>&lt;memory&gt;</span> synopsis <a class='abbr_ref'>[memory.syn]</a></h3>
+<div class='para' >
+	<div class='marginalizedparent'><a class='marginalized'>1</a></div>
+	<div  class='sentence'>The header <span class='texttt'>&lt;memory&gt;</span> defines several types and function templates that
+describe properties of pointers and pointer-like types, manage memory
+for containers and other template types, destroy objects, and
+construct multiple objects in
+uninitialized memory
+buffers (23.10.3–23.10.11).</div>
+<div  class='sentence'>The header also defines the templates
+<span class='texttt'>unique_&shy;ptr</span>, <span class='texttt'>shared_&shy;ptr</span>, <span class='texttt'>weak_&shy;ptr</span>, and various function
+templates that operate on objects of these types (23.11).</div>
+<pre class='codeblock'>
+namespace std {
+  <span class='comment'>// 23.10.3, pointer traits
+</span>  template&lt;class Ptr&gt; struct pointer_traits; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; struct pointer_traits&lt;T*&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.10.4, pointer conversion
+</span>  template&lt;class Ptr&gt; 
+    auto to_address(const Ptr&amp; p) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt;
+    constexpr T* to_address(T* p) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.10.5, pointer safety
+</span>  enum class pointer_safety { relaxed, preferred, strict };
+  void declare_reachable(void* p);
+  template&lt;class T&gt;
+    T* undeclare_reachable(T* p);
+  void declare_no_pointers(char* p, size_t n);
+  void undeclare_no_pointers(char* p, size_t n);
+  pointer_safety get_pointer_safety() noexcept;
+
+  <span class='comment'>// 23.10.6, pointer alignment function
+</span>  void* align(size_t alignment, size_t size, void*&amp; ptr, size_t&amp; space); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.10.7, allocator argument tag
+</span>  struct allocator_arg_t { explicit allocator_arg_t() = default; }; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  inline constexpr allocator_arg_t allocator_arg{}; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.10.8, <span class='tcode_in_codeblock'>uses_&shy;allocator</span>
+</span>  template&lt;class T, class Alloc&gt; struct uses_allocator; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.10.9, allocator traits
+</span>  template&lt;class Alloc&gt; struct allocator_traits; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.10.10, the default allocator
+</span>  template&lt;class T&gt; class allocator;
+  template&lt;class T, class U&gt;
+    bool operator==(const allocator&lt;T&gt;&amp;, const allocator&lt;U&gt;&amp;) noexcept;
+  template&lt;class T, class U&gt;
+    bool operator!=(const allocator&lt;T&gt;&amp;, const allocator&lt;U&gt;&amp;) noexcept;
+
+  <span class='comment'>// 23.10.11, specialized algorithms
+</span>  template&lt;class T&gt;
+    constexpr T* addressof(T&amp; r) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt;
+    const T* addressof(const T&amp;&amp;) = delete; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ForwardIterator&gt;
+    void uninitialized_default_construct(ForwardIterator first, ForwardIterator last); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class ForwardIterator&gt;
+    void uninitialized_default_construct(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
+</span>                                         ForwardIterator first, ForwardIterator last);
+  template&lt;class ForwardIterator, class Size&gt;
+    ForwardIterator uninitialized_default_construct_n(ForwardIterator first, Size n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class ForwardIterator, class Size&gt;
+    ForwardIterator uninitialized_default_construct_n(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
+</span>                                                      ForwardIterator first, Size n);
+  template&lt;class ForwardIterator&gt;
+    void uninitialized_value_construct(ForwardIterator first, ForwardIterator last);  <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class ForwardIterator&gt;
+    void uninitialized_value_construct(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
+</span>                                       ForwardIterator first, ForwardIterator last);
+  template&lt;class ForwardIterator, class Size&gt;
+    ForwardIterator uninitialized_value_construct_n(ForwardIterator first, Size n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class ForwardIterator, class Size&gt;
+    ForwardIterator uninitialized_value_construct_n(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
+</span>                                                    ForwardIterator first, Size n);
+  template&lt;class InputIterator, class ForwardIterator&gt;
+    ForwardIterator uninitialized_copy(InputIterator first, InputIterator last,
+                                       ForwardIterator result); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class InputIterator, class ForwardIterator&gt;
+    ForwardIterator uninitialized_copy(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
+</span>                                       InputIterator first, InputIterator last,
+                                       ForwardIterator result);
+  template&lt;class InputIterator, class Size, class ForwardIterator&gt;
+    ForwardIterator uninitialized_copy_n(InputIterator first, Size n,
+                                         ForwardIterator result); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class InputIterator, class Size, class ForwardIterator&gt;
+    ForwardIterator uninitialized_copy_n(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
+</span>                                         InputIterator first, Size n,
+                                         ForwardIterator result);
+  template&lt;class InputIterator, class ForwardIterator&gt;
+    ForwardIterator uninitialized_move(InputIterator first, InputIterator last,
+                                       ForwardIterator result); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class InputIterator, class ForwardIterator&gt;
+    ForwardIterator uninitialized_move(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
+</span>                                       InputIterator first, InputIterator last,
+                                       ForwardIterator result);
+  template&lt;class InputIterator, class Size, class ForwardIterator&gt;
+    pair&lt;InputIterator, ForwardIterator&gt; uninitialized_move_n(InputIterator first, Size n,
+                                                              ForwardIterator result); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class InputIterator, class Size, class ForwardIterator&gt;
+    pair&lt;InputIterator, ForwardIterator&gt; uninitialized_move_n(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
+</span>                                                              InputIterator first, Size n,
+                                                              ForwardIterator result);
+  template&lt;class ForwardIterator, class T&gt;
+    void uninitialized_fill(ForwardIterator first, ForwardIterator last, const T&amp; x); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class ForwardIterator, class T&gt;
+    void uninitialized_fill(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
+</span>                            ForwardIterator first, ForwardIterator last, const T&amp; x);
+  template&lt;class ForwardIterator, class Size, class T&gt;
+    ForwardIterator uninitialized_fill_n(ForwardIterator first, Size n, const T&amp; x); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class ForwardIterator, class Size, class T&gt;
+    ForwardIterator uninitialized_fill_n(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
+</span>                                         ForwardIterator first, Size n, const T&amp; x);
+  template&lt;class T&gt;
+    void destroy_at(T* location); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ForwardIterator&gt;
+    void destroy(ForwardIterator first, ForwardIterator last); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class ForwardIterator&gt;
+    void destroy(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
+</span>                 ForwardIterator first, ForwardIterator last);
+  template&lt;class ForwardIterator, class Size&gt;
+    ForwardIterator destroy_n(ForwardIterator first, Size n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class ForwardIterator, class Size&gt;
+    ForwardIterator destroy_n(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
+</span>                              ForwardIterator first, Size n);
+
+  <span class='comment'>// 23.11.1, class template <span class='tcode_in_codeblock'>unique_&shy;ptr</span>
+</span>  template&lt;class T&gt; struct default_delete;
+  template&lt;class T&gt; struct default_delete&lt;T[]&gt;;
+  template&lt;class T, class D = default_delete&lt;T&gt;&gt; class unique_ptr;
+  template&lt;class T, class D&gt; class unique_ptr&lt;T[], D&gt;;
+
+  template&lt;class T, class... Args&gt; unique_ptr&lt;T&gt;
+    make_unique(Args&amp;&amp;... args);                                                <span class='comment'>// <span class='tcode_in_codeblock'>T</span> is not array
+</span>  template&lt;class T&gt; unique_ptr&lt;T&gt;
+    make_unique(size_t n);                                                      <span class='comment'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[]</span>
+</span>  template&lt;class T, class... Args&gt;
+    <span class='textit'><span class='texttt'>unspecified</span></span> make_unique(Args&amp;&amp;...) = delete;                                <span class='comment'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[N]</span>
+</span>
+  template&lt;class T, class D&gt;
+    void swap(unique_ptr&lt;T, D&gt;&amp; x, unique_ptr&lt;T, D&gt;&amp; y) noexcept;
+
+  template&lt;class T1, class D1, class T2, class D2&gt;
+    bool operator==(const unique_ptr&lt;T1, D1&gt;&amp; x, const unique_ptr&lt;T2, D2&gt;&amp; y);
+  template&lt;class T1, class D1, class T2, class D2&gt;
+    bool operator!=(const unique_ptr&lt;T1, D1&gt;&amp; x, const unique_ptr&lt;T2, D2&gt;&amp; y);
+  template&lt;class T1, class D1, class T2, class D2&gt;
+    bool operator&lt;(const unique_ptr&lt;T1, D1&gt;&amp; x, const unique_ptr&lt;T2, D2&gt;&amp; y);
+  template&lt;class T1, class D1, class T2, class D2&gt;
+    bool operator&lt;=(const unique_ptr&lt;T1, D1&gt;&amp; x, const unique_ptr&lt;T2, D2&gt;&amp; y);
+  template&lt;class T1, class D1, class T2, class D2&gt;
+    bool operator&gt;(const unique_ptr&lt;T1, D1&gt;&amp; x, const unique_ptr&lt;T2, D2&gt;&amp; y);
+  template&lt;class T1, class D1, class T2, class D2&gt;
+    bool operator&gt;=(const unique_ptr&lt;T1, D1&gt;&amp; x, const unique_ptr&lt;T2, D2&gt;&amp; y);
+
+  template&lt;class T, class D&gt;
+    bool operator==(const unique_ptr&lt;T, D&gt;&amp; x, nullptr_t) noexcept;
+  template&lt;class T, class D&gt;
+    bool operator==(nullptr_t, const unique_ptr&lt;T, D&gt;&amp; y) noexcept;
+  template&lt;class T, class D&gt;
+    bool operator!=(const unique_ptr&lt;T, D&gt;&amp; x, nullptr_t) noexcept;
+  template&lt;class T, class D&gt;
+    bool operator!=(nullptr_t, const unique_ptr&lt;T, D&gt;&amp; y) noexcept;
+  template&lt;class T, class D&gt;
+    bool operator&lt;(const unique_ptr&lt;T, D&gt;&amp; x, nullptr_t);
+  template&lt;class T, class D&gt;
+    bool operator&lt;(nullptr_t, const unique_ptr&lt;T, D&gt;&amp; y);
+  template&lt;class T, class D&gt;
+    bool operator&lt;=(const unique_ptr&lt;T, D&gt;&amp; x, nullptr_t);
+  template&lt;class T, class D&gt;
+    bool operator&lt;=(nullptr_t, const unique_ptr&lt;T, D&gt;&amp; y);
+  template&lt;class T, class D&gt;
+    bool operator&gt;(const unique_ptr&lt;T, D&gt;&amp; x, nullptr_t);
+  template&lt;class T, class D&gt;
+    bool operator&gt;(nullptr_t, const unique_ptr&lt;T, D&gt;&amp; y);
+  template&lt;class T, class D&gt;
+    bool operator&gt;=(const unique_ptr&lt;T, D&gt;&amp; x, nullptr_t);
+  template&lt;class T, class D&gt;
+    bool operator&gt;=(nullptr_t, const unique_ptr&lt;T, D&gt;&amp; y);
+
+  template&lt;class E, class T, class Y, class D&gt;
+    basic_ostream&lt;E, T&gt;&amp; operator&lt;&lt;(basic_ostream&lt;E, T&gt;&amp; os, const unique_ptr&lt;Y, D&gt;&amp; p);
+
+  <span class='comment'>// 23.11.2, class <span class='tcode_in_codeblock'>bad_&shy;weak_&shy;ptr</span>
+</span>  class bad_weak_ptr;
+
+  <span class='comment'>// 23.11.3, class template <span class='tcode_in_codeblock'>shared_&shy;ptr</span>
+</span>  template&lt;class T&gt; class shared_ptr;
+
+  <span class='comment'>// 23.11.3.6, <span class='tcode_in_codeblock'>shared_&shy;ptr</span> creation
+</span>  template&lt;class T, class... Args&gt;
+    shared_ptr&lt;T&gt; make_shared(Args&amp;&amp;... args);                                  <span class='comment'>// <span class='tcode_in_codeblock'>T</span> is not array
+</span>  template&lt;class T, class A, class... Args&gt;
+    shared_ptr&lt;T&gt; allocate_shared(const A&amp; a, Args&amp;&amp;... args);                  <span class='comment'>// <span class='tcode_in_codeblock'>T</span> is not array
+</span>
+  template&lt;class T&gt;
+    shared_ptr&lt;T&gt; make_shared(size_t N);                                        <span class='comment'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[]</span>
+</span>  template&lt;class T, class A&gt;
+    shared_ptr&lt;T&gt; allocate_shared(const A&amp; a, size_t N);                        <span class='comment'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[]</span>
+</span>
+  template&lt;class T&gt;
+    shared_ptr&lt;T&gt; make_shared();                                                <span class='comment'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[N]</span>
+</span>  template&lt;class T, class A&gt;
+    shared_ptr&lt;T&gt; allocate_shared(const A&amp; a);                                  <span class='comment'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[N]</span>
+</span>
+  template&lt;class T&gt;
+    shared_ptr&lt;T&gt; make_shared(size_t N, const remove_extent_t&lt;T&gt;&amp; u);           <span class='comment'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[]</span>
+</span>  template&lt;class T, class A&gt;
+    shared_ptr&lt;T&gt; allocate_shared(const A&amp; a, size_t N,
+                                  const remove_extent_t&lt;T&gt;&amp; u);                 <span class='comment'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[]</span>
+</span>
+  template&lt;class T&gt; shared_ptr&lt;T&gt;
+    make_shared(const remove_extent_t&lt;T&gt;&amp; u);                                   <span class='comment'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[N]</span>
+</span>  template&lt;class T, class A&gt;
+    shared_ptr&lt;T&gt; allocate_shared(const A&amp; a, const remove_extent_t&lt;T&gt;&amp; u);     <span class='comment'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[N]</span>
+</span>
+  <span class='comment'>// 23.11.3.7, <span class='tcode_in_codeblock'>shared_&shy;ptr</span> comparisons
+</span>  template&lt;class T, class U&gt;
+    bool operator==(const shared_ptr&lt;T&gt;&amp; a, const shared_ptr&lt;U&gt;&amp; b) noexcept;
+  template&lt;class T, class U&gt;
+    bool operator!=(const shared_ptr&lt;T&gt;&amp; a, const shared_ptr&lt;U&gt;&amp; b) noexcept;
+  template&lt;class T, class U&gt;
+    bool operator&lt;(const shared_ptr&lt;T&gt;&amp; a, const shared_ptr&lt;U&gt;&amp; b) noexcept;
+  template&lt;class T, class U&gt;
+    bool operator&gt;(const shared_ptr&lt;T&gt;&amp; a, const shared_ptr&lt;U&gt;&amp; b) noexcept;
+  template&lt;class T, class U&gt;
+    bool operator&lt;=(const shared_ptr&lt;T&gt;&amp; a, const shared_ptr&lt;U&gt;&amp; b) noexcept;
+  template&lt;class T, class U&gt;
+    bool operator&gt;=(const shared_ptr&lt;T&gt;&amp; a, const shared_ptr&lt;U&gt;&amp; b) noexcept;
+
+  template&lt;class T&gt;
+    bool operator==(const shared_ptr&lt;T&gt;&amp; x, nullptr_t) noexcept;
+  template&lt;class T&gt;
+    bool operator==(nullptr_t, const shared_ptr&lt;T&gt;&amp; y) noexcept;
+  template&lt;class T&gt;
+    bool operator!=(const shared_ptr&lt;T&gt;&amp; x, nullptr_t) noexcept;
+  template&lt;class T&gt;
+    bool operator!=(nullptr_t, const shared_ptr&lt;T&gt;&amp; y) noexcept;
+  template&lt;class T&gt;
+    bool operator&lt;(const shared_ptr&lt;T&gt;&amp; x, nullptr_t) noexcept;
+  template&lt;class T&gt;
+    bool operator&lt;(nullptr_t, const shared_ptr&lt;T&gt;&amp; y) noexcept;
+  template&lt;class T&gt;
+    bool operator&lt;=(const shared_ptr&lt;T&gt;&amp; x, nullptr_t) noexcept;
+  template&lt;class T&gt;
+    bool operator&lt;=(nullptr_t, const shared_ptr&lt;T&gt;&amp; y) noexcept;
+  template&lt;class T&gt;
+    bool operator&gt;(const shared_ptr&lt;T&gt;&amp; x, nullptr_t) noexcept;
+  template&lt;class T&gt;
+    bool operator&gt;(nullptr_t, const shared_ptr&lt;T&gt;&amp; y) noexcept;
+  template&lt;class T&gt;
+    bool operator&gt;=(const shared_ptr&lt;T&gt;&amp; x, nullptr_t) noexcept;
+  template&lt;class T&gt;
+    bool operator&gt;=(nullptr_t, const shared_ptr&lt;T&gt;&amp; y) noexcept;
+
+  <span class='comment'>// 23.11.3.8, <span class='tcode_in_codeblock'>shared_&shy;ptr</span> specialized algorithms
+</span>  template&lt;class T&gt;
+    void swap(shared_ptr&lt;T&gt;&amp; a, shared_ptr&lt;T&gt;&amp; b) noexcept;
+
+  <span class='comment'>// 23.11.3.9, <span class='tcode_in_codeblock'>shared_&shy;ptr</span> casts
+</span>  template&lt;class T, class U&gt;
+    shared_ptr&lt;T&gt; static_pointer_cast(const shared_ptr&lt;U&gt;&amp; r) noexcept;
+  template&lt;class T, class U&gt;
+    shared_ptr&lt;T&gt; dynamic_pointer_cast(const shared_ptr&lt;U&gt;&amp; r) noexcept;
+  template&lt;class T, class U&gt;
+    shared_ptr&lt;T&gt; const_pointer_cast(const shared_ptr&lt;U&gt;&amp; r) noexcept;
+  template&lt;class T, class U&gt;
+    shared_ptr&lt;T&gt; reinterpret_pointer_cast(const shared_ptr&lt;U&gt;&amp; r) noexcept;
+
+  <span class='comment'>// 23.11.3.10, <span class='tcode_in_codeblock'>shared_&shy;ptr</span> <span class='tcode_in_codeblock'>get_&shy;deleter</span>
+</span>  template&lt;class D, class T&gt;
+    D* get_deleter(const shared_ptr&lt;T&gt;&amp; p) noexcept;
+
+  <span class='comment'>// 23.11.3.11, <span class='tcode_in_codeblock'>shared_&shy;ptr</span> I/O
+</span>  template&lt;class E, class T, class Y&gt;
+    basic_ostream&lt;E, T&gt;&amp; operator&lt;&lt;(basic_ostream&lt;E, T&gt;&amp; os, const shared_ptr&lt;Y&gt;&amp; p);
+
+  <span class='comment'>// 23.11.4, class template <span class='tcode_in_codeblock'>weak_&shy;ptr</span>
+</span>  template&lt;class T&gt; class weak_ptr;
+
+  <span class='comment'>// 23.11.4.6, <span class='tcode_in_codeblock'>weak_&shy;ptr</span> specialized algorithms
+</span>  template&lt;class T&gt; void swap(weak_ptr&lt;T&gt;&amp; a, weak_ptr&lt;T&gt;&amp; b) noexcept;
+
+  <span class='comment'>// 23.11.5, class template <span class='tcode_in_codeblock'>owner_&shy;less</span>
+</span>  template&lt;class T = void&gt; struct owner_less;
+
+  <span class='comment'>// 23.11.6, class template <span class='tcode_in_codeblock'>enable_&shy;shared_&shy;from_&shy;this</span>
+</span>  template&lt;class T&gt; class enable_shared_from_this;
+
+  <span class='comment'>// 23.11.7, hash support
+</span>  template&lt;class T&gt; struct hash;
+  template&lt;class T, class D&gt; struct hash&lt;unique_ptr&lt;T, D&gt;&gt;;
+  template&lt;class T&gt; struct hash&lt;shared_ptr&lt;T&gt;&gt;;
+
+  <span class='comment'>// 23.11.8, atomic smart pointers
+</span>  template&lt;class T&gt; struct atomic&lt;shared_ptr&lt;T&gt;&gt;;
+  template&lt;class T&gt; struct atomic&lt;weak_ptr&lt;T&gt;&gt;;
+
+  <span class='comment'>// 23.10.8.1, <span class='tcode_in_codeblock'>uses_&shy;allocator</span>
+</span>  template&lt;class T, class Alloc&gt;
+    inline constexpr bool uses_allocator_v = uses_allocator&lt;T, Alloc&gt;::value; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+}</pre></div>
 </blockquote>
 
 <h1>Acknowledgements</h1>
