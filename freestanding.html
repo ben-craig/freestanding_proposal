@@ -484,7 +484,7 @@ ol.enumerate { list-style-type: none; }
 
 <body>
 <h1>Freestanding Proposal</h1>
-Document number: D0829R1.1<br/>
+Document number: D0829R1.2<br/>
 Date: 2017-10-14<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: SG14, Library Evolution Working Group
@@ -804,8 +804,8 @@ Add a new subclause [freestanding.membership] after [objects.within.classes]:
 <h4 ><a class='secnum' style='min-width:118pt'>20.4.2.5</a> Freestanding membership <a class='abbr_ref'>[freestanding.membership]</a></h4>
 <div class='para'>
 	<div class='marginalizedparent'><a class='marginalized'>1</a></div>
-	<div class='sentence'>Several headers are required to be implemented in a freestanding implementation.</div> 
-	<div class='sentence'>The synopsis for these headers will start with a comment that ends with <span class='textit'>freestanding</span>, as in:</div> 
+	<div class='sentence'>Several headers are required to be implemented in a freestanding implementation.</div>
+	<div class='sentence'>The synopsis for these headers will start with a comment that ends with <span class='textit'>freestanding</span>, as in:</div>
 <pre class='codeblock'>
 <span class='comment'>// <span class='textit'>freestanding</span></span>
 namespace std {
@@ -814,7 +814,7 @@ namespace std {
 <div class='para'>
 	<div class='marginalizedparent'><a class='marginalized'>2</a></div>
 	<div class='sentence'>Several macros, values, types, classes, class templates, functions, function templates, and objects are required to be implemented in a freestanding implementation, even when the entirety of the containing header is not required to be implemented in a freestanding environment.</div>
-	<div class='sentence'>The declarations for such entities will be followed with a comment that ends with <span class='textit'>freestanding</span>, as in:</div> 
+	<div class='sentence'>The declarations for such entities will be followed with a comment that ends with <span class='textit'>freestanding</span>, as in:</div>
 <pre class='codeblock'>
 #define E2BIG <span class='textit'><span class='texttt'>see below</span></span> <span class='comment'>// <span class='textit'>freestanding</span></span>
 </pre>
@@ -843,8 +843,8 @@ Rework Table 19 referenced from 20.5.1.3 [compliance]:
 	<td class='left'><div class='sentence'>21.3</div></td>
 	<td class='left'><div class='sentence'>Implementation properties</div></td>
 	<td class='left'><div class='sentence'>
-		<span class='texttt'>&lt;cfloat&gt;</span> 
-		<span class='texttt'>&lt;limits&gt;</span> 
+		<span class='texttt'>&lt;cfloat&gt;</span>
+		<span class='texttt'>&lt;limits&gt;</span>
 		<span class='texttt'>&lt;climits&gt;</span></div>
 	</td>
 </tr>
@@ -897,7 +897,7 @@ Rework Table 19 referenced from 20.5.1.3 [compliance]:
 	<td class='left'><div class='sentence'>D.4.2, D.4.3</div></td>
 	<td class='left'><div class='sentence'>Deprecated headers</div></td>
 	<td class='left'><div class='sentence'>
-		<span class='texttt'>&lt;cstdalign&gt;</span> 
+		<span class='texttt'>&lt;cstdalign&gt;</span>
 		<span class='texttt'>&lt;cstdbool&gt;</span></div>
 	</td>
 </tr></table></div></div>
@@ -1440,7 +1440,7 @@ namespace std {
   template&lt;class T&gt; struct pointer_traits&lt;T*&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
   <span class='comment'>// 23.10.4, pointer conversion
-</span>  template&lt;class Ptr&gt; 
+</span>  template&lt;class Ptr&gt;
     auto to_address(const Ptr&amp; p) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T&gt;
     constexpr T* to_address(T* p) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
