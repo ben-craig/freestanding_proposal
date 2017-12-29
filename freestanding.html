@@ -2110,6 +2110,24 @@ namespace std {
 }</pre>
 </blockquote>
 
+Change in [string.syn] (24.3.1):
+<blockquote class="std">
+<h3 ><a class='secnum' style='min-width:103pt'>24.3.1</a> Header <span class='texttt'>&lt;string&gt;</span> synopsis <a class='abbr_ref'>[string.syn]</a></h3>
+<pre class='codeblock'>
+#include &lt;initializer_list&gt;
+
+namespace std {
+  <span class='comment'>// 24.2, character traits
+</span>  template&lt;class charT&gt; struct char_traits; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct char_traits&lt;char&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct char_traits&lt;char16_t&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct char_traits&lt;char32_t&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct char_traits&lt;wchar_t&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 24.3.2, <span class='tcode_in_codeblock'>basic_&shy;string</span></span>
+</pre>
+</blockquote>
+
 <h1>Acknowledgements</h1>
 <p>
 Thanks to Brandon Streiff, Joshua Cannon, Phil Hindman, and Irwan Djajadi for reviewing this proposal.
