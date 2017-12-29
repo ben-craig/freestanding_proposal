@@ -2128,6 +2128,45 @@ namespace std {
 </pre>
 </blockquote>
 
+Change in [cstring.syn] (24.5.3):
+<blockquote class="std">
+<h3 ><a class='secnum' style='min-width:103pt'>24.5.3</a> Header <span class='texttt'>&lt;cstring&gt;</span> synopsis <a class='abbr_ref'>[cstring.syn]</a></h3>
+<pre class='codeblock'>
+namespace std {
+  using size_t = <span class='textit'>see 21.2.4</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  void* memcpy(void* s1, const void* s2, size_t n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  void* memmove(void* s1, const void* s2, size_t n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  char* strcpy(char* s1, const char* s2); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  char* strncpy(char* s1, const char* s2, size_t n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  char* strcat(char* s1, const char* s2); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  char* strncat(char* s1, const char* s2, size_t n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  int memcmp(const void* s1, const void* s2, size_t n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  int strcmp(const char* s1, const char* s2); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  int strcoll(const char* s1, const char* s2);
+  int strncmp(const char* s1, const char* s2, size_t n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  size_t strxfrm(char* s1, const char* s2, size_t n);
+  const void* memchr(const void* s, int c, size_t n);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
+</span>  void* memchr(void* s, int c, size_t n);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
+</span>  const char* strchr(const char* s, int c);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
+</span>  char* strchr(char* s, int c);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
+</span>  size_t strcspn(const char* s1, const char* s2); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  const char* strpbrk(const char* s1, const char* s2);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
+</span>  char* strpbrk(char* s1, const char* s2);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
+</span>  const char* strrchr(const char* s, int c);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
+</span>  char* strrchr(char* s, int c);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
+</span>  size_t strspn(const char* s1, const char* s2); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  const char* strstr(const char* s1, const char* s2);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
+</span>  char* strstr(char* s1, const char* s2);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
+</span>  char* strtok(char* s1, const char* s2);
+  void* memset(void* s, int c, size_t n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  char* strerror(int errnum);
+  size_t strlen(const char* s); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+}
+
+#define NULL <span class='textit'>see 21.2.3</span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins></pre>
+</blockquote>
+
 <h1>Acknowledgements</h1>
 <p>
 Thanks to Brandon Streiff, Joshua Cannon, Phil Hindman, and Irwan Djajadi for reviewing this proposal.
