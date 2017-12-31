@@ -3510,6 +3510,144 @@ namespace std {
 }</pre>
 </blockquote>
 
+Change in [rand.synopsis] (29.6.2):
+<blockquote class="std">
+<h3 ><a class='secnum' style='min-width:103pt'>29.6.2</a> Header <span class='texttt'>&lt;random&gt;</span> synopsis <a class='abbr_ref'>[rand.synopsis]</a></h3>
+<pre class='codeblock'>
+#include &lt;initializer_list&gt;
+
+namespace std {
+  <span class='comment'>// 29.6.3.1, class template <span class='tcode_in_codeblock'>linear_&shy;congruential_&shy;engine</span>
+</span>  template&lt;class UIntType, UIntType a, UIntType c, UIntType m&gt;
+    class linear_congruential_engine; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 29.6.3.2, class template <span class='tcode_in_codeblock'>mersenne_&shy;twister_&shy;engine</span>
+</span>  template&lt;class UIntType, size_t w, size_t n, size_t m, size_t r,
+           UIntType a, size_t u, UIntType d, size_t s,
+           UIntType b, size_t t,
+           UIntType c, size_t l, UIntType f&gt;
+    class mersenne_twister_engine; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 29.6.3.3, class template <span class='tcode_in_codeblock'>subtract_&shy;with_&shy;carry_&shy;engine</span>
+</span>  template&lt;class UIntType, size_t w, size_t s, size_t r&gt;
+    class subtract_with_carry_engine; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 29.6.4.2, class template <span class='tcode_in_codeblock'>discard_&shy;block_&shy;engine</span>
+</span>  template&lt;class Engine, size_t p, size_t r&gt;
+    class discard_block_engine; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 29.6.4.3, class template <span class='tcode_in_codeblock'>independent_&shy;bits_&shy;engine</span>
+</span>  template&lt;class Engine, size_t w, class UIntType&gt;
+    class independent_bits_engine; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 29.6.4.4, class template <span class='tcode_in_codeblock'>shuffle_&shy;order_&shy;engine</span>
+</span>  template&lt;class Engine, size_t k&gt;
+    class shuffle_order_engine; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 29.6.5, engines and engine adaptors with predefined parameters
+</span>  using minstd_rand0  = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  using minstd_rand   = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  using mt19937       = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  using mt19937_64    = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  using ranlux24_base = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  using ranlux48_base = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  using ranlux24      = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  using ranlux48      = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  using knuth_b       = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  using default_random_engine = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 29.6.6, class <span class='tcode_in_codeblock'>random_&shy;device</span>
+</span>  class random_device;
+
+  <span class='comment'>// 29.6.7.1, class <span class='tcode_in_codeblock'>seed_&shy;seq</span>
+</span>  class seed_seq;
+
+  <span class='comment'>// 29.6.7.2, function template <span class='tcode_in_codeblock'>generate_&shy;canonical</span>
+</span>  template&lt;class RealType, size_t bits, class URBG&gt;
+    RealType generate_canonical(URBG&amp; g);
+
+  <span class='comment'>// 29.6.8.2.1, class template <span class='tcode_in_codeblock'>uniform_&shy;int_&shy;distribution</span>
+</span>  template&lt;class IntType = int&gt;
+    class uniform_int_distribution; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 29.6.8.2.2, class template <span class='tcode_in_codeblock'>uniform_&shy;real_&shy;distribution</span>
+</span>  template&lt;class RealType = double&gt;
+    class uniform_real_distribution;
+
+  <span class='comment'>// 29.6.8.3.1, class <span class='tcode_in_codeblock'>bernoulli_&shy;distribution</span>
+</span>  class bernoulli_distribution;
+
+  <span class='comment'>// 29.6.8.3.2, class template <span class='tcode_in_codeblock'>binomial_&shy;distribution</span>
+</span>  template&lt;class IntType = int&gt;
+    class binomial_distribution;
+
+  <span class='comment'>// 29.6.8.3.3, class template <span class='tcode_in_codeblock'>geometric_&shy;distribution</span>
+</span>  template&lt;class IntType = int&gt;
+    class geometric_distribution;
+
+  <span class='comment'>// 29.6.8.3.4, class template <span class='tcode_in_codeblock'>negative_&shy;binomial_&shy;distribution</span>
+</span>  template&lt;class IntType = int&gt;
+    class negative_binomial_distribution;
+
+  <span class='comment'>// 29.6.8.4.1, class template <span class='tcode_in_codeblock'>poisson_&shy;distribution</span>
+</span>  template&lt;class IntType = int&gt;
+    class poisson_distribution;
+
+  <span class='comment'>// 29.6.8.4.2, class template <span class='tcode_in_codeblock'>exponential_&shy;distribution</span>
+</span>  template&lt;class RealType = double&gt;
+    class exponential_distribution;
+
+  <span class='comment'>// 29.6.8.4.3, class template <span class='tcode_in_codeblock'>gamma_&shy;distribution</span>
+</span>  template&lt;class RealType = double&gt;
+    class gamma_distribution;
+
+  <span class='comment'>// 29.6.8.4.4, class template <span class='tcode_in_codeblock'>weibull_&shy;distribution</span>
+</span>  template&lt;class RealType = double&gt;
+    class weibull_distribution;
+
+  <span class='comment'>// 29.6.8.4.5, class template <span class='tcode_in_codeblock'>extreme_&shy;value_&shy;distribution</span>
+</span>  template&lt;class RealType = double&gt;
+    class extreme_value_distribution;
+
+  <span class='comment'>// 29.6.8.5.1, class template <span class='tcode_in_codeblock'>normal_&shy;distribution</span>
+</span>  template&lt;class RealType = double&gt;
+    class normal_distribution;
+
+  <span class='comment'>// 29.6.8.5.2, class template <span class='tcode_in_codeblock'>lognormal_&shy;distribution</span>
+</span>  template&lt;class RealType = double&gt;
+    class lognormal_distribution;
+
+  <span class='comment'>// 29.6.8.5.3, class template <span class='tcode_in_codeblock'>chi_&shy;squared_&shy;distribution</span>
+</span>  template&lt;class RealType = double&gt;
+    class chi_squared_distribution;
+
+  <span class='comment'>// 29.6.8.5.4, class template <span class='tcode_in_codeblock'>cauchy_&shy;distribution</span>
+</span>  template&lt;class RealType = double&gt;
+    class cauchy_distribution;
+
+  <span class='comment'>// 29.6.8.5.5, class template <span class='tcode_in_codeblock'>fisher_&shy;f_&shy;distribution</span>
+</span>  template&lt;class RealType = double&gt;
+    class fisher_f_distribution;
+
+  <span class='comment'>// 29.6.8.5.6, class template <span class='tcode_in_codeblock'>student_&shy;t_&shy;distribution</span>
+</span>  template&lt;class RealType = double&gt;
+    class student_t_distribution;
+
+  <span class='comment'>// 29.6.8.6.1, class template <span class='tcode_in_codeblock'>discrete_&shy;distribution</span>
+</span>  template&lt;class IntType = int&gt;
+    class discrete_distribution;
+
+  <span class='comment'>// 29.6.8.6.2, class template <span class='tcode_in_codeblock'>piecewise_&shy;constant_&shy;distribution</span>
+  
+</span>  template&lt;class RealType = double&gt;
+    class piecewise_constant_distribution;
+
+  <span class='comment'>// 29.6.8.6.3, class template <span class='tcode_in_codeblock'>piecewise_&shy;linear_&shy;distribution</span>
+</span>  template&lt;class RealType = double&gt;
+    class piecewise_linear_distribution;
+}</pre></blockquote>
+
 <h1>Acknowledgements</h1>
 <p>
 Thanks to Brandon Streiff, Joshua Cannon, Phil Hindman, and Irwan Djajadi for reviewing this proposal.
