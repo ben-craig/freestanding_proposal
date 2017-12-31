@@ -769,6 +769,8 @@ A portion of <code>&lt;cinttypes&gt;</code> will be present.
 </p><p>
 Many string functions (<code>strtol</code> and family) rely on <code>errno</code>.
 </p><p>
+<code>strtok</code> and <code>rand</code> aren't required to use thread-local storage, but good implementations do.  I don't want to encourage bad implementations.
+</p><p>
 <code>string_view</code> and <code>array</code> have methods that can throw exceptions.
 </p><p>
 <code>assert</code> is not included as it requires a stderror stream.
