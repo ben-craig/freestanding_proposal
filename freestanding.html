@@ -3724,7 +3724,6 @@ namespace std {
 }</pre>
 </blockquote>
 
-
 Change in [cmath.syn] (29.9.1):
 <blockquote class="std">
 <pre class='codeblock'>
@@ -3735,6 +3734,29 @@ Change in [cmath.syn] (29.9.1):
   float abs(float j);
   double abs(double j);
   long double abs(long double j);
+</pre>
+</blockquote>
+
+Change in [cinttypes.syn] (30.12.2):
+<blockquote class="std">
+<h3 ><a class='secnum' style='min-width:103pt'>30.12.2</a> Header <span class='texttt'>&lt;cinttypes&gt;</span> synopsis <a class='abbr_ref'>[cinttypes.syn]</a></h3>
+<pre class='codeblock'>
+#include &lt;cstdint&gt;  <span class='comment'>// see <a
+>[cstdint.syn]</a>
+</span>
+namespace std {
+  using imaxdiv_t = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  intmax_t imaxabs(intmax_t j); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  imaxdiv_t imaxdiv(intmax_t numer, intmax_t denom); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  intmax_t strtoimax(const char* nptr, char** endptr, int base);
+  uintmax_t strtoumax(const char* nptr, char** endptr, int base);
+  intmax_t wcstoimax(const wchar_t* nptr, wchar_t** endptr, int base);
+  uintmax_t wcstoumax(const wchar_t* nptr, wchar_t** endptr, int base);
+
+  intmax_t abs(intmax_t);  <span class='comment'>// optional, see below<ins><span class='textit'>, freestanding</span></ins>
+</span>  imaxdiv_t div(intmax_t, intmax_t);  <span class='comment'>// optional, see below<ins><span class='textit'>, freestanding</span></ins>
+</span>}
 </pre>
 </blockquote>
 
