@@ -796,7 +796,7 @@ Perhaps we don't worry about library portability in all cases.  Just because ker
 <ul><li><code>errno</code> and string functions like <code>strtol</code></li></ul>
 While <code>errno</code> is global data, it isn't much global data.  Thread safety is a concern for those platforms that have threading, but don't have thread-local storage.
 <ul><li><code>unique_ptr</code></li></ul>
-There are uses for <code>unique_ptr</code> that don't require the heap, and can be made to work.  Since we still require <code>new</code> and <code>delete</code> to exist, <code>default_delete</code> shouldn't have any problems compiling.
+There are uses for <code>unique_ptr</code> that don't require the heap, and can be made to work.  While I would prefer not to be coupled to <code>new</code> or <code>delete</code> at all, the C++17 definition of freestanding requires <code>new</code> and <code>delete</code> to exist, so <code>default_delete</code> shouldn't have any problems compiling.
 <h1>Wording</h1>
 <p>
 Wording is based off of Working Draft, Standard for Programming Language C++, N4713.
