@@ -614,7 +614,7 @@ Most operating systems speed up system calls by not saving and restoring floatin
 <h2>Functions requiring global or thread-local storage</h2>
 These functions have been omitted or removed from the freestanding library.  Examples are the locale aware functions and the C random number functions.</li>
 <h2>Parallel algorithms</h2>
-For the <code>&lt;algorithms&gt;</code> header, we would only be able to support sequential execution of parallel algorithms.  Since this adds little value, the execution policy overloads will be omitted.
+For the <code>&lt;algorithms&gt;</code>, <code>&lt;numeric&gt;</code>, and <code>&lt;memory&gt;</code> headers, we would only be able to support sequential execution of parallel algorithms.  Since this adds little value, the execution policy overloads will be omitted.
 <h1>Technical Specifications</h1>
 <h2>Complete headers newly required for freestanding implementations</h2>
 <code><ul>
