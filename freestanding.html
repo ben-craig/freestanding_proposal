@@ -552,14 +552,20 @@ There were some conversations in the 2017 Albuquerque meeting around adding anot
 There was some desire to come up with a new name for "freestanding" in the 2017 Albuquerque meeting.  This new name could better express the intended audience of such an implementation.  My current recommendation will be to keep the name "freestanding", but I will suggest some alternatives just the same.
 </p>
 <ul>
+<li>backless</li>
 <li>barebones</li>
 <li>basic</li>
 <li>embedded</li>
+<li>foundational</li>
 <li>freestanding</li>
+<li>fundamental</li>
+<li>independent</li>
 <li>kernel</li>
 <li>minimal</li>
 <li>OS-free</li>
 <li>OS-less</li>
+<li>reduced</li>
+<li>resource-constrained</li>
 <li>skeleton</li>
 <li>standalone</li>
 <li>stripped</li>
@@ -582,12 +588,14 @@ Note that the following concerns are not revolving around execution time perform
 This proposal doesn't remove problematic features from the language, but it does make it so that the bulk of the freestanding standard library doesn't require those features.  Users that disable the problematic features (as is existing practice) will still have portable portions of the standard library at their disposal.
 </p><p>
 Note that we cannot just take the list of <code>constexpr</code> or conditionally <code>noexcept</code> functions and make those functions the freestanding subset.  We also can't do the reverse, and make everything freestanding <code>constexpr</code> or conditionally <code>noexcept</code>.  <code>memcpy</code> cannot currently be made <code>constexpr</code> because it must convert from <code>cv void*</code> to <code>unsigned char[]</code>.  Several floating point functions could be made <code>constexpr</code>, but would not be permitted in freestanding.  The "Lakos Rule"[Meredith11] prohibits standard library functions from being <code>noexcept</code>, unless they have a wide contract.  Regardless, if a function or class is <code>constexpr</code> or <code>noexcept</code>, and it doesn't involve floating point, then that function or class is a strong candidate to be put into freestanding mode.
+</p><p>
+In the future, it may make sense to allow all <code>constexpr</code> functions into freestanding, so long as they are used in a <code>constexpr</code> context and not invoked at runtime.
 </p>
 <h2>Exceptions</h2>
 <p>
 Exceptions either require external jump tables or extra bookkeeping instructions.  This consumes program storage space.
 </p><p>
-In the Itanium ABI, throwing an exception requires a heap allocation.  In the Microsoft ABI, re-throwing an exception will consume surprisingly large amounts of stack space.  Program storage space, heap space, and stack space are typically scarce resources in embedded development.
+In the Itanium ABI, throwing an exception requires a heap allocation.  In the Microsoft ABI, re-throwing an exception will consume surprisingly large amounts of stack space (2,100 bytes for a re-throw in 32-bit environments, 9,700 bytes in a 64-bit environment).  Program storage space, heap space, and stack space are typically scarce resources in embedded development.
 </p><p>
 In environments with threads, exception handling requires the use of thread-local storage.
 </p>
