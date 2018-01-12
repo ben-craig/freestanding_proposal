@@ -484,7 +484,7 @@ ol.enumerate { list-style-type: none; }
 
 <body>
 <h1>Freestanding Proposal</h1>
-Document number: D0829R1.3<br/>
+Document number: D0829R1.4<br/>
 Date: 2017-10-14<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: SG14, Library Evolution Working Group
@@ -1838,16 +1838,16 @@ namespace std {
     <span class='comment'>// 23.17.4, customization traits
 </span>    template&lt;class Rep&gt; struct treat_as_floating_point; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     template&lt;class Rep&gt; struct duration_values; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class Rep&gt;
-      inline constexpr bool treat_as_floating_point_v = treat_as_floating_point&lt;Rep&gt;::value; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    template&lt;class Rep&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      inline constexpr bool treat_as_floating_point_v = treat_as_floating_point&lt;Rep&gt;::value;
 
     <span class='comment'>// 23.17.5.5, <span class='tcode_in_codeblock'>duration</span> arithmetic
 </span>    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
-      constexpr common_type_t&lt;duration&lt;Rep1, Period1&gt;, duration&lt;Rep2, Period2&gt;&gt;
-        operator+(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr common_type_t&lt;duration&lt;Rep1, Period1&gt;, duration&lt;Rep2, Period2&gt;&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+        operator+(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
     template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
-      constexpr common_type_t&lt;duration&lt;Rep1, Period1&gt;, duration&lt;Rep2, Period2&gt;&gt;
-        operator-(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr common_type_t&lt;duration&lt;Rep1, Period1&gt;, duration&lt;Rep2, Period2&gt;&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+        operator-(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
     template&lt;class Rep1, class Period, class Rep2&gt;
       constexpr duration&lt;common_type_t&lt;Rep1, Rep2&gt;, Period&gt;
         operator*(const duration&lt;Rep1, Period&gt;&amp; d, const Rep2&amp; s); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -1858,14 +1858,14 @@ namespace std {
       constexpr duration&lt;common_type_t&lt;Rep1, Rep2&gt;, Period&gt;
         operator/(const duration&lt;Rep1, Period&gt;&amp; d, const Rep2&amp; s); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
-      constexpr common_type_t&lt;Rep1, Rep2&gt;
-        operator/(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr common_type_t&lt;Rep1, Rep2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+        operator/(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
     template&lt;class Rep1, class Period, class Rep2&gt;
       constexpr duration&lt;common_type_t&lt;Rep1, Rep2&gt;, Period&gt;
         operator%(const duration&lt;Rep1, Period&gt;&amp; d, const Rep2&amp; s); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
-      constexpr common_type_t&lt;duration&lt;Rep1, Period1&gt;, duration&lt;Rep2, Period2&gt;&gt;
-        operator%(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr common_type_t&lt;duration&lt;Rep1, Period1&gt;, duration&lt;Rep2, Period2&gt;&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+        operator%(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
 
     <span class='comment'>// 23.17.5.6, <span class='tcode_in_codeblock'>duration</span> comparisons
 </span>    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
@@ -1906,15 +1906,15 @@ namespace std {
     using hours        = duration&lt;<span class='textit'>signed integer type of at least 23 bits</span>, ratio&lt;3600&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
     <span class='comment'>// 23.17.6.5, <span class='tcode_in_codeblock'>time_&shy;point</span> arithmetic
-</span>    template&lt;class Clock, class Duration1, class Rep2, class Period2&gt;
+</span>    template&lt;class Clock, class Duration1, class Rep2, class Period2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
       constexpr time_point&lt;Clock, common_type_t&lt;Duration1, duration&lt;Rep2, Period2&gt;&gt;&gt;
-        operator+(const time_point&lt;Clock, Duration1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class Rep1, class Period1, class Clock, class Duration2&gt;
+        operator+(const time_point&lt;Clock, Duration1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
+    template&lt;class Rep1, class Period1, class Clock, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
       constexpr time_point&lt;Clock, common_type_t&lt;duration&lt;Rep1, Period1&gt;, Duration2&gt;&gt;
-        operator+(const duration&lt;Rep1, Period1&gt;&amp; lhs, const time_point&lt;Clock, Duration2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class Clock, class Duration1, class Rep2, class Period2&gt;
+        operator+(const duration&lt;Rep1, Period1&gt;&amp; lhs, const time_point&lt;Clock, Duration2&gt;&amp; rhs);
+    template&lt;class Clock, class Duration1, class Rep2, class Period2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
       constexpr time_point&lt;Clock, common_type_t&lt;Duration1, duration&lt;Rep2, Period2&gt;&gt;&gt;
-        operator-(const time_point&lt;Clock, Duration1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+        operator-(const time_point&lt;Clock, Duration1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
     template&lt;class Clock, class Duration1, class Duration2&gt;
       constexpr common_type_t&lt;Duration1, Duration2&gt;
         operator-(const time_point&lt;Clock, Duration1&gt;&amp; lhs,
@@ -1944,12 +1944,12 @@ namespace std {
 </span>    template&lt;class ToDuration, class Clock, class Duration&gt;
       constexpr time_point&lt;Clock, ToDuration&gt;
         time_point_cast(const time_point&lt;Clock, Duration&gt;&amp; t); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class ToDuration, class Clock, class Duration&gt;
-      constexpr time_point&lt;Clock, ToDuration&gt; floor(const time_point&lt;Clock, Duration&gt;&amp; tp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class ToDuration, class Clock, class Duration&gt;
-      constexpr time_point&lt;Clock, ToDuration&gt; ceil(const time_point&lt;Clock, Duration&gt;&amp; tp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class ToDuration, class Clock, class Duration&gt;
-      constexpr time_point&lt;Clock, ToDuration&gt; round(const time_point&lt;Clock, Duration&gt;&amp; tp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    template&lt;class ToDuration, class Clock, class Duration&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr time_point&lt;Clock, ToDuration&gt; floor(const time_point&lt;Clock, Duration&gt;&amp; tp);
+    template&lt;class ToDuration, class Clock, class Duration&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr time_point&lt;Clock, ToDuration&gt; ceil(const time_point&lt;Clock, Duration&gt;&amp; tp);
+    template&lt;class ToDuration, class Clock, class Duration&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr time_point&lt;Clock, ToDuration&gt; round(const time_point&lt;Clock, Duration&gt;&amp; tp);
 
     <span class='comment'>// 23.17.5.9, specialized algorithms
 </span>    template&lt;class Rep, class Period&gt;
@@ -2290,8 +2290,8 @@ namespace std {
     const move_iterator&lt;Iterator1&gt;&amp; x,
     const move_iterator&lt;Iterator2&gt;&amp; y) -&gt; decltype(x.base() - y.base()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class Iterator&gt;
-    constexpr move_iterator&lt;Iterator&gt; operator+(
-      typename move_iterator&lt;Iterator&gt;::difference_type n, const move_iterator&lt;Iterator&gt;&amp; x); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    constexpr move_iterator&lt;Iterator&gt; operator+( <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      typename move_iterator&lt;Iterator&gt;::difference_type n, const move_iterator&lt;Iterator&gt;&amp; x);
   template&lt;class Iterator&gt;
     constexpr move_iterator&lt;Iterator&gt; make_move_iterator(Iterator i); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
@@ -2900,8 +2900,8 @@ namespace std {
                  UniformRandomBitGenerator&amp;&amp; g); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
   <span class='comment'>// 28.7.4, partitions
-</span>  template&lt;class InputIterator, class Predicate&gt;
-    constexpr bool is_partitioned(InputIterator first, InputIterator last, Predicate pred); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+</span>  template&lt;class InputIterator, class Predicate&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    constexpr bool is_partitioned(InputIterator first, InputIterator last, Predicate pred);
   template&lt;class ExecutionPolicy, class ForwardIterator, class Predicate&gt;
     bool is_partitioned(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
 </span>                        ForwardIterator first, ForwardIterator last, Predicate pred);
@@ -3511,8 +3511,8 @@ namespace std {
   <span class='comment'>// 29.8.2, accumulate
 </span>  template&lt;class InputIterator, class T&gt;
     T accumulate(InputIterator first, InputIterator last, T init); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class T, class BinaryOperation&gt;
-    T accumulate(InputIterator first, InputIterator last, T init, BinaryOperation binary_op); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class InputIterator, class T, class BinaryOperation&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    T accumulate(InputIterator first, InputIterator last, T init, BinaryOperation binary_op);
 
   <span class='comment'>// 29.8.3, reduce
 </span>  template&lt;class InputIterator&gt;
@@ -3520,8 +3520,8 @@ namespace std {
       reduce(InputIterator first, InputIterator last); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class InputIterator, class T&gt;
     T reduce(InputIterator first, InputIterator last, T init); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class T, class BinaryOperation&gt;
-    T reduce(InputIterator first, InputIterator last, T init, BinaryOperation binary_op); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class InputIterator, class T, class BinaryOperation&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    T reduce(InputIterator first, InputIterator last, T init, BinaryOperation binary_op);
   template&lt;class ExecutionPolicy, class ForwardIterator&gt;
     typename iterator_traits&lt;ForwardIterator&gt;::value_type
       reduce(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
