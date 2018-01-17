@@ -104,3 +104,16 @@ std/algorithms/alg.sorting/alg.sort/partial.sort
 std/algorithms/alg.sorting/alg.sort/sort
 std/algorithms/alg.sorting/alg.merge/merge.pass.cpp
 std/algorithms/alg.sorting/alg.merge/merge_comp.pass.cpp
+
+std/numerics/rand/rand.adapt
+std/numerics/rand/rand.eng
+std/numerics/rand/rand.predef
+std/numerics/rand/rand.req
+std/numerics/rand/rand.dis/rand.dist.uni/rand.dist.uni.int
+
+std/numerics/numeric.ops/
+
+std/numerics/c.math/cmath.pass.cpp #partial
+
+std/atomics/
+
