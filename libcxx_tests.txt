@@ -1,0 +1,56 @@
+std/language.support/support.types
+# beware of floats in limits
+std/language.support/support.limits
+std/language.support/cstdint
+# beware of allocations
+std/language.support/support.dynamic
+# std/language.support/support.rtti
+# std/language.support/support.exception
+std/language.support/support.initlist
+# std/language.support/cmp   #doesn't exist yet
+std/language.support/support.runtime/cstdarg.pass.cpp
+std/language.support/support.runtime/cstdbool.pass.cpp
+# std/language.support/support.start.term/
+
+std/diagnostics/errno/
+std/diagnostics/syserr/errc.pass.cpp
+
+std/utilities/utility
+std/utilities/tuple
+
+std/utilities/allocator.tag
+std/utilities/allocator.traits
+std/utilities/allocator.uses
+std/utilities/pointer.conversion
+std/utilities/pointer.traits
+std/utilities/ptr.align
+std/utilities/specialized.algorithms
+
+std/utilities/function.objects/arithmetic.operations
+std/utilities/function.objects/bind
+std/utilities/function.objects/bitwise.operations
+std/utilities/function.objects/comparisons
+std/utilities/function.objects/func.def
+std/utilities/function.objects/func.invoke
+std/utilities/function.objects/func.memfn
+std/utilities/function.objects/func.not_fn
+std/utilities/function.objects/func.require
+std/utilities/function.objects/func.search/func.search.default/
+std/utilities/function.objects/logical.operations
+std/utilities/function.objects/negators
+std/utilities/function.objects/refwrap
+std/utilities/function.objects/unord.hash
+
+std/utilities/meta
+std/utilities/ratio
+
+std/utilities/time/time.clock.req
+std/utilities/time/time.duration
+std/utilities/time/time.point
+std/utilities/time/time.traits
+std/utilities/time/hours.pass.cpp
+std/utilities/time/microseconds.pass.cpp
+std/utilities/time/milliseconds.pass.cpp
+std/utilities/time/minutes.pass.cpp
+std/utilities/time/nanoseconds.pass.cpp
+std/utilities/time/seconds.pass.cpp
