@@ -54,3 +54,18 @@ std/utilities/time/milliseconds.pass.cpp
 std/utilities/time/minutes.pass.cpp
 std/utilities/time/nanoseconds.pass.cpp
 std/utilities/time/seconds.pass.cpp
+
+#std/utilities/charconv #partial, does not exist yet
+
+std/strings/char.traits/
+std/strings/c.strings/cstring.pass.cpp #partial
+std/strings/c.strings/cwchar.pass.cpp #partial
+
+std/iterators/iterator.container
+std/iterators/iterator.primitives
+std/iterators/iterator.range
+std/iterators/iterator.requirements
+std/iterators/iterator.synopsis
+std/iterators/iterators.general
+std/iterators/predef.iterators/move.iterators
+std/iterators/predef.iterators/reverse.iterators
