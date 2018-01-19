@@ -492,13 +492,13 @@ Audience: SG14, Library Evolution Working Group
 <h2> R0 -&gt; R1 </h2>
 R1 adds an abstract.<br/>
 R1 no longer removes any existing freestanding libraries.<br/>
-R1 no longer adds portions of classes to freestanding.  It is now the entirety of a class or none of it.  Related functions (like <code>operator&lt;&lt;</code>) may still be omitted even when the associated class is included.<br/>
 R1 no longer gives implementations freedom to add <code>static_assert</code>s to allocation functions in freestanding mode.<br/>
 <code>unique_ptr</code> is no longer included in freestanding, with the hopes that <code>unique_resource</code> and <code>scope_exit</code> will fill the void<br/>
 R1 adds naming alternatives for freestanding.<br/>
 R1 includes substantially less of <code>&lt;random&gt;</code>, and white-lists inclusions rather than black-lists omissions.<br/>
 R1 adds some allocator machinery, though it does not add the default allocator.<br/>
 R1 adds <code>&lt;compare&gt;</code>, as it seems to have been accidentally omitted from the freestanding headers list.<br/>
+R1 adds large portions of <code>&lt;chrono&gt;</code>, <code>&lt;optional&gt;</code>, and <code>&lt;variant&gt;</code>.
 <h1>Abstract</h1>
 Add everything to the freestanding implementation that can be implemented without OS calls and space overhead.
 <h1>Introduction</h1>
@@ -653,6 +653,10 @@ All the error <code>#defines</code> in <code>&lt;cerrno&gt;</code>, but not <cod
 </p><p>
 The <code>errc</code> enum from <code>&lt;system_error&gt;</code>.
 </p><p>
+All of <code>&lt;optional&gt;</code>, except for <code>bad_optional_access</code> and <code>optional::value</code>.  The <code>optional</code> value can be accessed through the unchecked observers, <code>operator*</code> and <code>operator-&gt;</code>.
+</p><p>
+All of <code>&lt;variant&gt;</code>, except for <code>bad_variant_access</code>, <code>get</code>, and <code>visit</code>.  The <code>variant</code> value can be accessed through <code>get_if</code>.
+</p><p>
 Portions of <code>&lt;memory&gt;</code>.
 </p>
 <ul>
@@ -687,6 +691,20 @@ Portions of <code>&lt;charconv&gt;</code>.
 <p>
 The <code>char_traits</code> class from <code>&lt;string&gt;</code>.
 </p><p>
+Most of <code>&lt;string_view&gt;</code>.  These functions will be <b>omitted</b>:
+</p>
+<ul>
+<code><li>operator&lt;&lt;</li>
+<li>basic_string_view::at</li>
+<li>basic_string_view::copy</li>
+<li>basic_string_view::substr</li>
+<li>basic_string_view::compare(size_type pos1, size_type n1, basic_string_view s);
+<li>basic_string_view::compare(size_type pos1, size_type n1, basic_string_view s,
+size_type pos2, size_type n2);
+<li>basic_string_view::compare(size_type pos1, size_type n1, const charT* s);
+<li>basic_string_view::compare(size_type pos1, size_type n1, const charT* s,
+size_type n2);
+</code></ul><p>
 Portions of <code>&lt;cstring&gt;</code>.
 <ul>
 <code><li>memcpy</li>
@@ -731,6 +749,8 @@ Portions of <code>&lt;cwchar&gt;</code>.
 <li>wmemset</li>
 </code></ul>
 <p>
+All of <code>&lt;array&gt;</code> except for <code>array::at</code>.
+</p><p>
 All of <code>&lt;iterator&gt;</code> except for the stream iterators and the insert iterators.
 </p><p>
 Most of <code>&lt;algorithm&gt;</code> and <code>&lt;numeric&gt;</code>.  The ExecutionPolicy overloads will not be included.  The following functions will be <b>omitted</b> due to the usage of temporary buffers:
@@ -779,11 +799,7 @@ Many string functions (<code>strtol</code> and family) rely on <code>errno</code
 </p><p>
 <code>strtok</code> and <code>rand</code> aren't required to use thread-local storage, but good implementations do.  I don't want to encourage bad implementations.
 </p><p>
-<code>string_view</code> and <code>array</code> have methods that can throw exceptions.
-</p><p>
 <code>assert</code> is not included as it requires a stderror stream.
-</p><p>
-<code>&lt;variant&gt;</code> and <code>&lt;optional&gt;</code> could work in a freestanding environment if their interfaces didn't rely on exceptions.
 </p><p>
 <code>&lt;cctype&gt;</code> and <code>&lt;cwctype&gt;</code> rely heavily on global locale data.
 </p><p>
@@ -795,6 +811,8 @@ Many string functions (<code>strtol</code> and family) rely on <code>errno</code
 Here are some things that I am currently requiring, but could be convinced to remove.
 <ul><li><code>&lt;cwchar&gt;</code></li></ul>
 The <code>&lt;cwchar&gt;</code> functions are implementable for freestanding environments, but infrequently used for systems programming.  They do not exist in freestanding C11 implementations.
+<ul><li>Partial classes</li></ul>
+<code>&lt;array&gt;</code>, <code>&lt;optional&gt;</code>, <code>&lt;string_view&gt;</code>, and <code>&lt;variant&gt;</code> all have functions that throw.  These functions aren't critical to the use of the class.  The exceptions that <code>&lt;array&gt;</code> and <code>&lt;string_view&gt;</code> throw are doubly bad, as those exceptions require <code>std::string</code>.  These headers and classes can be omitted if the committee strongly objects to marking a class partially freestanding.
 <h2>Potential additions</h2>
 Here are some things that I am not currently requiring, but could be convinced to add.
 <ul><li><code>complex&lt;integer&gt;</code></li></ul>
@@ -805,6 +823,8 @@ Perhaps we don't worry about library portability in all cases.  Just because ker
 While <code>errno</code> is global data, it isn't much global data.  Thread safety is a concern for those platforms that have threading, but don't have thread-local storage.
 <ul><li><code>unique_ptr</code></li></ul>
 There are uses for <code>unique_ptr</code> that don't require the heap, and can be made to work.  While I would prefer not to be coupled to <code>new</code> or <code>delete</code> at all, the C++17 definition of freestanding requires <code>new</code> and <code>delete</code> to exist, so <code>default_delete</code> shouldn't have any problems compiling.
+<ul><li><code>visit</code></li></ul>
+<code>visit</code> only throws when the <code>variant</code> is valueless.  If exceptions are disabled, the <code>variant</code> will always have a value.  This would also require us to include <code>bad_variant_access</code>, but that class is no worse than the other exceptions in <code>&lt;exception&gt;</code>
 <h1>Wording</h1>
 <p>
 Wording is based off of Working Draft, Standard for Programming Language C++, N4713.
@@ -917,57 +937,64 @@ Rework Table 19 referenced from 20.5.1.3 [compliance]:
 <tr class='rowsep'>
 	<td class='left'><div class='sentence'><span class='texttt'>&lt;algorithm&gt;</span></div></td>
 	<td class='left'><div class='sentence'><span class='texttt'>&lt;cmath&gt;</span></div></td>
-	<td class='left'><div class='sentence'><span class='texttt'>&lt;cwchar&gt;</span></div></td>
-	<td class='left'><div class='sentence'><span class='texttt'>&lt;random&gt;</span></div></td>
-</tr>
-<tr >
-	<td class='left'><div class='sentence'><span class='texttt'>&lt;atomic&gt;</span></div></td>
-	<td class='left'><div class='sentence'><span class='texttt'>&lt;compare&gt;</span></div></td>
 	<td class='left'><div class='sentence'><span class='texttt'>&lt;exception&gt;</span></div></td>
 	<td class='left'><div class='sentence'><span class='texttt'>&lt;ratio&gt;</span></div></td>
 </tr>
 <tr>
-	<td class='left'><div class='sentence'><span class='texttt'>&lt;cerrno&gt;</span></div></td>
-	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstdalign&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;atomic&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;compare&gt;</span></div></td>
 	<td class='left'><div class='sentence'><span class='texttt'>&lt;functional&gt;</span></div></td>
 	<td class='left'><div class='sentence'><span class='texttt'>&lt;string&gt;</span></div></td>
 </tr>
 <tr>
-	<td class='left'><div class='sentence'><span class='texttt'>&lt;cfloat&gt;</span></div></td>
-	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstdarg&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;array&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstdalign&gt;</span></div></td>
 	<td class='left'><div class='sentence'><span class='texttt'>&lt;initializer_list&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;string_view&gt;</span></div></td>
+</tr>
+<tr>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cerrno&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstdarg&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;iterator&gt;</span></div></td>
 	<td class='left'><div class='sentence'><span class='texttt'>&lt;system_error&gt;</span></div></td>
 </tr>
 <tr>
-	<td class='left'><div class='sentence'><span class='texttt'>&lt;charconv&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cfloat&gt;</span></div></td>
 	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstdbool&gt;</span></div></td>
-	<td class='left'><div class='sentence'><span class='texttt'>&lt;iterator&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;limits&gt;</span></div></td>
 	<td class='left'><div class='sentence'><span class='texttt'>&lt;tuple&gt;</span></div></td>
 </tr>
 <tr>
-	<td class='left'><div class='sentence'><span class='texttt'>&lt;chrono&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;charconv&gt;</span></div></td>
 	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstddef&gt;</span></div></td>
-	<td class='left'><div class='sentence'><span class='texttt'>&lt;limits&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;memory&gt;</span></div></td>
 	<td class='left'><div class='sentence'><span class='texttt'>&lt;type_traits&gt;</span></div></td>
 </tr>
 <tr>
-	<td class='left'><div class='sentence'><span class='texttt'>&lt;cinttypes&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;chrono&gt;</span></div></td>
 	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstdint&gt;</span></div></td>
-	<td class='left'><div class='sentence'><span class='texttt'>&lt;memory&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;new&gt;</span></div></td>
 	<td class='left'><div class='sentence'><span class='texttt'>&lt;typeinfo&gt;</span></div></td>
 </tr>
 <tr>
-	<td class='left'><div class='sentence'><span class='texttt'>&lt;ciso646&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cinttypes&gt;</span></div></td>
 	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstdlib&gt;</span></div></td>
-	<td class='left'><div class='sentence'><span class='texttt'>&lt;new&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;numeric&gt;</span></div></td>
 	<td class='left'><div class='sentence'><span class='texttt'>&lt;utility&gt;</span></div></td>
 </tr>
 <tr>
-	<td class='left'><div class='sentence'><span class='texttt'>&lt;climits&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;ciso646&gt;</span></div></td>
 	<td class='left'><div class='sentence'><span class='texttt'>&lt;cstring&gt;</span></div></td>
-	<td class='left'><div class='sentence'><span class='texttt'>&lt;numeric&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;optional&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;variant&gt;</span></div></td>
+</tr>
+<tr>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;climits&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;cwchar&gt;</span></div></td>
+	<td class='left'><div class='sentence'><span class='texttt'>&lt;random&gt;</span></div></td>
 	<td class='left'><div class='sentence'><span class='texttt'></span></div></td>
-</tr></table></div></ins>
+</tr>
+</table></div></ins>
 Change in [compliance] (20.5.1.3) paragraph 3:
 <blockquote class="std">
 <div class='para'>
