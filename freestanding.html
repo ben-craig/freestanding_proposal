@@ -834,24 +834,41 @@ Add a new subclause [freestanding.membership] after [objects.within.classes]:
 <h4 ><a class='secnum' style='min-width:118pt'>20.4.2.5</a> Freestanding membership <a class='abbr_ref'>[freestanding.membership]</a></h4>
 <div class='para'>
 	<div class='marginalizedparent'><a class='marginalized'>1</a></div>
-	<div class='sentence'>Several headers are required to be implemented in a freestanding implementation.</div>
-	<div class='sentence'>The synopsis for these headers will start with a comment that ends with <span class='textit'>freestanding</span>, as in:</div>
-<pre class='codeblock'>
-<span class='comment'>// <span class='textit'>freestanding</span></span>
-namespace std {
-</pre>
-</div>
-<div class='para'>
-	<div class='marginalizedparent'><a class='marginalized'>2</a></div>
-	<div class='sentence'>Several macros, values, types, classes, class templates, functions, function templates, and objects are required to be implemented in a freestanding implementation, even when the entirety of the containing header is not required to be implemented in a freestanding environment.</div>
-	<div class='sentence'>The declarations for such entities will be followed with a comment that ends with <span class='textit'>freestanding</span>, as in:</div>
+	<div class='sentence'>Several macros, values, types, classes, class templates, functions, function templates, and objects are required to be implemented in their entirety in a freestanding implementation.</div>
+	<div class='sentence'>In the associated header synopsis for such entities, the declarations shall be followed with a comment that ends with <span class='textit'>freestanding</span>, as in:</div>
 <pre class='codeblock'>
 #define E2BIG <span class='textit'><span class='texttt'>see below</span></span> <span class='comment'>// <span class='textit'>freestanding</span></span>
 </pre>
 </div>
 <div class='para'>
+	<div class='marginalizedparent'><a class='marginalized'>2</a></div>
+	<div class='sentence'>Several headers are required to be implemented in their entirety in a freestanding implementation.</div>
+	<div class='sentence'>The synopsis for these headers shall start with a comment that ends with <span class='textit'>freestanding</span>, as in:</div>
+<pre class='codeblock'>
+<span class='comment'>// <span class='textit'>freestanding</span></span>
+namespace std {
+</pre>
+	<div class='sentence'>Individual macro, value, type, class, class template, function, function template, and object declarations in such a header shall not be followed with a comment that ends with <span class='textit'>freestanding</span>.</div>
+	<div class='sentence'>Classes and class templates in such a header shall be implemented in their entirety.</div>
+</div>
+<div class='para'>
 	<div class='marginalizedparent'><a class='marginalized'>3</a></div>
-	<div class='sentence'>Classes and class templates that are required to be implemented in a freestanding implementation shall be implemented in their entirety.</div>
+	<div class='sentence'>Some classes and class templates are required to be partially implemented in a freestanding implementation.</div>
+	<div class='sentence'>In the associated header synopsis for such entities, the declarations shall be followed with a comment that ends with <span class='textit'>freestanding, partial</span>, as in:</div>
+<pre class='codeblock'>
+  template&lt;class T&gt;
+    class optional; <span class='comment'>// <span class='textit'>freestanding, partial</span></span>
+</pre>
+	<div class='sentence'>Some member functions in partially implemented entities are not required to be present in a freestanding implementation.</div>
+	<div class='sentence'>In the associated class or class template synopsis for such member functions, the declarations shall be followed by a comment that ends with <span class='textit'>freestanding, omit</span>, as in:</div>
+<pre class='codeblock'>
+    constexpr const T&amp; value() const&amp;; <span class='comment'>// <span class='textit'>freestanding, omit</span></span>
+</pre>
+	<div class='sentence'>All entities in the partially implemented class or class template that are not followed by a <span class='textit'>freestanding, omit</span> comment shall meet the same requirements as for a hosted implementation.</div>
+</div>
+<div class='para'>
+	<div class='marginalizedparent'><a class='marginalized'>4</a></div>
+	<div class='sentence'>Deduction guides for class templates that are implemented (partially or full) in a freestanding implementation shall also by implemented in a freestanding implementation.</div>
 </div>
 </blockquote>
 
