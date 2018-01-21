@@ -1392,6 +1392,149 @@ namespace std {
 </pre>
 </blockquote>
 
+Change in [optional.syn] (23.6.2):
+<blockquote class="std">
+<h3 ><a class='secnum' style='min-width:103pt'>23.6.2</a> Header <span class='texttt'>&lt;optional&gt;</span> synopsis <a class='abbr_ref'>[optional.syn]</a></h3>
+<pre class='codeblock'>
+namespace std {
+  <span class='comment'>// 23.6.3, class template <span class='tcode_in_codeblock'>optional</span>
+</span>  template&lt;class T&gt;
+    class optional; <ins><span class='comment'>// <span class='textit'>freestanding, partial</span></span></ins>
+
+  <span class='comment'>// 23.6.4, no-value state indicator
+</span>  struct nullopt_t{<span class='textit'><span class='texttt'>see below</span></span>}; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  inline constexpr nullopt_t nullopt(<span class='textit'><span class='texttt'>unspecified</span></span>); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.6.5, class <span class='tcode_in_codeblock'>bad_&shy;optional_&shy;access</span>
+</span>  class bad_optional_access;
+
+  <span class='comment'>// 23.6.6, relational operators
+</span>  template&lt;class T, class U&gt;
+  constexpr bool operator==(const optional&lt;T&gt;&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class U&gt;
+  constexpr bool operator!=(const optional&lt;T&gt;&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class U&gt;
+  constexpr bool operator&lt;(const optional&lt;T&gt;&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class U&gt;
+  constexpr bool operator&gt;(const optional&lt;T&gt;&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class U&gt;
+  constexpr bool operator&lt;=(const optional&lt;T&gt;&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class U&gt;
+  constexpr bool operator&gt;=(const optional&lt;T&gt;&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.6.7, comparison with <span class='tcode_in_codeblock'>nullopt</span>
+</span>  template&lt;class T&gt; constexpr bool operator==(const optional&lt;T&gt;&amp;, nullopt_t) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; constexpr bool operator==(nullopt_t, const optional&lt;T&gt;&amp;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; constexpr bool operator!=(const optional&lt;T&gt;&amp;, nullopt_t) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; constexpr bool operator!=(nullopt_t, const optional&lt;T&gt;&amp;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; constexpr bool operator&lt;(const optional&lt;T&gt;&amp;, nullopt_t) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; constexpr bool operator&lt;(nullopt_t, const optional&lt;T&gt;&amp;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; constexpr bool operator&lt;=(const optional&lt;T&gt;&amp;, nullopt_t) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; constexpr bool operator&lt;=(nullopt_t, const optional&lt;T&gt;&amp;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; constexpr bool operator&gt;(const optional&lt;T&gt;&amp;, nullopt_t) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; constexpr bool operator&gt;(nullopt_t, const optional&lt;T&gt;&amp;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; constexpr bool operator&gt;=(const optional&lt;T&gt;&amp;, nullopt_t) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; constexpr bool operator&gt;=(nullopt_t, const optional&lt;T&gt;&amp;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.6.8, comparison with <span class='tcode_in_codeblock'>T</span>
+</span>  template&lt;class T, class U&gt; constexpr bool operator==(const optional&lt;T&gt;&amp;, const U&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class U&gt; constexpr bool operator==(const T&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class U&gt; constexpr bool operator!=(const optional&lt;T&gt;&amp;, const U&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class U&gt; constexpr bool operator!=(const T&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class U&gt; constexpr bool operator&lt;(const optional&lt;T&gt;&amp;, const U&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class U&gt; constexpr bool operator&lt;(const T&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class U&gt; constexpr bool operator&lt;=(const optional&lt;T&gt;&amp;, const U&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class U&gt; constexpr bool operator&lt;=(const T&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class U&gt; constexpr bool operator&gt;(const optional&lt;T&gt;&amp;, const U&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class U&gt; constexpr bool operator&gt;(const T&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class U&gt; constexpr bool operator&gt;=(const optional&lt;T&gt;&amp;, const U&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class U&gt; constexpr bool operator&gt;=(const T&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.6.9, specialized algorithms
+</span>  template&lt;class T&gt;
+    void swap(optional&lt;T&gt;&amp;, optional&lt;T&gt;&amp;) noexcept(<span class='textit'><span class='texttt'>see below</span></span>); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  template&lt;class T&gt;
+    constexpr optional&lt;<span class='textit'><span class='texttt'>see below</span></span>&gt; make_optional(T&amp;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class... Args&gt;
+    constexpr optional&lt;T&gt; make_optional(Args&amp;&amp;... args); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class U, class... Args&gt;
+    constexpr optional&lt;T&gt; make_optional(initializer_list&lt;U&gt; il, Args&amp;&amp;... args); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// 23.6.10, hash support
+</span>  template&lt;class T&gt; struct hash; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; struct hash&lt;optional&lt;T&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+}</pre>
+</blockquote>
+
+Change in [optional.optional] (23.6.3)
+<blockquote class="std">
+<h3 ><a class='secnum' style='min-width:103pt'>23.6.3</a> Class template <span class='texttt'>optional</span> <a class='abbr_ref'>[optional.optional]</a></h3>
+<pre class='codeblock'>
+template&lt;class T&gt;
+  class optional {
+  public:
+    using value_type = T;
+
+    <span class='comment'>// 23.6.3.1, constructors
+</span>    constexpr optional() noexcept;
+    constexpr optional(nullopt_t) noexcept;
+    constexpr optional(const optional&amp;);
+    constexpr optional(optional&amp;&amp;) noexcept(<span class='textit'><span class='texttt'>see below</span></span>);
+    template&lt;class... Args&gt;
+      constexpr explicit optional(in_place_t, Args&amp;&amp;...);
+    template&lt;class U, class... Args&gt;
+      constexpr explicit optional(in_place_t, initializer_list&lt;U&gt;, Args&amp;&amp;...);
+    template&lt;class U = T&gt;
+      <span class='textit'><span class='texttt'>EXPLICIT</span></span> constexpr optional(U&amp;&amp;);
+    template&lt;class U&gt;
+      <span class='textit'><span class='texttt'>EXPLICIT</span></span> optional(const optional&lt;U&gt;&amp;);
+    template&lt;class U&gt;
+      <span class='textit'><span class='texttt'>EXPLICIT</span></span> optional(optional&lt;U&gt;&amp;&amp;);
+
+    <span class='comment'>// 23.6.3.2, destructor
+</span>    ~optional();
+
+    <span class='comment'>// 23.6.3.3, assignment
+</span>    optional&amp; operator=(nullopt_t) noexcept;
+    optional&amp; operator=(const optional&amp;);
+    optional&amp; operator=(optional&amp;&amp;) noexcept(<span class='textit'><span class='texttt'>see below</span></span>);
+    template&lt;class U = T&gt; optional&amp; operator=(U&amp;&amp;);
+    template&lt;class U&gt; optional&amp; operator=(const optional&lt;U&gt;&amp;);
+    template&lt;class U&gt; optional&amp; operator=(optional&lt;U&gt;&amp;&amp;);
+    template&lt;class... Args&gt; T&amp; emplace(Args&amp;&amp;...);
+    template&lt;class U, class... Args&gt; T&amp; emplace(initializer_list&lt;U&gt;, Args&amp;&amp;...);
+
+    <span class='comment'>// 23.6.3.4, swap
+</span>    void swap(optional&amp;) noexcept(<span class='textit'><span class='texttt'>see below</span></span>);
+
+    <span class='comment'>// 23.6.3.5, observers
+</span>    constexpr const T* operator-&gt;() const;
+    constexpr T* operator-&gt;();
+    constexpr const T&amp; operator*() const&amp;;
+    constexpr T&amp; operator*() &amp;;
+    constexpr T&amp;&amp; operator*() &amp;&amp;;
+    constexpr const T&amp;&amp; operator*() const&amp;&amp;;
+    constexpr explicit operator bool() const noexcept;
+    constexpr bool has_value() const noexcept;
+    constexpr const T&amp; value() const&amp;; <ins><span class='comment'>// <span class='textit'>freestanding, omit</span></span></ins>
+    constexpr T&amp; value() &amp;; <ins><span class='comment'>// <span class='textit'>freestanding, omit</span></span></ins>
+    constexpr T&amp;&amp; value() &amp;&amp;; <ins><span class='comment'>// <span class='textit'>freestanding, omit</span></span></ins>
+    constexpr const T&amp;&amp; value() const&amp;&amp;; <ins><span class='comment'>// <span class='textit'>freestanding, omit</span></span></ins>
+    template&lt;class U&gt; constexpr T value_or(U&amp;&amp;) const&amp;;
+    template&lt;class U&gt; constexpr T value_or(U&amp;&amp;) &amp;&amp;;
+
+    <span class='comment'>// 23.6.3.6, modifiers
+</span>    void reset() noexcept;
+
+  private:
+    T *val; <span class='comment'>// <span class='textit'>exposition only</span>
+</span>  };
+
+template&lt;class T&gt; optional(T) -&gt; optional&lt;T&gt;;
+</pre>
+</blockquote>
+
 Change in [memory.syn] (23.10.2):
 <blockquote class="std">
 <h3 ><a class='secnum' style='min-width:103pt'>23.10.2</a> Header <span class='texttt'>&lt;memory&gt;</span> synopsis <a class='abbr_ref'>[memory.syn]</a></h3>
