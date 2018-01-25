@@ -578,6 +578,8 @@ There was some desire to come up with a new name for "freestanding" in the 2017 
 C++ standard library headers will likely need to add preprocessor feature toggles to portions of headers that would emit warnings or errors in freestanding mode.  The precision and timeliness (compile time vs. link time) of errors remains a quality-of-implementation detail.
 </p><p>
 A minimal freestanding C11 standard library will not be sufficient to provide the C portions of the C++ standard library.  <code>std::char_traits</code> and many of the function specializations in <code>&lt;algorithm&gt;</code> are implemented in terms of non-freestanding C functions.  In practice, most C libraries are not minimal freestanding C11 libraries.  The optimized versions of the <code>&lt;cstring&gt;</code> and <code>&lt;cwchar&gt;</code> functions will typically be the same for both hosted and freestanding environments.
+</p><p>
+My expectation is that no new freestanding library will be authored as a result of this paper.  Instead hosted libraries will be stripped down through some feature toggle mechanism to become freestanding.
 </p>
 <h1>Design decisions</h1>
 <p>
@@ -615,6 +617,14 @@ Most operating systems speed up system calls by not saving and restoring floatin
 These functions have been omitted or removed from the freestanding library.  Examples are the locale aware functions and the C random number functions.</li>
 <h2>Parallel algorithms</h2>
 For the <code>&lt;algorithms&gt;</code>, <code>&lt;numeric&gt;</code>, and <code>&lt;memory&gt;</code> headers, we would only be able to support sequential execution of parallel algorithms.  Since this adds little value, the execution policy overloads will be omitted.
+<h2>Partial class inclusion</h2>
+<p>
+Some classes are only partially freestanding.  In the Albuquerque 2017 meeting, there was no consensus on allowing or prohibiting this (SF F N A SA 0 9 3 5 1).
+</p><p>
+In this proposal, I partially include three classes: <code>std::array</code>, <code>std::string_view</code>, and <code>std::optional</code>.  If we were designing these classes from scratch with a freestanding environment in mind, they would have the exact same layout and the exact same interface, with the exception of the excluded methods.  I think it is highly unlikely that the committee would standardize a <code>std::freestanding_array</code> that was the exact same as <code>std::array</code>, just without the <code>at()</code> method.
+</p><p>
+I would like to call out <code>std::variant</code> as well.  While I do include the entire class, I do exclude the <code>get()</code> and <code>visit()</code> functions.  Those functions are logically part of the interface.  The same general argument I used for <code>std::array</code>, <code>std::string_view</code>, and <code>std::optional</code> holds for <code>std::variant</code>.
+</p>
 <h1>Technical Specifications</h1>
 <h2>Complete headers newly required for freestanding implementations</h2>
 <code><ul>
