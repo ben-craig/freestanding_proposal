@@ -541,7 +541,7 @@ I could see the scope increasing to the availability of the standard library on 
 </p><p>
 <h1>Impact on the standard</h1>
 <p>
-Rather than list all of the facilities available to a freestanding implementation in one place, as is currently done in [compliance], the standard would tag each header, class, or function that is available in a freestanding implementation.  I expect this to be a large number of small edits, but the edits would have easy to understand ramifications throughout the standard.
+The standard will no long list all of the facilities available to the freestanding implementation, as is currently done in [compliance].  Instead, [compliance] will list all the headers that are required to be present, and the header and class synopses will tag which parts of the headers and classes will be available.  This is a large number of small, easy to understand edits, along with the addition of a sub-clause that discusses how the tagging works.
 </p><p>
 There is precedent for this kind of tagging in other specification documents.  The ECMAScript Language Specification has optional support for ECMA-402 (internationalization).  The impact of ECMA-402 is called out explicitly in several places.  POSIX tags functions as supported in base, XSI, or in one of many option groups.
 </p><p>
