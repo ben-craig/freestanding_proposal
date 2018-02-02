@@ -835,6 +835,27 @@ While <code>errno</code> is global data, it isn't much global data.  Thread safe
 There are uses for <code>unique_ptr</code> that don't require the heap, and can be made to work.  While I would prefer not to be coupled to <code>new</code> or <code>delete</code> at all, the C++17 definition of freestanding requires <code>new</code> and <code>delete</code> to exist, so <code>default_delete</code> shouldn't have any problems compiling.
 <ul><li><code>visit</code></li></ul>
 <code>visit</code> only throws when the <code>variant</code> is valueless.  If exceptions are disabled, the <code>variant</code> will always have a value.  This would also require us to include <code>bad_variant_access</code>, but that class is no worse than the other exceptions in <code>&lt;exception&gt;</code>
+<h1>Feature Test Macros</h1>
+<p>
+A freestanding implementation that provides support for this paper shall define the following feature test macro.
+</p>
+<table border="1">
+	<thead><tr>
+		<th>Name</th>
+		<th>Value</th>
+		<th>Header</th>
+	</tr></thead>
+	<tbody><tr>
+		<td>__cpp_freestanding</td>
+		<td><var>201803</var></td>
+		<td><em>predefined</em></td>
+	</tr></tbody>
+</table>
+<p>
+The __cpp_freestanding macro is useful for detecting the absence of throwing facilities.  A user could conditionally use a hand-rolled implementation in freestanding mode or the standard implementation in hosted mode.
+</p><p>
+An implementation that has a hosted and a freestanding mode shall define all feature macros according to what is available in the current implementation mode.
+</p>
 <h1>Wording</h1>
 <p>
 Wording is based off of Working Draft, Standard for Programming Language C++, N4713.
