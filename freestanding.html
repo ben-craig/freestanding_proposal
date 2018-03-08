@@ -484,11 +484,13 @@ ol.enumerate { list-style-type: none; }
 
 <body>
 <h1>Freestanding Proposal</h1>
-Document number: P0829R1<br/>
+Document number: D0829R2.0<br/>
 Date: 2017-10-14<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: SG14, Library Evolution Working Group
 <h1>Change history</h1>
+<h2> R1 -&gt; R2 </h2>
+Removed <code>atoi</code> because of reliance on <code>isspace.</code><br/>
 <h2> R0 -&gt; R1 </h2>
 R1 adds an abstract.<br/>
 R1 no longer removes any existing freestanding libraries.<br/>
@@ -645,9 +647,6 @@ Portions of <code>&lt;cstdlib&gt;</code>
 <li>EXIT_FAILURE</li>
 <li>EXIT_SUCCESS</li>
 <li>_Exit</li>
-<li>atoi</li>
-<li>atol</li>
-<li>atoll</li>
 <li>bsearch</li>
 <li>qsort</li>
 <li>abs(int)</li>
@@ -1142,9 +1141,9 @@ namespace std {
   void* realloc(void* ptr, size_t size);
 
   double atof(const char* nptr);
-  int atoi(const char* nptr); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  long int atol(const char* nptr); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  long long int atoll(const char* nptr); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  int atoi(const char* nptr);
+  long int atol(const char* nptr);
+  long long int atoll(const char* nptr);
   double strtod(const char* nptr, char** endptr);
   float strtof(const char* nptr, char** endptr);
   long double strtold(const char* nptr, char** endptr);
