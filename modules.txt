@@ -1,95 +1,144 @@
+MIA: <cstring>, <charconv>, <compare>, <cinttypes>
+MIA, no one cares: <ciso646>, <version>, <cstdalign>, <cstdbool>
+MIA, heavy macros: <climits>, <cstdarg>, <cerrno>
+
 1. Module std.fundamental provides the declarations of the following facilities:
-* Content of <cstddef>
-* Content of <limits>
-* Content of <cfloat>
-* Content of <cstdint>
-* Content of <new>
-* Content of <typeinfo>
-* Content of <exception>
-* Content of <initializer_list>
-* Content of <csignal>
-* Content of <csetjump>
-* Content of <cstdlib>
-* Content of <stdexcept>
-* Content of <system_error>
-* Content of <utility>
-* Content of <tuple>
-* Content of <optional>
-* Content of <variant>
-* Content of <any>
-* Content of <bitset> without the IO formatting declarations
-* Content of <type_traits>
-* Content of <ratio>
-* Content of <chrono>
-* Content of <ctime>
-* Content of <atomic>
-* Content of <typeindex>
-* std::unique_ptr and associated classes and functions from <memory>
-* std::shared_ptr and associated classes and function from <memory>
+* Basic
+  * Content of <cstddef>
+  * Content of <limits>
+  * Content of <cfloat>
+  * Content of <cstdint>
+  * Content of <new>
+  * Content of <typeinfo>
+  * Content of <exception>
+  * Content of <initializer_list>
+  * Content of <csetjump>
+    * setjmp is a macro...
+  * Content of <cstdlib> (partial)
+  * Content of <utility>
+  * Content of <tuple>
+  * Content of <optional> (but what about exceptions?)
+  * Content of <variant>   (but what about exceptions?)
+  * Content of <system_error> (partial)
+  * Content of <type_traits>
+  * Content of <ratio>
+  * Content of <chrono> (partial)
+  * Content of <atomic>
+* Full
+  * Content of <csignal>
+  * Content of <cstdlib> (partial)
+  * Content of <system_error> (partial)
+  * Content of <any>
+  * Content of <chrono> (partial)
+  * Content of <ctime>
+  * Content of <typeindex>
+  * std::unique_ptr and associated classes and functions from <memory>
+    * this one is tricky...
+  * std::shared_ptr and associated classes and function from <memory>
 
 2. Module std.core provides the declarations of the following facilities:
 * Re-export of module std.fundamental
-* Content of <array>
-* Content of <list>
-* Content of <forward_list>
-* Content of <vector>
-* Content of <deque>
-* Content of <queue>
-* Content of <stack>
-* Content of <map>
-* Content of <set>
-* Content of <unordered_map>
-* Content of <unordered_set>
-* Content of <iterator>
-* Content of <algorithm>
-* Content of <execution>
-* Content of <functional>
-* Content of <string_view>
-* Content of <string> without IO declarations
-* Content of <memory> except std::unique_ptr and associated classes and functions, std::shared_ptr and associated classes and functions
-* Content of <memory_resource>
-* Content of <scoped_allocator>
-* Content of <regex>
+* Basic
+  * Content of <bitset> without the IO formatting declarations
+    * TODO: exceptions...
+  * Content of <array>
+    * TODO: exceptions...
+  * Content of <iterator> (partial)
+  * Content of <algorithm> (partial)
+  * Content of <functional> (partial)
+  * Content of <string_view> (partial)
+    * TODO: exceptions
+  * Content of <memory> except std::unique_ptr and associated classes and functions, std::shared_ptr and associated classes and functions
+    *partial
+    * addressof should probably be fundamental
+  * Content of <string> without IO declarations
+    * partial
+* Full
+  * Content of <stdexcept>
+  * Content of <list>
+  * Content of <forward_list>
+  * Content of <vector>
+  * Content of <deque>
+  * Content of <queue>
+  * Content of <stack>
+  * Content of <map>
+  * Content of <set>
+  * Content of <unordered_map>
+  * Content of <unordered_set>
+  * Content of <iterator> (partial)
+  * Content of <algorithm> (partial)
+  * Content of <functional> (partial)
+  * Content of <string_view> (partial)
+  * Content of <execution>
+  * Content of <string> without IO declarations
+    * partial
+  * Content of <memory> except std::unique_ptr and associated classes and functions, std::shared_ptr and associated classes and functions
+    *partial
+  * Content of <memory_resource>
+  * Content of <scoped_allocator>
+  * Content of <regex>
 
 3. Module std.io provides the declarations from the following headers:
-* <cctype>
-* <cwctype>
-* <cwchar>
-* <cstdlib>
-* <cuchar>
-* <locale>
-* <codecvt>
-* <clocale>
-* <iosfwd>
-* <iostream>
-* <ios>
-* <streambuf>
-* <istream>
-* <ostream>
-* <iomanip>
-* <sstream>
-* <fstream>
-* <cstdio>
-* Declarations for IO formatting from <complex>
-* Declarations for IO formatting from <string>
-* Declarations for IO formatting from <bitset>
+* Basic
+  * <cwchar>
+    * partial
+  * <cstdlib>
+    * partial
+* Full
+  * <cctype>
+  * <cwctype>
+  * <cwchar>
+    * partial
+  * <cstdlib>
+    * partial
+  * <cuchar>
+  * <locale>
+  * <codecvt>
+  * <clocale>
+  * <iosfwd>
+  * <iostream>
+  * <ios>
+  * <streambuf>
+  * <istream>
+  * <ostream>
+  * <iomanip>
+  * <sstream>
+  * <fstream>
+  * <cstdio>
+  * Declarations for IO formatting from <complex>
+  * Declarations for IO formatting from <string>
+  * Declarations for IO formatting from <bitset>
 
 4. Module std.os provides the declarations from the following header:
-* <filesystem>
+* Full
+  * <filesystem>
 
 5. Module std.concurrency provides the declarations for the following facilities:
-* Content of <mutex>
-* Content of <thread>
-* Content of <condition_variable>
-* Content of <shared_mutex>
-* Content of <future>
+* Full
+  * Content of <mutex>
+  * Content of <thread>
+  * Content of <condition_variable>
+  * Content of <shared_mutex>
+  * Content of <future>
 
 6. Module std.math provides the declarations from the following headers:
 * Content of <complex> without the IO formatting declarations
-* <numeric>
-* <valarray>
-* <random>
-* <cmath>
+* Basic
+  * <numeric>
+    * partial
+  * <random>
+    * partial
+  * <cmath>
+    * partial
+
+* Full
+  * <numeric>
+    * partial
+  * <valarray>
+  * <random>
+    * partial
+  * <cmath>
+    * partial
 
 7. Module std provides all the standard facilities. It can be thought of as an aggregation of all
 preceding modules.
