@@ -1,0 +1,95 @@
+1. Module std.fundamental provides the declarations of the following facilities:
+* Content of <cstddef>
+* Content of <limits>
+* Content of <cfloat>
+* Content of <cstdint>
+* Content of <new>
+* Content of <typeinfo>
+* Content of <exception>
+* Content of <initializer_list>
+* Content of <csignal>
+* Content of <csetjump>
+* Content of <cstdlib>
+* Content of <stdexcept>
+* Content of <system_error>
+* Content of <utility>
+* Content of <tuple>
+* Content of <optional>
+* Content of <variant>
+* Content of <any>
+* Content of <bitset> without the IO formatting declarations
+* Content of <type_traits>
+* Content of <ratio>
+* Content of <chrono>
+* Content of <ctime>
+* Content of <atomic>
+* Content of <typeindex>
+* std::unique_ptr and associated classes and functions from <memory>
+* std::shared_ptr and associated classes and function from <memory>
+
+2. Module std.core provides the declarations of the following facilities:
+* Re-export of module std.fundamental
+* Content of <array>
+* Content of <list>
+* Content of <forward_list>
+* Content of <vector>
+* Content of <deque>
+* Content of <queue>
+* Content of <stack>
+* Content of <map>
+* Content of <set>
+* Content of <unordered_map>
+* Content of <unordered_set>
+* Content of <iterator>
+* Content of <algorithm>
+* Content of <execution>
+* Content of <functional>
+* Content of <string_view>
+* Content of <string> without IO declarations
+* Content of <memory> except std::unique_ptr and associated classes and functions, std::shared_ptr and associated classes and functions
+* Content of <memory_resource>
+* Content of <scoped_allocator>
+* Content of <regex>
+
+3. Module std.io provides the declarations from the following headers:
+* <cctype>
+* <cwctype>
+* <cwchar>
+* <cstdlib>
+* <cuchar>
+* <locale>
+* <codecvt>
+* <clocale>
+* <iosfwd>
+* <iostream>
+* <ios>
+* <streambuf>
+* <istream>
+* <ostream>
+* <iomanip>
+* <sstream>
+* <fstream>
+* <cstdio>
+* Declarations for IO formatting from <complex>
+* Declarations for IO formatting from <string>
+* Declarations for IO formatting from <bitset>
+
+4. Module std.os provides the declarations from the following header:
+* <filesystem>
+
+5. Module std.concurrency provides the declarations for the following facilities:
+* Content of <mutex>
+* Content of <thread>
+* Content of <condition_variable>
+* Content of <shared_mutex>
+* Content of <future>
+
+6. Module std.math provides the declarations from the following headers:
+* Content of <complex> without the IO formatting declarations
+* <numeric>
+* <valarray>
+* <random>
+* <cmath>
+
+7. Module std provides all the standard facilities. It can be thought of as an aggregation of all
+preceding modules.
