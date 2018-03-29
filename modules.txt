@@ -1,5 +1,7 @@
+List of MIA and heavy macro users is ad hoc.  Systematic sweep of standard incomplete
 MIA, no one cares: <cstdalign>, <cstdbool>
-MIA, heavy macros: <climits>, <cstdarg>, <cerrno>, <cfenv>, <cinttypes>
+MIA, heavy macros: <climits>, <cstdarg>, <cerrno>
+Heavy macros, but present: <cfenv>, <cinttypes>, <csetjump>, <atomic>
 
 1. Module std.fundamental contains compiler, processor, and ABI specific facilities.  These are declarations that users cannot efficiently provide portably on their own.  It provides the declarations of the following facilities:
 * Basic
