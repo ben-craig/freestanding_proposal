@@ -1,113 +1,371 @@
-MIA: <cstring>, <charconv>, <compare>, <cinttypes>
-MIA, no one cares: <ciso646>, <version>, <cstdalign>, <cstdbool>
-MIA, heavy macros: <climits>, <cstdarg>, <cerrno>
+MIA, no one cares: <cstdalign>, <cstdbool>
+MIA, heavy macros: <climits>, <cstdarg>, <cerrno>, <cfenv>, <cinttypes>
 
-1. Module std.fundamental provides the declarations of the following facilities:
+1. Module std.fundamental contains compiler, processor, and ABI specific facilities.  These are declarations that users cannot efficiently provide portably on their own.  It provides the declarations of the following facilities:
 * Basic
-  * Content of <cstddef>
-  * Content of <limits>
-  * Content of <cfloat>
-  * Content of <cstdint>
-  * Content of <new>
-  * Content of <typeinfo>
-  * Content of <exception>
-  * Content of <initializer_list>
-  * Content of <csetjump>
-    * setjmp is a macro...
-  * Content of <cstdlib> (partial)
-  * Content of <utility>
-  * Content of <tuple>
-  * Content of <optional> (but what about exceptions?)
-  * Content of <variant>   (but what about exceptions?)
-  * Content of <system_error> (partial)
-  * Content of <type_traits>
-  * Content of <ratio>
-  * Content of <chrono> (partial)
-  * Content of <atomic>
+  * Full content of the following headers:
+    * <atomic>
+    * <cfloat>
+    * <ciso646>
+    * <compare>
+    * <cstddef>
+    * <cstdint>
+    * <initializer_list>
+    * <limits>
+    * <type_traits>
+    * <version>
+    * <csetjump>
+      * setjmp is a macro...
+    * <new>
+      * not entirely embedded friendly, would require EWG input
+    * <typeinfo>
+      * not entirely embedded friendly, would require EWG input
+    * <exception>
+      * not entirely embedded friendly, would require EWG input
+  * Some of <cstdlib>
+    * _Exit
+      * nonsensical, but harmless on embedded
+    * abort
+        * not entirely embedded friendly, would require EWG input
+    * exit
+        * not entirely embedded friendly, would require EWG input
+    * atexit
+        * not entirely embedded friendly, would require EWG input
+    * quick_exit
+      * Potentially demotable.  Users could implement quick_exit in terms of _Exit.
+    * at_quick_exit
+      * Potentially demotable.
+  * Some of <cstring>
+    * memcpy
+    * memmove
+    * strcpy
+    * strncpy
+    * strcat
+    * strncat
+    * memcmp
+    * strcmp
+    * strncmp
+    * memchr
+    * strchr
+    * strcspn
+    * strpbrk
+    * strrchr
+    * strspn
+    * strstr
+    * memset
+    * strlen
+  * Some of <memory>
+    * addressof
+  * Some of <functional>
+    * equal_to
+    * not_equal_to
+    * greater
+    * less
+    * greater_equal
+    * less_equal
+  * (Should tuple go in here?  Decent build speeds require intrinsics)
+  * (Should std::move and std::forward go here?  Those are easily implementable by layered STLs (EASTL, STLport, whatever Bloomberg does)
 * Full
-  * Content of <csignal>
-  * Content of <cstdlib> (partial)
-  * Content of <system_error> (partial)
-  * Content of <any>
-  * Content of <chrono> (partial)
-  * Content of <ctime>
-  * Content of <typeindex>
-  * std::unique_ptr and associated classes and functions from <memory>
-    * this one is tricky...
-  * std::shared_ptr and associated classes and function from <memory>
+  * All of <cfenv>
 
 2. Module std.core provides the declarations of the following facilities:
 * Re-export of module std.fundamental
 * Basic
-  * Content of <bitset> without the IO formatting declarations
-    * TODO: exceptions...
-  * Content of <array>
-    * TODO: exceptions...
-  * Content of <iterator> (partial)
-  * Content of <algorithm> (partial)
-  * Content of <functional> (partial)
-  * Content of <string_view> (partial)
-    * TODO: exceptions
-  * Content of <memory> except std::unique_ptr and associated classes and functions, std::shared_ptr and associated classes and functions
-    *partial
-    * addressof should probably be fundamental
-  * Content of <string> without IO declarations
-    * partial
+  * Full content of:
+    * <utility>
+    * <tuple>
+    * <ratio>
+  * Some of <cstdlib>
+    * bsearch
+    * qsort
+    * abs(int) //also <cmath>
+    * abs(long int) //also <cmath>
+    * abs(long long int) //also <cmath>
+    * labs
+    * llabs
+    * div
+    * ldiv
+    * lldiv
+  * Some of <cinttypes>
+    * imaxabs
+    * imaxdiv
+    * abs(intmax_t)
+    * div(intmax_t, intmax_t)
+  * Some of <system_error>
+    * errc enum
+  * Most of <optional>
+    * omit bad_optional_access
+    * omit optional::value (this will be tricky)
+  * Most of <variant>
+    * omit get
+    * (visit and bad_variant_access are in)
+  * Most of <bitset>
+    * omit operator>>
+    * omit operator<<
+    * omit string overloads of bitset constructors
+    * omit bitset::to_string
+    * omit bitset::set(size_t, bool) overload
+    * omit bitset::reset(size_t) overload
+    * omit bitset::flip(size_t) overload
+  * Some of <memory>
+    * pointer_traits
+    * to_address
+    * align
+    * allocator_arg_t
+    * allocator_arg
+    * uses_allocator
+    * allocator_traits
+    * destroy_at
+    * Overloads of the following that don't involve ExecutionPolicy:
+      * uninitialized_default_construct
+      * uninitialized_default_construct_n
+      * uninitialized_value_construct
+      * uninitialized_value_construct_n
+      * uninitialized_copy
+      * uninitialized_copy_n
+      * uninitialized_move
+      * uninitialized_move_n
+      * uninitialized_fill
+      * uninitialized_fill_n
+      * destroy
+      * destroy_n
+    * unique_ptr
+      * with freestanding specific default template arguments
+      * hosted says = default_delete<T>, freestanding says = unspecified
+    * swap(unique_ptr)
+    * operator@(unique_ptr)
+    * hash<unique_ptr>
+    * uses_allocator_v
+  * Most of <functional>
+    * omit comparisons (those are in fundamental)
+      * equal_to
+      * not_equal_to
+      * greater
+      * less
+      * greater_equal
+      * less_equal
+    * omit std::function related facilities (in core full)
+      * bad_function_call
+      * function
+      * op@(function)
+    * non-default searchers (in core full)
+      * boyer_moore_searcher
+      * boyer_moore_horspool_searcher
+  * Most of <chrono>
+    * omit system_clock
+    * omit steady_clock
+    * omit high_resolution_clock
+  * Some of <charconv>
+    * to_chars_result
+    * from_chars_result
+    * to_chars(integral)
+    * from_chars(integral)
+  * Some of <string>
+    * char_traits
+  * Most of <string_view>
+    * omit operator<<(string_view)
+    * omit basic_string_view::at
+    * omit basic_string_view::copy
+    * omit basic_string_view::substr
+    * omit basic_string_view::compare(size_type pos1, size_type n1, basic_string_view s)
+    * omit basic_string_view::compare(size_type pos1, size_type n1, basic_string_view s, size_type pos2, size_type n2);
+    * omit basic_string_view::compare(size_type pos1, size_type n1, const charT* s);
+    * omit basic_string_view::compare(size_type pos1, size_type n1, const charT* s, size_type n2);
+  * Some of <cwchar>
+    * wcscpy
+    * wcsncpy
+    * wmemcpy
+    * wmemmove
+    * wcscat
+    * wcsncat
+    * wcscmp
+    * wcsncmp
+    * wmemcmp
+    * wcschr
+    * wcscspn
+    * wcxpbrk
+    * wcsrchr
+    * wcsspn
+    * wcsstr
+    * wcstok
+    * wmemchr
+    * wcslen
+    * wmemset
+  * Most of <array>
+    * omit array::at
+  * Most of <iterator>
+    * omit back_insert_iterator
+    * omit front_insert_iterator
+    * omit insert_iterator
+    * omit istream_iterator
+    * omit op@(istream_iterator)
+    * omit ostream_iterator
+    * omit istreambuf_iterator
+    * omit op@(istreambuf_iterator)
+    * omit ostreambuf_iterator
+  * Most of <algorithm>
+    * omit stable_sort
+    * omit stable_partition
+    * omit inplace_merge
+    * omit ExecutionPolicy overloads
+  * Most of <numeric>
+    * omit ExecutionPolicy overloads
 * Full
-  * Content of <stdexcept>
-  * Content of <list>
-  * Content of <forward_list>
-  * Content of <vector>
-  * Content of <deque>
-  * Content of <queue>
-  * Content of <stack>
-  * Content of <map>
-  * Content of <set>
-  * Content of <unordered_map>
-  * Content of <unordered_set>
-  * Content of <iterator> (partial)
-  * Content of <algorithm> (partial)
-  * Content of <functional> (partial)
-  * Content of <string_view> (partial)
-  * Content of <execution>
-  * Content of <string> without IO declarations
-    * partial
-  * Content of <memory> except std::unique_ptr and associated classes and functions, std::shared_ptr and associated classes and functions
-    *partial
-  * Content of <memory_resource>
-  * Content of <scoped_allocator>
-  * Content of <regex>
+  * Most of <system_error>
+    * omit errc enum (in basic core)
+    * omit operator<<(error_code)
+  * Some of <optional>
+    * bad_optional_access
+    * optional::value (this will be tricky)
+  * Some of <variant>
+    * get
+  * All of <any>
+  * Some of <bitset>
+    * string overloads of bitset constructors
+    * bitset::to_string
+    * bitset::set(size_t, bool) overload
+    * bitset::reset(size_t) overload
+    * bitset::flip(size_t) overload
+  * Some of <memory>
+    * pointer_safety
+    * declare_reachable
+    * undeclare_reachable
+    * declare_no_pointers
+    * undeclare_no_pointers
+    * get_pointer_safety()
+    * allocator
+    * op@(allocator)
+    * ExecutionPolicy overloads of the following:
+      * uninitialized_default_construct
+      * uninitialized_default_construct_n
+      * uninitialized_value_construct
+      * uninitialized_value_construct_n
+      * uninitialized_copy
+      * uninitialized_copy_n
+      * uninitialized_move
+      * uninitialized_move_n
+      * uninitialized_fill
+      * uninitialized_fill_n
+      * destroy
+      * destroy_n
+    * default_delete
+    * make_unique
+    * bad_weak_ptr
+    * shared_ptr
+    * make_shared
+    * allocate_shared
+    * op@(shared_ptr)
+    * swap(shared_ptr)
+    * static_pointer_cast
+    * dynamic_pointer_cast
+    * const_poineter_cast
+    * reinterpret_pointer_cast
+    * get_deleter
+    * weak_ptr
+    * swap(weak_ptr)
+    * owner_less
+    * enable_shared_from_this
+    * hash<shared_ptr>
+    * atomic<shared_ptr>
+    * atomic<weak_ptr>
+  * All of <memory_resource>
+  * All of <scoped_allocator>
+  * Some of <functional>
+    * bad_function_call
+    * function
+    * op@(function)
+    * boyer_moore_searcher
+    * boyer_moore_horspool_searcher
+  * Some of <chrono>
+    * system_clock
+    * steady_clock
+    * high_resolution_clock
+  * All of <ctime>
+  * All of <type_index>
+  * All of <execution>
+  * Most of <charconv>
+    * omit to_chars_result (in basic core)
+    * omit from_chars_result (in basic core)
+    * omit to_chars(integral) (in basic core)
+    * omit from_chars(integral) (in basic core)
+  * Most of <string>
+    * omit char_traits (in basic core)
+    * omit operator<<(string)
+    * omit operator>>(string)
+  * Some of <string_view>
+    * basic_string_view::at
+    * basic_string_view::copy
+    * basic_string_view::substr
+    * basic_string_view::compare(size_type pos1, size_type n1, basic_string_view s)
+    * basic_string_view::compare(size_type pos1, size_type n1, basic_string_view s, size_type pos2, size_type n2);
+    * basic_string_view::compare(size_type pos1, size_type n1, const charT* s);
+    * basic_string_view::compare(size_type pos1, size_type n1, const charT* s, size_type n2);
+  * Remainder of <array>
+
+  * Some of <iterator>
+    * back_insert_iterator
+    * front_insert_iterator
+    * insert_iterator
+  * Remainder of <algorithm>
+  * Remainder of <numeric>
+  * All of the following headers:
+    * <csignal>
+    * <stdexcept>
+    * <list>
+    * <forward_list>
+    * <vector>
+    * <deque>
+    * <queue>
+    * <stack>
+    * <map>
+    * <set>
+    * <unordered_map>
+    * <unordered_set>
+    * <regex>
 
 3. Module std.io provides the declarations from the following headers:
-* Basic
-  * <cwchar>
-    * partial
-  * <cstdlib>
-    * partial
 * Full
-  * <cctype>
-  * <cwctype>
-  * <cwchar>
-    * partial
-  * <cstdlib>
-    * partial
-  * <cuchar>
-  * <locale>
-  * <codecvt>
-  * <clocale>
-  * <iosfwd>
-  * <iostream>
-  * <ios>
-  * <streambuf>
-  * <istream>
-  * <ostream>
-  * <iomanip>
-  * <sstream>
-  * <fstream>
-  * <cstdio>
-  * Declarations for IO formatting from <complex>
-  * Declarations for IO formatting from <string>
-  * Declarations for IO formatting from <bitset>
+  * Remainder of <cwchar>
+  * Remainder of <cstdlib>
+  * Remainer of <cinttypes>
+  * Remainder of <cstring>
+  * Some / remainder of <iterator>
+    * istream_iterator
+    * op@(istream_iterator)
+    * ostream_iterator
+    * istreambuf_iterator
+    * op@(istreambuf_iterator)
+    * ostreambuf_iterator
+  * All of the following headers:
+    * <cctype>
+    * <cwctype>
+    * <cuchar>
+    * <locale>
+    * <codecvt>
+    * <clocale>
+    * <iosfwd>
+    * <iostream>
+    * <ios>
+    * <streambuf>
+    * <istream>
+    * <ostream>
+    * <iomanip>
+    * <sstream>
+    * <fstream>
+    * <cstdio>
+  * <string_view>
+    * operator <<(string_view)
+  * <system_error>
+    * operator <<(error_code)
+  * <complex>
+    * operator <<(complex)
+    * operator >>(complex)
+  * <string>
+    * operator <<(string)
+    * operator >>(string)
+  * <bitset>
+    * operator <<(bitset)
+    * operator >>(bitset)
 
 4. Module std.os provides the declarations from the following header:
 * Full
@@ -115,30 +373,31 @@ MIA, heavy macros: <climits>, <cstdarg>, <cerrno>
 
 5. Module std.concurrency provides the declarations for the following facilities:
 * Full
-  * Content of <mutex>
-  * Content of <thread>
-  * Content of <condition_variable>
-  * Content of <shared_mutex>
-  * Content of <future>
+  * All of <mutex>
+  * All of <thread>
+  * All of <condition_variable>
+  * All of <shared_mutex>
+  * All of <future>
 
 6. Module std.math provides the declarations from the following headers:
 * Content of <complex> without the IO formatting declarations
 * Basic
-  * <numeric>
-    * partial
-  * <random>
-    * partial
-  * <cmath>
-    * partial
+  * Some of <random>
+    * linear_congruential_engine
+    * mersenne_twister_engine
+    * subtract_with_carry_engine
+    * discard_block_engine
+    * independent_bits_engine
+    * shuffle_order_engine
+    * [rand.predef]
+    * uniform_int_distribution
 
 * Full
-  * <numeric>
-    * partial
+  * Remainder of <random>
+  * Remainder of <cmath>
   * <valarray>
-  * <random>
-    * partial
-  * <cmath>
-    * partial
 
-7. Module std provides all the standard facilities. It can be thought of as an aggregation of all
-preceding modules.
+7. Module std.basic provides all the basic standard facilities. It can be thought of as an aggregation of all the basic modules.
+
+8. Module std provides all the standard facilities. It can be thought of as an aggregation of all preceding modules.
+
