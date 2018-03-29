@@ -490,9 +490,10 @@ Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: SG14, Library Evolution Working Group
 <h1>Change history</h1>
 <h2> R1 -&gt; R2 </h2>
-Removed <code>atoi</code> because of reliance on <code>isspace.</code><br/>
-TODO: Add <code>&lt;version&gt;</code> and move feature macro there.
-TODO: Add unique_ptr back, add visit and friend, add bitset
+Removed <code>atoi</code> because of reliance on <code>isspace</code>.<br/>
+Adding <code>visit</code> and <code>bad_variant_access</code>.<br/>
+TODO: Add <code>&lt;version&gt;</code> and move feature macro there.<br/>
+TODO: Add unique_ptr back, add bitset
 <h2> R0 -&gt; R1 </h2>
 R1 adds an abstract.<br/>
 R1 no longer removes any existing freestanding libraries.<br/>
@@ -628,7 +629,7 @@ Some classes are only partially freestanding.  In the Albuquerque 2017 meeting, 
 </p><p>
 In this proposal, I partially include three classes: <code>std::array</code>, <code>std::string_view</code>, and <code>std::optional</code>.  If we were designing these classes from scratch with a freestanding environment in mind, they would have the exact same layout and the exact same interface, with the exception of the excluded methods.  I think it is highly unlikely that the committee would standardize a <code>std::freestanding_array</code> that was the exact same as <code>std::array</code>, just without the <code>at()</code> method.
 </p><p>
-I would like to call out <code>std::variant</code> as well.  While I do include the entire class, I do exclude the <code>get()</code> and <code>visit()</code> functions.  Those functions are logically part of the interface.  The same general argument I used for <code>std::array</code>, <code>std::string_view</code>, and <code>std::optional</code> holds for <code>std::variant</code>.
+I would like to call out <code>std::variant</code> as well.  While I do include the entire class, I do exclude the <code>get()</code> function.  <code>get()</code> is logically part of the interface.  The same general argument I used for <code>std::array</code>, <code>std::string_view</code>, and <code>std::optional</code> holds for <code>std::variant</code>.
 </p>
 <h1>Technical Specifications</h1>
 <h2>Complete headers newly required for freestanding implementations</h2>
@@ -667,7 +668,7 @@ The <code>errc</code> enum from <code>&lt;system_error&gt;</code>.
 </p><p>
 All of <code>&lt;optional&gt;</code>, except for <code>bad_optional_access</code> and <code>optional::value</code>.  The <code>optional</code> value can be accessed through the unchecked observers, <code>operator*</code> and <code>operator-&gt;</code>.
 </p><p>
-All of <code>&lt;variant&gt;</code>, except for <code>bad_variant_access</code>, <code>get</code>, and <code>visit</code>.  The <code>variant</code> value can be accessed through <code>get_if</code>.
+All of <code>&lt;variant&gt;</code>, except for <code>get</code>.  The <code>variant</code> value can be accessed through <code>get_if</code>.
 </p><p>
 Portions of <code>&lt;memory&gt;</code>.
 </p>
@@ -823,6 +824,8 @@ Many string functions (<code>strtol</code> and family) rely on <code>errno</code
 Here are some things that I am currently requiring, but could be convinced to remove.
 <ul><li><code>&lt;cwchar&gt;</code></li></ul>
 The <code>&lt;cwchar&gt;</code> functions are implementable for freestanding environments, but infrequently used for systems programming.  They do not exist in freestanding C11 implementations.
+<ul><li><code>visit</code></li></ul>
+<code>visit</code> only throws when the <code>variant</code> is valueless.  If exceptions are disabled, the <code>variant</code> will always have a value.  Since the standard doesn't acknowledge exceptions being disabled, we include the (hopefully) dead <code>bad_variant_access</code> class.
 <ul><li>Partial classes</li></ul>
 <code>&lt;array&gt;</code>, <code>&lt;optional&gt;</code>, <code>&lt;string_view&gt;</code>, and <code>&lt;variant&gt;</code> all have functions that throw.  These functions aren't critical to the use of the class.  The exceptions that <code>&lt;array&gt;</code> and <code>&lt;string_view&gt;</code> throw are doubly bad, as those exceptions require <code>std::string</code>.  These headers and classes can be omitted if the committee strongly objects to marking a class partially freestanding.
 <h2>Potential additions</h2>
@@ -835,8 +838,6 @@ Perhaps we don't worry about library portability in all cases.  Just because ker
 While <code>errno</code> is global data, it isn't much global data.  Thread safety is a concern for those platforms that have threading, but don't have thread-local storage.
 <ul><li><code>unique_ptr</code></li></ul>
 There are uses for <code>unique_ptr</code> that don't require the heap, and can be made to work.  While I would prefer not to be coupled to <code>new</code> or <code>delete</code> at all, the C++17 definition of freestanding requires <code>new</code> and <code>delete</code> to exist, so <code>default_delete</code> shouldn't have any problems compiling.
-<ul><li><code>visit</code></li></ul>
-<code>visit</code> only throws when the <code>variant</code> is valueless.  If exceptions are disabled, the <code>variant</code> will always have a value.  This would also require us to include <code>bad_variant_access</code>, but that class is no worse than the other exceptions in <code>&lt;exception&gt;</code>
 <h1>Feature Test Macros</h1>
 <p>
 A freestanding implementation that provides support for this paper shall define the following feature test macro.
@@ -867,7 +868,7 @@ Add a new subclause [freestanding.membership] after [objects.within.classes]:
 <h4 ><a class='secnum' style='min-width:118pt'>20.4.2.5</a> Freestanding membership <a class='abbr_ref'>[freestanding.membership]</a></h4>
 <div class='para'>
 	<div class='marginalizedparent'><a class='marginalized'>1</a></div>
-	<div class='sentence'>The freestanding implementation has several C++ standard library entities and macros that shall meet the same requirements as for a hosted implementation.</div>
+	<div class='sentence'>The freestanding implementation has several C++ standard library entities and macros that shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
 	<div class='sentence'>In the associated header synopsis for such entities and macros, the declarations shall be followed with a comment that ends with <span class='textit'>freestanding</span>, as in:</div>
 <pre class='codeblock'>
 #define E2BIG <span class='textit'><span class='texttt'>see below</span></span> <span class='comment'>// <span class='textit'>freestanding</span></span>
@@ -875,14 +876,14 @@ Add a new subclause [freestanding.membership] after [objects.within.classes]:
 </div>
 <div class='para'>
 	<div class='marginalizedparent'><a class='marginalized'>2</a></div>
-	<div class='sentence'>The freestanding implementation has several headers that shall meet the same requirements as for a hosted implementation.</div>
+	<div class='sentence'>The freestanding implementation has several headers that shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
 	<div class='sentence'>The synopsis for these headers shall start with a comment that ends with <span class='textit'>freestanding</span>, as in:</div>
 <pre class='codeblock'>
 <span class='comment'>// <span class='textit'>freestanding</span></span>
 namespace std {
 </pre>
 	<div class='sentence'>Individual entity and macro declarations in such a header shall not be followed with a comment that ends with <span class='textit'>freestanding</span>.</div>
-	<div class='sentence'>Classes and class templates in such a header shall meet the same requirements as for a hosted implementation.</div>
+	<div class='sentence'>Classes and class templates in such a header shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
 </div>
 <div class='para'>
 	<div class='marginalizedparent'><a class='marginalized'>3</a></div>
@@ -898,7 +899,7 @@ namespace std {
 <pre class='codeblock'>
     constexpr const T&amp; value() const&amp;; <span class='comment'>// <span class='textit'>freestanding, omit</span></span>
 </pre>
-	<div class='sentence'>All entities in the partially implemented class or class template that are not followed by a <span class='textit'>freestanding, omit</span> comment shall meet the same requirements as for a hosted implementation.</div>
+	<div class='sentence'>All entities in the partially implemented class or class template that are not followed by a <span class='textit'>freestanding, omit</span> comment shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
 </div>
 <div class='para'>
 	<div class='marginalizedparent'><a class='marginalized'>4</a></div>
@@ -1653,7 +1654,7 @@ namespace std {
 
   <span class='comment'>// 23.7.7, visitation
 </span>  template&lt;class Visitor, class... Variants&gt;
-    constexpr <span class='textit'><span class='texttt'>see below</span></span> visit(Visitor&amp;&amp;, Variants&amp;&amp;...);
+    constexpr <span class='textit'><span class='texttt'>see below</span></span> visit(Visitor&amp;&amp;, Variants&amp;&amp;...); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
   <span class='comment'>// 23.7.8, class <span class='tcode_in_codeblock'>monostate</span>
 </span>  struct monostate; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -1671,7 +1672,7 @@ namespace std {
     void swap(variant&lt;Types...&gt;&amp;, variant&lt;Types...&gt;&amp;) noexcept(<span class='textit'><span class='texttt'>see below</span></span>);
 
   <span class='comment'>// 23.7.11, class <span class='tcode_in_codeblock'>bad_&shy;variant_&shy;access</span>
-</span>  class bad_variant_access;
+</span>  class bad_variant_access; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
   <span class='comment'>// 23.7.12, hash support
 </span>  template&lt;class T&gt; struct hash; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
