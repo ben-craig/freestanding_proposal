@@ -868,8 +868,8 @@ Add a new subclause [freestanding.membership] after [objects.within.classes]:
 <h4 ><a class='secnum' style='min-width:118pt'>20.4.2.5</a> Freestanding membership <a class='abbr_ref'>[freestanding.membership]</a></h4>
 <div class='para'>
 	<div class='marginalizedparent'><a class='marginalized'>1</a></div>
-	<div class='sentence'>The freestanding implementation has several C++ standard library entities and macros that shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
-	<div class='sentence'>In the associated header synopsis for such entities and macros, the declarations shall be followed with a comment that ends with <span class='textit'>freestanding</span>, as in:</div>
+	<div class='sentence'>The freestanding implementation has several declarations and macro definitions that shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
+	<div class='sentence'>In the associated header synopsis for such declarations and macro definitions, the items shall be followed with a comment that ends with <span class='textit'>freestanding</span>, as in:</div>
 <pre class='codeblock'>
 #define E2BIG <span class='textit'><span class='texttt'>see below</span></span> <span class='comment'>// <span class='textit'>freestanding</span></span>
 </pre>
@@ -882,14 +882,13 @@ Add a new subclause [freestanding.membership] after [objects.within.classes]:
 <span class='comment'>// <span class='textit'>freestanding</span></span>
 namespace std {
 </pre>
-	<div class='sentence'>Individual entity and macro declarations in such a header shall not be followed with a comment that ends with <span class='textit'>freestanding</span>.</div>
-	<div class='sentence'>Classes and class templates in such a header shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
+	<div class='sentence'>Individual declarations and macro definitions in such a header shall not be followed with a comment that ends with <span class='textit'>freestanding</span>.</div>
 </div>
 <div class='para'>
 	<div class='marginalizedparent'><a class='marginalized'>3</a></div>
 	<div class='sentence'>Some classes and class templates are required to be partially implemented in a freestanding implementation.</div>
 	<div class='sentence'>Such entities are permitted to be fully implemented in a freestanding implementation.</div>
-	<div class='sentence'>In the associated header synopsis for such entities, the declarations shall be followed with a comment that ends with <span class='textit'>freestanding, partial</span>, as in:</div>
+	<div class='sentence'>In the associated header synopsis for such declarations, the declarations shall be followed with a comment that ends with <span class='textit'>freestanding, partial</span>, as in:</div>
 <pre class='codeblock'>
   template&lt;class T&gt;
     class optional; <span class='comment'>// <span class='textit'>freestanding, partial</span></span>
@@ -899,11 +898,12 @@ namespace std {
 <pre class='codeblock'>
     constexpr const T&amp; value() const&amp;; <span class='comment'>// <span class='textit'>freestanding, omit</span></span>
 </pre>
-	<div class='sentence'>All entities in the partially implemented class or class template that are not followed by a <span class='textit'>freestanding, omit</span> comment shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
+	<div class='sentence'>All declarations in the partially implemented class or class template that are not followed by a <span class='textit'>freestanding, omit</span> comment shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
 </div>
 <div class='para'>
 	<div class='marginalizedparent'><a class='marginalized'>4</a></div>
-	<div class='sentence'>Deduction guides for class templates that are implemented (partially or fully) in a freestanding implementation shall also by implemented in a freestanding implementation.</div>
+	<div class='sentence'>Deduction guides for class templates that are implemented (partially or fully) in a freestanding implementation shall be implemented in a freestanding implementation.</div>
+    <div class='sentence'>The containing namespace for each non-namespace declaration that is implemented (partially or fully) in a freestanding implementation shall be implemented in a freestanding implementation.</div>
 </div>
 </blockquote>
 
