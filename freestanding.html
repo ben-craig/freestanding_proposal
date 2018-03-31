@@ -494,8 +494,8 @@ Removed <code>atoi</code> because of reliance on <code>isspace</code>.<br/>
 Added <code>visit</code> and <code>bad_variant_access</code>.<br/>
 Added <code>bitset</code>, minus the string members and throwing members.<br/>
 Added <code>&lt;version&gt;</code> and moved the feature macro there.<br/>
-TODO: Add span
-TODO: Add unique_ptr back
+TODO: Add span<br/>
+TODO: Finish adding unique_ptr back.  Wording is done, need to fix main text.  make_unique and default_delete are notable omissions.<br/>
 <h2> R0 -&gt; R1 </h2>
 R1 adds an abstract.<br/>
 R1 no longer removes any existing freestanding libraries.<br/>
@@ -829,7 +829,7 @@ The <code>&lt;cwchar&gt;</code> functions are implementable for freestanding env
 <ul><li><code>visit</code></li></ul>
 <code>visit</code> only throws when the <code>variant</code> is valueless.  If exceptions are disabled, the <code>variant</code> will always have a value.  Since the standard doesn't acknowledge exceptions being disabled, we include the (hopefully) dead <code>bad_variant_access</code> class.
 <ul><li>Partial classes</li></ul>
-<code>array</code>, <code>bitset<code>, <code>optional</code>, <code>string_view</code>, and <code>variant</code> all have functions that throw.  These functions aren't critical to the use of the class.  The exceptions that <code>array</code>, <code>bitset</code>, and <code>string_view</code> throw are doubly bad, as those exceptions require <code>std::string</code>.  These headers and classes can be omitted if the committee strongly objects to marking a class partially freestanding.
+<code>array</code>, <code>bitset</code>, <code>optional</code>, <code>string_view</code>, and <code>variant</code> all have functions that throw.  These functions aren't critical to the use of the class.  The exceptions that <code>array</code>, <code>bitset</code>, and <code>string_view</code> throw are doubly bad, as those exceptions require <code>std::string</code>.  These headers and classes can be omitted if the committee strongly objects to marking a class partially freestanding.
 <h2>Potential additions</h2>
 Here are some things that I am not currently requiring, but could be convinced to add.
 <ul><li><code>complex&lt;integer&gt;</code></li></ul>
@@ -1930,8 +1930,8 @@ namespace std {
   <span class='comment'>// 23.11.1, class template <span class='tcode_in_codeblock'>unique_&shy;ptr</span>
 </span>  template&lt;class T&gt; struct default_delete;
   template&lt;class T&gt; struct default_delete&lt;T[]&gt;;
-  template&lt;class T, class D = default_delete&lt;T&gt;&gt; class unique_ptr;
-  template&lt;class T, class D&gt; class unique_ptr&lt;T[], D&gt;;
+  template&lt;class T, class D = <ins><span class='textit'><span class='texttt'>see below</span></span></ins><del>default_delete&lt;T&gt;</del>&gt; class unique_ptr; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class D&gt; class unique_ptr&lt;T[], D&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
   template&lt;class T, class... Args&gt; unique_ptr&lt;T&gt;
     make_unique(Args&amp;&amp;... args);                                                <span class='comment'>// <span class='tcode_in_codeblock'>T</span> is not array
@@ -1940,45 +1940,45 @@ namespace std {
 </span>  template&lt;class T, class... Args&gt;
     <span class='textit'><span class='texttt'>unspecified</span></span> make_unique(Args&amp;&amp;...) = delete;                                <span class='comment'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[N]</span>
 </span>
-  template&lt;class T, class D&gt;
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     void swap(unique_ptr&lt;T, D&gt;&amp; x, unique_ptr&lt;T, D&gt;&amp; y) noexcept;
 
-  template&lt;class T1, class D1, class T2, class D2&gt;
+  template&lt;class T1, class D1, class T2, class D2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     bool operator==(const unique_ptr&lt;T1, D1&gt;&amp; x, const unique_ptr&lt;T2, D2&gt;&amp; y);
-  template&lt;class T1, class D1, class T2, class D2&gt;
+  template&lt;class T1, class D1, class T2, class D2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     bool operator!=(const unique_ptr&lt;T1, D1&gt;&amp; x, const unique_ptr&lt;T2, D2&gt;&amp; y);
-  template&lt;class T1, class D1, class T2, class D2&gt;
+  template&lt;class T1, class D1, class T2, class D2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     bool operator&lt;(const unique_ptr&lt;T1, D1&gt;&amp; x, const unique_ptr&lt;T2, D2&gt;&amp; y);
-  template&lt;class T1, class D1, class T2, class D2&gt;
+  template&lt;class T1, class D1, class T2, class D2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     bool operator&lt;=(const unique_ptr&lt;T1, D1&gt;&amp; x, const unique_ptr&lt;T2, D2&gt;&amp; y);
-  template&lt;class T1, class D1, class T2, class D2&gt;
+  template&lt;class T1, class D1, class T2, class D2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     bool operator&gt;(const unique_ptr&lt;T1, D1&gt;&amp; x, const unique_ptr&lt;T2, D2&gt;&amp; y);
-  template&lt;class T1, class D1, class T2, class D2&gt;
+  template&lt;class T1, class D1, class T2, class D2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     bool operator&gt;=(const unique_ptr&lt;T1, D1&gt;&amp; x, const unique_ptr&lt;T2, D2&gt;&amp; y);
 
-  template&lt;class T, class D&gt;
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     bool operator==(const unique_ptr&lt;T, D&gt;&amp; x, nullptr_t) noexcept;
-  template&lt;class T, class D&gt;
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     bool operator==(nullptr_t, const unique_ptr&lt;T, D&gt;&amp; y) noexcept;
-  template&lt;class T, class D&gt;
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     bool operator!=(const unique_ptr&lt;T, D&gt;&amp; x, nullptr_t) noexcept;
-  template&lt;class T, class D&gt;
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     bool operator!=(nullptr_t, const unique_ptr&lt;T, D&gt;&amp; y) noexcept;
-  template&lt;class T, class D&gt;
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     bool operator&lt;(const unique_ptr&lt;T, D&gt;&amp; x, nullptr_t);
-  template&lt;class T, class D&gt;
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     bool operator&lt;(nullptr_t, const unique_ptr&lt;T, D&gt;&amp; y);
-  template&lt;class T, class D&gt;
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     bool operator&lt;=(const unique_ptr&lt;T, D&gt;&amp; x, nullptr_t);
-  template&lt;class T, class D&gt;
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     bool operator&lt;=(nullptr_t, const unique_ptr&lt;T, D&gt;&amp; y);
-  template&lt;class T, class D&gt;
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     bool operator&gt;(const unique_ptr&lt;T, D&gt;&amp; x, nullptr_t);
-  template&lt;class T, class D&gt;
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     bool operator&gt;(nullptr_t, const unique_ptr&lt;T, D&gt;&amp; y);
-  template&lt;class T, class D&gt;
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     bool operator&gt;=(const unique_ptr&lt;T, D&gt;&amp; x, nullptr_t);
-  template&lt;class T, class D&gt;
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     bool operator&gt;=(nullptr_t, const unique_ptr&lt;T, D&gt;&amp; y);
 
   template&lt;class E, class T, class Y, class D&gt;
@@ -2091,8 +2091,8 @@ namespace std {
 </span>  template&lt;class T&gt; class enable_shared_from_this;
 
   <span class='comment'>// 23.11.7, hash support
-</span>  template&lt;class T&gt; struct hash;
-  template&lt;class T, class D&gt; struct hash&lt;unique_ptr&lt;T, D&gt;&gt;;
+</span>  template&lt;class T&gt; struct hash; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class D&gt; struct hash&lt;unique_ptr&lt;T, D&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T&gt; struct hash&lt;shared_ptr&lt;T&gt;&gt;;
 
   <span class='comment'>// 23.11.8, atomic smart pointers
@@ -2103,6 +2103,82 @@ namespace std {
 </span>  template&lt;class T, class Alloc&gt;
     inline constexpr bool uses_allocator_v = uses_allocator&lt;T, Alloc&gt;::value; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 }</pre></div>
+</blockquote>
+
+Change in [unique.ptr.dltr.general] (21.11.1.1.1) paragraph 1:
+<blockquote class="std">
+<div id='1.sentence-1' class='sentence'>The class template <span class='texttt'>default_&shy;delete</span> serves as the default deleter (destruction policy)
+for the class template <span class='texttt'>unique_&shy;ptr</span> <ins>for hosted implementations</ins>.</div>
+</blockquote>
+
+Change in [unique.ptr.single] (21.11.1.2):
+<blockquote class="std">
+<h4 ><a class='secnum' style='min-width:118pt'>23.11.1.2</a> <span class='texttt'>unique_&shy;ptr</span> for single objects <a class='abbr_ref'>[unique.ptr.single]</a></h4><pre class='codeblock'>
+namespace std {
+  template&lt;class T, class D = <ins><span class='textit'><span class='texttt'>see below</span></span></ins><del>default_delete&lt;T&gt;</del>&gt; class unique_ptr {
+  public:
+    using pointer      = <span class='textit'><span class='texttt'>see below</span></span>;
+    using element_type = T;
+    using deleter_type = D;
+
+    <span class='comment'>// [unique.ptr.single.ctor], constructors
+</span>    constexpr unique_ptr() noexcept;
+    explicit unique_ptr(pointer p) noexcept;
+    unique_ptr(pointer p, <span class='textit'><span class='texttt'>see below</span></span> d1) noexcept;
+    unique_ptr(pointer p, <span class='textit'><span class='texttt'>see below</span></span> d2) noexcept;
+    unique_ptr(unique_ptr&amp;&amp; u) noexcept;
+    constexpr unique_ptr(nullptr_t) noexcept;
+    template&lt;class U, class E&gt;
+      unique_ptr(unique_ptr&lt;U, E&gt;&amp;&amp; u) noexcept;
+
+    <span class='comment'>// [unique.ptr.single.dtor], destructor
+</span>    ~unique_ptr();
+
+    <span class='comment'>// [unique.ptr.single.asgn], assignment
+</span>    unique_ptr&amp; operator=(unique_ptr&amp;&amp; u) noexcept;
+    template&lt;class U, class E&gt;
+      unique_ptr&amp; operator=(unique_ptr&lt;U, E&gt;&amp;&amp; u) noexcept;
+    unique_ptr&amp; operator=(nullptr_t) noexcept;
+
+    <span class='comment'>// [unique.ptr.single.observers], observers
+</span>    add_lvalue_reference_t&lt;T&gt; operator*() const;
+    pointer operator-&gt;() const noexcept;
+    pointer get() const noexcept;
+    deleter_type&amp; get_deleter() noexcept;
+    const deleter_type&amp; get_deleter() const noexcept;
+    explicit operator bool() const noexcept;
+
+    <span class='comment'>// [unique.ptr.single.modifiers], modifiers
+</span>    pointer release() noexcept;
+    void reset(pointer p = pointer()) noexcept;
+    void swap(unique_ptr&amp; u) noexcept;
+
+    <span class='comment'>// disable copy from lvalue
+</span>    unique_ptr(const unique_ptr&amp;) = delete;
+    unique_ptr&amp; operator=(const unique_ptr&amp;) = delete;
+  };
+}</pre>
+<div class='para' id='1'><div class='marginalizedparent'><a class='marginalized'>1</a></div>
+<div id='1.sentence-1' class='sentence'>The default type for the template parameter <span class='texttt'>D</span> is
+<span class='texttt'>default_&shy;delete</span> <ins>for hosted implementations</ins>.</div>
+
+<ins>
+<div id='1.sentence-x1' class='sentence'>The default type for the template parameter <span class='texttt'>D</span> is implementation defined for freestanding implementations.</div>
+<div id='1.sentence-x2' class='sentence'>If the type of the template argument <span class='texttt'>D</span> matches the default type for the template parameter <span class='texttt'>D</span>, and that type is not <span class='texttt'>default_&shy;delete</span>, then the program is ill-formed.</div>
+<div id='1.sentence-x3' class='sentence'>[ Footnote: The intent is to require freestanding users to provide a deleter argument, rather than rely on <span class='texttt'>default_&shy;delete</span>, as <span class='texttt'>default_&shy;delete</span> may not be present in a freestanding implementation. ]</div>
+</ins>
+
+<div id='1.sentence-2' class='sentence'>A client-supplied template argument
+<span class='texttt'>D</span> shall be a
+function object type,
+lvalue reference to function, or
+lvalue reference to function object type
+for which, given
+a value <span class='texttt'>d</span> of type <span class='texttt'>D</span> and a value
+<span class='texttt'>ptr</span> of type <span class='texttt'>unique_&shy;ptr&lt;T, D&gt;&#x200b;::&#x200b;pointer</span>, the expression
+<span class='texttt'>d(ptr)</span> is valid and has the effect of disposing of the
+pointer as appropriate for that deleter.</div>
+</div>
 </blockquote>
 
 Change in [functional.syn] (23.14.1):
