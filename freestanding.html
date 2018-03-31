@@ -494,8 +494,8 @@ Removed <code>atoi</code> because of reliance on <code>isspace</code>.<br/>
 Added <code>visit</code> and <code>bad_variant_access</code>.<br/>
 Added <code>bitset</code>, minus the string members and throwing members.<br/>
 Added <code>&lt;version&gt;</code> and moved the feature macro there.<br/>
+Added <code>unique_ptr</code>.  Leaving <code>make_unique</code> and <code>default_delete</code> out.<br/>
 TODO: Add span<br/>
-TODO: Finish adding unique_ptr back.  Wording is done, need to fix main text.  make_unique and default_delete are notable omissions.<br/>
 <h2> R0 -&gt; R1 </h2>
 R1 adds an abstract.<br/>
 R1 no longer removes any existing freestanding libraries.<br/>
@@ -685,6 +685,8 @@ Portions of <code>&lt;memory&gt;</code>.
 <li><code>uses_allocator</code></li>
 <li><code>allocator_traits</code></li>
 <li>23.10.11, specialized algorithms, except for the ExecutionPolicy overloads</li>
+<li><code>unique_ptr</code></li>
+Note that <code>default_delete</code> is not included, and wording has been added to allow the default deleter of <code>unique_ptr</code> to be implementation defined on freestanding implementations.
 <li><code>uses_allocator_v</code></li>
 </ul>
 <p>
@@ -818,7 +820,7 @@ Many string functions (<code>strtol</code> and family) rely on <code>errno</code
 </p><p>
 <code>&lt;cctype&gt;</code> and <code>&lt;cwctype&gt;</code> rely heavily on global locale data.
 </p><p>
-<code>unique_ptr</code> is generally used for heap management, but is occasionally used as a makeshift RAII object for other resources.  The use of the <code>default_delete</code> class in the template parameters is what dooms this class, as <code>default_delete</code> is very involved with the heap.  In the future, <a href="http://wg21.link/p0052"><code>unique_resource</code> and <code>scope_exit</code></a> may satisfy the non-deleting use cases that <code>unique_ptr</code> currently fills.
+<code>default_delete</code> and <code>make_unique</code> are not included, although <code>unique_ptr</code> is included.  <code>default_delete</code> and <code>make_unique</code> have direct dependencies on heap management functionality.
 </p><p>
 <code>seed_seq</code> uses the heap.  Users can create their own classes satisfying the seed sequence requirements if they wish to use the Sseq constructors on the engine templates.
 </p>
@@ -828,6 +830,8 @@ Here are some things that I am currently requiring, but could be convinced to re
 The <code>&lt;cwchar&gt;</code> functions are implementable for freestanding environments, but infrequently used for systems programming.  They do not exist in freestanding C11 implementations.
 <ul><li><code>visit</code></li></ul>
 <code>visit</code> only throws when the <code>variant</code> is valueless.  If exceptions are disabled, the <code>variant</code> will always have a value.  Since the standard doesn't acknowledge exceptions being disabled, we include the (hopefully) dead <code>bad_variant_access</code> class.
+<ul><li><code>unique_ptr</code></li></ul>
+<code>unique_ptr</code> is generally used for heap management, but is occasionally used as a makeshift RAII object for other resources.  In order to break the compile time dependency on <code>default_delete</code>, I add some implementation defined behavior for the freestanding implementation.  This may be too invasive for some committee members' tastes.  In the Jacksonville 2018 wg21 meeting, there was a strong interest in providing <code>unique_ptr</code>.
 <ul><li>Partial classes</li></ul>
 <code>array</code>, <code>bitset</code>, <code>optional</code>, <code>string_view</code>, and <code>variant</code> all have functions that throw.  These functions aren't critical to the use of the class.  The exceptions that <code>array</code>, <code>bitset</code>, and <code>string_view</code> throw are doubly bad, as those exceptions require <code>std::string</code>.  These headers and classes can be omitted if the committee strongly objects to marking a class partially freestanding.
 <h2>Potential additions</h2>
@@ -838,8 +842,6 @@ I currently omit the <code>complex</code> class entirely, but in theory, the int
 Perhaps we don't worry about library portability in all cases.  Just because kernel modes can't easily use floating point doesn't mean that we should deny floating point to the embedded space.  Do note that most of <code>&lt;cmath&gt;</code> has a dependency on <code>errno</code>.
 <ul><li><code>errno</code> and string functions like <code>strtol</code></li></ul>
 While <code>errno</code> is global data, it isn't much global data.  Thread safety is a concern for those platforms that have threading, but don't have thread-local storage.
-<ul><li><code>unique_ptr</code></li></ul>
-There are uses for <code>unique_ptr</code> that don't require the heap, and can be made to work.  While I would prefer not to be coupled to <code>new</code> or <code>delete</code> at all, the C++17 definition of freestanding requires <code>new</code> and <code>delete</code> to exist, so <code>default_delete</code> shouldn't have any problems compiling.
 <h1>Feature Test Macros</h1>
 <p>
 A freestanding implementation that provides support for this paper shall define the following feature test macro.
