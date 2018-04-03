@@ -496,6 +496,8 @@ Added <code>bitset</code>, minus the string members and throwing members.<br/>
 Added <code>&lt;version&gt;</code> and moved the feature macro there.<br/>
 Added <code>unique_ptr</code>.  Leaving <code>make_unique</code> and <code>default_delete</code> out.<br/>
 Added <code>&lt;span&gt;</code>.<br/>
+TODO: add setjmp<br/>
+TODO: update to n4741.  In the middle of utilities, with the massive <chrono> header now.<br/>
 <h2> R0 -&gt; R1 </h2>
 R1 adds an abstract.<br/>
 R1 no longer removes any existing freestanding libraries.<br/>
@@ -932,7 +934,8 @@ Rework Table 19 referenced from 20.5.1.3 [compliance]:
     <td class='left'><div class='sentence'>
         <span class='texttt'>&lt;cfloat&gt;</span>
         <span class='texttt'>&lt;limits&gt;</span>
-        <span class='texttt'>&lt;climits&gt;</span></div>
+        <span class='texttt'>&lt;climits&gt;</span>
+        <span class='texttt'>&lt;version&gt;</span></div>
     </td>
 </tr>
 <tr class='rowsep'>
@@ -1405,7 +1408,6 @@ namespace std {
 
 Change in [utility.syn] (23.2.1):
 <blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>23.2.1</a> Header <span class='texttt'>&lt;utility&gt;</span> synopsis <a class='abbr_ref'>[utility.syn]</a></h3>
 <pre class='codeblock'>
 <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 namespace std {
@@ -1498,45 +1500,7 @@ namespace std {
 
 Change in [optional.optional] (23.6.3)
 <blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>23.6.3</a> Class template <span class='texttt'>optional</span> <a class='abbr_ref'>[optional.optional]</a></h3>
 <pre class='codeblock'>
-template&lt;class T&gt;
-  class optional {
-  public:
-    using value_type = T;
-
-    <span class='comment'>// 23.6.3.1, constructors
-</span>    constexpr optional() noexcept;
-    constexpr optional(nullopt_t) noexcept;
-    constexpr optional(const optional&amp;);
-    constexpr optional(optional&amp;&amp;) noexcept(<span class='textit'><span class='texttt'>see below</span></span>);
-    template&lt;class... Args&gt;
-      constexpr explicit optional(in_place_t, Args&amp;&amp;...);
-    template&lt;class U, class... Args&gt;
-      constexpr explicit optional(in_place_t, initializer_list&lt;U&gt;, Args&amp;&amp;...);
-    template&lt;class U = T&gt;
-      <span class='textit'><span class='texttt'>EXPLICIT</span></span> constexpr optional(U&amp;&amp;);
-    template&lt;class U&gt;
-      <span class='textit'><span class='texttt'>EXPLICIT</span></span> optional(const optional&lt;U&gt;&amp;);
-    template&lt;class U&gt;
-      <span class='textit'><span class='texttt'>EXPLICIT</span></span> optional(optional&lt;U&gt;&amp;&amp;);
-
-    <span class='comment'>// 23.6.3.2, destructor
-</span>    ~optional();
-
-    <span class='comment'>// 23.6.3.3, assignment
-</span>    optional&amp; operator=(nullopt_t) noexcept;
-    optional&amp; operator=(const optional&amp;);
-    optional&amp; operator=(optional&amp;&amp;) noexcept(<span class='textit'><span class='texttt'>see below</span></span>);
-    template&lt;class U = T&gt; optional&amp; operator=(U&amp;&amp;);
-    template&lt;class U&gt; optional&amp; operator=(const optional&lt;U&gt;&amp;);
-    template&lt;class U&gt; optional&amp; operator=(optional&lt;U&gt;&amp;&amp;);
-    template&lt;class... Args&gt; T&amp; emplace(Args&amp;&amp;...);
-    template&lt;class U, class... Args&gt; T&amp; emplace(initializer_list&lt;U&gt;, Args&amp;&amp;...);
-
-    <span class='comment'>// 23.6.3.4, swap
-</span>    void swap(optional&amp;) noexcept(<span class='textit'><span class='texttt'>see below</span></span>);
-
     <span class='comment'>// 23.6.3.5, observers
 </span>    constexpr const T* operator-&gt;() const;
     constexpr T* operator-&gt;();
@@ -1552,15 +1516,6 @@ template&lt;class T&gt;
     constexpr const T&amp;&amp; value() const&amp;&amp;; <ins><span class='comment'>// <span class='textit'>freestanding, omit</span></span></ins>
     template&lt;class U&gt; constexpr T value_or(U&amp;&amp;) const&amp;;
     template&lt;class U&gt; constexpr T value_or(U&amp;&amp;) &amp;&amp;;
-
-    <span class='comment'>// 23.6.3.6, modifiers
-</span>    void reset() noexcept;
-
-  private:
-    T *val; <span class='comment'>// <span class='textit'>exposition only</span>
-</span>  };
-
-template&lt;class T&gt; optional(T) -&gt; optional&lt;T&gt;;
 </pre>
 </blockquote>
 
@@ -2908,7 +2863,7 @@ namespace std {
 </pre>
 </blockquote>
 
-Change in [array.syn] (26.3.2):
+Change in [array.overview] (26.3.7.1):
 <blockquote class="std">
 <pre class='codeblock'>
     <span class='comment'>// element access
@@ -2923,13 +2878,9 @@ Change in [array.syn] (26.3.2):
 </pre>
 </blockquote>
 
-Change in [views.general] (26.7.1):
+Change in [span.syn] (26.7.2):
 <blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>26.7.1</a> General <a class='abbr_ref'>[views.general]</a></h3>
-<div class='para'>
-    <div class='marginalizedparent'><a class='marginalized'>1</a></div>
-    <div class='sentence'>The header <span class='texttt'>&lt;span&gt;</span> defines the view <span class='texttt'>span</span>. A <span class='texttt'>span</span> is a view over a contiguous sequence of objects, the storage of which is owned by some other object.</div>
-<h3 >Header <span class='texttt'>&lt;span&gt;</span> synopsis</h3>
+<h3 ><a class='secnum' style='min-width:103pt'>26.7.2</a> Header <span class='texttt'>&lt;span&gt;</span> synopsis <a class='abbr_ref'>[span.syn]</a></h3>
 <pre class='codeblock'>
 <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 namespace std {
