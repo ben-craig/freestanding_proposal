@@ -496,8 +496,9 @@ Added <code>bitset</code>, minus the string members and throwing members.<br/>
 Added <code>&lt;version&gt;</code> and moved the feature macro there.<br/>
 Added <code>unique_ptr</code>.  Leaving <code>make_unique</code> and <code>default_delete</code> out.<br/>
 Added <code>&lt;span&gt;</code>.<br/>
+Added <code>weeks</code>, <code>years</code>, and <code>months</code> time durations.<br/>
 TODO: add setjmp<br/>
-TODO: update to n4741.  In the middle of utilities, with the massive <chrono> header now.<br/>
+TODO: update to n4741.  In the middle of utilities, just finished massive &lt;chrono&gt; header.<br/>
 <h2> R0 -&gt; R1 </h2>
 R1 adds an abstract.<br/>
 R1 no longer removes any existing freestanding libraries.<br/>
@@ -700,7 +701,7 @@ Most of <code>&lt;functional&gt;</code>.  <b>Omit</b> the following.
 <li>23.14.14.3, <code>boyer_moore_horspool_searcher</code></li>
 </ul>
 </p><p>
-Most of <code>&lt;chrono&gt;</code>.  <b>Omit</b> 23.17.7, Clocks.
+<code>&lt;chrono&gt;</code> durations and duration math.  Omit clocks, civil time, and streaming functions.
 </p><p>
 Portions of <code>&lt;charconv&gt;</code>.
 </p>
@@ -2282,14 +2283,14 @@ Change in [time.syn] (23.17.2):
 <pre class='codeblock'>
 namespace std {
   namespace chrono {
-    <span class='comment'>// 23.17.5, class template <span class='tcode_in_codeblock'>duration</span>
+    <span class='comment'>// [time.duration], class template <span class='tcode_in_codeblock'>duration</span>
 </span>    template&lt;class Rep, class Period = ratio&lt;1&gt;&gt; class duration; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-    <span class='comment'>// 23.17.6, class template <span class='tcode_in_codeblock'>time_&shy;point</span>
+    <span class='comment'>// [time.point], class template <span class='tcode_in_codeblock'>time_&shy;point</span>
 </span>    template&lt;class Clock, class Duration = typename Clock::duration&gt; class time_point; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   }
 
-  <span class='comment'>// 23.17.4.3, <span class='tcode_in_codeblock'>common_&shy;type</span> specializations
+  <span class='comment'>// [time.traits.specializations], <span class='tcode_in_codeblock'>common_&shy;type</span> specializations
 </span>  template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
     struct common_type&lt;chrono::duration&lt;Rep1, Period1&gt;,
                        chrono::duration&lt;Rep2, Period2&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -2299,13 +2300,16 @@ namespace std {
                        chrono::time_point&lt;Clock, Duration2&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
   namespace chrono {
-    <span class='comment'>// 23.17.4, customization traits
+    <span class='comment'>// [time.traits], customization traits
 </span>    template&lt;class Rep&gt; struct treat_as_floating_point; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     template&lt;class Rep&gt; struct duration_values; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     template&lt;class Rep&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
       inline constexpr bool treat_as_floating_point_v = treat_as_floating_point&lt;Rep&gt;::value;
 
-    <span class='comment'>// 23.17.5.5, <span class='tcode_in_codeblock'>duration</span> arithmetic
+    template&lt;class T&gt; struct is_clock;
+    template&lt;class T&gt; inline constexpr bool is_clock_v = is_clock&lt;T&gt;::value;
+
+    <span class='comment'>// [time.duration.nonmember], <span class='tcode_in_codeblock'>duration</span> arithmetic
 </span>    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
       constexpr common_type_t&lt;duration&lt;Rep1, Period1&gt;, duration&lt;Rep2, Period2&gt;&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
         operator+(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
@@ -2313,25 +2317,25 @@ namespace std {
       constexpr common_type_t&lt;duration&lt;Rep1, Period1&gt;, duration&lt;Rep2, Period2&gt;&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
         operator-(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
     template&lt;class Rep1, class Period, class Rep2&gt;
-      constexpr duration&lt;common_type_t&lt;Rep1, Rep2&gt;, Period&gt;
-        operator*(const duration&lt;Rep1, Period&gt;&amp; d, const Rep2&amp; s); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr duration&lt;common_type_t&lt;Rep1, Rep2&gt;, Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+        operator*(const duration&lt;Rep1, Period&gt;&amp; d, const Rep2&amp; s);
     template&lt;class Rep1, class Rep2, class Period&gt;
-      constexpr duration&lt;common_type_t&lt;Rep1, Rep2&gt;, Period&gt;
-        operator*(const Rep1&amp; s, const duration&lt;Rep2, Period&gt;&amp; d); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr duration&lt;common_type_t&lt;Rep1, Rep2&gt;, Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+        operator*(const Rep1&amp; s, const duration&lt;Rep2, Period&gt;&amp; d);
     template&lt;class Rep1, class Period, class Rep2&gt;
-      constexpr duration&lt;common_type_t&lt;Rep1, Rep2&gt;, Period&gt;
-        operator/(const duration&lt;Rep1, Period&gt;&amp; d, const Rep2&amp; s); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr duration&lt;common_type_t&lt;Rep1, Rep2&gt;, Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+        operator/(const duration&lt;Rep1, Period&gt;&amp; d, const Rep2&amp; s);
     template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
       constexpr common_type_t&lt;Rep1, Rep2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
         operator/(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
     template&lt;class Rep1, class Period, class Rep2&gt;
-      constexpr duration&lt;common_type_t&lt;Rep1, Rep2&gt;, Period&gt;
-        operator%(const duration&lt;Rep1, Period&gt;&amp; d, const Rep2&amp; s); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr duration&lt;common_type_t&lt;Rep1, Rep2&gt;, Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+        operator%(const duration&lt;Rep1, Period&gt;&amp; d, const Rep2&amp; s);
     template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
       constexpr common_type_t&lt;duration&lt;Rep1, Period1&gt;, duration&lt;Rep2, Period2&gt;&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
         operator%(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
 
-    <span class='comment'>// 23.17.5.6, <span class='tcode_in_codeblock'>duration</span> comparisons
+    <span class='comment'>// [time.duration.comparisons], <span class='tcode_in_codeblock'>duration</span> comparisons
 </span>    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
       constexpr bool operator==(const duration&lt;Rep1, Period1&gt;&amp; lhs,
                                 const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -2351,25 +2355,49 @@ namespace std {
       constexpr bool operator&gt;=(const duration&lt;Rep1, Period1&gt;&amp; lhs,
                                 const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-    <span class='comment'>// 23.17.5.7, <span class='tcode_in_codeblock'>duration_&shy;cast</span>
-</span>    template&lt;class ToDuration, class Rep, class Period&gt;
-      constexpr ToDuration duration_cast(const duration&lt;Rep, Period&gt;&amp; d); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class ToDuration, class Rep, class Period&gt;
-      constexpr ToDuration floor(const duration&lt;Rep, Period&gt;&amp; d); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class ToDuration, class Rep, class Period&gt;
-      constexpr ToDuration ceil(const duration&lt;Rep, Period&gt;&amp; d); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class ToDuration, class Rep, class Period&gt;
-      constexpr ToDuration round(const duration&lt;Rep, Period&gt;&amp; d); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='comment'>// [time.duration.cast], <span class='tcode_in_codeblock'>duration_&shy;cast</span>
+</span>    template&lt;class ToDuration, class Rep, class Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr ToDuration duration_cast(const duration&lt;Rep, Period&gt;&amp; d);
+    template&lt;class ToDuration, class Rep, class Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr ToDuration floor(const duration&lt;Rep, Period&gt;&amp; d);
+    template&lt;class ToDuration, class Rep, class Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr ToDuration ceil(const duration&lt;Rep, Period&gt;&amp; d);
+    template&lt;class ToDuration, class Rep, class Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr ToDuration round(const duration&lt;Rep, Period&gt;&amp; d);
+
+    <span class='comment'>// [time.duration.io], <span class='tcode_in_codeblock'>duration</span> I/O
+</span>    template&lt;class charT, class traits, class Rep, class Period&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os,
+                   const duration&lt;Rep, Period&gt;&amp; d);
+    template&lt;class charT, class traits, class Rep, class Period&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        to_stream(basic_ostream&lt;charT, traits&gt;&amp; os, const charT* fmt,
+                  const duration&lt;Rep, Period&gt;&amp; d);
+    template&lt;class charT, class traits, class Rep, class Period, class Alloc = allocator&lt;charT&gt;&gt;
+      basic_istream&lt;charT, traits&gt;&amp;
+        from_stream(basic_istream&lt;charT, traits&gt;&amp; is, const charT* fmt,
+                    duration&lt;Rep, Period&gt;&amp; d,
+                    basic_string&lt;charT, traits, Alloc&gt;* abbrev = nullptr,
+                    minutes* offset = nullptr);
 
     <span class='comment'>// convenience typedefs
-</span>    using nanoseconds  = duration&lt;<span class='textit'>signed integer type of at least 64 bits</span>, nano&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    using microseconds = duration&lt;<span class='textit'>signed integer type of at least 55 bits</span>, micro&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    using milliseconds = duration&lt;<span class='textit'>signed integer type of at least 45 bits</span>, milli&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    using seconds      = duration&lt;<span class='textit'>signed integer type of at least 35 bits</span>&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    using minutes      = duration&lt;<span class='textit'>signed integer type of at least 29 bits</span>, ratio&lt;  60&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    using hours        = duration&lt;<span class='textit'>signed integer type of at least 23 bits</span>, ratio&lt;3600&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+</span>    using nanoseconds  = duration&lt;<i>signed integer type of at least 64 bits</i>, nano&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    using microseconds = duration&lt;<i>signed integer type of at least 55 bits</i>, micro&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    using milliseconds = duration&lt;<i>signed integer type of at least 45 bits</i>, milli&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    using seconds      = duration&lt;<i>signed integer type of at least 35 bits</i>&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    using minutes      = duration&lt;<i>signed integer type of at least 29 bits</i>, ratio&lt;  60&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    using hours        = duration&lt;<i>signed integer type of at least 23 bits</i>, ratio&lt;3600&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    using days         = duration&lt;<i>signed integer type of at least 25 bits</i>,
+                                  ratio_multiply&lt;ratio&lt;24&gt;, hours::period&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    using weeks        = duration&lt;<i>signed integer type of at least 22 bits</i>,
+                                  ratio_multiply&lt;ratio&lt;7&gt;, days::period&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    using years        = duration&lt;<i>signed integer type of at least 17 bits</i>,
+                                  ratio_multiply&lt;ratio&lt;146097, 400&gt;, days::period&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    using months       = duration&lt;<i>signed integer type of at least 20 bits</i>,
+                                  ratio_divide&lt;years::period, ratio&lt;12&gt;&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-    <span class='comment'>// 23.17.6.5, <span class='tcode_in_codeblock'>time_&shy;point</span> arithmetic
+    <span class='comment'>// [time.point.nonmember], <span class='tcode_in_codeblock'>time_&shy;point</span> arithmetic
 </span>    template&lt;class Clock, class Duration1, class Rep2, class Period2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
       constexpr time_point&lt;Clock, common_type_t&lt;Duration1, duration&lt;Rep2, Period2&gt;&gt;&gt;
         operator+(const time_point&lt;Clock, Duration1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
@@ -2379,35 +2407,35 @@ namespace std {
     template&lt;class Clock, class Duration1, class Rep2, class Period2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
       constexpr time_point&lt;Clock, common_type_t&lt;Duration1, duration&lt;Rep2, Period2&gt;&gt;&gt;
         operator-(const time_point&lt;Clock, Duration1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
-    template&lt;class Clock, class Duration1, class Duration2&gt;
+    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
       constexpr common_type_t&lt;Duration1, Duration2&gt;
         operator-(const time_point&lt;Clock, Duration1&gt;&amp; lhs,
-                  const time_point&lt;Clock, Duration2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+                  const time_point&lt;Clock, Duration2&gt;&amp; rhs);
 
-    <span class='comment'>// 23.17.6.6, <span class='tcode_in_codeblock'>time_&shy;point</span> comparisons
-</span>    template&lt;class Clock, class Duration1, class Duration2&gt;
+    <span class='comment'>// [time.point.comparisons], <span class='tcode_in_codeblock'>time_&shy;point</span> comparisons
+</span>    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
        constexpr bool operator==(const time_point&lt;Clock, Duration1&gt;&amp; lhs,
-                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class Clock, class Duration1, class Duration2&gt;
+                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs);
+    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
        constexpr bool operator!=(const time_point&lt;Clock, Duration1&gt;&amp; lhs,
-                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class Clock, class Duration1, class Duration2&gt;
+                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs);
+    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
        constexpr bool operator&lt; (const time_point&lt;Clock, Duration1&gt;&amp; lhs,
-                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class Clock, class Duration1, class Duration2&gt;
+                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs);
+    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
        constexpr bool operator&lt;=(const time_point&lt;Clock, Duration1&gt;&amp; lhs,
-                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class Clock, class Duration1, class Duration2&gt;
+                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs);
+    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
        constexpr bool operator&gt; (const time_point&lt;Clock, Duration1&gt;&amp; lhs,
-                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class Clock, class Duration1, class Duration2&gt;
+                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs);
+    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
        constexpr bool operator&gt;=(const time_point&lt;Clock, Duration1&gt;&amp; lhs,
-                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs);
 
-    <span class='comment'>// 23.17.6.7, <span class='tcode_in_codeblock'>time_&shy;point_&shy;cast</span>
-</span>    template&lt;class ToDuration, class Clock, class Duration&gt;
+    <span class='comment'>// [time.point.cast], <span class='tcode_in_codeblock'>time_&shy;point_&shy;cast</span>
+</span>    template&lt;class ToDuration, class Clock, class Duration&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
       constexpr time_point&lt;Clock, ToDuration&gt;
-        time_point_cast(const time_point&lt;Clock, Duration&gt;&amp; t); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+        time_point_cast(const time_point&lt;Clock, Duration&gt;&amp; t);
     template&lt;class ToDuration, class Clock, class Duration&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
       constexpr time_point&lt;Clock, ToDuration&gt; floor(const time_point&lt;Clock, Duration&gt;&amp; tp);
     template&lt;class ToDuration, class Clock, class Duration&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -2415,39 +2443,804 @@ namespace std {
     template&lt;class ToDuration, class Clock, class Duration&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
       constexpr time_point&lt;Clock, ToDuration&gt; round(const time_point&lt;Clock, Duration&gt;&amp; tp);
 
-    <span class='comment'>// 23.17.5.9, specialized algorithms
+    <span class='comment'>// [time.duration.alg], specialized algorithms
 </span>    template&lt;class Rep, class Period&gt;
       constexpr duration&lt;Rep, Period&gt; abs(duration&lt;Rep, Period&gt; d); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-    <span class='comment'>// 23.17.7, clocks
+    <span class='comment'>// [time.clock.system], class <span class='tcode_in_codeblock'>system_&shy;clock</span>
 </span>    class system_clock;
-    class steady_clock;
-    class high_resolution_clock;
+
+    template&lt;class Duration&gt;
+      using sys_time  = time_point&lt;system_clock, Duration&gt;;
+    using sys_seconds = sys_time&lt;seconds&gt;;
+    using sys_days    = sys_time&lt;days&gt;;
+
+    template&lt;class charT, class traits, class Duration&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const sys_time&lt;Duration&gt;&amp; tp);
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const sys_days&amp; dp);
+
+    template&lt;class charT, class traits, class Duration&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        to_stream(basic_ostream&lt;charT, traits&gt;&amp; os, const charT* fmt,
+                  const sys_time&lt;Duration&gt;&amp; tp);
+
+    template&lt;class charT, class traits, class Duration, class Alloc = allocator&lt;charT&gt;&gt;
+      basic_istream&lt;charT, traits&gt;&amp;
+        from_stream(basic_istream&lt;charT, traits&gt;&amp; is, const charT* fmt,
+                    sys_time&lt;Duration&gt;&amp; tp,
+                    basic_string&lt;charT, traits, Alloc&gt;* abbrev = nullptr,
+                    minutes* offset = nullptr);
+
+    <span class='comment'>// [time.clock.utc], class <span class='tcode_in_codeblock'>utc_&shy;clock</span>
+</span>    class utc_clock;
+
+    template&lt;class Duration&gt;
+      using utc_time  = time_point&lt;utc_clock, Duration&gt;;
+    using utc_seconds = utc_time&lt;seconds&gt;;
+
+    template&lt;class charT, class traits, class Duration&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const utc_time&lt;Duration&gt;&amp; t);
+    template&lt;class charT, class traits, class Duration&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        to_stream(basic_ostream&lt;charT, traits&gt;&amp; os, const charT* fmt,
+                  const utc_time&lt;Duration&gt;&amp; tp);
+    template&lt;class charT, class traits, class Duration, class Alloc = allocator&lt;charT&gt;&gt;
+      basic_istream&lt;charT, traits&gt;&amp;
+        from_stream(basic_istream&lt;charT, traits&gt;&amp; is, const charT* fmt,
+                    utc_time&lt;Duration&gt;&amp; tp,
+                    basic_string&lt;charT, traits, Alloc&gt;* abbrev = nullptr,
+                    minutes* offset = nullptr);
+
+    <span class='comment'>// [time.clock.tai], class <span class='tcode_in_codeblock'>tai_&shy;clock</span>
+</span>    class tai_clock;
+
+    template&lt;class Duration&gt;
+      using tai_time  = time_point&lt;tai_clock, Duration&gt;;
+    using tai_seconds = tai_time&lt;seconds&gt;;
+
+    template&lt;class charT, class traits, class Duration&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const tai_time&lt;Duration&gt;&amp; t);
+    template&lt;class charT, class traits, class Duration&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        to_stream(basic_ostream&lt;charT, traits&gt;&amp; os, const charT* fmt,
+                  const tai_time&lt;Duration&gt;&amp; tp);
+    template&lt;class charT, class traits, class Duration, class Alloc = allocator&lt;charT&gt;&gt;
+      basic_istream&lt;charT, traits&gt;&amp;
+        from_stream(basic_istream&lt;charT, traits&gt;&amp; is, const charT* fmt,
+                    tai_time&lt;Duration&gt;&amp; tp,
+                    basic_string&lt;charT, traits, Alloc&gt;* abbrev = nullptr,
+                    minutes* offset = nullptr);
+
+    <span class='comment'>// [time.clock.gps], class <span class='tcode_in_codeblock'>gps_&shy;clock</span>
+</span>    class gps_clock;
+
+    template&lt;class Duration&gt;
+      using gps_time  = time_point&lt;gps_clock, Duration&gt;;
+    using gps_seconds = gps_time&lt;seconds&gt;;
+
+    template&lt;class charT, class traits, class Duration&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const gps_time&lt;Duration&gt;&amp; t);
+    template&lt;class charT, class traits, class Duration&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        to_stream(basic_ostream&lt;charT, traits&gt;&amp; os, const charT* fmt,
+                  const gps_time&lt;Duration&gt;&amp; tp);
+    template&lt;class charT, class traits, class Duration, class Alloc = allocator&lt;charT&gt;&gt;
+      basic_istream&lt;charT, traits&gt;&amp;
+        from_stream(basic_istream&lt;charT, traits&gt;&amp; is, const charT* fmt,
+                    gps_time&lt;Duration&gt;&amp; tp,
+                    basic_string&lt;charT, traits, Alloc&gt;* abbrev = nullptr,
+                    minutes* offset = nullptr);
+
+    <span class='comment'>// [time.clock.file], class <span class='tcode_in_codeblock'>file_&shy;clock</span>
+</span>    class file_clock;
+
+    template&lt;class Duration&gt;
+      using file_time = time_point&lt;file_clock, Duration&gt;;
+
+    template&lt;class charT, class traits, class Duration&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const file_time&lt;Duration&gt;&amp; tp);
+    template&lt;class charT, class traits, class Duration&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        to_stream(basic_ostream&lt;charT, traits&gt;&amp; os, const charT* fmt,
+                  const file_time&lt;Duration&gt;&amp; tp);
+    template&lt;class charT, class traits, class Duration, class Alloc = allocator&lt;charT&gt;&gt;
+      basic_istream&lt;charT, traits&gt;&amp;
+        from_stream(basic_istream&lt;charT, traits&gt;&amp; is, const charT* fmt,
+                    file_time&lt;Duration&gt;&amp; tp,
+                    basic_string&lt;charT, traits, Alloc&gt;* abbrev = nullptr,
+                    minutes* offset = nullptr);
+
+    <span class='comment'>// [time.clock.steady], class <span class='tcode_in_codeblock'>steady_&shy;clock</span>
+</span>    class steady_clock;
+
+    <span class='comment'>// [time.clock.hires], class <span class='tcode_in_codeblock'>high_&shy;resolution_&shy;clock</span>
+</span>    class high_resolution_clock;
+
+    <span class='comment'>// [time.clock.local], local time
+</span>    struct local_t {};
+    template&lt;class Duration&gt;
+      using local_time  = time_point&lt;local_t, Duration&gt;;
+    using local_seconds = local_time&lt;seconds&gt;;
+    using local_days    = local_time&lt;days&gt;;
+
+    template&lt;class charT, class traits, class Duration&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const local_time&lt;Duration&gt;&amp; tp);
+    template&lt;class charT, class traits, class Duration&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        to_stream(basic_ostream&lt;charT, traits&gt;&amp; os, const charT* fmt,
+                  const local_time&lt;Duration&gt;&amp; tp,
+                  const string* abbrev = nullptr, const seconds* offset_sec = nullptr);
+    template&lt;class charT, class traits, class Duration, class Alloc = allocator&lt;charT&gt;&gt;
+      basic_istream&lt;charT, traits&gt;&amp;
+        from_stream(basic_istream&lt;charT, traits&gt;&amp; is, const charT* fmt,
+                    local_time&lt;Duration&gt;&amp; tp,
+                    basic_string&lt;charT, traits, Alloc&gt;* abbrev = nullptr,
+                    minutes* offset = nullptr);
+
+    <span class='comment'>// [time.clock.cast], <span class='tcode_in_codeblock'>time_&shy;point</span> conversions
+</span>    template&lt;class DestClock, class SourceClock&gt;
+      struct clock_time_conversion;
+
+    template&lt;class DestClock, class SourceClock, class Duration&gt;
+      auto clock_cast(const time_point&lt;SourceClock, Duration&gt;&amp; t);
+
+    <span class='comment'>// [time.cal.last], class <span class='tcode_in_codeblock'>last_&shy;spec</span>
+</span>    struct last_spec;
+
+    <span class='comment'>// [time.cal.day], class <span class='tcode_in_codeblock'>day</span>
+</span>    class day;
+
+    constexpr bool operator==(const day&amp; x, const day&amp; y) noexcept;
+    constexpr bool operator!=(const day&amp; x, const day&amp; y) noexcept;
+    constexpr bool operator&lt; (const day&amp; x, const day&amp; y) noexcept;
+    constexpr bool operator&gt; (const day&amp; x, const day&amp; y) noexcept;
+    constexpr bool operator&lt;=(const day&amp; x, const day&amp; y) noexcept;
+    constexpr bool operator&gt;=(const day&amp; x, const day&amp; y) noexcept;
+
+    constexpr day  operator+(const day&amp;  x, const days&amp; y) noexcept;
+    constexpr day  operator+(const days&amp; x, const day&amp;  y) noexcept;
+    constexpr day  operator-(const day&amp;  x, const days&amp; y) noexcept;
+    constexpr days operator-(const day&amp;  x, const day&amp;  y) noexcept;
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const day&amp; d);
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        to_stream(basic_ostream&lt;charT, traits&gt;&amp; os, const charT* fmt, const day&amp; d);
+    template&lt;class charT, class traits, class Alloc = allocator&lt;charT&gt;&gt;
+      basic_istream&lt;charT, traits&gt;&amp;
+        from_stream(basic_istream&lt;charT, traits&gt;&amp; is, const charT* fmt,
+                    day&amp; d, basic_string&lt;charT, traits, Alloc&gt;* abbrev = nullptr,
+                    minutes* offset = nullptr);
+
+    <span class='comment'>// [time.cal.month], class <span class='tcode_in_codeblock'>month</span>
+</span>    class month;
+
+    constexpr bool operator==(const month&amp; x, const month&amp; y) noexcept;
+    constexpr bool operator!=(const month&amp; x, const month&amp; y) noexcept;
+    constexpr bool operator&lt; (const month&amp; x, const month&amp; y) noexcept;
+    constexpr bool operator&gt; (const month&amp; x, const month&amp; y) noexcept;
+    constexpr bool operator&lt;=(const month&amp; x, const month&amp; y) noexcept;
+    constexpr bool operator&gt;=(const month&amp; x, const month&amp; y) noexcept;
+
+    constexpr month  operator+(const month&amp;  x, const months&amp; y) noexcept;
+    constexpr month  operator+(const months&amp; x,  const month&amp; y) noexcept;
+    constexpr month  operator-(const month&amp;  x, const months&amp; y) noexcept;
+    constexpr months operator-(const month&amp;  x,  const month&amp; y) noexcept;
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const month&amp; m);
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        to_stream(basic_ostream&lt;charT, traits&gt;&amp; os, const charT* fmt, const month&amp; m);
+    template&lt;class charT, class traits, class Alloc = allocator&lt;charT&gt;&gt;
+      basic_istream&lt;charT, traits&gt;&amp;
+        from_stream(basic_istream&lt;charT, traits&gt;&amp; is, const charT* fmt,
+                    month&amp; m, basic_string&lt;charT, traits, Alloc&gt;* abbrev = nullptr,
+                    minutes* offset = nullptr);
+
+    <span class='comment'>// [time.cal.year], class <span class='tcode_in_codeblock'>year</span>
+</span>    class year;
+
+    constexpr bool operator==(const year&amp; x, const year&amp; y) noexcept;
+    constexpr bool operator!=(const year&amp; x, const year&amp; y) noexcept;
+    constexpr bool operator&lt; (const year&amp; x, const year&amp; y) noexcept;
+    constexpr bool operator&gt; (const year&amp; x, const year&amp; y) noexcept;
+    constexpr bool operator&lt;=(const year&amp; x, const year&amp; y) noexcept;
+    constexpr bool operator&gt;=(const year&amp; x, const year&amp; y) noexcept;
+
+    constexpr year  operator+(const year&amp;  x, const years&amp; y) noexcept;
+    constexpr year  operator+(const years&amp; x, const year&amp;  y) noexcept;
+    constexpr year  operator-(const year&amp;  x, const years&amp; y) noexcept;
+    constexpr years operator-(const year&amp;  x, const year&amp;  y) noexcept;
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const year&amp; y);
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        to_stream(basic_ostream&lt;charT, traits&gt;&amp; os, const charT* fmt, const year&amp; y);
+
+    template&lt;class charT, class traits, class Alloc = allocator&lt;charT&gt;&gt;
+      basic_istream&lt;charT, traits&gt;&amp;
+        from_stream(basic_istream&lt;charT, traits&gt;&amp; is, const charT* fmt,
+                    year&amp; y, basic_string&lt;charT, traits, Alloc&gt;* abbrev = nullptr,
+                    minutes* offset = nullptr);
+
+    <span class='comment'>// [time.cal.wd], class <span class='tcode_in_codeblock'>weekday</span>
+</span>    class weekday;
+
+    constexpr bool operator==(const weekday&amp; x, const weekday&amp; y) noexcept;
+    constexpr bool operator!=(const weekday&amp; x, const weekday&amp; y) noexcept;
+
+    constexpr weekday operator+(const weekday&amp; x, const days&amp;    y) noexcept;
+    constexpr weekday operator+(const days&amp;    x, const weekday&amp; y) noexcept;
+    constexpr weekday operator-(const weekday&amp; x, const days&amp;    y) noexcept;
+    constexpr days    operator-(const weekday&amp; x, const weekday&amp; y) noexcept;
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const weekday&amp; wd);
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        to_stream(basic_ostream&lt;charT, traits&gt;&amp; os, const charT* fmt, const weekday&amp; wd);
+
+    template&lt;class charT, class traits, class Alloc = allocator&lt;charT&gt;&gt;
+      basic_istream&lt;charT, traits&gt;&amp;
+        from_stream(basic_istream&lt;charT, traits&gt;&amp; is, const charT* fmt,
+                    weekday&amp; wd, basic_string&lt;charT, traits, Alloc&gt;* abbrev = nullptr,
+                    minutes* offset = nullptr);
+
+    <span class='comment'>// [time.cal.wdidx], class <span class='tcode_in_codeblock'>weekday_&shy;indexed</span>
+</span>    class weekday_indexed;
+
+    constexpr bool operator==(const weekday_indexed&amp; x, const weekday_indexed&amp; y) noexcept;
+    constexpr bool operator!=(const weekday_indexed&amp; x, const weekday_indexed&amp; y) noexcept;
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const weekday_indexed&amp; wdi);
+
+    <span class='comment'>// [time.cal.wdlast], class <span class='tcode_in_codeblock'>weekday_&shy;last</span>
+</span>    class weekday_last;
+
+    constexpr bool operator==(const weekday_last&amp; x, const weekday_last&amp; y) noexcept;
+    constexpr bool operator!=(const weekday_last&amp; x, const weekday_last&amp; y) noexcept;
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const weekday_last&amp; wdl);
+
+    <span class='comment'>// [time.cal.md], class <span class='tcode_in_codeblock'>month_&shy;day</span>
+</span>    class month_day;
+
+    constexpr bool operator==(const month_day&amp; x, const month_day&amp; y) noexcept;
+    constexpr bool operator!=(const month_day&amp; x, const month_day&amp; y) noexcept;
+    constexpr bool operator&lt; (const month_day&amp; x, const month_day&amp; y) noexcept;
+    constexpr bool operator&gt; (const month_day&amp; x, const month_day&amp; y) noexcept;
+    constexpr bool operator&lt;=(const month_day&amp; x, const month_day&amp; y) noexcept;
+    constexpr bool operator&gt;=(const month_day&amp; x, const month_day&amp; y) noexcept;
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const month_day&amp; md);
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        to_stream(basic_ostream&lt;charT, traits&gt;&amp; os, const charT* fmt, const month_day&amp; md);
+
+    template&lt;class charT, class traits, class Alloc = allocator&lt;charT&gt;&gt;
+      basic_istream&lt;charT, traits&gt;&amp;
+        from_stream(basic_istream&lt;charT, traits&gt;&amp; is, const charT* fmt,
+                    month_day&amp; md, basic_string&lt;charT, traits, Alloc&gt;* abbrev = nullptr,
+                    minutes* offset = nullptr);
+
+    <span class='comment'>// [time.cal.mdlast], class <span class='tcode_in_codeblock'>month_&shy;day_&shy;last</span>
+</span>    class month_day_last;
+
+    constexpr bool operator==(const month_day_last&amp; x, const month_day_last&amp; y) noexcept;
+    constexpr bool operator!=(const month_day_last&amp; x, const month_day_last&amp; y) noexcept;
+    constexpr bool operator&lt; (const month_day_last&amp; x, const month_day_last&amp; y) noexcept;
+    constexpr bool operator&gt; (const month_day_last&amp; x, const month_day_last&amp; y) noexcept;
+    constexpr bool operator&lt;=(const month_day_last&amp; x, const month_day_last&amp; y) noexcept;
+    constexpr bool operator&gt;=(const month_day_last&amp; x, const month_day_last&amp; y) noexcept;
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const month_day_last&amp; mdl);
+
+    <span class='comment'>// [time.cal.mwd], class <span class='tcode_in_codeblock'>month_&shy;weekday</span>
+</span>    class month_weekday;
+
+    constexpr bool operator==(const month_weekday&amp; x, const month_weekday&amp; y) noexcept;
+    constexpr bool operator!=(const month_weekday&amp; x, const month_weekday&amp; y) noexcept;
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const month_weekday&amp; mwd);
+
+    <span class='comment'>// [time.cal.mwdlast], class <span class='tcode_in_codeblock'>month_&shy;weekday_&shy;last</span>
+</span>    class month_weekday_last;
+
+    constexpr bool operator==(const month_weekday_last&amp; x, const month_weekday_last&amp; y) noexcept;
+    constexpr bool operator!=(const month_weekday_last&amp; x, const month_weekday_last&amp; y) noexcept;
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const month_weekday_last&amp; mwdl);
+
+    <span class='comment'>// [time.cal.ym], class <span class='tcode_in_codeblock'>year_&shy;month</span>
+</span>    class year_month;
+
+    constexpr bool operator==(const year_month&amp; x, const year_month&amp; y) noexcept;
+    constexpr bool operator!=(const year_month&amp; x, const year_month&amp; y) noexcept;
+    constexpr bool operator&lt; (const year_month&amp; x, const year_month&amp; y) noexcept;
+    constexpr bool operator&gt; (const year_month&amp; x, const year_month&amp; y) noexcept;
+    constexpr bool operator&lt;=(const year_month&amp; x, const year_month&amp; y) noexcept;
+    constexpr bool operator&gt;=(const year_month&amp; x, const year_month&amp; y) noexcept;
+
+    constexpr year_month operator+(const year_month&amp; ym, const months&amp; dm) noexcept;
+    constexpr year_month operator+(const months&amp; dm, const year_month&amp; ym) noexcept;
+    constexpr year_month operator-(const year_month&amp; ym, const months&amp; dm) noexcept;
+    constexpr months operator-(const year_month&amp; x, const year_month&amp; y) noexcept;
+    constexpr year_month operator+(const year_month&amp; ym, const years&amp; dy) noexcept;
+    constexpr year_month operator+(const years&amp; dy, const year_month&amp; ym) noexcept;
+    constexpr year_month operator-(const year_month&amp; ym, const years&amp; dy) noexcept;
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const year_month&amp; ym);
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        to_stream(basic_ostream&lt;charT, traits&gt;&amp; os, const charT* fmt, const year_month&amp; ym);
+
+    template&lt;class charT, class traits, class Alloc = allocator&lt;charT&gt;&gt;
+      basic_istream&lt;charT, traits&gt;&amp;
+        from_stream(basic_istream&lt;charT, traits&gt;&amp; is, const charT* fmt,
+                    year_month&amp; ym, basic_string&lt;charT, traits, Alloc&gt;* abbrev = nullptr,
+                    minutes* offset = nullptr);
+
+    <span class='comment'>// [time.cal.ymd], class <span class='tcode_in_codeblock'>year_&shy;month_&shy;day</span>
+</span>    class year_month_day;
+
+    constexpr bool operator==(const year_month_day&amp; x, const year_month_day&amp; y) noexcept;
+    constexpr bool operator!=(const year_month_day&amp; x, const year_month_day&amp; y) noexcept;
+    constexpr bool operator&lt; (const year_month_day&amp; x, const year_month_day&amp; y) noexcept;
+    constexpr bool operator&gt; (const year_month_day&amp; x, const year_month_day&amp; y) noexcept;
+    constexpr bool operator&lt;=(const year_month_day&amp; x, const year_month_day&amp; y) noexcept;
+    constexpr bool operator&gt;=(const year_month_day&amp; x, const year_month_day&amp; y) noexcept;
+
+    constexpr year_month_day operator+(const year_month_day&amp; ymd, const months&amp; dm) noexcept;
+    constexpr year_month_day operator+(const months&amp; dm, const year_month_day&amp; ymd) noexcept;
+    constexpr year_month_day operator+(const year_month_day&amp; ymd, const years&amp; dy) noexcept;
+    constexpr year_month_day operator+(const years&amp; dy, const year_month_day&amp; ymd) noexcept;
+    constexpr year_month_day operator-(const year_month_day&amp; ymd, const months&amp; dm) noexcept;
+    constexpr year_month_day operator-(const year_month_day&amp; ymd, const years&amp; dy) noexcept;
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const year_month_day&amp; ymd);
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        to_stream(basic_ostream&lt;charT, traits&gt;&amp; os, const charT* fmt,
+                  const year_month_day&amp; ymd);
+
+    template&lt;class charT, class traits, class Alloc = allocator&lt;charT&gt;&gt;
+      basic_istream&lt;charT, traits&gt;&amp;
+        from_stream(basic_istream&lt;charT, traits&gt;&amp; is, const charT* fmt,
+                    year_month_day&amp; ymd,
+                    basic_string&lt;charT, traits, Alloc&gt;* abbrev = nullptr,
+                    minutes* offset = nullptr);
+
+    <span class='comment'>// [time.cal.ymdlast], class <span class='tcode_in_codeblock'>year_&shy;month_&shy;day_&shy;last</span>
+</span>    class year_month_day_last;
+
+    constexpr bool operator==(const year_month_day_last&amp; x,
+                              const year_month_day_last&amp; y) noexcept;
+    constexpr bool operator!=(const year_month_day_last&amp; x,
+                              const year_month_day_last&amp; y) noexcept;
+    constexpr bool operator&lt; (const year_month_day_last&amp; x,
+                              const year_month_day_last&amp; y) noexcept;
+    constexpr bool operator&gt; (const year_month_day_last&amp; x,
+                              const year_month_day_last&amp; y) noexcept;
+    constexpr bool operator&lt;=(const year_month_day_last&amp; x,
+                              const year_month_day_last&amp; y) noexcept;
+    constexpr bool operator&gt;=(const year_month_day_last&amp; x,
+                              const year_month_day_last&amp; y) noexcept;
+
+    constexpr year_month_day_last
+      operator+(const year_month_day_last&amp; ymdl, const months&amp; dm) noexcept;
+    constexpr year_month_day_last
+      operator+(const months&amp; dm, const year_month_day_last&amp; ymdl) noexcept;
+    constexpr year_month_day_last
+      operator+(const year_month_day_last&amp; ymdl, const years&amp; dy) noexcept;
+    constexpr year_month_day_last
+      operator+(const years&amp; dy, const year_month_day_last&amp; ymdl) noexcept;
+    constexpr year_month_day_last
+      operator-(const year_month_day_last&amp; ymdl, const months&amp; dm) noexcept;
+    constexpr year_month_day_last
+      operator-(const year_month_day_last&amp; ymdl, const years&amp; dy) noexcept;
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const year_month_day_last&amp; ymdl);
+
+    <span class='comment'>// [time.cal.ymwd], class <span class='tcode_in_codeblock'>year_&shy;month_&shy;weekday</span>
+</span>    class year_month_weekday;
+
+    constexpr bool operator==(const year_month_weekday&amp; x,
+                              const year_month_weekday&amp; y) noexcept;
+    constexpr bool operator!=(const year_month_weekday&amp; x,
+                              const year_month_weekday&amp; y) noexcept;
+
+    constexpr year_month_weekday
+      operator+(const year_month_weekday&amp; ymwd, const months&amp; dm) noexcept;
+    constexpr year_month_weekday
+      operator+(const months&amp; dm, const year_month_weekday&amp; ymwd) noexcept;
+    constexpr year_month_weekday
+      operator+(const year_month_weekday&amp; ymwd, const years&amp; dy) noexcept;
+    constexpr year_month_weekday
+      operator+(const years&amp; dy, const year_month_weekday&amp; ymwd) noexcept;
+    constexpr year_month_weekday
+      operator-(const year_month_weekday&amp; ymwd, const months&amp; dm) noexcept;
+    constexpr year_month_weekday
+      operator-(const year_month_weekday&amp; ymwd, const years&amp; dy) noexcept;
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const year_month_weekday&amp; ymwdi);
+
+    <span class='comment'>// [time.cal.ymwdlast], class <span class='tcode_in_codeblock'>year_&shy;month_&shy;weekday_&shy;last</span>
+</span>    class year_month_weekday_last;
+
+    constexpr bool operator==(const year_month_weekday_last&amp; x,
+                              const year_month_weekday_last&amp; y) noexcept;
+    constexpr bool operator!=(const year_month_weekday_last&amp; x,
+                              const year_month_weekday_last&amp; y) noexcept;
+
+    constexpr year_month_weekday_last
+      operator+(const year_month_weekday_last&amp; ymwdl, const months&amp; dm) noexcept;
+    constexpr year_month_weekday_last
+      operator+(const months&amp; dm, const year_month_weekday_last&amp; ymwdl) noexcept;
+    constexpr year_month_weekday_last
+      operator+(const year_month_weekday_last&amp; ymwdl, const years&amp; dy) noexcept;
+    constexpr year_month_weekday_last
+      operator+(const years&amp; dy, const year_month_weekday_last&amp; ymwdl) noexcept;
+    constexpr year_month_weekday_last
+      operator-(const year_month_weekday_last&amp; ymwdl, const months&amp; dm) noexcept;
+    constexpr year_month_weekday_last
+      operator-(const year_month_weekday_last&amp; ymwdl, const years&amp; dy) noexcept;
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const year_month_weekday_last&amp; ymwdl);
+
+    <span class='comment'>// [time.cal.operators], civil calendar conventional syntax operators
+</span>    constexpr year_month
+      operator/(const year&amp; y, const month&amp; m) noexcept;
+    constexpr year_month
+      operator/(const year&amp; y, int m) noexcept;
+    constexpr month_day
+      operator/(const month&amp; m, const day&amp; d) noexcept;
+    constexpr month_day
+      operator/(const month&amp; m, int d) noexcept;
+    constexpr month_day
+      operator/(int m, const day&amp; d) noexcept;
+    constexpr month_day
+      operator/(const day&amp; d, const month&amp; m) noexcept;
+    constexpr month_day
+      operator/(const day&amp; d, int m) noexcept;
+    constexpr month_day_last
+      operator/(const month&amp; m, last_spec) noexcept;
+    constexpr month_day_last
+      operator/(int m, last_spec) noexcept;
+    constexpr month_day_last
+      operator/(last_spec, const month&amp; m) noexcept;
+    constexpr month_day_last
+      operator/(last_spec, int m) noexcept;
+    constexpr month_weekday
+      operator/(const month&amp; m, const weekday_indexed&amp; wdi) noexcept;
+    constexpr month_weekday
+      operator/(int m, const weekday_indexed&amp; wdi) noexcept;
+    constexpr month_weekday
+      operator/(const weekday_indexed&amp; wdi, const month&amp; m) noexcept;
+    constexpr month_weekday
+      operator/(const weekday_indexed&amp; wdi, int m) noexcept;
+    constexpr month_weekday_last
+      operator/(const month&amp; m, const weekday_last&amp; wdl) noexcept;
+    constexpr month_weekday_last
+      operator/(int m, const weekday_last&amp; wdl) noexcept;
+    constexpr month_weekday_last
+      operator/(const weekday_last&amp; wdl, const month&amp; m) noexcept;
+    constexpr month_weekday_last
+      operator/(const weekday_last&amp; wdl, int m) noexcept;
+    constexpr year_month_day
+      operator/(const year_month&amp; ym, const day&amp; d) noexcept;
+    constexpr year_month_day
+      operator/(const year_month&amp; ym, int d) noexcept;
+    constexpr year_month_day
+      operator/(const year&amp; y, const month_day&amp; md) noexcept;
+    constexpr year_month_day
+      operator/(int y, const month_day&amp; md) noexcept;
+    constexpr year_month_day
+      operator/(const month_day&amp; md, const year&amp; y) noexcept;
+    constexpr year_month_day
+      operator/(const month_day&amp; md, int y) noexcept;
+    constexpr year_month_day_last
+      operator/(const year_month&amp; ym, last_spec) noexcept;
+    constexpr year_month_day_last
+      operator/(const year&amp; y, const month_day_last&amp; mdl) noexcept;
+    constexpr year_month_day_last
+      operator/(int y, const month_day_last&amp; mdl) noexcept;
+    constexpr year_month_day_last
+      operator/(const month_day_last&amp; mdl, const year&amp; y) noexcept;
+    constexpr year_month_day_last
+      operator/(const month_day_last&amp; mdl, int y) noexcept;
+    constexpr year_month_weekday
+      operator/(const year_month&amp; ym, const weekday_indexed&amp; wdi) noexcept;
+    constexpr year_month_weekday
+      operator/(const year&amp; y, const month_weekday&amp; mwd) noexcept;
+    constexpr year_month_weekday
+      operator/(int y, const month_weekday&amp; mwd) noexcept;
+    constexpr year_month_weekday
+      operator/(const month_weekday&amp; mwd, const year&amp; y) noexcept;
+    constexpr year_month_weekday
+      operator/(const month_weekday&amp; mwd, int y) noexcept;
+    constexpr year_month_weekday_last
+      operator/(const year_month&amp; ym, const weekday_last&amp; wdl) noexcept;
+    constexpr year_month_weekday_last
+      operator/(const year&amp; y, const month_weekday_last&amp; mwdl) noexcept;
+    constexpr year_month_weekday_last
+      operator/(int y, const month_weekday_last&amp; mwdl) noexcept;
+    constexpr year_month_weekday_last
+      operator/(const month_weekday_last&amp; mwdl, const year&amp; y) noexcept;
+    constexpr year_month_weekday_last
+      operator/(const month_weekday_last&amp; mwdl, int y) noexcept;
+
+    <span class='comment'>// [time.tod], class template <span class='tcode_in_codeblock'>time_&shy;of_&shy;day</span>
+</span>    template&lt;class Duration&gt; class time_of_day;
+    template&lt;&gt; class time_of_day&lt;hours&gt;;
+    template&lt;&gt; class time_of_day&lt;minutes&gt;;
+    template&lt;&gt; class time_of_day&lt;seconds&gt;;
+    template&lt;class Rep, class Period&gt; class time_of_day&lt;duration&lt;Rep, Period&gt;&gt;;
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const time_of_day&lt;hours&gt;&amp; t);
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const time_of_day&lt;minutes&gt;&amp; t);
+
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const time_of_day&lt;seconds&gt;&amp; t);
+
+    template&lt;class charT, class traits, class Rep, class Period&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os,
+                   const time_of_day&lt;duration&lt;Rep, Period&gt;&gt;&amp; t);
+
+    <span class='comment'>// [time.zone.db], time zone database
+</span>    struct tzdb;
+    class tzdb_list;
+
+    <span class='comment'>// [time.zone.db.access], time zone database access
+</span>    const tzdb&amp; get_tzdb();
+    tzdb_list&amp; get_tzdb_list();
+    const time_zone* locate_zone(string_view tz_name);
+    const time_zone* current_zone();
+
+    <span class='comment'>// [time.zone.db.remote], remote time zone database support
+</span>    const tzdb&amp; reload_tzdb();
+    string remote_version();
+
+    <span class='comment'>// [time.zone.exception], exception classes
+</span>    class nonexistent_local_time;
+    class ambiguous_local_time;
+
+    <span class='comment'>// [time.zone.info], information classes
+</span>    struct sys_info;
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const sys_info&amp; si);
+
+    struct local_info;
+    template&lt;class charT, class traits&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const local_info&amp; li);
+
+    <span class='comment'>// [time.zone.timezone], class <span class='tcode_in_codeblock'>time_&shy;zone</span>
+</span>    enum class choose {earliest, latest};
+    class time_zone;
+
+    bool operator==(const time_zone&amp; x, const time_zone&amp; y) noexcept;
+    bool operator!=(const time_zone&amp; x, const time_zone&amp; y) noexcept;
+
+    bool operator&lt;(const time_zone&amp; x, const time_zone&amp; y) noexcept;
+    bool operator&gt;(const time_zone&amp; x, const time_zone&amp; y) noexcept;
+    bool operator&lt;=(const time_zone&amp; x, const time_zone&amp; y) noexcept;
+    bool operator&gt;=(const time_zone&amp; x, const time_zone&amp; y) noexcept;
+
+    <span class='comment'>// [time.zone.zonedtraits], class template <span class='tcode_in_codeblock'>zoned_&shy;traits</span>
+</span>    template&lt;class T&gt; struct zoned_traits;
+
+    <span class='comment'>// [time.zone.zonedtime], class template <span class='tcode_in_codeblock'>zoned_&shy;time</span>
+</span>    template&lt;class Duration, class TimeZonePtr = const time_zone*&gt; class zoned_time;
+
+    using zoned_seconds = zoned_time&lt;seconds&gt;;
+
+    template&lt;class Duration1, class Duration2, class TimeZonePtr&gt;
+      bool operator==(const zoned_time&lt;Duration1, TimeZonePtr&gt;&amp; x,
+                      const zoned_time&lt;Duration2, TimeZonePtr&gt;&amp; y);
+
+    template&lt;class Duration1, class Duration, class TimeZonePtr2&gt;
+      bool operator!=(const zoned_time&lt;Duration1, TimeZonePtr&gt;&amp; x,
+                      const zoned_time&lt;Duration2, TimeZonePtr&gt;&amp; y);
+
+    template&lt;class charT, class traits, class Duration, class TimeZonePtr&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os,
+                   const zoned_time&lt;Duration, TimeZonePtr&gt;&amp; t);
+
+    template&lt;class charT, class traits, class Duration, class TimeZonePtr&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        to_stream(basic_ostream&lt;charT, traits&gt;&amp; os, const charT* fmt,
+                  const zoned_time&lt;Duration, TimeZonePtr&gt;&amp; tp);
+
+    <span class='comment'>// [time.zone.leap], leap second support
+</span>    class leap;
+
+    bool operator==(const leap&amp; x, const leap&amp; y);
+    bool operator!=(const leap&amp; x, const leap&amp; y);
+    bool operator&lt; (const leap&amp; x, const leap&amp; y);
+    bool operator&gt; (const leap&amp; x, const leap&amp; y);
+    bool operator&lt;=(const leap&amp; x, const leap&amp; y);
+    bool operator&gt;=(const leap&amp; x, const leap&amp; y);
+
+    template&lt;class Duration&gt;
+      bool operator==(const leap&amp; x, const sys_time&lt;Duration&gt;&amp; y);
+    template&lt;class Duration&gt;
+      bool operator==(const sys_time&lt;Duration&gt;&amp; x, const leap&amp; y);
+    template&lt;class Duration&gt;
+      bool operator!=(const leap&amp; x, const sys_time&lt;Duration&gt;&amp; y);
+    template&lt;class Duration&gt;
+      bool operator!=(const sys_time&lt;Duration&gt;&amp; x, const leap&amp; y);
+    template&lt;class Duration&gt;
+      bool operator&lt; (const leap&amp; x, const sys_time&lt;Duration&gt;&amp; y);
+    template&lt;class Duration&gt;
+      bool operator&lt; (const sys_time&lt;Duration&gt;&amp; x, const leap&amp; y);
+    template&lt;class Duration&gt;
+      bool operator&gt; (const leap&amp; x, const sys_time&lt;Duration&gt;&amp; y);
+    template&lt;class Duration&gt;
+      bool operator&gt; (const sys_time&lt;Duration&gt;&amp; x, const leap&amp; y);
+    template&lt;class Duration&gt;
+      bool operator&lt;=(const leap&amp; x, const sys_time&lt;Duration&gt;&amp; y);
+    template&lt;class Duration&gt;
+      bool operator&lt;=(const sys_time&lt;Duration&gt;&amp; x, const leap&amp; y);
+    template&lt;class Duration&gt;
+      bool operator&gt;=(const leap&amp; x, const sys_time&lt;Duration&gt;&amp; y);
+    template&lt;class Duration&gt;
+      bool operator&gt;=(const sys_time&lt;Duration&gt;&amp; x, const leap&amp; y);
+
+    <span class='comment'>// [time.zone.link], class <span class='tcode_in_codeblock'>link</span>
+</span>    class link;
+
+    bool operator==(const link&amp; x, const link&amp; y);
+    bool operator!=(const link&amp; x, const link&amp; y);
+    bool operator&lt; (const link&amp; x, const link&amp; y);
+    bool operator&gt; (const link&amp; x, const link&amp; y);
+    bool operator&lt;=(const link&amp; x, const link&amp; y);
+    bool operator&gt;=(const link&amp; x, const link&amp; y);
+
+    <span class='comment'>// [time.format], formatting
+</span>    template&lt;class charT, class Streamable&gt;
+      basic_string&lt;charT&gt;
+        format(const charT* fmt, const Streamable&amp; s);
+    template&lt;class charT, class Streamable&gt;
+      basic_string&lt;charT&gt;
+        format(const locale&amp; loc, const charT* fmt, const Streamable&amp; s);
+    template&lt;class charT, class traits, class Alloc, class Streamable&gt;
+      basic_string&lt;charT, traits, Alloc&gt;
+        format(const basic_string&lt;charT, traits, Alloc&gt;&amp; fmt, const Streamable&amp; s);
+    template&lt;class charT, class traits, class Alloc, class Streamable&gt;
+      basic_string&lt;charT, traits, Alloc&gt;
+        format(const locale&amp; loc, const basic_string&lt;charT, traits, Alloc&gt;&amp; fmt,
+               const Streamable&amp; s);
+
+    <span class='comment'>// [time.parse], parsing
+</span>    template&lt;class charT, class traits, class Alloc, class Parsable&gt;
+      <span class='textit'><span class='texttt'>unspecified</span></span>
+        parse(const basic_string&lt;charT, traits, Alloc&gt;&amp; format, Parsable&amp; tp);
+
+    template&lt;class charT, class traits, class Alloc, class Parsable&gt;
+      <span class='textit'><span class='texttt'>unspecified</span></span>
+        parse(const basic_string&lt;charT, traits, Alloc&gt;&amp; format, Parsable&amp; tp,
+              basic_string&lt;charT, traits, Alloc&gt;&amp; abbrev);
+
+    template&lt;class charT, class traits, class Alloc, class Parsable&gt;
+      <span class='textit'><span class='texttt'>unspecified</span></span>
+        parse(const basic_string&lt;charT, traits, Alloc&gt;&amp; format, Parsable&amp; tp,
+              minutes&amp; offset);
+
+    template&lt;class charT, class traits, class Alloc, class Parsable&gt;
+      <span class='textit'><span class='texttt'>unspecified</span></span>
+        parse(const basic_string&lt;charT, traits, Alloc&gt;&amp; format, Parsable&amp; tp,
+              basic_string&lt;charT, traits, Alloc&gt;&amp; abbrev, minutes&amp; offset);
+
+    <span class='comment'>// calendrical constants
+</span>    inline constexpr last_spec last{};
+
+    inline constexpr weekday Sunday{0};
+    inline constexpr weekday Monday{1};
+    inline constexpr weekday Tuesday{2};
+    inline constexpr weekday Wednesday{3};
+    inline constexpr weekday Thursday{4};
+    inline constexpr weekday Friday{5};
+    inline constexpr weekday Saturday{6};
+
+    inline constexpr month January{1};
+    inline constexpr month February{2};
+    inline constexpr month March{3};
+    inline constexpr month April{4};
+    inline constexpr month May{5};
+    inline constexpr month June{6};
+    inline constexpr month July{7};
+    inline constexpr month August{8};
+    inline constexpr month September{9};
+    inline constexpr month October{10};
+    inline constexpr month November{11};
+    inline constexpr month December{12};
   }
 
   inline namespace literals {
   inline namespace chrono_literals {
-    <span class='comment'>// 23.17.5.8, suffixes for duration literals
+    <span class='comment'>// [time.duration.literals], suffixes for duration literals
 </span>    constexpr chrono::hours                                 operator""h(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>, ratio&lt;3600, 1&gt;&gt; operator""h(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    constexpr chrono::minutes                               operator""min(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>, ratio&lt;60, 1&gt;&gt;   operator""min(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    constexpr chrono::seconds                               operator""s(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>&gt;                 operator""s(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    constexpr chrono::milliseconds                          operator""ms(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>, milli&gt;          operator""ms(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    constexpr chrono::microseconds                          operator""us(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>, micro&gt;          operator""us(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    constexpr chrono::nanoseconds                           operator""ns(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>, nano&gt;           operator""ns(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    constexpr chrono::minutes                             operator""min(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>, ratio&lt;60, 1&gt;&gt; operator""min(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    constexpr chrono::seconds               operator""s(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>&gt; operator""s(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    constexpr chrono::milliseconds                 operator""ms(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>, milli&gt; operator""ms(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    constexpr chrono::microseconds                 operator""us(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>, micro&gt; operator""us(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    constexpr chrono::nanoseconds                 operator""ns(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>, nano&gt; operator""ns(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='comment'>// [time.cal.day.nonmembers], non-member functions
+</span>    constexpr chrono::day  operator""d(unsigned long long d) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='comment'>// [time.cal.year.nonmembers], non-member functions
+</span>    constexpr chrono::year operator""y(unsigned long long y) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   }
   }
 
   namespace chrono {
     using namespace literals::chrono_literals; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   }
-}</pre>
-</blockquote>
+}</pre></blockquote>
 
 Change in [charconv.syn] (23.20.1):
 <blockquote class="std">
@@ -3782,739 +4575,4 @@ namespace std {
   template&lt;class ForwardIterator, class T, class Compare&gt;
     constexpr ForwardIterator
       upper_bound(ForwardIterator first, ForwardIterator last,
-                  const T&amp; value, Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  template&lt;class ForwardIterator, class T&gt;
-    constexpr pair&lt;ForwardIterator, ForwardIterator&gt;
-      equal_range(ForwardIterator first, ForwardIterator last,
-                  const T&amp; value); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ForwardIterator, class T, class Compare&gt;
-    constexpr pair&lt;ForwardIterator, ForwardIterator&gt;
-      equal_range(ForwardIterator first, ForwardIterator last,
-                  const T&amp; value, Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  template&lt;class ForwardIterator, class T&gt;
-    constexpr bool
-      binary_search(ForwardIterator first, ForwardIterator last,
-                    const T&amp; value); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ForwardIterator, class T, class Compare&gt;
-    constexpr bool
-      binary_search(ForwardIterator first, ForwardIterator last,
-                    const T&amp; value, Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 28.7.5, merge
-</span>  template&lt;class InputIterator1, class InputIterator2, class OutputIterator&gt;
-    constexpr OutputIterator
-      merge(InputIterator1 first1, InputIterator1 last1,
-            InputIterator2 first2, InputIterator2 last2,
-            OutputIterator result); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator1, class InputIterator2, class OutputIterator,
-           class Compare&gt;
-    constexpr OutputIterator
-      merge(InputIterator1 first1, InputIterator1 last1,
-            InputIterator2 first2, InputIterator2 last2,
-            OutputIterator result, Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2,
-           class ForwardIterator&gt;
-    ForwardIterator
-      merge(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>            ForwardIterator1 first1, ForwardIterator1 last1,
-            ForwardIterator2 first2, ForwardIterator2 last2,
-            ForwardIterator result);
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2,
-           class ForwardIterator, class Compare&gt;
-    ForwardIterator
-      merge(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>            ForwardIterator1 first1, ForwardIterator1 last1,
-            ForwardIterator2 first2, ForwardIterator2 last2,
-            ForwardIterator result, Compare comp);
-
-  template&lt;class BidirectionalIterator&gt;
-    void inplace_merge(BidirectionalIterator first,
-                       BidirectionalIterator middle,
-                       BidirectionalIterator last);
-  template&lt;class BidirectionalIterator, class Compare&gt;
-    void inplace_merge(BidirectionalIterator first,
-                       BidirectionalIterator middle,
-                       BidirectionalIterator last, Compare comp);
-  template&lt;class ExecutionPolicy, class BidirectionalIterator&gt;
-    void inplace_merge(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                       BidirectionalIterator first,
-                       BidirectionalIterator middle,
-                       BidirectionalIterator last);
-  template&lt;class ExecutionPolicy, class BidirectionalIterator, class Compare&gt;
-    void inplace_merge(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                       BidirectionalIterator first,
-                       BidirectionalIterator middle,
-                       BidirectionalIterator last, Compare comp);
-
-  <span class='comment'>// 28.7.6, set operations
-</span>  template&lt;class InputIterator1, class InputIterator2&gt;
-    constexpr bool includes(InputIterator1 first1, InputIterator1 last1,
-                            InputIterator2 first2, InputIterator2 last2); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator1, class InputIterator2, class Compare&gt;
-    constexpr bool includes(InputIterator1 first1, InputIterator1 last1,
-                            InputIterator2 first2, InputIterator2 last2,
-                            Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2&gt;
-    bool includes(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                  ForwardIterator1 first1, ForwardIterator1 last1,
-                  ForwardIterator2 first2, ForwardIterator2 last2);
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2,
-           class Compare&gt;
-    bool includes(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                  ForwardIterator1 first1, ForwardIterator1 last1,
-                  ForwardIterator2 first2, ForwardIterator2 last2,
-                  Compare comp);
-
-  template&lt;class InputIterator1, class InputIterator2, class OutputIterator&gt;
-    constexpr OutputIterator
-      set_union(InputIterator1 first1, InputIterator1 last1,
-                InputIterator2 first2, InputIterator2 last2,
-                OutputIterator result); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator1, class InputIterator2, class OutputIterator, class Compare&gt;
-    constexpr OutputIterator
-                set_union(InputIterator1 first1, InputIterator1 last1,
-                InputIterator2 first2, InputIterator2 last2,
-                OutputIterator result, Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2,
-           class ForwardIterator&gt;
-    ForwardIterator
-      set_union(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                ForwardIterator1 first1, ForwardIterator1 last1,
-                ForwardIterator2 first2, ForwardIterator2 last2,
-                ForwardIterator result);
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2,
-           class ForwardIterator, class Compare&gt;
-    ForwardIterator
-      set_union(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                ForwardIterator1 first1, ForwardIterator1 last1,
-                ForwardIterator2 first2, ForwardIterator2 last2,
-                ForwardIterator result, Compare comp);
-
-  template&lt;class InputIterator1, class InputIterator2, class OutputIterator&gt;
-    constexpr OutputIterator
-      set_intersection(InputIterator1 first1, InputIterator1 last1,
-                       InputIterator2 first2, InputIterator2 last2,
-                       OutputIterator result); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator1, class InputIterator2, class OutputIterator, class Compare&gt;
-    constexpr OutputIterator
-      set_intersection(InputIterator1 first1, InputIterator1 last1,
-                       InputIterator2 first2, InputIterator2 last2,
-                       OutputIterator result, Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2,
-           class ForwardIterator&gt;
-    ForwardIterator
-      set_intersection(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                       ForwardIterator1 first1, ForwardIterator1 last1,
-                       ForwardIterator2 first2, ForwardIterator2 last2,
-                       ForwardIterator result);
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2,
-           class ForwardIterator, class Compare&gt;
-    ForwardIterator
-      set_intersection(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                       ForwardIterator1 first1, ForwardIterator1 last1,
-                       ForwardIterator2 first2, ForwardIterator2 last2,
-                       ForwardIterator result, Compare comp);
-
-  template&lt;class InputIterator1, class InputIterator2, class OutputIterator&gt;
-    constexpr OutputIterator
-      set_difference(InputIterator1 first1, InputIterator1 last1,
-                     InputIterator2 first2, InputIterator2 last2,
-                     OutputIterator result); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator1, class InputIterator2, class OutputIterator, class Compare&gt;
-    constexpr OutputIterator
-      set_difference(InputIterator1 first1, InputIterator1 last1,
-                     InputIterator2 first2, InputIterator2 last2,
-                     OutputIterator result, Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2,
-           class ForwardIterator&gt;
-    ForwardIterator
-      set_difference(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                     ForwardIterator1 first1, ForwardIterator1 last1,
-                     ForwardIterator2 first2, ForwardIterator2 last2,
-                     ForwardIterator result);
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2,
-           class ForwardIterator, class Compare&gt;
-    ForwardIterator
-      set_difference(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                     ForwardIterator1 first1, ForwardIterator1 last1,
-                     ForwardIterator2 first2, ForwardIterator2 last2,
-                     ForwardIterator result, Compare comp);
-
-  template&lt;class InputIterator1, class InputIterator2, class OutputIterator&gt;
-    constexpr OutputIterator
-      set_symmetric_difference(InputIterator1 first1, InputIterator1 last1,
-                               InputIterator2 first2, InputIterator2 last2,
-                               OutputIterator result); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator1, class InputIterator2, class OutputIterator, class Compare&gt;
-    constexpr OutputIterator
-      set_symmetric_difference(InputIterator1 first1, InputIterator1 last1,
-                               InputIterator2 first2, InputIterator2 last2,
-                               OutputIterator result, Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2,
-           class ForwardIterator&gt;
-    ForwardIterator
-      set_symmetric_difference(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                               ForwardIterator1 first1, ForwardIterator1 last1,
-                               ForwardIterator2 first2, ForwardIterator2 last2,
-                               ForwardIterator result);
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2,
-           class ForwardIterator, class Compare&gt;
-    ForwardIterator
-      set_symmetric_difference(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                               ForwardIterator1 first1, ForwardIterator1 last1,
-                               ForwardIterator2 first2, ForwardIterator2 last2,
-                               ForwardIterator result, Compare comp);
-
-  <span class='comment'>// 28.7.7, heap operations
-</span>  template&lt;class RandomAccessIterator&gt;
-    void push_heap(RandomAccessIterator first, RandomAccessIterator last); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class RandomAccessIterator, class Compare&gt;
-    void push_heap(RandomAccessIterator first, RandomAccessIterator last,
-                   Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  template&lt;class RandomAccessIterator&gt;
-    void pop_heap(RandomAccessIterator first, RandomAccessIterator last); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class RandomAccessIterator, class Compare&gt;
-    void pop_heap(RandomAccessIterator first, RandomAccessIterator last,
-                  Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  template&lt;class RandomAccessIterator&gt;
-    void make_heap(RandomAccessIterator first, RandomAccessIterator last); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class RandomAccessIterator, class Compare&gt;
-    void make_heap(RandomAccessIterator first, RandomAccessIterator last,
-                   Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  template&lt;class RandomAccessIterator&gt;
-    void sort_heap(RandomAccessIterator first, RandomAccessIterator last); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class RandomAccessIterator, class Compare&gt;
-    void sort_heap(RandomAccessIterator first, RandomAccessIterator last,
-                   Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  template&lt;class RandomAccessIterator&gt;
-    constexpr bool is_heap(RandomAccessIterator first, RandomAccessIterator last); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class RandomAccessIterator, class Compare&gt;
-    constexpr bool is_heap(RandomAccessIterator first, RandomAccessIterator last,
-                           Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy, class RandomAccessIterator&gt;
-    bool is_heap(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                 RandomAccessIterator first, RandomAccessIterator last);
-  template&lt;class ExecutionPolicy, class RandomAccessIterator, class Compare&gt;
-    bool is_heap(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                 RandomAccessIterator first, RandomAccessIterator last,
-                 Compare comp);
-  template&lt;class RandomAccessIterator&gt;
-    constexpr RandomAccessIterator
-      is_heap_until(RandomAccessIterator first, RandomAccessIterator last); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class RandomAccessIterator, class Compare&gt;
-    constexpr RandomAccessIterator
-      is_heap_until(RandomAccessIterator first, RandomAccessIterator last,
-                    Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy, class RandomAccessIterator&gt;
-    RandomAccessIterator
-      is_heap_until(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                    RandomAccessIterator first, RandomAccessIterator last);
-  template&lt;class ExecutionPolicy, class RandomAccessIterator, class Compare&gt;
-    RandomAccessIterator
-      is_heap_until(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                    RandomAccessIterator first, RandomAccessIterator last,
-                    Compare comp);
-
-  <span class='comment'>// 28.7.8, minimum and maximum
-</span>  template&lt;class T&gt; constexpr const T&amp; min(const T&amp; a, const T&amp; b); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T, class Compare&gt;
-    constexpr const T&amp; min(const T&amp; a, const T&amp; b, Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T&gt;
-    constexpr T min(initializer_list&lt;T&gt; t); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T, class Compare&gt;
-    constexpr T min(initializer_list&lt;T&gt; t, Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  template&lt;class T&gt; constexpr const T&amp; max(const T&amp; a, const T&amp; b); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T, class Compare&gt;
-    constexpr const T&amp; max(const T&amp; a, const T&amp; b, Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T&gt;
-    constexpr T max(initializer_list&lt;T&gt; t); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T, class Compare&gt;
-    constexpr T max(initializer_list&lt;T&gt; t, Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  template&lt;class T&gt; constexpr pair&lt;const T&amp;, const T&amp;&gt; minmax(const T&amp; a, const T&amp; b); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T, class Compare&gt;
-    constexpr pair&lt;const T&amp;, const T&amp;&gt; minmax(const T&amp; a, const T&amp; b, Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T&gt;
-    constexpr pair&lt;T, T&gt; minmax(initializer_list&lt;T&gt; t); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T, class Compare&gt;
-    constexpr pair&lt;T, T&gt; minmax(initializer_list&lt;T&gt; t, Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  template&lt;class ForwardIterator&gt;
-    constexpr ForwardIterator min_element(ForwardIterator first, ForwardIterator last); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ForwardIterator, class Compare&gt;
-    constexpr ForwardIterator min_element(ForwardIterator first, ForwardIterator last,
-                                          Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy, class ForwardIterator&gt;
-    ForwardIterator min_element(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                ForwardIterator first, ForwardIterator last);
-  template&lt;class ExecutionPolicy, class ForwardIterator, class Compare&gt;
-    ForwardIterator min_element(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                ForwardIterator first, ForwardIterator last,
-                                Compare comp);
-  template&lt;class ForwardIterator&gt;
-    constexpr ForwardIterator max_element(ForwardIterator first, ForwardIterator last); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ForwardIterator, class Compare&gt;
-    constexpr ForwardIterator max_element(ForwardIterator first, ForwardIterator last,
-                                          Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy, class ForwardIterator&gt;
-    ForwardIterator max_element(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                ForwardIterator first, ForwardIterator last);
-  template&lt;class ExecutionPolicy, class ForwardIterator, class Compare&gt;
-    ForwardIterator max_element(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                ForwardIterator first, ForwardIterator last,
-                                Compare comp);
-  template&lt;class ForwardIterator&gt;
-    constexpr pair&lt;ForwardIterator, ForwardIterator&gt;
-      minmax_element(ForwardIterator first, ForwardIterator last); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ForwardIterator, class Compare&gt;
-    constexpr pair&lt;ForwardIterator, ForwardIterator&gt;
-      minmax_element(ForwardIterator first, ForwardIterator last, Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy, class ForwardIterator&gt;
-    pair&lt;ForwardIterator, ForwardIterator&gt;
-      minmax_element(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                     ForwardIterator first, ForwardIterator last);
-  template&lt;class ExecutionPolicy, class ForwardIterator, class Compare&gt;
-    pair&lt;ForwardIterator, ForwardIterator&gt;
-      minmax_element(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                     ForwardIterator first, ForwardIterator last, Compare comp);
-
-  <span class='comment'>// 28.7.9, bounded value
-</span>  template&lt;class T&gt;
-    constexpr const T&amp; clamp(const T&amp; v, const T&amp; lo, const T&amp; hi); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T, class Compare&gt;
-    constexpr const T&amp; clamp(const T&amp; v, const T&amp; lo, const T&amp; hi, Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 28.7.10, lexicographical comparison
-</span>  template&lt;class InputIterator1, class InputIterator2&gt;
-    constexpr bool
-      lexicographical_compare(InputIterator1 first1, InputIterator1 last1,
-                              InputIterator2 first2, InputIterator2 last2); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator1, class InputIterator2, class Compare&gt;
-    constexpr bool
-      lexicographical_compare(InputIterator1 first1, InputIterator1 last1,
-                              InputIterator2 first2, InputIterator2 last2,
-                              Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2&gt;
-    bool
-      lexicographical_compare(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                              ForwardIterator1 first1, ForwardIterator1 last1,
-                              ForwardIterator2 first2, ForwardIterator2 last2);
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2,
-           class Compare&gt;
-    bool
-      lexicographical_compare(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                              ForwardIterator1 first1, ForwardIterator1 last1,
-                              ForwardIterator2 first2, ForwardIterator2 last2,
-                              Compare comp);
-
-  <span class='comment'>// 28.7.11, three-way comparison algorithms
-</span>  template&lt;class T, class U&gt;
-    constexpr auto compare_3way(const T&amp; a, const U&amp; b); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator1, class InputIterator2, class Cmp&gt;
-    constexpr auto
-      lexicographical_compare_3way(InputIterator1 b1, InputIterator1 e1,
-                                   InputIterator2 b2, InputIterator2 e2,
-                                   Cmp comp)
-        -&gt; common_comparison_category_t&lt;decltype(comp(*b1, *b2)), strong_ordering&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator1, class InputIterator2&gt;
-    constexpr auto
-      lexicographical_compare_3way(InputIterator1 b1, InputIterator1 e1,
-                                   InputIterator2 b2, InputIterator2 e2); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 28.7.12, permutations
-</span>  template&lt;class BidirectionalIterator&gt;
-    bool next_permutation(BidirectionalIterator first,
-                          BidirectionalIterator last); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class BidirectionalIterator, class Compare&gt;
-    bool next_permutation(BidirectionalIterator first,
-                          BidirectionalIterator last, Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class BidirectionalIterator&gt;
-    bool prev_permutation(BidirectionalIterator first,
-                          BidirectionalIterator last); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class BidirectionalIterator, class Compare&gt;
-    bool prev_permutation(BidirectionalIterator first,
-                          BidirectionalIterator last, Compare comp); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-}</pre>
-</blockquote>
-
-Change in [rand.synopsis] (29.6.2):
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>29.6.2</a> Header <span class='texttt'>&lt;random&gt;</span> synopsis <a class='abbr_ref'>[rand.synopsis]</a></h3>
-<pre class='codeblock'>
-#include &lt;initializer_list&gt;
-
-namespace std {
-  <span class='comment'>// 29.6.3.1, class template <span class='tcode_in_codeblock'>linear_&shy;congruential_&shy;engine</span>
-</span>  template&lt;class UIntType, UIntType a, UIntType c, UIntType m&gt;
-    class linear_congruential_engine; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 29.6.3.2, class template <span class='tcode_in_codeblock'>mersenne_&shy;twister_&shy;engine</span>
-</span>  template&lt;class UIntType, size_t w, size_t n, size_t m, size_t r,
-           UIntType a, size_t u, UIntType d, size_t s,
-           UIntType b, size_t t,
-           UIntType c, size_t l, UIntType f&gt;
-    class mersenne_twister_engine; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 29.6.3.3, class template <span class='tcode_in_codeblock'>subtract_&shy;with_&shy;carry_&shy;engine</span>
-</span>  template&lt;class UIntType, size_t w, size_t s, size_t r&gt;
-    class subtract_with_carry_engine; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 29.6.4.2, class template <span class='tcode_in_codeblock'>discard_&shy;block_&shy;engine</span>
-</span>  template&lt;class Engine, size_t p, size_t r&gt;
-    class discard_block_engine; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 29.6.4.3, class template <span class='tcode_in_codeblock'>independent_&shy;bits_&shy;engine</span>
-</span>  template&lt;class Engine, size_t w, class UIntType&gt;
-    class independent_bits_engine; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 29.6.4.4, class template <span class='tcode_in_codeblock'>shuffle_&shy;order_&shy;engine</span>
-</span>  template&lt;class Engine, size_t k&gt;
-    class shuffle_order_engine; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 29.6.5, engines and engine adaptors with predefined parameters
-</span>  using minstd_rand0  = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  using minstd_rand   = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  using mt19937       = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  using mt19937_64    = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  using ranlux24_base = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  using ranlux48_base = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  using ranlux24      = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  using ranlux48      = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  using knuth_b       = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  using default_random_engine = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 29.6.6, class <span class='tcode_in_codeblock'>random_&shy;device</span>
-</span>  class random_device;
-
-  <span class='comment'>// 29.6.7.1, class <span class='tcode_in_codeblock'>seed_&shy;seq</span>
-</span>  class seed_seq;
-
-  <span class='comment'>// 29.6.7.2, function template <span class='tcode_in_codeblock'>generate_&shy;canonical</span>
-</span>  template&lt;class RealType, size_t bits, class URBG&gt;
-    RealType generate_canonical(URBG&amp; g);
-
-  <span class='comment'>// 29.6.8.2.1, class template <span class='tcode_in_codeblock'>uniform_&shy;int_&shy;distribution</span>
-</span>  template&lt;class IntType = int&gt;
-    class uniform_int_distribution; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 29.6.8.2.2, class template <span class='tcode_in_codeblock'>uniform_&shy;real_&shy;distribution</span>
-</span>  template&lt;class RealType = double&gt;
-    class uniform_real_distribution;
-</pre></blockquote>
-
-Change in [numeric.ops.overview] (29.8.1):
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>29.8.1</a> Header <span class='texttt'>&lt;numeric&gt;</span> synopsis <a class='abbr_ref'>[numeric.ops.overview]</a></h3>
-<pre class='codeblock'>
-namespace std {
-  <span class='comment'>// 29.8.2, accumulate
-</span>  template&lt;class InputIterator, class T&gt;
-    T accumulate(InputIterator first, InputIterator last, T init); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class T, class BinaryOperation&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    T accumulate(InputIterator first, InputIterator last, T init, BinaryOperation binary_op);
-
-  <span class='comment'>// 29.8.3, reduce
-</span>  template&lt;class InputIterator&gt;
-    typename iterator_traits&lt;InputIterator&gt;::value_type
-      reduce(InputIterator first, InputIterator last); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class T&gt;
-    T reduce(InputIterator first, InputIterator last, T init); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class T, class BinaryOperation&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    T reduce(InputIterator first, InputIterator last, T init, BinaryOperation binary_op);
-  template&lt;class ExecutionPolicy, class ForwardIterator&gt;
-    typename iterator_traits&lt;ForwardIterator&gt;::value_type
-      reduce(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>             ForwardIterator first, ForwardIterator last);
-  template&lt;class ExecutionPolicy, class ForwardIterator, class T&gt;
-    T reduce(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>             ForwardIterator first, ForwardIterator last, T init);
-  template&lt;class ExecutionPolicy, class ForwardIterator, class T, class BinaryOperation&gt;
-    T reduce(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>             ForwardIterator first, ForwardIterator last, T init, BinaryOperation binary_op);
-
-  <span class='comment'>// 29.8.4, inner product
-</span>  template&lt;class InputIterator1, class InputIterator2, class T&gt;
-    T inner_product(InputIterator1 first1, InputIterator1 last1,
-                    InputIterator2 first2, T init); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator1, class InputIterator2, class T,
-           class BinaryOperation1, class BinaryOperation2&gt;
-    T inner_product(InputIterator1 first1, InputIterator1 last1,
-                    InputIterator2 first2, T init,
-                    BinaryOperation1 binary_op1,
-                    BinaryOperation2 binary_op2); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 29.8.5, transform reduce
-</span>  template&lt;class InputIterator1, class InputIterator2, class T&gt;
-    T transform_reduce(InputIterator1 first1, InputIterator1 last1,
-                       InputIterator2 first2,
-                       T init); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator1, class InputIterator2, class T,
-           class BinaryOperation1, class BinaryOperation2&gt;
-    T transform_reduce(InputIterator1 first1, InputIterator1 last1,
-                       InputIterator2 first2,
-                       T init,
-                       BinaryOperation1 binary_op1,
-                       BinaryOperation2 binary_op2); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class T,
-           class BinaryOperation, class UnaryOperation&gt;
-    T transform_reduce(InputIterator first, InputIterator last,
-                       T init,
-                       BinaryOperation binary_op, UnaryOperation unary_op); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy,
-           class ForwardIterator1, class ForwardIterator2, class T&gt;
-    T transform_reduce(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                       ForwardIterator1 first1, ForwardIterator1 last1,
-                       ForwardIterator2 first2,
-                       T init);
-  template&lt;class ExecutionPolicy,
-           class ForwardIterator1, class ForwardIterator2, class T,
-           class BinaryOperation1, class BinaryOperation2&gt;
-    T transform_reduce(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                       ForwardIterator1 first1, ForwardIterator1 last1,
-                       ForwardIterator2 first2,
-                       T init,
-                       BinaryOperation1 binary_op1,
-                       BinaryOperation2 binary_op2);
-  template&lt;class ExecutionPolicy,
-           class ForwardIterator, class T,
-           class BinaryOperation, class UnaryOperation&gt;
-    T transform_reduce(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                       ForwardIterator first, ForwardIterator last,
-                       T init,
-                       BinaryOperation binary_op, UnaryOperation unary_op);
-
-  <span class='comment'>// 29.8.6, partial sum
-</span>  template&lt;class InputIterator, class OutputIterator&gt;
-    OutputIterator partial_sum(InputIterator first,
-                               InputIterator last,
-                               OutputIterator result); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class OutputIterator, class BinaryOperation&gt;
-    OutputIterator partial_sum(InputIterator first,
-                               InputIterator last,
-                               OutputIterator result,
-                               BinaryOperation binary_op); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 29.8.7, exclusive scan
-</span>  template&lt;class InputIterator, class OutputIterator, class T&gt;
-    OutputIterator exclusive_scan(InputIterator first, InputIterator last,
-                                  OutputIterator result,
-                                  T init); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class OutputIterator, class T, class BinaryOperation&gt;
-    OutputIterator exclusive_scan(InputIterator first, InputIterator last,
-                                  OutputIterator result,
-                                  T init, BinaryOperation binary_op); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2, class T&gt;
-    ForwardIterator2 exclusive_scan(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                    ForwardIterator1 first, ForwardIterator1 last,
-                                    ForwardIterator2 result,
-                                    T init);
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2, class T,
-           class BinaryOperation&gt;
-    ForwardIterator2 exclusive_scan(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                    ForwardIterator1 first, ForwardIterator1 last,
-                                    ForwardIterator2 result,
-                                    T init, BinaryOperation binary_op);
-
-  <span class='comment'>// 29.8.8, inclusive scan
-</span>  template&lt;class InputIterator, class OutputIterator&gt;
-    OutputIterator inclusive_scan(InputIterator first, InputIterator last,
-                                  OutputIterator result); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class OutputIterator, class BinaryOperation&gt;
-    OutputIterator inclusive_scan(InputIterator first, InputIterator last,
-                                  OutputIterator result,
-                                  BinaryOperation binary_op); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class OutputIterator, class BinaryOperation, class T&gt;
-    OutputIterator inclusive_scan(InputIterator first, InputIterator last,
-                                  OutputIterator result,
-                                  BinaryOperation binary_op, T init); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2&gt;
-    ForwardIterator2 inclusive_scan(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                    ForwardIterator1 first, ForwardIterator1 last,
-                                    ForwardIterator2 result);
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2,
-           class BinaryOperation&gt;
-    ForwardIterator2 inclusive_scan(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                    ForwardIterator1 first, ForwardIterator1 last,
-                                    ForwardIterator2 result,
-                                    BinaryOperation binary_op);
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2,
-           class BinaryOperation, class T&gt;
-    ForwardIterator2 inclusive_scan(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                    ForwardIterator1 first, ForwardIterator1 last,
-                                    ForwardIterator2 result,
-                                    BinaryOperation binary_op, T init);
-
-  <span class='comment'>// 29.8.9, transform exclusive scan
-</span>  template&lt;class InputIterator, class OutputIterator, class T,
-           class BinaryOperation, class UnaryOperation&gt;
-    OutputIterator transform_exclusive_scan(InputIterator first, InputIterator last,
-                                            OutputIterator result,
-                                            T init,
-                                            BinaryOperation binary_op,
-                                            UnaryOperation unary_op); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy,
-           class ForwardIterator1, class ForwardIterator2, class T,
-           class BinaryOperation, class UnaryOperation&gt;
-    ForwardIterator2 transform_exclusive_scan(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                              ForwardIterator1 first, ForwardIterator1 last,
-                                              ForwardIterator2 result,
-                                              T init,
-                                              BinaryOperation binary_op,
-                                              UnaryOperation unary_op);
-
-  <span class='comment'>// 29.8.10, transform inclusive scan
-</span>  template&lt;class InputIterator, class OutputIterator,
-           class BinaryOperation, class UnaryOperation&gt;
-    OutputIterator transform_inclusive_scan(InputIterator first, InputIterator last,
-                                            OutputIterator result,
-                                            BinaryOperation binary_op,
-                                            UnaryOperation unary_op); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class OutputIterator,
-           class BinaryOperation, class UnaryOperation, class T&gt;
-    OutputIterator transform_inclusive_scan(InputIterator first, InputIterator last,
-                                            OutputIterator result,
-                                            BinaryOperation binary_op,
-                                            UnaryOperation unary_op,
-                                            T init); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy,
-           class ForwardIterator1, class ForwardIterator2,
-           class BinaryOperation, class UnaryOperation&gt;
-    ForwardIterator2 transform_inclusive_scan(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                              ForwardIterator1 first, ForwardIterator1 last,
-                                              ForwardIterator2 result,
-                                              BinaryOperation binary_op,
-                                              UnaryOperation unary_op);
-  template&lt;class ExecutionPolicy,
-           class ForwardIterator1, class ForwardIterator2,
-           class BinaryOperation, class UnaryOperation, class T&gt;
-    ForwardIterator2 transform_inclusive_scan(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                              ForwardIterator1 first, ForwardIterator1 last,
-                                              ForwardIterator2 result,
-                                              BinaryOperation binary_op,
-                                              UnaryOperation unary_op,
-                                              T init);
-
-  <span class='comment'>// 29.8.11, adjacent difference
-</span>  template&lt;class InputIterator, class OutputIterator&gt;
-    OutputIterator adjacent_difference(InputIterator first,
-                                       InputIterator last,
-                                       OutputIterator result); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class OutputIterator, class BinaryOperation&gt;
-    OutputIterator adjacent_difference(InputIterator first,
-                                       InputIterator last,
-                                       OutputIterator result,
-                                       BinaryOperation binary_op); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2&gt;
-    ForwardIterator2 adjacent_difference(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                         ForwardIterator1 first,
-                                         ForwardIterator1 last,
-                                         ForwardIterator2 result);
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2,
-           class BinaryOperation&gt;
-    ForwardIterator2 adjacent_difference(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                         ForwardIterator1 first,
-                                         ForwardIterator1 last,
-                                         ForwardIterator2 result,
-                                         BinaryOperation binary_op);
-
-  <span class='comment'>// 29.8.12, iota
-</span>  template&lt;class ForwardIterator, class T&gt;
-    void iota(ForwardIterator first, ForwardIterator last, T value); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 29.8.13, greatest common divisor
-</span>  template&lt;class M, class N&gt;
-    constexpr common_type_t&lt;M,N&gt; gcd(M m, N n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 29.8.14, least common multiple
-</span>  template&lt;class M, class N&gt;
-    constexpr common_type_t&lt;M,N&gt; lcm(M m, N n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-}</pre>
-</blockquote>
-
-Change in [cmath.syn] (29.9.1):
-<blockquote class="std">
-<pre class='codeblock'>
-  <span class='comment'>// 29.9.2, absolute values
-</span>  int abs(int j); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  long int abs(long int j);<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  long long int abs(long long int j); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  float abs(float j);
-  double abs(double j);
-  long double abs(long double j);
-</pre>
-</blockquote>
-
-Change in [cinttypes.syn] (30.12.2):
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>30.12.2</a> Header <span class='texttt'>&lt;cinttypes&gt;</span> synopsis <a class='abbr_ref'>[cinttypes.syn]</a></h3>
-<pre class='codeblock'>
-#include &lt;cstdint&gt;  <span class='comment'>// see <a
->[cstdint.syn]</a>
-</span>
-namespace std {
-  using imaxdiv_t = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  intmax_t imaxabs(intmax_t j); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  imaxdiv_t imaxdiv(intmax_t numer, intmax_t denom); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  intmax_t strtoimax(const char* nptr, char** endptr, int base);
-  uintmax_t strtoumax(const char* nptr, char** endptr, int base);
-  intmax_t wcstoimax(const wchar_t* nptr, wchar_t** endptr, int base);
-  uintmax_t wcstoumax(const wchar_t* nptr, wchar_t** endptr, int base);
-
-  intmax_t abs(intmax_t);  <span class='comment'>// optional, see below<ins><span class='textit'>, freestanding</span></ins>
-</span>  imaxdiv_t div(intmax_t, intmax_t);  <span class='comment'>// optional, see below<ins><span class='textit'>, freestanding</span></ins>
-</span>}
-</pre>
-</blockquote>
-
-Change in [atomics.syn] (32.2):
-<blockquote class="std">
-<h2 ><a class='secnum' style='min-width:88pt'>32.2</a> Header <span class='texttt'>&lt;atomic&gt;</span> synopsis <a class='abbr_ref'>[atomics.syn]</a></h2>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-namespace std {
-</pre>
-</blockquote>
-
-Change in [depr.cstdalign.syn] (D.4.2):
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>D.4.2</a> Header <span class='texttt'>&lt;cstdalign&gt;</span> synopsis <a class='abbr_ref'>[depr.cstdalign.syn]</a></h3>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-#define <span class='tcode_in_codeblock'>__alignas_&shy;is_&shy;defined</span> 1</pre>
-</blockquote>
-
-Change in [depr.cstdbool.syn] (D.4.3):
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>D.4.3</a> Header <span class='texttt'>&lt;cstdbool&gt;</span> synopsis <a class='abbr_ref'>[depr.cstdbool.syn]</a></h3>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-#define <span class='tcode_in_codeblock'>__bool_&shy;true_&shy;false_&shy;are_&shy;defined</span> 1</pre>
-</blockquote>
-
-<h1>Acknowledgements</h1>
-<p>
-Thanks to Brandon Streiff, Joshua Cannon, Phil Hindman, and Irwan Djajadi for reviewing this proposal.
-</p><p>
-Similar work was done in the C++11 timeframe by Lawrence Crowl and Alberto Ganesh Barbati in <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3256.html">N3256</a>.
-</p><p>
-CppCon talks on getting C++ support in various unusual environments:
-</p><p>
-[Baker2017] CppCon 2017: Billy Baker "Almost Unlimited Modern C++ in Kernel-Mode Applications"
-</p><p>
-[Quinn2016] CppCon 2016: Rian Quinn "Making C++ and the STL Work in the Linux / Windows Kernels"
-</p><p>
-[Bratterud2017] CppCon 2017: Alfred Bratterud "Deconstructing the OS: The devil's In the side effects"
-</p><p>
-[Meredith11] noexcept Prevents Library Validation. A. Meredith; J. Lakos.  <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3248.pdf">N3248</a>.
-</p>
-</body>
-</html>
+       
