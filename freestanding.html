@@ -498,7 +498,7 @@ Added <code>unique_ptr</code>.  Leaving <code>make_unique</code> and <code>defau
 Added <code>&lt;span&gt;</code>.<br/>
 Added <code>weeks</code>, <code>years</code>, and <code>months</code> time durations.<br/>
 TODO: add setjmp<br/>
-TODO: update to n4741.  In the middle of utilities, just finished massive &lt;chrono&gt; header.<br/>
+TODO: update to n4741.  Done with utilities and strings.  Containers next<br/>
 <h2> R0 -&gt; R1 </h2>
 R1 adds an abstract.<br/>
 R1 no longer removes any existing freestanding libraries.<br/>
@@ -2661,49 +2661,7 @@ namespace std {
 
 Change in [string.view.template] (24.4.2):
 <blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>24.4.2</a> Class template <span class='texttt'>basic_&shy;string_&shy;view</span> <a class='abbr_ref'>[string.view.template]</a></h3>
 <pre class='codeblock'>
-template&lt;class charT, class traits = char_traits&lt;charT&gt;&gt;
-class basic_string_view {
-public:
-  <span class='comment'>// types
-</span>  using traits_type            = traits;
-  using value_type             = charT;
-  using pointer                = value_type*;
-  using const_pointer          = const value_type*;
-  using reference              = value_type&amp;;
-  using const_reference        = const value_type&amp;;
-  using const_iterator         = <span class='textit'>implementation-defined</span>; <span class='comment'>// see 24.4.2.2
-</span>  using iterator               = const_iterator;<a class='footnotenum'>232</a>
-  using const_reverse_iterator = reverse_iterator&lt;const_iterator&gt;;
-  using reverse_iterator       = const_reverse_iterator;
-  using size_type              = size_t;
-  using difference_type        = ptrdiff_t;
-  static constexpr size_type npos = size_type(-1);
-
-  <span class='comment'>// 24.4.2.1, construction and assignment
-</span>  constexpr basic_string_view() noexcept;
-  constexpr basic_string_view(const basic_string_view&amp;) noexcept = default;
-  constexpr basic_string_view&amp; operator=(const basic_string_view&amp;) noexcept = default;
-  constexpr basic_string_view(const charT* str);
-  constexpr basic_string_view(const charT* str, size_type len);
-
-  <span class='comment'>// 24.4.2.2, iterator support
-</span>  constexpr const_iterator begin() const noexcept;
-  constexpr const_iterator end() const noexcept;
-  constexpr const_iterator cbegin() const noexcept;
-  constexpr const_iterator cend() const noexcept;
-  constexpr const_reverse_iterator rbegin() const noexcept;
-  constexpr const_reverse_iterator rend() const noexcept;
-  constexpr const_reverse_iterator crbegin() const noexcept;
-  constexpr const_reverse_iterator crend() const noexcept;
-
-  <span class='comment'>// 24.4.2.3, capacity
-</span>  constexpr size_type size() const noexcept;
-  constexpr size_type length() const noexcept;
-  constexpr size_type max_size() const noexcept;
-  [[nodiscard]] constexpr bool empty() const noexcept;
-
   <span class='comment'>// 24.4.2.4, element access
 </span>  constexpr const_reference operator[](size_type pos) const;
   constexpr const_reference at(size_type pos) const; <ins><span class='comment'>// <span class='textit'>freestanding, omit</span></span></ins>
@@ -2728,47 +2686,6 @@ public:
   constexpr int compare(const charT* s) const;
   constexpr int compare(size_type pos1, size_type n1, const charT* s) const; <ins><span class='comment'>// <span class='textit'>freestanding, omit</span></span></ins>
   constexpr int compare(size_type pos1, size_type n1, const charT* s, size_type n2) const; <ins><span class='comment'>// <span class='textit'>freestanding, omit</span></span></ins>
-
-  constexpr bool starts_with(basic_string_view x) const noexcept;
-  constexpr bool starts_with(charT x) const noexcept;
-  constexpr bool starts_with(const charT* x) const;
-  constexpr bool ends_with(basic_string_view x) const noexcept;
-  constexpr bool ends_with(charT x) const noexcept;
-  constexpr bool ends_with(const charT* x) const;
-
-  constexpr size_type find(basic_string_view s, size_type pos = 0) const noexcept;
-  constexpr size_type find(charT c, size_type pos = 0) const noexcept;
-  constexpr size_type find(const charT* s, size_type pos, size_type n) const;
-  constexpr size_type find(const charT* s, size_type pos = 0) const;
-  constexpr size_type rfind(basic_string_view s, size_type pos = npos) const noexcept;
-  constexpr size_type rfind(charT c, size_type pos = npos) const noexcept;
-  constexpr size_type rfind(const charT* s, size_type pos, size_type n) const;
-  constexpr size_type rfind(const charT* s, size_type pos = npos) const;
-
-  constexpr size_type find_first_of(basic_string_view s, size_type pos = 0) const noexcept;
-  constexpr size_type find_first_of(charT c, size_type pos = 0) const noexcept;
-  constexpr size_type find_first_of(const charT* s, size_type pos, size_type n) const;
-  constexpr size_type find_first_of(const charT* s, size_type pos = 0) const;
-  constexpr size_type find_last_of(basic_string_view s, size_type pos = npos) const noexcept;
-  constexpr size_type find_last_of(charT c, size_type pos = npos) const noexcept;
-  constexpr size_type find_last_of(const charT* s, size_type pos, size_type n) const;
-  constexpr size_type find_last_of(const charT* s, size_type pos = npos) const;
-  constexpr size_type find_first_not_of(basic_string_view s, size_type pos = 0) const noexcept;
-  constexpr size_type find_first_not_of(charT c, size_type pos = 0) const noexcept;
-  constexpr size_type find_first_not_of(const charT* s, size_type pos,
-                                        size_type n) const;
-  constexpr size_type find_first_not_of(const charT* s, size_type pos = 0) const;
-  constexpr size_type find_last_not_of(basic_string_view s,
-                                       size_type pos = npos) const noexcept;
-  constexpr size_type find_last_not_of(charT c, size_type pos = npos) const noexcept;
-  constexpr size_type find_last_not_of(const charT* s, size_type pos,
-                                       size_type n) const;
-  constexpr size_type find_last_not_of(const charT* s, size_type pos = npos) const;
-
-private:
-  const_pointer data_; <span class='comment'>// <span class='textit'>exposition only</span>
-</span>  size_type size_;     <span class='comment'>// <span class='textit'>exposition only</span>
-</span>};
 </pre>
 </blockquote>
 
