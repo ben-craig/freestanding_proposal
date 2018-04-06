@@ -329,7 +329,7 @@ Heavy macros, but present: <cfenv>, <cinttypes>, <csetjump>, <atomic>
 * Full
   * Remainder of <cwchar>
   * Remainder of <cstdlib>
-  * Remainer of <cinttypes>
+  * Remainder of <cinttypes>
   * Remainder of <cstring>
   * Some / remainder of <iterator>
     * istream_iterator
