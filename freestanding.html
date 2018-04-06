@@ -496,9 +496,9 @@ Added <code>bitset</code>, minus the string members and throwing members.<br/>
 Added <code>&lt;version&gt;</code> and moved the feature macro there.<br/>
 Added <code>unique_ptr</code>.  Leaving <code>make_unique</code> and <code>default_delete</code> out.<br/>
 Added <code>&lt;span&gt;</code>.<br/>
-Added <code>weeks</code>, <code>years</code>, and <code>months</code> time durations.<br/>
+Added <code>days</code>, <code>weeks</code>, <code>months</code>, and <code>years</code> time durations.<br/>
+Added <code>&lt;csetjmp&gt;</code><br/>
 Updated to N4741.<br/>
-TODO: add setjmp<br/>
 <h2> R0 -&gt; R1 </h2>
 R1 adds an abstract.<br/>
 R1 no longer removes any existing freestanding libraries.<br/>
@@ -639,6 +639,7 @@ I would like to call out <code>std::variant</code> as well.  While I do include 
 <h1>Technical Specifications</h1>
 <h2>Complete headers newly required for freestanding implementations</h2>
 <code><ul>
+<li>&lt;csetjmp&gt;</li>
 <li>&lt;utility&gt;</li>
 <li>&lt;tuple&gt;</li>
 <li>&lt;ratio&gt;</li>
@@ -1279,6 +1280,15 @@ namespace std {
 Change in [cstdarg.syn] (21.11.1):
 <blockquote class="std">
 <h3 ><a class='secnum' style='min-width:103pt'>21.11.1</a> Header <span class='texttt'>&lt;cstdarg&gt;</span> synopsis <a class='abbr_ref'>[cstdarg.syn]</a></h3>
+<pre class='codeblock'>
+<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+namespace std {
+</pre>
+</blockquote>
+
+Change in [csetjmp.syn] (21.11.2):
+<blockquote class="std">
+<h3 ><a class='secnum' style='min-width:103pt'>21.11.2</a> Header <span class='texttt'>&lt;csetjmp&gt;</span> synopsis <a class='abbr_ref'>[csetjmp.syn]</a></h3>
 <pre class='codeblock'>
 <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 namespace std {
