@@ -515,10 +515,14 @@ Add everything to the freestanding implementation that can be implemented withou
 <h1>Introduction</h1>
 <p>
 The current definition of the freestanding implementation is not very useful.  Here is the current high level definition from [intro.compliance]:
-<blockquote>7 Two kinds of implementations are defined: a hosted implementation and a freestanding implementation. For a
-hosted implementation, this document defines the set of available libraries. A freestanding implementation is
-one in which execution may take place without the benefit of an operating system, and has an implementation defined
-set of libraries that includes certain language-support libraries (20.5.1.3).</blockquote>
+<blockquote class="std"><div class='para' id='7'>
+<div class='marginalizedparent'><a class='marginalized'>7</a></div>
+<div id='7.sentence-1' class='sentence'>Two kinds of implementations are defined: a <i >hosted implementation</i> and a
+<i >freestanding implementation</i>.</div> <div id='7.sentence-2' class='sentence'>For a hosted implementation, this
+document defines the set of available libraries.</div> <div id='7.sentence-3' class='sentence'>A freestanding
+implementation is one in which execution may take place without the benefit of
+an operating system, and has an <span class='indexparent'><a class='index' id=':required_libraries_for_freestanding_implementation'></a></span>implementation-defined set of libraries that includes certain language-support
+libraries ([compliance]).</div></div></blockquote>
 <p>
 The main people served by the current freestanding definition are people writing their own hosted C++ standard library to sit atop the compiler author's freestanding implementation (i.e. the STLport use case).  The freestanding portions contain all the functions and types known to the compiler that can't easily be authored in a cross-compiler manner.
 </p><p>
@@ -702,7 +706,7 @@ Most of <code>&lt;functional&gt;</code>.  <b>Omit</b> the following.
 <li>23.14.14.3, <code>boyer_moore_horspool_searcher</code></li>
 </ul>
 </p><p>
-<code>&lt;chrono&gt;</code> durations and duration math.  Omit clocks, civil time, and streaming functions.
+<code>&lt;chrono&gt;</code> durations and duration math.  <b>Omit</b> clocks, civil time, and streaming functions.
 </p><p>
 Portions of <code>&lt;charconv&gt;</code>.
 </p>
