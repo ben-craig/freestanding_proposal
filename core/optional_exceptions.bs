@@ -1,0 +1,18 @@
+<pre class='metadata'>
+Title: Make Exceptions and Company Optional for Freestanding Implementations
+Shortname: D0000
+Level: 0
+Status: D
+Group: wg21
+URL: http://example.com/url-this-spec-will-live-at
+Editor: Ben Craig &lt;ben dot craig at gmail dot com&gt;
+!Document number: D0000R0.0
+!Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;
+!Audience: SG14, EWG
+Abstract: A short description of your spec, one or two sentences.
+</pre>
+
+Introduction {#intro}
+=====================
+
+Introduction here.
