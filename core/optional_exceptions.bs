@@ -1,14 +1,13 @@
 <pre class='metadata'>
 Title: Make Exceptions and Company Optional for Freestanding Implementations
 Shortname: D0000
-Level: 0
+Revision: 0
+Audience: SG14, EWG
 Status: D
-Group: wg21
+Group: WG21
 URL: http://example.com/url-this-spec-will-live-at
+!Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/optional_exceptions.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/optional_exceptions.bs</a>
 Editor: Ben Craig &lt;ben dot craig at gmail dot com&gt;
-!Document number: D0000R0.0
-!Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;
-!Audience: SG14, EWG
 Abstract: A short description of your spec, one or two sentences.
 </pre>
 
