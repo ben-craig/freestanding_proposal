@@ -8,10 +8,48 @@ Group: WG21
 URL: http://example.com/url-this-spec-will-live-at
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/optional_exceptions.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/optional_exceptions.bs</a>
 Editor: Ben Craig &lt;ben dot craig at gmail dot com&gt;
-Abstract: A short description of your spec, one or two sentences.
+Abstract: Making core language features (like exceptions) optional in freestanding mode if they have an OS dependency or incur space overhead.
 </pre>
 
 Introduction {#intro}
 =====================
 
 Introduction here.
+Something about Embedded C++ and the Embedded Template Library
+
+
+Features going optional {#features}
+===================================
+
+Exceptions {#exceptions}
+------------------------
+What about re-throw, try, catch, uncaught_exceptions?  terminate?
+
+
+RTTI {#rtti}
+------------
+
+Default heap storage {#heap}
+----------------------------
+Related, virtual destructors
+
+Thread local storage {#tls}
+---------------------------
+
+Floating point {#float}
+-----------------------
+
+Program startup and teardown {#startup_teardown}
+------------------------------------------------
+
+Function local statics {#function_statics}
+------------------------------------------
+
+Locked atomics {#locked-atomics}
+--------------------------------
+
+Common QoI issues
+=================
+Pure virtual functions
+
+
