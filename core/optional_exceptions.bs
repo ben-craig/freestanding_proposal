@@ -23,32 +23,58 @@ Features going optional {#features}
 
 Exceptions {#exceptions}
 ------------------------
-What about re-throw, try, catch, uncaught_exceptions?  terminate?
+### What am I changing? ### {#exception_what}
 
+### Why? ### {#exception_why}
+What about re-throw, try, catch, uncaught_exceptions?  terminate?
+noexcept?
+Relation to d0709
 
 RTTI {#rtti}
 ------------
+### What am I changing? ### {#rtti_what}
+
+### Why? ### {#rtti_why}
+Potential change in ABI
 
 Default heap storage {#heap}
 ----------------------------
+### What am I changing? ### {#heap_what}
+
+### Why? ### {#heap_why}
 Related, virtual destructors
 
 Thread local storage {#tls}
 ---------------------------
+### What am I changing? ### {#tls_what}
+
+### Why? ### {#tls_why}
 
 Floating point {#float}
 -----------------------
+### What am I changing? ### {#float_what}
+
+### Why? ### {#float_why}
 
 Program startup and teardown {#startup_teardown}
 ------------------------------------------------
+### What am I changing? ### {#startup_teardown_what}
+
+### Why? ### {#startup_teardown_why}
 
 Function local statics {#function_statics}
 ------------------------------------------
+### What am I changing? ### {#function_statics_what}
 
-Locked atomics {#locked-atomics}
+### Why? ### {#function_statics_why}
+
+Locked atomics {#locked_atomics}
 --------------------------------
+### What am I changing? ### {#locked_atomics_what}
 
-Common QoI issues
+### Why? ### {#locked_atomics_why}
+
+Common QoI issues {#qoi}
 =================
 Pure virtual functions
 
