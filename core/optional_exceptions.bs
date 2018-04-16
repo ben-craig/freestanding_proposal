@@ -20,15 +20,29 @@ Something about Embedded C++ and the Embedded Template Library
 
 Features going optional {#features}
 ===================================
+The following applies only to freestanding mode.  Hosted mode will remain unchanged.
 
 Exceptions {#exceptions}
 ------------------------
+This section applies to "dynamic" exceptions.  In other words, the exceptions we have had since C++98.  [[P0709]] could add "static" exceptions.  I am keeping static exceptions in mind with this design, but I'm not providing any wording against that proposal.
+
 ### What am I changing? ### {#exception_what}
+Throw expressions with operands may be ill formed.  Evaluating a throw expression with no operands is undefined behavior.
+
+When a function without a noexcept specification is passed to a noexcept expression, noexcept may return true.
+
+noexcept(false) code should be treated with suspicion.
+
+The <exception> header is not required to be present.  Note that this removes std::terminate and uncaught_exceptions.
+
+### What isn't changing? ### {#exception_same}
+try and catch are both still allowed.  Compilers should treat catch blocks as unreachable code.
 
 ### Why? ### {#exception_why}
-What about re-throw, try, catch, uncaught_exceptions?  terminate?
-noexcept?
-Relation to d0709
+Kernel and embedded environments can't universally afford exceptions.  
+
+
+See [[P0709]] for problems with exceptions in general.
 
 RTTI {#rtti}
 ------------
@@ -79,3 +93,12 @@ Common QoI issues {#qoi}
 Pure virtual functions
 
 
+<pre class=biblio>
+{
+    "P0709": {
+        "authors": ["Herb Sutter"],
+        "href": "http://wg21.link/P0709",
+        "title": "Zero-overhead deterministic exceptions: Throw values"
+    }
+}
+</pre>
