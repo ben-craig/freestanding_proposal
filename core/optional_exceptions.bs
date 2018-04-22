@@ -41,13 +41,13 @@ See [[P0709]] for further discussion on the problems with exceptions.
 
 Evaluating a `throw` expression with no operands (a "rethrow") is undefined behavior.  We allow the programmer to compile with a rethrow to allow exception neutral code to be shared between freestanding and hosted implementations, but the rethrow shouldn't ever be evaluated, since we shouldn't be able to get into a catch block.  This behavior is different from the current behavior though, as a rethrow without an active exception currently calls `std::terminate`.  I don't call `std::terminate`, as `std::terminate` relies on the global terminate handler, and freestanding doesn't want to pay the cost of synchronizing the global terminate handler.
 
-When a function without a noexcept specification is passed to a noexcept expression, noexcept will return true if exception support is not present.  This will speed up operations like `move_if_noexcept` and containers with strong exception guarantees.  This also differs somewhat from existing practices.  Visual Studio, clang, and gcc do not currently adjust the value of noexcept when exceptions are off.  The Intel compiler (with EDG frontend) does make functions noexcept when exceptions are turned off.  In addition, Visual Studio has a compiler mode, /EHsc, that takes `extern "C"` functions and makes them noexcept.  TODO: see what Intel does for `noexcept(void foo() noexcept(false))`.  Note that this approach leaves the door open for static exceptions.
+When a function without a noexcept specification is passed to a noexcept expression, noexcept will return true if exception support is not present.  This will speed up operations like `move_if_noexcept` and containers with strong exception guarantees.  This also differs somewhat from existing practices.  Visual Studio, clang, and gcc do not currently adjust the value of noexcept when exceptions are off.  The Intel compiler (with EDG frontend) makes the noexcept operator unconditionally return true when exceptions are turned off.  In addition, Visual Studio has a compiler mode, /EHsc, that takes `extern "C"` functions and makes them noexcept.  Note that this approach leaves the door open for static exceptions to use noexcept.
 
 noexcept(false) code should be treated with suspicion.  This isn't normative, but it would be a useful place for compilers to warn.
 
 The <exception> header is not required to be present.  Note that this removes std::terminate and uncaught_exceptions.
 
-`catch` blocks are treated the same as an `if constexpr(false)` block.  This is to allow some trivial exception translation to continue compiling.
+`catch` blocks are treated the same as an `if constexpr(false)` block.  This is to allow some trivial exception translation to continue compiling.  TODO: what if the catch block translates from one exception to another, but uses a helper function to do so?  Maybe make throw UB?
 
 RTTI {#rtti}
 ------------
