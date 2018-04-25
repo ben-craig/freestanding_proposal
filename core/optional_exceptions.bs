@@ -109,11 +109,16 @@ Many embedded processors do not have floating point units.  The cost for the fir
 In kernel environments, floating point operations are avoided.  The system call interface from user mode to kernel mode normally does a partial context switch, where it saves off the old values of registers, so that they can be restored when returning to user mode.  In order to make user / kernel transitions fast, operating systems usually don't save or restore the floating point state.  This means that using floating point in the kernel ends up corrupting the user mode program's floating point state.
 
 
-Program startup and teardown {#startup_teardown}
+Program start-up and termination {#startup_termination}
 ------------------------------------------------
-### What am I changing? ### {#startup_teardown_what}
+### What isn't changing ### {#startup_termination_same}
+[basic.start.main](http://wg21.link/basic.start.main) already makes start-up and termination implementation defined for freestanding implementations.  I interpret this as meaning that neither static initialization nor dynamic initialization is required to take place.  This also means that non-local object destruction is implementation defined.
 
-### Why? ### {#startup_teardown_why}
+### What am I changing? ### {#startup_termination_what}
+The existence of `atexit`, `at_quick_exit`, `exit`, and `quick_exit` should also be implementation defined (i.e. optional).
+
+### Why? ### {#startup_termination_why}
+These functions require space overhead, and are difficult to optimize away.  Process termination code iterates over the contents of the `atexit` list, pinning the memory in place.
 
 Function local statics {#function_statics}
 ------------------------------------------
@@ -121,11 +126,13 @@ Function local statics {#function_statics}
 
 ### Why? ### {#function_statics_why}
 
+
 Locked atomics {#locked_atomics}
 --------------------------------
 ### What am I changing? ### {#locked_atomics_what}
 
 ### Why? ### {#locked_atomics_why}
+Spin locks on a tick-less OS are a bad idea.  You could get in the middle of static initialization, get an interrupt that causes you to change threads, then get stuck on the initialization of the same static.  Forward progress will be halted until another interrupt happens at some indeterminate point in the future.
 
 Common QoI issues {#qoi}
 =================
