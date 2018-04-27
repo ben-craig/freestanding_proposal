@@ -64,10 +64,7 @@ RTTI {#rtti}
 
 The slot in the vtable itself is also a place where space is wasted.
 
-If `typeid` and `dynamic_cast` can't be called, implementations can safely remove the vtable slot and the `type_info` objects, saving space.
-
-
-TODO: double check existing implementations so that I can claim that this is existing practice.  It seems to be the case on MSVC.  Be sure to throw virtual inheritance at the problem, and possibly suggest removing those offsets.
+If `typeid` and `dynamic_cast` can't be called, implementations can safely remove the `type_info` objects, saving space.  Some ABIs will even permit reclaiming the vtable slot.
 
 Default heap storage {#heap}
 ----------------------------
