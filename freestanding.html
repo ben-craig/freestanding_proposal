@@ -604,7 +604,7 @@ Note that the following concerns are not revolving around execution time perform
 </p><p>
 This proposal doesn't remove problematic features from the language, but it does make it so that the bulk of the freestanding standard library doesn't require those features.  Users that disable the problematic features (as is existing practice) will still have portable portions of the standard library at their disposal.
 </p><p>
-Note that we cannot just take the list of <code>constexpr</code> or conditionally <code>noexcept</code> functions and make those functions the freestanding subset.  We also can't do the reverse, and make everything freestanding <code>constexpr</code> or conditionally <code>noexcept</code>.  <code>memcpy</code> cannot currently be made <code>constexpr</code> because it must convert from <code>cv void*</code> to <code>unsigned char[]</code>.  Several floating point functions could be made <code>constexpr</code>, but would not be permitted in freestanding.  The "Lakos Rule"[Meredith11] prohibits standard library functions from being <code>noexcept</code>, unless they have a wide contract.  Regardless, if a function or class is <code>constexpr</code> or <code>noexcept</code>, and it doesn't involve floating point, then that function or class is a strong candidate to be put into freestanding mode.
+Note that we cannot just take the list of <code>constexpr</code> or conditionally <code>noexcept</code> functions and make those functions the freestanding subset.  We also can't do the reverse, and make everything freestanding <code>constexpr</code> or conditionally <code>noexcept</code>.  <code>memcpy</code> cannot currently be made <code>constexpr</code> because it must convert from <code>cv void*</code> to <code>unsigned char[]</code>.  Several floating point functions could be made <code>constexpr</code>, but would not be permitted in freestanding.  The "Lakos Rule"[Meredith11] prohibits most standard library functions from being conditionally <code>noexcept</code>, unless they have a wide contract.  Regardless, if a function or class is <code>constexpr</code> or <code>noexcept</code>, and it doesn't involve floating point, then that function or class is a strong candidate to be put into freestanding mode.
 </p><p>
 In the future, it may make sense to allow all <code>constexpr</code> functions into freestanding, so long as they are used in a <code>constexpr</code> context and not invoked at runtime.
 </p>
@@ -4484,7 +4484,7 @@ CppCon talks on getting C++ support in various unusual environments:
 </p><p>
 [Bratterud2017] CppCon 2017: Alfred Bratterud "Deconstructing the OS: The devil's In the side effects"
 </p><p>
-[Meredith11] noexcept Prevents Library Validation. A. Meredith; J. Lakos.  <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3248.pdf">N3248</a>.
+[Meredith11] Conservative use of noexcept in the Library. A. Meredith; J. Lakos.  <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3279.pdf">N3279</a>.
 </p>
 </body>
 </html>
