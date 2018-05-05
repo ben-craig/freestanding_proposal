@@ -38,9 +38,9 @@ See [[P0709]] for further discussion on the problems with exceptions.
 `try` and `catch` are both still allowed.  Compilers should treat `catch` blocks as unreachable code.  `try` and `catch` blocks are allowed so that exception neutral code can be shared between freestanding and hosted implementations without requiring preprocessor hackery.
 
 ### What am I changing (and why)? ### {#exception_what}
-`throw` expressions with operands are ill formed if exception support is not present.  When exception support isn't present, we can't reliably unwind the stack, so we should error when that is requested.
+Evaluating a `throw` expression in an environment without exception support is undefined behavior.  We allow the programmer to compile with a `throw` to allow exception neutral code to be shared between freestanding and hosted implementations, but the `throw` shouldn't ever be evaluated, since we shouldn't be able to get into a `catch` block.  We allow 'throw' expressions with operands so that programmers can do exception translation in environments with exceptions, with the expectation that the code won't ever be executed in exceptionless environments.  For `throw` expressions without operands, this will be a change in behavior.  A rethrow without an active exception currently calls `std::terminate`.  I don't call `std::terminate`, as `std::terminate` relies on the global terminate handler, and freestanding doesn't want to pay the cost of synchronizing the global terminate handler.
 
-Evaluating a `throw` expression with no operands (a "rethrow") is undefined behavior.  We allow the programmer to compile with a rethrow to allow exception neutral code to be shared between freestanding and hosted implementations, but the rethrow shouldn't ever be evaluated, since we shouldn't be able to get into a `catch` block.  This behavior is different from the current behavior though, as a rethrow without an active exception currently calls `std::terminate`.  I don't call `std::terminate`, as `std::terminate` relies on the global terminate handler, and freestanding doesn't want to pay the cost of synchronizing the global terminate handler.
+Implementations are encouraged to produce warnings on any 'throw' expression with operands, as well as allow suppressions for informing the compiler when those throws are actually there for exception translation purposes.
 
 When a function without a `noexcept` specification is passed to a `noexcept` expression, `noexcept` will return true if exception support is not present.  This will speed up operations like `move_if_noexcept` and containers with strong exception guarantees.  This also differs somewhat from existing practices.  Visual Studio, clang, and gcc do not currently adjust the value of `noexcept` when exceptions are off.  The Intel compiler (with EDG frontend) makes the `noexcept` operator unconditionally return true when exceptions are turned off.  In addition, Visual Studio has a compiler mode, /EHsc, that takes `extern "C"` functions and makes them `noexcept`.  Note that this approach leaves the door open for static exceptions to use `noexcept`.
 
@@ -52,8 +52,25 @@ Types derived from `std::exception` are not required to be present in their resp
 
 `std::visit` is no longer required to throw `std::bad_variant_access`, as it will now be impossible to get into the `valueless_by_exception` state.
 
-`catch` blocks are treated the same as an `if constexpr(false)` block.  This is to allow some trivial exception translation to continue compiling.  TODO: what if the `catch` block translates from one exception to another, but uses a helper function to do so?  Maybe make `throw` with operands UB?
+`catch` blocks are treated the same as an `if constexpr(false)` block.  This is to allow some trivial exception translation to continue compiling.
 
+### Alternative designs ### {#exception_alt}
+1. No change to `noexcept` expression
+
+  `noexcept` would continue to assume that a function without a `noexcept` specifier could throw.  We have the most experience with this option (Clang, gcc, and Visual Studio implement it), but it also leaves the most unexploited performance, as it pessimizes `move_if_noexcept`, `vector`, and other facilities that query `noexcept`.
+
+2. `noexcept` expressions always return true
+
+  Intel icc currently implements this option.  This opens us up to breakage if some other proposal gives meaning to `noexcept` on platforms without dynamic exceptions.  Having `noexcept` directly contradict a `noexcept(false)` specification seems wrong as well.
+
+3. Make `noexcept` ill-formed
+
+  Visual Studio currently warns when it sees a `noexcept` specifier while exceptions are disabled.  This option would make it very difficult to share code between freestanding and hosted.  Libraries attempting to target both would most likely resort to a macro that conditionally expands to `noexcept`.
+
+4. `throw` UB vs. ill-formed
+
+  We could make some or all `throw` expressions ill-formed.  The benefit is that compilers could more reliably produce diagnostics.  The cost is that it would be more difficult to share exception neutral code between hosted and freestanding.
+  
 RTTI {#rtti}
 ------------
 ### What am I changing? ### {#rtti_what}
@@ -78,7 +95,7 @@ Many embedded systems do not have a heap.  Such a system could provide an implem
 
 Many kernel systems have multiple pools of memory, none of which is suitable as a default.  In the Microsoft Windows kernel, developers have the choice of paged pool, which is plentiful and dangerous; and non-paged pool, which is safe and scarce.  The National Instruments codebase has had experience using each of those options as a default, and both have proven problematic.  The Microsoft Visual Studio compiler switch `/kernel` already implements the lack of default allocation functions. [[kernel_switch]]
 
-In current implementations of `virtual` destructors, the class's vtable points at a stub function that calls the "real" destructor, then calls `::operator delete`.  This places a burden on freestanding users of hosted code, even when the freestanding users aren't using `new` and `delete`.  It seems reasonable to allow a freestanding class to have a `virtual` destructor, so long as it is never `new`ed or `delete`ed.  Hosted uses of the class can `new` and `delete` all they want.
+In current implementations of `virtual` destructors, the class's vtable points at a stub function that calls the "real" destructor, then calls `::operator delete`.  This places a burden on freestanding users of hosted code, even when the freestanding users aren't using `new` and `delete`.  It seems reasonable to allow a freestanding class to have a `virtual` destructor, so long as the class is never `new`ed or `delete`ed.  Hosted uses of the class can `new` and `delete` all they want.
 
 
 Thread local storage {#tls}
