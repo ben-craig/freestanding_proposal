@@ -5,7 +5,7 @@ Revision: 0
 Audience: SG14, EWG
 Status: D
 Group: WG21
-URL: http://example.com/url-this-spec-will-live-at
+URL: https://wg21.link/index.html
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/optional_exceptions.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/optional_exceptions.bs</a>
 Editor: Ben Craig &lt;ben dot craig at gmail dot com&gt;
 Abstract: Making core language features (like exceptions) optional in freestanding mode if they have an OS dependency or incur space overhead.
@@ -97,7 +97,6 @@ Many kernel systems have multiple pools of memory, none of which is suitable as 
 
 In current implementations of `virtual` destructors, the class's vtable points at a stub function that calls the "real" destructor, then calls `::operator delete`.  This places a burden on freestanding users of hosted code, even when the freestanding users aren't using `new` and `delete`.  It seems reasonable to allow a freestanding class to have a `virtual` destructor, so long as the class is never `new`ed or `delete`ed.  Hosted uses of the class can `new` and `delete` all they want.
 
-
 Thread local storage {#tls}
 ---------------------------
 ### What am I changing? ### {#tls_what}
@@ -122,7 +121,6 @@ Many embedded processors do not have floating point units.  The cost for the fir
 
 In kernel environments, floating point operations are avoided.  The system call interface from user mode to kernel mode normally does a partial context switch, where it saves off the old values of registers, so that they can be restored when returning to user mode.  In order to make user / kernel transitions fast, operating systems usually don't save or restore the floating point state.  This means that using floating point in the kernel ends up corrupting the user mode program's floating point state.
 
-
 Program start-up and termination {#startup_termination}
 ------------------------------------------------
 ### What isn't changing ### {#startup_termination_same}
@@ -134,19 +132,25 @@ The existence of `atexit`, `at_quick_exit`, `exit`, and `quick_exit` should also
 ### Why? ### {#startup_termination_why}
 These functions require space overhead, and are difficult to optimize away.  Process termination code iterates over the contents of the `atexit` list, pinning the memory in place.
 
-Function local statics {#function_statics}
-------------------------------------------
-### What am I changing? ### {#function_statics_what}
+Language mandated locks {#locking}
+----------------------------------
+### What am I changing? ### {#locking_what}
+In environments without locking support, dynamic initialization of function statics and non-lock-free atomics are ill-formed.
 
-### Why? ### {#function_statics_why}
+In practice, this won't require changes from toolchain vendors.  On unknown environments, the C++ runtime functions necessary to implement locked atomics and dynamic initialization of function statics generally aren't provided.  This results in linker errors, satisfying the ill-formed requirement.  This change will make such a toolchain conforming.
 
+### Why? ### {#locking_why}
+Locking is hard and not universally portable.
 
-Locked atomics {#locked_atomics}
---------------------------------
-### What am I changing? ### {#locked_atomics_what}
+On a system without an OS, your main locking choices are disabling interrupts and spin locks.  Spin locks are needed to synchronize among multiple hardware threads, and disabling interrupts is required when synchronizing a processor with itself.  Neither locking technique is universally applicable, even when limited to the realm of OS-less systems.
 
-### Why? ### {#locked_atomics_why}
-Spin locks on a tick-less OS are a bad idea.  You could get in the middle of static initialization, get an interrupt that causes you to change threads, then get stuck on the initialization of the same static.  Forward progress will be halted until another interrupt happens at some indeterminate point in the future.
+In the Windows kernel, there are multiple types of locks.  No one lock type is appropriate in all situations.
+
+The CRECT RTOS [[CRECT]] doesn't have independent locks like many other OSes do.  All locks are explicitly associated with a particular resource.  Jobs must list all resources they use so that scheduling priorities can be calculated at compile-time.  This effectively means that a CRECT application has N distinct lock types, used only by that application.  None of these locks are known to the maintainers of CRECT, and none of them are known to the C++ runtime.  Current compiler ABIs do not provide the C++ runtime with information about the type or address of the function static being initialized.
+
+Some OSes aren't scheduled in a time-sliced manner.  Spin locks on these systems are a bad idea.  You could get in the middle of static initialization, get an interrupt that causes you to change threads, then get stuck on the initialization of the same static.  Forward progress will be halted until another interrupt happens at some indeterminate point in the future.
+
+All of these concerns are also concerns with regards to signals.  [support.signal](https://wg21.link/support.signal) already calls out that locked atomics result in UB when invoked from a signal.  Dynamic initialization of a static variable is also UB when invoked from a signal.  If we are willing to make special rules for signals, shouldn't we be willing to make special rules for embedded and kernel... especially if the rules are largely the same?
 
 Common QoI issues {#qoi}
 =================
@@ -163,6 +167,11 @@ Pure virtual functions
         "authors": ["Microsoft Documentation"],
         "title": "/kernel (Create Kernel Mode Binary)",
         "href": "https://docs.microsoft.com/en-us/cpp/build/reference/kernel-create-kernel-mode-binary"
+    },
+    "CRECT": {
+        "authors": ["Emil Fresk", "Odin Holmes", "Carlos van Rooijen"],
+        "title": "crect: A C++, compile-time, reactive RTOS",
+        "href": "https://github.com/korken89/crect"
     }
 }
 </pre>
