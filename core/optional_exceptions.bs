@@ -48,7 +48,7 @@ When a function without a `noexcept` specification is passed to a `noexcept` exp
 
 The `<exception>` header is not required to be present.  Note that this removes `std::terminate` and `uncaught_exceptions`.
 
-Types derived from `std::exception` are not required to be present in their respective headers.  
+Types derived from `std::exception` are not required to be present in their respective headers.
 
 `std::visit` is no longer required to throw `std::bad_variant_access`, as it will now be impossible to get into the `valueless_by_exception` state.
 
@@ -70,7 +70,7 @@ Types derived from `std::exception` are not required to be present in their resp
 4. `throw` UB vs. ill-formed
 
   We could make some or all `throw` expressions ill-formed.  The benefit is that compilers could more reliably produce diagnostics.  The cost is that it would be more difficult to share exception neutral code between hosted and freestanding.
-  
+
 RTTI {#rtti}
 ------------
 ### What am I changing? ### {#rtti_what}
