@@ -14,10 +14,15 @@ Markup Shorthands: markdown yes
 
 Introduction {#intro}
 =====================
+Conforming C++ toolchains are ill-suited to target kernel and embedded domains.  In practice, kernel and embedded developers almost always use compiler switches that make the toolchain non-conforming.  This means that conforming C++ has left room for a lower level language: non-conforming C++.  WG21 needs to decide between the lesser of several evils: adding a dialect, leaving room for a lower level language, or massive breakage in real code.  This paper proposes adding a dialect.
 
-Introduction here.
-Something about Embedded C++ and the Embedded Template Library
+It is my intent that this be the least bad form of dialect, the proper subset.  All programs authored in the freestanding dialect should have the same semantics as in the hosted language (except, perhaps, with the noexcept operator [#exception_what]).
 
+In [[P0829]], I propose adding library features to the paper that should work everywhere.  This paper covers the removal of features that don't work everywhere.  There is already standards precedent in [support.signal](http://eel.is/c++draft/support.signal#3) for avoiding portions of all the features that I am making optional.
+
+There are years, if not decades of field experience using C++ subsets similar to what I am proposing.  The workarounds and compiler switches are mostly available today.  The main places where this paper innovates is in places where we can keep more features than current compiler based switches allow.
+
+In theory, this paper would result in large scale code breaks for existing freestanding users.  In practice, there are almost no existing freestanding users because the current definition is not serving the stated purpose of working ["without the benefit of an operating system"](http://eel.is/c++draft/intro.compliance#7).
 
 Features going optional {#features}
 ===================================
@@ -162,6 +167,16 @@ Pure virtual functions
         "authors": ["Herb Sutter"],
         "href": "http://wg21.link/P0709",
         "title": "Zero-overhead deterministic exceptions: Throw values"
+    },
+    "P0829": {
+        "authors": ["Ben Craig"],
+        "href": "http://wg21.link/P0829",
+        "title": "Freestanding Proposal"
+    },
+    "P0829R0": {
+        "authors": ["Ben Craig"],
+        "href": "http://wg21.link/P0829R0",
+        "title": "Freestanding Proposal (R0)"
     },
     "kernel_switch": {
         "authors": ["Microsoft Documentation"],
