@@ -16,7 +16,7 @@ Introduction {#intro}
 =====================
 Conforming C++ toolchains are ill-suited to target kernel and embedded domains.  In practice, kernel and embedded developers almost always use compiler switches that make the toolchain non-conforming.  This means that conforming C++ has left room for a lower level language: non-conforming C++.  WG21 needs to decide between the lesser of several evils: adding a dialect, leaving room for a lower level language, or massive breakage in real code.  This paper proposes adding a dialect.
 
-It is my intent that this be the least bad form of dialect, the proper subset.  All programs authored in the freestanding dialect should have the same semantics as in the hosted language (except, perhaps, with the noexcept operator [#exception_what]).
+It is my intent that this be the least bad form of dialect, the proper subset.  All valid freestanding libraries should be valid hosted libraries with compatible semantics.
 
 In [[P0829]], I propose adding library features to the paper that should work everywhere.  This paper covers the removal of features that don't work everywhere.  There is already standards precedent in [support.signal](http://eel.is/c++draft/support.signal#3) for avoiding portions of all the features that I am making optional.
 
@@ -137,17 +137,17 @@ The existence of `atexit`, `at_quick_exit`, `exit`, and `quick_exit` should also
 ### Why? ### {#startup_termination_why}
 These functions require space overhead, and are difficult to optimize away.  Process termination code iterates over the contents of the `atexit` list, pinning the memory in place.
 
-Language mandated locks {#locking}
+Language mandated blocking {#blocking}
 ----------------------------------
-### What am I changing? ### {#locking_what}
-In environments without locking support, dynamic initialization of function statics and non-lock-free atomics are ill-formed.
+### What am I changing? ### {#blocking_what}
+In environments without blocking support, dynamic initialization of function statics and non-lock-free atomics are ill-formed.
 
 In practice, this won't require changes from toolchain vendors.  On unknown environments, the C++ runtime functions necessary to implement locked atomics and dynamic initialization of function statics generally aren't provided.  This results in linker errors, satisfying the ill-formed requirement.  This change will make such a toolchain conforming.
 
-### Why? ### {#locking_why}
-Locking is hard and not universally portable.
+### Why? ### {#blocking_why}
+Blocking is hard and not universally portable.
 
-On a system without an OS, your main locking choices are disabling interrupts and spin locks.  Spin locks are needed to synchronize among multiple hardware threads, and disabling interrupts is required when synchronizing a processor with itself.  Neither locking technique is universally applicable, even when limited to the realm of OS-less systems.
+On a system without an OS, your main blocking choices are disabling interrupts and spin locks.  Spin locks are needed to synchronize among multiple hardware threads, and disabling interrupts is required when synchronizing a processor with itself.  Neither blocking technique is universally applicable, even when limited to the realm of OS-less systems.
 
 In the Windows kernel, there are multiple types of locks.  No one lock type is appropriate in all situations.
 
@@ -157,12 +157,25 @@ Some OSes aren't scheduled in a time-sliced manner.  Spin locks on these systems
 
 All of these concerns are also concerns with regards to signals.  [support.signal](https://wg21.link/support.signal) already calls out that locked atomics result in UB when invoked from a signal.  Dynamic initialization of a static variable is also UB when invoked from a signal.  If we are willing to make special rules for signals, shouldn't we be willing to make special rules for embedded and kernel... especially if the rules are largely the same?
 
+Related works in progress, and future work {#other_work}
+========================================================
+
+[[P0709]] Zero-overhead deterministic exceptions {#p0709}
+------------------------------------------------
+Efforts were made to not design out static exceptions.  If we were to ignore other static exceptions, and other potential implementations of exceptions, we could provide an implementation of `uncaught_exceptions` that always returned 0.  This would enable `scope_success` and `scope_failure` out of [[P0052]].
+
+
 Common QoI issues {#qoi}
 =================
 Pure virtual functions
 
 <pre class=biblio>
 {
+    "P0052": {
+        "authors": ["Peter Sommerlad" , "Andrew L. Sandoval"],
+        "href": "http://wg21.link/P0052",
+        "title": "Generic Scope Guard and RAII Wrapper for the Standard Library"
+    },
     "P0709": {
         "authors": ["Herb Sutter"],
         "href": "http://wg21.link/P0709",
