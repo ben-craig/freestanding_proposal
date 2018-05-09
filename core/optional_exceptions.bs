@@ -24,6 +24,14 @@ There are years, if not decades of field experience using C++ subsets similar to
 
 In theory, this paper would result in large scale code breaks for existing freestanding users.  In practice, there are almost no existing freestanding users because the current definition is not serving the stated purpose of working ["without the benefit of an operating system"](http://eel.is/c++draft/intro.compliance#7).  I believe that the embedded and kernel C++ community is better served by explicitly omitting functionality, rather than providing conforming, but low quality, highly unsatisfactory implementations.  Missing functionality sends a clear signal to library writers, where low quality implementations provide an easier to miss message.
 
+Value of standardization {#value}
+=================================
+What benefit does standardization bring to the kernel and embedded communities?  Kernel and embedded developers seem to be getting work done in non-conforming C++, so why should WG21 change course?
+
+First, I will answer those questions with another question: Why bring any proposal into the standard?  Presumably the authors of those proposals could get work done without the proposal.  Proposal authors are resourceful people, and can probably implement their papers in a fork of an existing compiler or standard library.  Yet they go through the hassle and expense of presenting papers to WG21 anyway.
+
+By making freestanding useful, I will be providing a target for toolchain and library authors.  Library authors that wish to make their libraries as portable as possible will have a standardized lowest common denominator to write against.  Purchasers will be better able to make requests of their vendors for freestanding compliant products.  Educators will be better able to teach about the requirements of kernel and embedded programming.  Tool vendors can better prioritize work on conforming compiler modes, and possibly reject new, ad-hoc non-conforming modes.  Users can get uniform behavior on what is currently an inconsistent set of vendor extensions.
+
 Features going optional {#features}
 ===================================
 The following applies only to freestanding mode.  Hosted mode will remain unchanged.
@@ -127,7 +135,7 @@ Many embedded processors do not have floating point units.  The cost for the fir
 In kernel environments, floating point operations are avoided.  The system call interface from user mode to kernel mode normally does a partial context switch, where it saves off the old values of registers, so that they can be restored when returning to user mode.  In order to make user / kernel transitions fast, operating systems usually don't save or restore the floating point state.  This means that using floating point in the kernel ends up corrupting the user mode program's floating point state.
 
 Program start-up and termination {#startup_termination}
-------------------------------------------------
+-------------------------------------------------------
 ### What isn't changing ### {#startup_termination_same}
 [basic.start.main](http://wg21.link/basic.start.main) already makes start-up and termination implementation defined for freestanding implementations.  I interpret this as meaning that neither static initialization nor dynamic initialization is required to take place.  This also means that non-local object destruction is implementation defined.
 
@@ -138,7 +146,7 @@ The existence of `atexit`, `at_quick_exit`, `exit`, and `quick_exit` should also
 These functions require space overhead, and are difficult to optimize away.  Process termination code iterates over the contents of the `atexit` list, pinning the memory in place.
 
 Language mandated blocking {#blocking}
-----------------------------------
+--------------------------------------
 ### What am I changing? ### {#blocking_what}
 In environments without blocking support, dynamic initialization of function statics and non-lock-free atomics are ill-formed.
 
@@ -166,7 +174,7 @@ Efforts were made to not design out static exceptions.  If we were to ignore oth
 
 
 Common QoI issues {#qoi}
-=================
+========================
 Pure virtual functions
 
 <pre class=biblio>
