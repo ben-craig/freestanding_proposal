@@ -169,9 +169,20 @@ Related works in progress, and future work {#other_work}
 ========================================================
 
 [[P0709]] Zero-overhead deterministic exceptions {#p0709}
-------------------------------------------------
-Efforts were made to not design out static exceptions.  If we were to ignore other static exceptions, and other potential implementations of exceptions, we could provide an implementation of `uncaught_exceptions` that always returned 0.  This would enable `scope_success` and `scope_failure` out of [[P0052]].
+---------------------------------------------------------
+Efforts were made to not design out static exceptions.  If we were to ignore static exceptions and other potential implementations of exceptions, we could provide an implementation of `uncaught_exceptions` that always returned 0.  This would enable `scope_success` and `scope_failure` out of [[P0052]].  
 
+[[P0784]] Standard containers and `constexpr` {#p0784}
+------------------------------------------------------
+In theory, any program (including kernel and embedded program) should be able to use `constexpr` containers.  However, the proposal for `constexpr` containers requires `std::allocator`.  Kernel and embedded systems may not want to provide `std::allocator` at runtime.  There aren't general purpose ways of providing constexpr classes at compile time without also providing them at runtime.  If this paper progresses, we may need to find a general purpose way of providing things at compile time, or we may need to find a special purpose way that will satisfy the `std::allocator` use case.  Note that if we only solve the special case, we will likely need to solve other special cases, like `std::vector`.
+
+One possible avenue for the `std::allocator` special case is for the implementation to provide declarations of all the methods, but provide no implementations.  The declarations may prove sufficient for the `constexpr` use case, while triggering linker errors in the runtime case.
+
+Or maybe, this could be tackled with `constexpr` parameters...
+
+[[P1045]] `constexpr` Function Parameters {#p1045}
+--------------------------------------------------
+P1045 provides a way to overload functions on `constexpr`ness.  That may enable things like floating point overloads of `<cmath>` functions and compile-time only overloads of `std::allocator` methods.
 
 Common QoI issues {#qoi}
 ========================
@@ -189,6 +200,11 @@ Pure virtual functions
         "href": "http://wg21.link/P0709",
         "title": "Zero-overhead deterministic exceptions: Throw values"
     },
+    "P0784": {
+        "authors": ["Louis Dionne", "Richard Smith", "Nina Ranns", "Daveed Vandevoorde"],
+        "href": "http://wg21.link/P0784",
+        "title": "Standard containers and constexpr"
+    },
     "P0829": {
         "authors": ["Ben Craig"],
         "href": "http://wg21.link/P0829",
@@ -198,6 +214,11 @@ Pure virtual functions
         "authors": ["Ben Craig"],
         "href": "http://wg21.link/P0829R0",
         "title": "Freestanding Proposal (R0)"
+    },
+    "P1045": {
+        "authors": ["David Stone"],
+        "href": "http://wg21.link/P1045",
+        "title": "constexpr Function Parameters"
     },
     "kernel_switch": {
         "authors": ["Microsoft Documentation"],
