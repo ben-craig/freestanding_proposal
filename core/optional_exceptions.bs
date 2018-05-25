@@ -26,6 +26,45 @@ In theory, this paper would result in large scale code breaks for existing frees
 
 Note that freestanding implementations can (and should) make available all the features that are implementable on their target environment.  For example, there are many embedded systems where floating point operations are desirable, but heap allocations are not.  Each cluster of features will get its own feature test macro.  This has the effect of making all implementations compliant that are "between" the bare minimum freestanding and the full hosted implementation.
 
+Obligatory Tony tables {#tony}
+==============================
+<table>
+  <tr>
+    <th>Standard says this should work</th>
+    <th>Today's reality</th>
+    <th>With this proposal, this is conforming</th>
+  </tr>
+  <tr>
+    <td>`throw 0;`</td>
+    <td><b>Visual Studio 2017, /kernel</b>
+      <br/>error C2980: C++ exception handling is not supported with /kernel
+      <br/>
+      <br/><b>gcc 8.1 and clang 6.0.0, -ffreestanding -nostdlib</b>
+      <br/>undefined reference to "__cxa_allocate_exception"
+      <br/>undefined reference to "__cxa_throw"
+      <br/>undefined reference to "typeinfo for int"</pre></td>
+    <td><b>Proposed option:</b>
+      <br/>undefined behavior if `throw 0;` is executed.
+      <br/>
+      <br/><b>Alternative to be polled:</b>
+      <br/>ill-formed</td>
+  </tr>
+  <tr>
+    <td>`try { foo(); }
+         catch(...) {}`</td>
+    <td><b>Visual Studio 2017, /kernel</b>
+      <br/>error C2980: C++ exception handling is not supported with /kernel
+      <br/>
+      <br/><b>gcc 8.1 and clang 6.0.0, -ffreestanding -nostdlib</b>
+      <br/>undefined reference to "__cxa_begin_catch"
+      <br/>undefined reference to "__cxa_end_catch"
+    </td>
+    <td>`try { foo(); }
+         catch(...) {}`
+      <br/>When exceptions aren't present, `try` and `catch` generate no code.
+    </td>
+  </tr>
+</table>
 Value of standardization {#value}
 =================================
 What benefit does standardization bring to the kernel and embedded communities?  Kernel and embedded developers seem to be getting work done in non-conforming C++, so why should WG21 change course?
