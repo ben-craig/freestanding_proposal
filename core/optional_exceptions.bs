@@ -26,7 +26,7 @@ In theory, this paper would result in large scale code breaks for existing frees
 
 Note that freestanding implementations can (and should) make available all the features that are implementable on their target environment.  For example, there are many embedded systems where floating point operations are desirable, but heap allocations are not.  Each cluster of features will get its own feature test macro.  This has the effect of making all implementations compliant that are "between" the bare minimum freestanding and the full hosted implementation.
 
-Obligatory Tony tables {#tony}
+Before-and-after tables {#tony}
 ==============================
 <table>
   <tr>
@@ -39,10 +39,25 @@ Obligatory Tony tables {#tony}
     <td><b>Visual Studio 2017, /kernel</b>
       <br/>error C2980: C++ exception handling is not supported with /kernel
       <br/>
-      <br/><b>gcc 8.1 and clang 6.0.0, -ffreestanding -nostdlib</b>
+      <br/><b>gcc 8.1 and clang 6.0.0, -nostdlib</b>
       <br/>undefined reference to "__cxa_allocate_exception"
       <br/>undefined reference to "__cxa_throw"
-      <br/>undefined reference to "typeinfo for int"</pre></td>
+      <br/>undefined reference to "typeinfo for int"
+      <br/>
+      <br/><b>Bare metal gcc 4.8 with newlib</b>
+      <br/>undefined reference to "__exidx_end"
+      <br/>undefined reference to "__exidx_start"
+      <br/>undefined reference to "_exit"
+      <br/>undefined reference to "_sbrk"
+      <br/>undefined reference to "_kill"
+      <br/>undefined reference to "_getpid"
+      <br/>undefined reference to "_write"
+      <br/>undefined reference to "_close"
+      <br/>undefined reference to "_fstat"
+      <br/>undefined reference to "_isatty"
+      <br/>undefined reference to "_lseek"
+      <br/>undefined reference to "_read"
+    </td>
     <td><b>Proposed option:</b>
       <br/>undefined behavior if `throw 0;` is executed.
       <br/>
@@ -51,13 +66,23 @@ Obligatory Tony tables {#tony}
   </tr>
   <tr>
     <td>`try { foo(); }
-         catch(...) {}`</td>
+         catch(...) {throw;}`</td>
     <td><b>Visual Studio 2017, /kernel</b>
       <br/>error C2980: C++ exception handling is not supported with /kernel
       <br/>
-      <br/><b>gcc 8.1 and clang 6.0.0, -ffreestanding -nostdlib</b>
+      <br/><b>gcc 8.1 and clang 6.0.0, -nostdlib</b>
       <br/>undefined reference to "__cxa_begin_catch"
+      <br/>undefined reference to "__cxa_rethrow"
       <br/>undefined reference to "__cxa_end_catch"
+      <br/>undefined reference to "_Unwind_Resume"
+      <br/>undefined reference to "__gxx_personality_v0"
+      <br/>
+      <br/><b>Bare metal gcc 4.8 with newlib</b>
+      <br/>undefined reference to "__exidx_end"
+      <br/>undefined reference to "__exidx_start"
+      <br/>undefined reference to "_exit"
+      <br/>undefined reference to "_sbrk"
+      <br/>...
     </td>
     <td>`try { foo(); }
          catch(...) {}`
