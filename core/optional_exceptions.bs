@@ -65,8 +65,8 @@ Before-and-after tables {#tony}
       <br/>ill-formed</td>
   </tr>
   <tr>
-    <td>`try { foo(); }
-         catch(...) {throw;}`</td>
+    <td><code><pre>try { foo(); }
+catch(...) {throw;}</pre></code></td>
     <td><b>Visual Studio 2017, /kernel</b>
       <br/>error C2980: C++ exception handling is not supported with /kernel
       <br/>
@@ -82,12 +82,35 @@ Before-and-after tables {#tony}
       <br/>undefined reference to "__exidx_start"
       <br/>undefined reference to "_exit"
       <br/>undefined reference to "_sbrk"
-      <br/>...
+      <br/>etc...
     </td>
-    <td>`try { foo(); }
-         catch(...) {}`
+    <td><code><pre>try { foo(); }
+catch(...) {throw;}</pre></code>
       <br/>When exceptions aren't present, `try` and `catch` generate no code.
     </td>
+  </tr>
+  <tr>
+    <td><code><pre>struct B {virtual void f() {}};
+struct D : B {virtual void f() {}};
+D *func(B *b) {
+    return dynamic_cast&lt;D*&gt;(b);
+}</pre></code></td>
+    <td><b>Visual Studio 2017, /kernel</b>
+      <br/>error C2981: the dynamic form of "dynamic_cast" is not supported with /kernel
+      <br/>
+      <br/><b>gcc 8.1 and clang 6.0.0, -nostdlib</b>
+      <br/>undefined reference to "__dynamic_cast"
+      <br/>undefined reference to "vtable for __cxxabiv1::__si_class_type_info"
+      <br/>undefined reference to "vtable for __cxxabiv1::__class_type_info"
+      <br/>
+      <br/><b>Bare metal gcc 4.8 with newlib</b>
+      <br/>undefined reference to "__exidx_end"
+      <br/>undefined reference to "__exidx_start"
+      <br/>undefined reference to "_exit"
+      <br/>undefined reference to "_sbrk"
+      <br/>etc...
+    </td>
+    <td>ill-formed</td>
   </tr>
 </table>
 Value of standardization {#value}
