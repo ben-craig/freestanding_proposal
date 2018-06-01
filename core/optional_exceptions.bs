@@ -34,6 +34,7 @@ Before-and-after tables {#tony}
     <th>Today's reality</th>
     <th>With this proposal, this is conforming</th>
   </tr>
+  
   <tr>
     <td>`throw 0;`</td>
     <td><b>Visual Studio 2017, /kernel</b>
@@ -64,6 +65,7 @@ Before-and-after tables {#tony}
       <br/><b>Alternative to be polled:</b>
       <br/>ill-formed</td>
   </tr>
+  
   <tr>
     <td><code><pre>try { foo(); }
 catch(...) {throw;}</pre></code></td>
@@ -89,6 +91,7 @@ catch(...) {throw;}</pre></code>
       <br/>When exceptions aren't present, `try` and `catch` generate no code.
     </td>
   </tr>
+  
   <tr>
     <td><code><pre>struct B {virtual void f() {}};
 struct D : B {virtual void f() {}};
@@ -112,6 +115,7 @@ D *func(B *b) {
     </td>
     <td>ill-formed</td>
   </tr>
+  
   <tr>
     <td><code><pre>#include &lt;typeinfo&gt;
 struct B {virtual void f() {}};
@@ -134,6 +138,7 @@ const bool func(B &b) {
     </td>
     <td>ill-formed</td>
   </tr>
+  
   <tr>
     <td>`void f(int *i) {delete i;}`</td>
     <td><b>Visual Studio 2017, /kernel</b>
@@ -148,6 +153,7 @@ const bool func(B &b) {
     <td><b>Proposed option:</b>
       <br/>ill-formed</td>
   </tr>
+  
   <tr>
     <td><code><pre>struct B {virtual ~B() {} };
 void foo() {B b;}</pre></code></td>
@@ -157,6 +163,36 @@ void foo() {B b;}</pre></code></td>
       <br/><b>gcc 8.1 and clang 6.0.0, -nostdlib</b>
       <br/>undefined reference to "operator delete(void*, unsigned long)"
       <br/>undefined reference to "vtable for __cxxabiv1::__class_type_info"
+    </td>
+    <td><b>Proposed option:</b>
+      <br/>ill-formed</td>
+  </tr>
+  
+  <tr>
+    <td><code><pre>int foo() {
+    thread_local int x = 0;
+    ++x;
+    return x;
+}</pre></code></td>
+    <td><b>Visual Studio 2017, /kernel</b>
+      <br/>error C2949: thread_local is not supported with /kernel
+      <br/>
+      <br/><b>gcc 8.1 and clang 6.0.0, -nostdlib</b>
+      <br/>successfully compiles, but corrupts memory associated with thread control block
+    </td>
+    <td><b>Proposed option:</b>
+      <br/>ill-formed</td>
+  </tr>
+  
+  <tr>
+    <td><code><pre>double doubler(double x) {
+    return x * 2.0;
+}</pre></code></td>
+    <td><b>Visual Studio 2017, /kernel</b>
+      <br/>successfully compiles, and corrupts user-mode floating point application state
+      <br/>
+      <br/><b>Bare metal gcc 4.8 with newlib</b>
+      <br/>successfully compiles, and even works, at the expense of 1052 bytes of floating point addition library code
     </td>
     <td><b>Proposed option:</b>
       <br/>ill-formed</td>
