@@ -34,7 +34,7 @@ Before-and-after tables {#tony}
     <th>Today's reality</th>
     <th>With this proposal, this is conforming</th>
   </tr>
-  
+
   <tr>
     <td>`throw 0;`</td>
     <td><b>Visual Studio 2017, /kernel</b>
@@ -65,7 +65,7 @@ Before-and-after tables {#tony}
       <br/><b>Alternative to be polled:</b>
       <br/>ill-formed</td>
   </tr>
-  
+
   <tr>
     <td><code><pre>try { foo(); }
 catch(...) {throw;}</pre></code></td>
@@ -91,7 +91,7 @@ catch(...) {throw;}</pre></code>
       <br/>When exceptions aren't present, `try` and `catch` generate no code.
     </td>
   </tr>
-  
+
   <tr>
     <td><code><pre>struct B {virtual void f() {}};
 struct D : B {virtual void f() {}};
@@ -115,7 +115,7 @@ D *func(B *b) {
     </td>
     <td>ill-formed</td>
   </tr>
-  
+
   <tr>
     <td><code><pre>#include &lt;typeinfo&gt;
 struct B {virtual void f() {}};
@@ -138,7 +138,7 @@ const bool func(B &b) {
     </td>
     <td>ill-formed</td>
   </tr>
-  
+
   <tr>
     <td>`void f(int *i) {delete i;}`</td>
     <td><b>Visual Studio 2017, /kernel</b>
@@ -153,7 +153,7 @@ const bool func(B &b) {
     <td><b>Proposed option:</b>
       <br/>ill-formed</td>
   </tr>
-  
+
   <tr>
     <td><code><pre>struct B {virtual ~B() {} };
 void foo() {B b;}</pre></code></td>
@@ -167,7 +167,7 @@ void foo() {B b;}</pre></code></td>
     <td><b>Proposed option:</b>
       <br/>ill-formed</td>
   </tr>
-  
+
   <tr>
     <td><code><pre>int foo() {
     thread_local int x = 0;
@@ -183,7 +183,7 @@ void foo() {B b;}</pre></code></td>
     <td><b>Proposed option:</b>
       <br/>ill-formed</td>
   </tr>
-  
+
   <tr>
     <td><code><pre>double doubler(double x) {
     return x * 2.0;
@@ -193,6 +193,72 @@ void foo() {B b;}</pre></code></td>
       <br/>
       <br/><b>Bare metal gcc 4.8 with newlib</b>
       <br/>successfully compiles, and even works, at the expense of 1052 bytes of floating point addition library code
+    </td>
+    <td><b>Proposed option:</b>
+      <br/>ill-formed</td>
+  </tr>
+
+  <tr>
+    <td><code><pre>void handler();
+void foo() {
+    atexit(handler);
+}</pre></code></td>
+    <td><b>Visual Studio 2017, /kernel</b>
+      <br/>error LNK2019: unresolved external symbol "int atexit(void)"
+      <br/>
+      <br/><b>gcc 8.1 and clang 6.0.0, -nostdlib</b>
+      <br/>undefined reference to "atexit"
+      <br/>
+      <br/><b>Bare metal gcc 4.8 with newlib</b>
+      <br/>undefined reference to "_sbrk"
+    </td>
+    <td><b>Proposed option:</b>
+      <br/>ill-formed</td>
+  </tr>
+
+  <tr>
+    <td><code><pre>struct Obj {Obj();};
+void foo() {
+    static Obj obj;
+}</pre></code></td>
+    <td><b>Visual Studio 2017, /kernel</b>
+      <br/>successfully compiles, but generates thread unsafe initialization for `obj`.
+      <br/>
+      <br/><b>gcc 8.1 and clang 6.0.0, -nostdlib</b>
+      <br/>undefined reference to "__cxa_guard_acquire"
+      <br/>undefined reference to "__cxa_guard_release"
+      <br/>undefined reference to "__cxa_guard_abort"
+      <br/>undefined reference to "_Unwind_Resume"
+      <br/>undefined reference to "__gxx_personality_v0"
+      <br/>
+      <br/><b>Bare metal gcc 4.8 with newlib</b>
+      <br/>undefined reference to "__exidx_end"
+      <br/>undefined reference to "__exidx_start"
+      <br/>undefined reference to "_exit"
+      <br/>undefined reference to "_sbrk"
+      <br/>etc...
+    </td>
+    <td><b>Proposed option:</b>
+      <br/>ill-formed</td>
+  </tr>
+
+  <tr>
+    <td><code><pre>struct BigData {
+    int d[16];
+};
+
+void foo(
+    std::atomic<BigData> &lhs, 
+    const BigData &rhs) 
+{lhs = rhs;}</pre></code></td>
+    <td><b>Visual Studio 2017, /kernel</b>
+      <br/>successfully compiles, but generates spin locks that are dangerous when shared with interrupts.
+      <br/>
+      <br/><b>gcc 8.1 and clang 6.0.0, -nostdlib</b>
+      <br/>undefined reference to "__atomic_store"
+      <br/>
+      <br/><b>Bare metal gcc 4.8 with newlib</b>
+      <br/>undefined reference to "__atomic_store"
     </td>
     <td><b>Proposed option:</b>
       <br/>ill-formed</td>
@@ -348,7 +414,7 @@ Related works in progress, and future work {#other_work}
 
 [[P0709]] Zero-overhead deterministic exceptions {#p0709}
 ---------------------------------------------------------
-Efforts were made to not design out static exceptions.  If we were to ignore static exceptions and other potential implementations of exceptions, we could provide an implementation of `uncaught_exceptions` that always returned 0.  This would enable `scope_success` and `scope_failure` out of [[P0052]].  
+Efforts were made to not design out static exceptions.  If we were to ignore static exceptions and other potential implementations of exceptions, we could provide an implementation of `uncaught_exceptions` that always returned 0.  This would enable `scope_success` and `scope_failure` out of [[P0052]].
 
 [[P0784]] Standard containers and `constexpr` {#p0784}
 ------------------------------------------------------
@@ -407,6 +473,11 @@ Pure virtual functions
         "authors": ["Emil Fresk", "Odin Holmes", "Carlos van Rooijen"],
         "title": "crect: A C++, compile-time, reactive RTOS",
         "href": "https://github.com/korken89/crect"
+    },
+    "OSR": {
+        "authors": ["The NT Insider"],
+        "title": "Global Relief Effort - C++ Runtime Support for the NT DDK",
+        "href": "http://www.osronline.com/article.cfm?article=57"
     }
 }
 </pre>
