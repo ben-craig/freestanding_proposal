@@ -265,6 +265,92 @@ void foo(
   </tr>
 
 </table>
+
+`noexcept` comparisons{#tony_noexcept}
+--------------------------------------
+[[#exceptions]] describes several potential changes to noexcept for environments without exceptions.  The following declarations will be used to illustrate the differences.
+<code><pre>extern "C" void extern_c();
+void plain();
+void noexcept_false() noexcept(false);
+void noexcept_true() noexcept;</pre></code>
+The following table shows the results of the `noexcept` operator in the expression `noexcept(column_header())`.  Highlighted cells indicate places where there is a deviation from C++17 standard behavior.
+<table>
+  <tr>
+    <th></th>
+    <th>`extern_c`</th>
+    <th>`plain`</th>
+    <th>`noexcept_false`</th>
+    <th>`noexcept_true`</th>
+  </tr>
+  
+  <tr>
+    <td>C++17</td>
+    <td>false</td>
+    <td>false</td>
+    <td>false</td>
+    <td>true</td>
+  </tr>
+
+  <tr>
+    <td>MSVC 2017 RTW (no exceptions)</td>
+    <td>false</td>
+    <td>false</td>
+    <td>false</td>
+    <td>true</td>
+  </tr>
+
+  <tr>
+    <td>MSVC 2017 RTW /EHsc</td>
+    <td bgcolor="green">true</td>
+    <td>false</td>
+    <td>false</td>
+    <td>true</td>
+  </tr>
+
+  <tr>
+    <td>gcc 8.1, clang 6.0, icc 18.0</td>
+    <td>false</td>
+    <td>false</td>
+    <td>false</td>
+    <td>true</td>
+  </tr>
+  <tr>
+    <td>gcc 8.1, clang 6.0, -fno-exceptions</td>
+    <td>false</td>
+    <td>false</td>
+    <td>false</td>
+    <td>true</td>
+  </tr>
+  <tr>
+    <td>icc 18.0 -fno-exceptions</td>
+    <td bgcolor="green">true</td>
+    <td bgcolor="green">true</td>
+    <td bgcolor="green">true</td>
+    <td>true</td>
+  </tr>
+  <tr>
+    <td>Proposed (no exceptions)</td>
+    <td bgcolor="green">true</td>
+    <td bgcolor="green">true</td>
+    <td>false</td>
+    <td>true</td>
+  </tr>
+  <tr>
+    <td>Alternative 1 (no exceptions)</td>
+    <td>false</td>
+    <td>false</td>
+    <td>false</td>
+    <td>true</td>
+  </tr>
+  <tr>
+    <td>Alternative 2 (no exceptions)</td>
+    <td bgcolor="green">true</td>
+    <td bgcolor="green">true</td>
+    <td bgcolor="green">true</td>
+    <td>true</td>
+  </tr>
+</table>
+
 Value of standardization {#value}
 =================================
 What benefit does standardization bring to the kernel and embedded communities?  Kernel and embedded developers seem to be getting work done in non-conforming C++, so why should WG21 change course?
