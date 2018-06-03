@@ -68,10 +68,11 @@ Before-and-after tables {#tony}
       <br/>undefined reference to "_read"
     </td>
     <td><b>Proposed option:</b>
-      <br/>undefined behavior if `throw 0;` is executed.  This is similar to how `throw;` is currently undefined if executed outside of a `catch` block.
+      <br/>Undefined behavior if `throw 0;` is executed and exceptions are not enabled.  This is similar to how `throw;` currently calls std::terminate() if executed outside of a `catch` block.
       <br/>
       <br/><b>Alternative to be polled:</b>
-      <br/>ill-formed</td>
+      <br/>Ill-formed if exceptions are not enabled.
+    </td>
   </tr>
 
   <tr>
@@ -95,7 +96,7 @@ catch(...) {throw;}</pre></code></td>
       <br/>etc...
     </td>
     <td><b>Proposed option:</b>
-      <br/>This code is allowed:
+      <br/>This code is allowed everywhere, except in signal handlers:
       <br/><code><pre>try { foo(); }
 catch(...) {throw;}</pre></code>
       <br/>When exceptions aren't present, `try` and `catch` generate no code.
@@ -124,7 +125,7 @@ D *func(B *b) {
       <br/>etc...
     </td>
     <td><b>Proposed option:</b>
-      <br/>ill-formed
+      <br/>Ill-formed if RTTI is not enabled.
     </td>
   </tr>
 
@@ -149,7 +150,7 @@ const bool func(B &b) {
       <br/>etc...
     </td>
     <td><b>Proposed option:</b>
-      <br/>ill-formed
+      <br/>Ill-formed if RTTI is not enabled.
     </td>
   </tr>
 
@@ -165,7 +166,8 @@ const bool func(B &b) {
       <br/>undefined reference to "_sbrk"
     </td>
     <td><b>Proposed option:</b>
-      <br/>ill-formed</td>
+      <br/>Ill-formed if the heap is not enabled.
+    </td>
   </tr>
 
   <tr>
@@ -179,7 +181,8 @@ void foo() {B b;}</pre></code></td>
       <br/>undefined reference to "vtable for __cxxabiv1::__class_type_info"
     </td>
     <td><b>Proposed option:</b>
-      <br/>ill-formed</td>
+      <br/>Well-formed, even if the heap is not enabled.
+    </td>
   </tr>
 
   <tr>
@@ -195,7 +198,8 @@ void foo() {B b;}</pre></code></td>
       <br/>successfully compiles, but corrupts memory associated with thread control block
     </td>
     <td><b>Proposed option:</b>
-      <br/>ill-formed</td>
+      <br/>Ill-formed if thread-local storage is not enabled.
+    </td>
   </tr>
 
   <tr>
@@ -209,7 +213,8 @@ void foo() {B b;}</pre></code></td>
       <br/>successfully compiles, and even works, at the expense of 1052 bytes of floating point addition library code
     </td>
     <td><b>Proposed option:</b>
-      <br/>ill-formed</td>
+      <br/>Ill-formed if floating point support is not enabled.
+    </td>
   </tr>
 
   <tr>
@@ -227,7 +232,8 @@ void foo() {
       <br/>undefined reference to "_sbrk"
     </td>
     <td><b>Proposed option:</b>
-      <br/>ill-formed</td>
+      <br/>Ill-formed if dynamic initialization and tear-down support is not enabled.
+    </td>
   </tr>
 
   <tr>
@@ -253,7 +259,8 @@ void foo() {
       <br/>etc...
     </td>
     <td><b>Proposed option:</b>
-      <br/>ill-formed</td>
+      <br/>Ill-formed if blocking support is not enabled.
+    </td>
   </tr>
 
   <tr>
@@ -275,7 +282,8 @@ void foo(
       <br/>undefined reference to "__atomic_store"
     </td>
     <td><b>Proposed option:</b>
-      <br/>ill-formed</td>
+      <br/>Ill-formed if blocking support is not enabled.
+    </td>
   </tr>
 
 </table>
@@ -386,7 +394,7 @@ This section applies to "dynamic" exceptions.  In other words, the exceptions we
 ### Why make this optional? ### {#exception_why}
 Kernel and embedded environments can't universally afford exceptions.  Throwing an exception requires a heap allocation on the Itanium ABI, and a large stack allocation in the Microsoft ABI, neither of which are suitable in kernel and embedded environments.  Throwing an exception requires TLS ([[#tls]]) in order to propagate the number of uncaught exceptions.  Windows, Linux, Mac, and FreeBSD don't allow drivers to store arbitrary TLS data, and they don't have any special handling for C++ specific TLS requirements, like the number of uncaught exceptions.
 
-Even when exceptions aren't thrown, there is a large space cost.  Table based exception costs grows roughly in proportion to the size and complexity of the program, and not in the number of `throw` sites, `catch` sites, or frames traversed in an exception `throw`.  Since table based exception costs grows with program size, rather than how much it is used, it is not zero overhead.  `setjmp` / `longjmp` exception size costs are similar in these regards.
+Even when exceptions aren't thrown, there is a large space cost.  Table based exception costs grow roughly in proportion to the size and complexity of the program, and not in the number of `throw` sites, `catch` sites, or frames traversed in an exception `throw`.  Since table based exception costs grows with program size, rather than how much it is used, it is not zero overhead.  `setjmp` / `longjmp` exception size costs are similar in these regards.
 
 See [[P0709]] for further discussion on the problems with exceptions.
 
