@@ -20,7 +20,7 @@ It is my intent that this be the least bad form of dialect, the proper subset.  
 
 In [[P0829]], I propose adding library features to the paper that should work everywhere.  This paper covers the removal of features that don't work everywhere.  There is already standards precedent in [support.signal](http://eel.is/c++draft/support.signal#3) for avoiding portions of all the features that I am making optional.
 
-There are years, if not decades of field experience using C++ subsets similar to what I am proposing.  The workarounds and compiler switches are mostly available today.  The main places where this paper innovates is in places where we can keep more features than current compiler based switches allow.
+There are years, if not decades of field experience using C++ subsets similar to what I am proposing ([[OSR]]).  The workarounds and compiler switches are mostly available today.  The main places where this paper innovates is in places where we can keep more features than current compiler based switches allow.
 
 In theory, this paper would result in large scale code breaks for existing freestanding users.  In practice, there are almost no existing freestanding users because the current definition is not serving the stated purpose of working ["without the benefit of an operating system"](http://eel.is/c++draft/intro.compliance#7).  I believe that the embedded and kernel C++ community is better served by explicitly omitting functionality, rather than providing conforming, but low quality, highly unsatisfactory implementations.  Missing functionality sends a clear signal to library writers, where low quality implementations provide an easier to miss message.
 
@@ -68,7 +68,7 @@ Before-and-after tables {#tony}
       <br/>undefined reference to "_read"
     </td>
     <td><b>Proposed option:</b>
-      <br/>undefined behavior if `throw 0;` is executed.
+      <br/>undefined behavior if `throw 0;` is executed.  This is similar to how `throw;` is currently undefined if executed outside of a `catch` block.
       <br/>
       <br/><b>Alternative to be polled:</b>
       <br/>ill-formed</td>
@@ -94,7 +94,9 @@ catch(...) {throw;}</pre></code></td>
       <br/>undefined reference to "_sbrk"
       <br/>etc...
     </td>
-    <td><code><pre>try { foo(); }
+    <td><b>Proposed option:</b>
+      <br/>This code is allowed:
+      <br/><code><pre>try { foo(); }
 catch(...) {throw;}</pre></code>
       <br/>When exceptions aren't present, `try` and `catch` generate no code.
     </td>
@@ -121,7 +123,9 @@ D *func(B *b) {
       <br/>undefined reference to "_sbrk"
       <br/>etc...
     </td>
-    <td>ill-formed</td>
+    <td><b>Proposed option:</b>
+      <br/>ill-formed
+    </td>
   </tr>
 
   <tr>
@@ -144,7 +148,9 @@ const bool func(B &b) {
       <br/>undefined reference to "_sbrk"
       <br/>etc...
     </td>
-    <td>ill-formed</td>
+    <td><b>Proposed option:</b>
+      <br/>ill-formed
+    </td>
   </tr>
 
   <tr>
@@ -256,8 +262,8 @@ void foo() {
 };
 
 void foo(
-    std::atomic<BigData> &lhs, 
-    const BigData &rhs) 
+    std::atomic<BigData> &lhs,
+    const BigData &rhs)
 {lhs = rhs;}</pre></code></td>
     <td><b>Visual Studio 2017, /kernel</b>
       <br/>successfully compiles, but generates spin locks that are dangerous when shared with interrupts.
@@ -290,7 +296,7 @@ The following table shows the results of the `noexcept` operator in the expressi
     <th>`noexcept_false`</th>
     <th>`noexcept_true`</th>
   </tr>
-  
+  <tr><td><b>Modes with exceptions</b></td><td/><td/><td/><td/></tr>
   <tr>
     <td>C++17</td>
     <td>false</td>
@@ -300,7 +306,15 @@ The following table shows the results of the `noexcept` operator in the expressi
   </tr>
 
   <tr>
-    <td>MSVC 2017 RTW (no exceptions)</td>
+    <td>gcc 8.1, clang 6.0, icc 18.0</td>
+    <td>false</td>
+    <td>false</td>
+    <td>false</td>
+    <td>true</td>
+  </tr>
+
+  <tr>
+    <td>MSVC 2017 RTW /EHs</td>
     <td>false</td>
     <td>false</td>
     <td>false</td>
@@ -315,13 +329,15 @@ The following table shows the results of the `noexcept` operator in the expressi
     <td>true</td>
   </tr>
 
+  <tr><td><b>Modes without exceptions</b></td><td/><td/><td/><td/></tr>
   <tr>
-    <td>gcc 8.1, clang 6.0, icc 18.0</td>
+    <td>MSVC 2017 RTW</td>
     <td>false</td>
     <td>false</td>
     <td>false</td>
     <td>true</td>
   </tr>
+
   <tr>
     <td>gcc 8.1, clang 6.0, -fno-exceptions</td>
     <td>false</td>
@@ -337,21 +353,21 @@ The following table shows the results of the `noexcept` operator in the expressi
     <td>true</td>
   </tr>
   <tr>
-    <td>Proposed (no exceptions)</td>
+    <td>Proposed</td>
     <td bgcolor="green">true</td>
     <td bgcolor="green">true</td>
     <td>false</td>
     <td>true</td>
   </tr>
   <tr>
-    <td>Alternative 1 (no exceptions)</td>
+    <td>Alternative 1</td>
     <td>false</td>
     <td>false</td>
     <td>false</td>
     <td>true</td>
   </tr>
   <tr>
-    <td>Alternative 2 (no exceptions)</td>
+    <td>Alternative 2</td>
     <td bgcolor="green">true</td>
     <td bgcolor="green">true</td>
     <td bgcolor="green">true</td>
