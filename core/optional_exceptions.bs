@@ -508,15 +508,17 @@ In theory, any program (including kernel and embedded program) should be able to
 
 One possible avenue for the `std::allocator` special case is for the implementation to provide declarations of all the methods, but provide no implementations.  The declarations may prove sufficient for the `constexpr` use case, while triggering linker errors in the runtime case.
 
-Or maybe, this could be tackled with `constexpr` parameters...
+Or maybe, this could be tackled with conditionally `constexpr!` functions...
 
-[[P1045]] `constexpr` Function Parameters {#p1045}
+[[P1073]] `constexpr!` functions {#p1073}
 --------------------------------------------------
-P1045 provides a way to overload functions on `constexpr`ness.  That may enable things like floating point overloads of `<cmath>` functions and compile-time only overloads of `std::allocator` methods.
+P1073 provides a way to force a function to only be invokable at compile time.  Freestanding implementations could mark all `constexpr`, non-freestanding functions as `constexpr!`.
 
 Common QoI issues {#qoi}
 ========================
-Pure virtual functions
+Pure virtual functions {#pure_virtual}
+--------------------------------------
+In freestanding environments, compilers should prefer to fill in vtable slots for pure virtual functions with a null pointer, rather than with a pointer to a library support function (e.g. `__cxa_pure_virtual`).  The library support function takes up a small amount of space, all to support ease of debugging.
 
 <pre class=biblio>
 {
@@ -549,6 +551,11 @@ Pure virtual functions
         "authors": ["David Stone"],
         "href": "http://wg21.link/P1045",
         "title": "constexpr Function Parameters"
+    },
+    "P1073": {
+        "authors": ["Richard Smith", "Andrew Sutton", "Daveed Vandevoorde"],
+        "href": "http://wg21.link/P1073",
+        "title": "constexpr! functions"
     },
     "kernel_switch": {
         "authors": ["Microsoft Documentation"],
