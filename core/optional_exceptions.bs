@@ -14,7 +14,7 @@ Markup Shorthands: markdown yes
 
 Introduction {#intro}
 =====================
-Conforming C++ toolchains are ill-suited to target kernel and embedded domains.  In practice, kernel and embedded developers almost always use compiler switches that make the toolchain non-conforming.  This means that conforming C++ has left room for a lower level language: non-conforming C++.  WG21 needs to decide between the lesser of several evils: adding a dialect, leaving room for a lower level language, or massive breakage in real code.  This paper proposes adding a dialect.
+Conforming C++ toolchains are ill-suited to target kernel and embedded domains.  In practice, kernel and embedded developers almost always use compiler switches that make the toolchain non-conforming.  This means that conforming C++ has left room for a lower level language: non-conforming C++.  WG21 needs to decide between the lesser of several evils: formalizing a dialect, leaving room for a lower level language, or massive breakage in real code.  This paper proposes formalizing a dialect.
 
 It is my intent that this be the least bad form of dialect, the proper subset.  All valid freestanding libraries should be valid hosted libraries with compatible semantics.
 
@@ -26,13 +26,21 @@ In theory, this paper would result in large scale code breaks for existing frees
 
 Note that freestanding implementations can (and should) make available all the features that are implementable on their target environment.  For example, there are many embedded systems where floating point operations are desirable, but heap allocations are not.  Each cluster of features will get its own feature test macro.  This has the effect of making all implementations compliant that are "between" the bare minimum freestanding and the full hosted implementation.
 
+Value of standardization {#value}
+=================================
+What benefit does standardization bring to the kernel and embedded communities?  Kernel and embedded developers seem to be getting work done in non-conforming C++, so why should WG21 change course?
+
+First, I will answer those questions with another question: Why bring any proposal into the standard?  Presumably the authors of those proposals could get work done without the proposal.  Proposal authors are resourceful people, and can probably implement their papers in a fork of an existing compiler or standard library.  Yet they go through the hassle and expense of presenting papers to WG21 anyway.
+
+By making freestanding useful, I will be providing a target for toolchain and library authors.  Library authors that wish to make their libraries as portable as possible will have a standardized lowest common denominator to write against.  Purchasers will be better able to make requests of their vendors for freestanding compliant products.  Educators will be better able to teach about the requirements of kernel and embedded programming.  Tool vendors can better prioritize work on conforming compiler modes, and possibly reject new, ad-hoc non-conforming modes.  Users can get uniform behavior on what is currently an inconsistent set of vendor extensions.
+
 Before-and-after tables {#tony}
-==============================
+===============================
 <table>
   <tr>
     <th>Standard says this should work</th>
     <th>Today's reality</th>
-    <th>With this proposal, this is conforming</th>
+    <th>Proposed conforming freestanding behavior</th>
   </tr>
 
   <tr>
@@ -350,14 +358,6 @@ The following table shows the results of the `noexcept` operator in the expressi
     <td>true</td>
   </tr>
 </table>
-
-Value of standardization {#value}
-=================================
-What benefit does standardization bring to the kernel and embedded communities?  Kernel and embedded developers seem to be getting work done in non-conforming C++, so why should WG21 change course?
-
-First, I will answer those questions with another question: Why bring any proposal into the standard?  Presumably the authors of those proposals could get work done without the proposal.  Proposal authors are resourceful people, and can probably implement their papers in a fork of an existing compiler or standard library.  Yet they go through the hassle and expense of presenting papers to WG21 anyway.
-
-By making freestanding useful, I will be providing a target for toolchain and library authors.  Library authors that wish to make their libraries as portable as possible will have a standardized lowest common denominator to write against.  Purchasers will be better able to make requests of their vendors for freestanding compliant products.  Educators will be better able to teach about the requirements of kernel and embedded programming.  Tool vendors can better prioritize work on conforming compiler modes, and possibly reject new, ad-hoc non-conforming modes.  Users can get uniform behavior on what is currently an inconsistent set of vendor extensions.
 
 Features going optional {#features}
 ===================================
