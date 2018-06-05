@@ -1,6 +1,6 @@
 <pre class='metadata'>
 Title: Leaving no room for a lower-level language: A C++ Subset
-Shortname: D0000
+Shortname: D1105
 Revision: 0
 Audience: SG14, EWG
 Status: D
