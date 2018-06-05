@@ -14,7 +14,7 @@ Markup Shorthands: markdown yes
 
 Introduction {#intro}
 =====================
-Conforming C++ toolchains are ill-suited to target kernel and embedded domains.  In practice, kernel and embedded developers almost always use compiler switches that make the toolchain non-conforming.  This means that conforming C++ has left room for a lower level language: non-conforming C++.  WG21 needs to decide between the lesser of several evils: formalizing a dialect, leaving room for a lower level language, or massive breakage in real code.  This paper proposes formalizing a dialect.
+Conforming C++ toolchains are ill-suited to target kernel and embedded domains.  In practice, kernel and embedded developers almost always use compiler switches that make the toolchain non-conforming.  This means that conforming C++ has left room for a lower level language: non-conforming C++.  WG21 needs to decide between the lesser of several evils: formalizing a dialect, leaving room for a lower level language, or massive breakage in real code.  If we do nothing, we will have left room for a lower level language (C, non-conforming C++).  If we make all the existing facilities work everywhere, we will have massive breakage in real code.  This paper proposes formalizing a dialect.
 
 It is my intent that this be the least bad form of dialect, the proper subset.  All valid freestanding libraries should be valid hosted libraries with compatible semantics.
 
