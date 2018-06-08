@@ -1,11 +1,11 @@
 <pre class='metadata'>
 Title: Leaving no room for a lower-level language: A C++ Subset
 Shortname: D1105
-Revision: 0
+Revision: 0.1
 Audience: SG14, EWG
 Status: D
 Group: WG21
-URL: https://wg21.link/index.html
+URL: https://htmlpreview.github.io/?https://github.com/ben-craig/freestanding_proposal/blob/master/core/leaving_no_room.html
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/optional_exceptions.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/optional_exceptions.bs</a>
 Editor: Ben Craig &lt;ben dot craig at gmail dot com&gt;
 Abstract: Making core language features (like exceptions) optional in freestanding mode if they have an OS dependency or incur space overhead.
@@ -20,7 +20,7 @@ It is my intent that this be the least bad form of dialect, the proper subset.  
 
 In [[P0829]], I propose adding library features to the paper that should work everywhere.  This paper covers the removal of features that don't work everywhere.  There is already standards precedent in [support.signal](http://eel.is/c++draft/support.signal#3) for avoiding portions of all the features that I am making optional.
 
-There are years, if not decades of field experience using C++ subsets similar to what I am proposing ([[OSR]]).  The workarounds and compiler switches are mostly available today.  The main places where this paper innovates is in places where we can keep more features than current compiler based switches allow.
+There are years, if not decades of field experience using C++ subsets similar to what I am proposing ([[OSR]], [[APPLE_KERNEL]]).  The workarounds and compiler switches are mostly available today.  The main places where this paper innovates is in places where we can keep more features than current compiler based switches allow.
 
 In theory, this paper would result in large scale code breaks for existing freestanding users.  In practice, there are almost no existing freestanding users because the current definition is not serving the stated purpose of working ["without the benefit of an operating system"](http://eel.is/c++draft/intro.compliance#7).  I believe that the embedded and kernel C++ community is better served by explicitly omitting functionality, rather than providing conforming, but low quality, highly unsatisfactory implementations.  Missing functionality sends a clear signal to library writers, where low quality implementations provide an easier to miss message.
 
@@ -207,7 +207,7 @@ void foo() {B b;}</pre></code></td>
     return x * 2.0;
 }</pre></code></td>
     <td><b>Visual Studio 2017, /kernel</b>
-      <br/>successfully compiles, and corrupts user-mode floating point application state
+      <br/>successfully compiles, and corrupts user-mode floating point application state unless extra code is written to preserve the floating point state
       <br/>
       <br/><b>Bare metal gcc 4.8 with newlib</b>
       <br/>successfully compiles, and even works, at the expense of 1052 bytes of floating point addition library code
@@ -295,7 +295,7 @@ void foo(
 void plain();
 void noexcept_false() noexcept(false);
 void noexcept_true() noexcept;</pre></code>
-The following table shows the results of the `noexcept` operator in the expression `noexcept(column_header())`.  Highlighted cells indicate places where there is a deviation from C++17 standard behavior.
+The following table shows the results of the `noexcept` operator in the expression `noexcept(column_header())`.  Bolded cells indicate places where there is a deviation from C++17 standard behavior.
 <table>
   <tr>
     <th></th>
@@ -331,7 +331,7 @@ The following table shows the results of the `noexcept` operator in the expressi
 
   <tr>
     <td>MSVC 2017 RTW /EHsc</td>
-    <td bgcolor="green">true</td>
+    <td><b>true</b></td>
     <td>false</td>
     <td>false</td>
     <td>true</td>
@@ -355,15 +355,15 @@ The following table shows the results of the `noexcept` operator in the expressi
   </tr>
   <tr>
     <td>icc 18.0 -fno-exceptions</td>
-    <td bgcolor="green">true</td>
-    <td bgcolor="green">true</td>
-    <td bgcolor="green">true</td>
+    <td><b>true</b></td>
+    <td><b>true</b></td>
+    <td><b>true</b></td>
     <td>true</td>
   </tr>
   <tr>
     <td>Proposed</td>
-    <td bgcolor="green">true</td>
-    <td bgcolor="green">true</td>
+    <td><b>true</b></td>
+    <td><b>true</b></td>
     <td>false</td>
     <td>true</td>
   </tr>
@@ -376,9 +376,9 @@ The following table shows the results of the `noexcept` operator in the expressi
   </tr>
   <tr>
     <td>Alternative 2</td>
-    <td bgcolor="green">true</td>
-    <td bgcolor="green">true</td>
-    <td bgcolor="green">true</td>
+    <td><b>true</b></td>
+    <td><b>true</b></td>
+    <td><b>true</b></td>
     <td>true</td>
   </tr>
 </table>
@@ -387,36 +387,44 @@ Features going optional {#features}
 ===================================
 The following applies only to freestanding mode.  Hosted mode will remain unchanged.
 
+The feature macros are somewhat backwards from how the macros are normally defined.  The macros are defined when the paper is adopted and the feature is missing.  We can't define the macros in the past to say the features are present.  Testing for the "non-feature" macros is a safer and more backwards compatible way of determining whether the following features are present.
+
 Exceptions {#exceptions}
 ------------------------
+Feature test macro: `__cpp_freestanding_no_exceptions`.  This macro is distinct from the `__cpp_exceptions` macro already defined in [[SD6]].
+
 This section applies to "dynamic" exceptions.  In other words, the exceptions we have had since C++98.  [[P0709]] could add "static" exceptions.  I am keeping static exceptions in mind with this design, but I'm not providing any wording against that proposal.
 
 ### Why make this optional? ### {#exception_why}
-Kernel and embedded environments can't universally afford exceptions.  Throwing an exception requires a heap allocation on the Itanium ABI, and a large stack allocation in the Microsoft ABI, neither of which are suitable in kernel and embedded environments.  Throwing an exception requires TLS ([[#tls]]) in order to propagate the number of uncaught exceptions.  Windows, Linux, Mac, and FreeBSD don't allow drivers to store arbitrary TLS data, and they don't have any special handling for C++ specific TLS requirements, like the number of uncaught exceptions.
+Kernel and embedded environments can't universally afford exceptions.  Throwing an exception requires a heap allocation on the Itanium ABI, and a large stack allocation on the Microsoft ABI, neither of which are suitable in kernel and embedded environments.  Throwing an exception requires TLS ([[#tls]]) in order to propagate the number of uncaught exceptions.  Windows, Linux, Mac, and FreeBSD don't allow drivers to store arbitrary TLS data, and they don't have any special handling for C++ specific TLS requirements, like the number of uncaught exceptions.
 
 Even when exceptions aren't thrown, there is a large space cost.  Table based exception costs grow roughly in proportion to the size and complexity of the program, and not in the number of `throw` sites, `catch` sites, or frames traversed in an exception `throw`.  Since table based exception costs grows with program size, rather than how much it is used, it is not zero overhead.  `setjmp` / `longjmp` exception size costs are similar in these regards.
 
 See [[P0709]] for further discussion on the problems with exceptions.
 
 ### What isn't changing? ### {#exception_same}
-`try` and `catch` are both still allowed.  Compilers should treat `catch` blocks as unreachable code.  `try` and `catch` blocks are allowed so that exception neutral code can be shared between freestanding and hosted implementations without requiring preprocessor hackery.
+`try` and `catch` are both still allowed.  Compilers should treat `catch` blocks as unreachable code (i.e. an `if constexpr(false)` block).  `try` and `catch` blocks are allowed so that exception neutral code can be shared between freestanding and hosted implementations without requiring preprocessor hackery.
 
 ### What am I changing (and why)? ### {#exception_what}
-Evaluating a `throw` expression in an environment without exception support is undefined behavior.  We allow the programmer to compile with a `throw` to allow exception neutral code to be shared between freestanding and hosted implementations, but the `throw` shouldn't ever be evaluated, since we shouldn't be able to get into a `catch` block.  We allow `throw` expressions with operands so that programmers can do exception translation in environments with exceptions, with the expectation that the code won't ever be executed in exceptionless environments.  For `throw` expressions without operands, this will be a change in behavior.  A rethrow without an active exception currently calls `std::terminate`.  I don't call `std::terminate`, as `std::terminate` relies on the global terminate handler, and freestanding doesn't want to pay the cost of synchronizing the global terminate handler.
+`catch` blocks are treated the same as an `if constexpr(false)` block.  This is to allow many error handling cases to continue compiling without resorting to macros.
+
+Evaluating a `throw` expression with operands in an environment without exception support is undefined behavior.  We allow the programmer to compile with a `throw` to allow exception neutral code to be shared between freestanding and hosted implementations.  The `throw` should never be evaluated, since we shouldn't be able to get into a `catch` block.
+
+Evaluating a `throw` expression without operands in an environment without exception support is also undefined behavior.  This is a minor change in behavior.  A rethrow without an active exception currently calls `std::terminate`.  I don't call `std::terminate`, as `std::terminate` relies on the global terminate handler, and freestanding doesn't want to pay for global terminate handler synchronization.
+
+We allow `throw` expressions so that programmers in environments with exceptions can catch the exception, and either translate the exception to another type of exception, rethrow the exception in a ["Lippincott" function](http://cppsecrets.blogspot.com/2013/12/using-lippincott-function-for.html), or handle the exception some other way.  In these cases, we have the expectation that the code will never run in the exceptionless environment.
 
 Implementations are encouraged to produce warnings on any `throw` expression with operands, as well as allow suppressions for informing the compiler when those `throw`s are actually there for exception translation purposes.
 
 When a function without a `noexcept` specification is passed to a `noexcept` expression, `noexcept` will return true if exception support is not present.  This will speed up operations like `move_if_noexcept` and containers with strong exception guarantees.  This also differs somewhat from existing practices.  Visual Studio, clang, and gcc do not currently adjust the value of `noexcept` when exceptions are off.  The Intel compiler (with EDG frontend) makes the `noexcept` operator unconditionally return true when exceptions are turned off.  In addition, Visual Studio has a compiler mode, /EHsc, that takes `extern "C"` functions and makes them `noexcept`.  Note that this approach leaves the door open for static exceptions to use `noexcept`.
 
-`noexcept(false)` code should be treated with suspicion.  This isn't normative, but it would be a useful place for compilers to warn.
+Both the literal form of `noexcept(false)` and the conditional form `noexcept(noexcept(foo()))` that evaluates to 'noexcept(false)' should be treated with suspicion in exceptionless environments.  Code that claims that it could throw when throwing isn't allowed seems wrong.  This isn't normative, but it would be a useful place for compilers to warn.  The behavior is being kept as is to leave room for future exception handling mechanisms, like [[P0709]].
 
-The `<exception>` header is not required to be present.  Note that this removes `std::terminate` and `uncaught_exceptions`.
+The `<exception>` header and its contents are not required to be present.  Note that this removes `std::terminate`, `uncaught_exceptions`, and the entire 'std::exception' hierarchy.
 
 Types derived from `std::exception` are not required to be present in their respective headers.
 
-`std::visit` is no longer required to throw `std::bad_variant_access`, as it will now be impossible to get into the `valueless_by_exception` state.
-
-`catch` blocks are treated the same as an `if constexpr(false)` block.  This is to allow some trivial exception translation to continue compiling.
+`std::visit` is no longer required to throw `std::bad_variant_access`, as it will now be impossible to get into the `valueless_by_exception` state.  I call this out explicitly, as [[P0829]] added `std::visit` in the hopes that it would never throw in practice in an environment without exceptions.
 
 ### Alternative designs ### {#exception_alt}
 1. No change to `noexcept` expression
@@ -435,8 +443,16 @@ Types derived from `std::exception` are not required to be present in their resp
 
   We could make some or all `throw` expressions ill-formed.  The benefit is that compilers could more reliably produce diagnostics.  The cost is that it would be more difficult to share exception neutral code between hosted and freestanding.
 
+5. `try` and `catch` allowed vs. ill-formed
+
+  If we made `try` and `catch` ill-formed, we would severely impact the portability of libraries across the exception and non-exception worlds.  However, this is basically the status quo today, so we have experience with this pain.
+
+  If we adopt everything else in this paper, while banning `try` and `catch`, we would be able to claim that freestanding C++ is signal safe C++.
+
 RTTI {#rtti}
 ------------
+Feature test macro: `__cpp_freestanding_no_rtti`.  This macro is distinct from the `__cpp_rtti` macro already defined in [[SD6]].
+
 ### What am I changing? ### {#rtti_what}
 `typeid` and `dynamic_cast` are ill-formed in environments without RTTI.  The `<typeinfo>` header is not required to be present.
 
@@ -449,8 +465,10 @@ If `typeid` and `dynamic_cast` can't be called, implementations can safely remov
 
 Default heap storage {#heap}
 ----------------------------
+Feature test macro: `__cpp_freestanding_no_default_heap`.
+
 ### What isn't changing? ### {#heap_same}
-Non-allocating placement `::operator new` and `::operator delete` will still be present.
+Non-allocating placement `::operator new` and `::operator delete` will still be present.  Users will still be allowed to implement the replaceable allocation and deallocation functions, as well as provide class specific implementations of `operator new` and `operator delete`.
 
 ### What am I changing? ### {#heap_what}
 On systems without default heap storage, neither the replaceable allocation functions nor the replaceable deallocation functions are provided by default.
@@ -466,6 +484,8 @@ In current implementations of `virtual` destructors, the class's vtable points a
 
 Thread local storage {#tls}
 ---------------------------
+Feature test macro: `__cpp_freestanding_no_thread_local_storage`.
+
 ### What am I changing? ### {#tls_what}
 Programs using the `thread_local` storage class specifier are ill-formed if the environment does not provide thread local storage.
 
@@ -478,6 +498,8 @@ For kernel platforms, and drivers in particular, the operating system may be own
 
 Floating point {#float}
 -----------------------
+Feature test macro: `__cpp_freestanding_no_floating_point_support`.
+
 ### What am I changing? ### {#float_what}
 The `float`, `double`, and `long double` types are ill-formed if the environment does not have floating point support.
 
@@ -486,12 +508,24 @@ The `float`, `double`, and `long double` types are ill-formed if the environment
 ### Why? ### {#float_why}
 Many embedded processors do not have floating point units.  The cost for the first usage of floating point is very high, as that pulls in floating point emulation libraries.
 
-In kernel environments, floating point operations are avoided.  The system call interface from user mode to kernel mode normally does a partial context switch, where it saves off the old values of registers, so that they can be restored when returning to user mode.  In order to make user / kernel transitions fast, operating systems usually don't save or restore the floating point state.  This means that using floating point in the kernel ends up corrupting the user mode program's floating point state.
+In kernel environments, floating point operations are avoided.  The system call interface from user mode to kernel mode normally does a partial context switch, where it saves off the old values of registers, so that they can be restored when returning to user mode.  In order to make user / kernel transitions fast, operating systems usually don't automatically save or restore the floating point state.  This means that carelessly using floating point in the kernel ends up corrupting the user mode program's floating point state.
 
 Program start-up and termination {#startup_termination}
 -------------------------------------------------------
+Feature test macros:
+* `__cpp_freestanding_no_static_initialization`.
+* `__cpp_freestanding_no_dynamic_initialization`.
+* `__cpp_freestanding_no_termination`.
+
 ### What isn't changing ### {#startup_termination_same}
 [basic.start.main](http://wg21.link/basic.start.main) already makes start-up and termination implementation defined for freestanding implementations.  I interpret this as meaning that neither static initialization nor dynamic initialization is required to take place.  This also means that non-local object destruction is implementation defined.
+
+### Rationalization for the status quo ### {#startup_termination_rationalization}
+Zero-overhead is a very sharp edge.  Initializing global, mutable data to zero requires the runtime code to know a range of bytes, and then the runtime code needs to memset those bytes to zero.  Applications that do not care about zero initialization could have better uses for those bytes and startup time.
+
+All code which runs before the user's code could be considered unwanted overhead in some applications.  All code that runs after the user's code could also be considered unwanted overhead.  Also, the "early" code that does initialization needs to be written in some language, and if we require zero initialization to happen before anything else, then that excludes C++ from being used to write early startup code.
+
+In practice, I expect zero initialization and static initialization to be the most used freestanding extension.
 
 ### What am I changing? ### {#startup_termination_what}
 The existence of `atexit`, `at_quick_exit`, `exit`, and `quick_exit` should also be implementation defined (i.e. optional).
@@ -501,10 +535,16 @@ These functions require space overhead, and are difficult to optimize away.  Pro
 
 Language mandated blocking {#blocking}
 --------------------------------------
+Feature test macros:
+* `__cpp_freestanding_no_locked_atomics`.
+* `__cpp_freestanding_no_dynamic_static_init`.  This implies that __cpp_threadsafe_static_init is undefined.
+
 ### What am I changing? ### {#blocking_what}
 In environments without blocking support, dynamic initialization of function statics and non-lock-free atomics are ill-formed.
 
 In practice, this won't require changes from toolchain vendors.  On unknown environments, the C++ runtime functions necessary to implement locked atomics and dynamic initialization of function statics generally aren't provided.  This results in linker errors, satisfying the ill-formed requirement.  This change will make such a toolchain conforming.
+
+This change would break code migrating from C++98 to C++Next, as it will remove function static initialization that previously worked.  That same code would likely break in the C++98 to C++11 migration, as the function static initialization would require facilities not present in the environment.  Implementations would likely continue to provide compiler flags to aid the migration.
 
 ### Why? ### {#blocking_why}
 Blocking is hard and not universally portable.
@@ -514,6 +554,8 @@ On a system without an OS, your main blocking choices are disabling interrupts a
 In the Windows kernel, there are multiple types of locks.  No one lock type is appropriate in all situations.
 
 The CRECT RTOS [[CRECT]] doesn't have independent locks like many other OSes do.  All locks are explicitly associated with a particular resource.  Jobs must list all resources they use so that scheduling priorities can be calculated at compile-time.  This effectively means that a CRECT application has N distinct lock types, used only by that application.  None of these locks are known to the maintainers of CRECT, and none of them are known to the C++ runtime.  Current compiler ABIs do not provide the C++ runtime with information about the type or address of the function static being initialized.
+
+Some OSes and applications are trying to meet hard real time guarantees.  Spin locks and disabled interrupts can add potentially unbounded jitter and latency to time critical operations, even when the operation isn't performed on a time critical code path.
 
 Some OSes aren't scheduled in a time-sliced manner.  Spin locks on these systems are a bad idea.  You could get in the middle of static initialization, get an interrupt that causes you to change threads, then get stuck on the initialization of the same static.  Forward progress will be halted until another interrupt happens at some indeterminate point in the future.
 
@@ -538,11 +580,26 @@ Or maybe, this could be tackled with conditionally `constexpr!` functions...
 --------------------------------------------------
 P1073 provides a way to force a function to only be invokable at compile time.  Freestanding implementations could mark all `constexpr`, non-freestanding functions as `constexpr!`.
 
+Explicit control of program startup and termination {#explicit_startup_and_term}
+--------------------------------------------------------------------------------
+At some point in the future, I would like to see a standard way to explicitly invoke constructors of globals and class statics, and a way to explicitly invoke the termination code.  This would give freestanding users the ability to control when these actions take place.
+
 Common QoI issues {#qoi}
 ========================
 Pure virtual functions {#pure_virtual}
 --------------------------------------
 In freestanding environments, compilers should prefer to fill in vtable slots for pure virtual functions with a null pointer, rather than with a pointer to a library support function (e.g. `__cxa_pure_virtual`).  The library support function takes up a small amount of space, all to support ease of debugging.
+
+Symbol name length {#symbol_length}
+-----------------------------------
+Some systems (including certain configurations of the Linux kernel) keep around symbol names during runtime.  C++ symbol names usually encode return type information, parameter type information, enclosing namespaces and class names, and template arguments.  All this extra information makes for long, and often cryptic symbol names.  The long symbol names take up more space in the resulting binary, and the mangling scheme makes for more difficult debugging.
+
+The C++ standard does not govern name mangling, and this paper makes no concrete recommendations.  Implementations should strive to allow users to make useful tradeoffs between symbol name length, legibility, and ABI compatibility.
+
+Acknowledgments {#ack}
+======================
+Thank you to the many reviewers of this paper:
+Brandon Streiff, Irwan Djajadi, Joshua Cannon, and Brad Keryan
 
 <pre class=biblio>
 {
@@ -595,6 +652,16 @@ In freestanding environments, compilers should prefer to fill in vtable slots fo
         "authors": ["The NT Insider"],
         "title": "Global Relief Effort - C++ Runtime Support for the NT DDK",
         "href": "http://www.osronline.com/article.cfm?article=57"
+    },
+    "APPLE_KERNEL": {
+        "authors": ["Apple Documentation"],
+        "title": "The libkern C++ Runtime",
+        "href": "https://developer.apple.com/library/archive/documentation/DeviceDrivers/Conceptual/WritingDeviceDriver/CPluPlusRuntime/CPlusPlusRuntime.html"
+    },
+    "SD6": {
+        "authors": ["Clark Nelson"],
+        "title": "SD-6: SG10 Feature Test Recommendations",
+        "href": "http://wg21.link/sd6"
     }
 }
 </pre>
