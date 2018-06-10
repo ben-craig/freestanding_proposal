@@ -501,7 +501,7 @@ Other than `std::exception` and `std::terminate`, nothing in the `<exception>` h
 ### Why? ### {#exception_header_why}
 The terminate handler functions require synchronizing a global variable.  Freestanding environments do not have a reliable way to do that (see [[#blocking]]).  The default terminate handler is typically suitable.
 
-`uncaught_exceptions` relies on thread-local storage (see [[#tls]].  Hard coding a return value of zero would work for existing implementations, but it would close off potential future designs (see [[#p0709]]).
+`uncaught_exceptions` relies on thread-local storage (see [[#tls]]).  Hard coding a return value of zero would work for existing implementations, but it would close off potential future designs (see [[#p0709]]).
 
 The `exception_ptr` and `throw_with_nested` facilities require heap allocations and/or thread-local storage.
 
