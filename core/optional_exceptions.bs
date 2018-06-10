@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: Leaving no room for a lower-level language: A C++ Subset
 Shortname: D1105
-Revision: 0.1
+Revision: 0.2
 Audience: SG14, EWG
 Status: D
 Group: WG21
@@ -76,16 +76,55 @@ Before-and-after tables {#tony}
   </tr>
 
   <tr>
-    <td><code><pre>try { foo(); }
-catch(...) {throw;}</pre></code></td>
+    <td>`std::bad_alloc e;`</td>
+    <td><b>Visual Studio 2017, /kernel</b>
+      <br/>error LNK2019: unresolved external symbol "void __cdecl operator delete(void *,unsigned __int64)"
+      <br/>error LNK2019: unresolved external symbol __std_exception_destroy
+      <br/>
+      <br/><b>gcc 8.1 and clang 6.0.0, -nostdlib</b>
+      <br/>undefined reference to "std::bad_alloc::~bad_alloc()"
+      <br/>
+      <br/><b>Bare metal gcc 4.8 with newlib</b>
+      <br/>undefined reference to "__exidx_end"
+      <br/>undefined reference to "__exidx_start"
+      <br/>undefined reference to "_exit"
+      <br/>undefined reference to "_sbrk"
+      <br/>undefined reference to "_kill"
+      <br/>undefined reference to "_getpid"
+      <br/>undefined reference to "_write"
+      <br/>undefined reference to "_close"
+      <br/>undefined reference to "_fstat"
+      <br/>undefined reference to "_isatty"
+      <br/>undefined reference to "_lseek"
+      <br/>undefined reference to "_read"
+    </td>
+    <td><b>Proposed option:</b>
+      <br/>Well defined, but uncommon code.
+      <br/>
+      <br/><b>Alternative to be polled:</b>
+      <br/>Ill-formed if exceptions are not enabled.
+    </td>
+  </tr>
+
+  <tr>
+    <td><code><pre>void caller() {
+    try {foo();}
+    catch(const std::exception &e) {
+        log_exception(e.what());
+        throw;
+    }
+}</pre></code></td>
     <td><b>Visual Studio 2017, /kernel</b>
       <br/>error C2980: C++ exception handling is not supported with /kernel
       <br/>
       <br/><b>gcc 8.1 and clang 6.0.0, -nostdlib</b>
       <br/>undefined reference to "__cxa_begin_catch"
       <br/>undefined reference to "__cxa_rethrow"
-      <br/>undefined reference to "__cxa_end_catch"
+      <br/>undefined reference to "__cxa_end_catch
       <br/>undefined reference to "_Unwind_Resume"
+      <br/>undefined reference to "typeinfo for std::exception"
+      <br/>undefined reference to "__cxa_begin_catch"
+      <br/>undefined reference to "std::terminate()"
       <br/>undefined reference to "__gxx_personality_v0"
       <br/>
       <br/><b>Bare metal gcc 4.8 with newlib</b>
@@ -96,10 +135,9 @@ catch(...) {throw;}</pre></code></td>
       <br/>etc...
     </td>
     <td><b>Proposed option:</b>
-      <br/>This code is allowed everywhere, except in signal handlers:
-      <br/><code><pre>try { foo(); }
-catch(...) {throw;}</pre></code>
+      <br/>Well formed.
       <br/>When exceptions aren't present, `try` and `catch` generate no code.
+      <br/>Names and syntax are still checked in catch blocks, similar to `if constexpr(false)`.
     </td>
   </tr>
 
@@ -403,28 +441,22 @@ Even when exceptions aren't thrown, there is a large space cost.  Table based ex
 See [[P0709]] for further discussion on the problems with exceptions.
 
 ### What isn't changing? ### {#exception_same}
-`try` and `catch` are both still allowed.  Compilers should treat `catch` blocks as unreachable code (i.e. an `if constexpr(false)` block).  `try` and `catch` blocks are allowed so that exception neutral code can be shared between freestanding and hosted implementations without requiring preprocessor hackery.
+`try` and `catch` are both still allowed.  Compilers should treat `catch` blocks as discarded code (i.e. an `if constexpr(false)` block).  `try` and `catch` blocks are allowed so that exception neutral code can be shared between freestanding and hosted implementations without requiring preprocessor hackery.
 
 ### What am I changing (and why)? ### {#exception_what}
 `catch` blocks are treated the same as an `if constexpr(false)` block.  This is to allow many error handling cases to continue compiling without resorting to macros.
 
 Evaluating a `throw` expression with operands in an environment without exception support is undefined behavior.  We allow the programmer to compile with a `throw` to allow exception neutral code to be shared between freestanding and hosted implementations.  The `throw` should never be evaluated, since we shouldn't be able to get into a `catch` block.
 
-Evaluating a `throw` expression without operands in an environment without exception support is also undefined behavior.  This is a minor change in behavior.  A rethrow without an active exception currently calls `std::terminate`.  I don't call `std::terminate`, as `std::terminate` relies on the global terminate handler, and freestanding doesn't want to pay for global terminate handler synchronization.
+Evaluating a `throw` expression without operands in an environment without exception support is also undefined behavior.  This is a minor change in behavior.  A rethrow without an active exception currently calls `std::terminate`.  I don't want unreachable code to increase binary size, and requiring a call to `std::terminate` would do that.
 
 We allow `throw` expressions so that programmers in environments with exceptions can catch the exception, and either translate the exception to another type of exception, rethrow the exception in a ["Lippincott" function](http://cppsecrets.blogspot.com/2013/12/using-lippincott-function-for.html), or handle the exception some other way.  In these cases, we have the expectation that the code will never run in the exceptionless environment.
 
 Implementations are encouraged to produce warnings on any `throw` expression with operands, as well as allow suppressions for informing the compiler when those `throw`s are actually there for exception translation purposes.
 
-When a function without a `noexcept` specification is passed to a `noexcept` expression, `noexcept` will return true if exception support is not present.  This will speed up operations like `move_if_noexcept` and containers with strong exception guarantees.  This also differs somewhat from existing practices.  Visual Studio, clang, and gcc do not currently adjust the value of `noexcept` when exceptions are off.  The Intel compiler (with EDG frontend) makes the `noexcept` operator unconditionally return true when exceptions are turned off.  In addition, Visual Studio has a compiler mode, /EHsc, that takes `extern "C"` functions and makes them `noexcept`.  Note that this approach leaves the door open for static exceptions to use `noexcept`.
+When a function without a `noexcept` specification is passed to a `noexcept` expression, `noexcept` will return true if exception support is not present.  This will speed up operations like `move_if_noexcept` and containers with strong exception guarantees.  This also differs somewhat from existing practices.  Visual Studio, clang, and gcc do not currently adjust the value of `noexcept` when exceptions are off.  The Intel compiler makes the `noexcept` operator unconditionally return true when exceptions are turned off.  In addition, Visual Studio has a compiler mode, /EHsc, that takes `extern "C"` functions and makes them `noexcept`.  Note that this approach leaves the door open for static exceptions to use `noexcept`.
 
 Both the literal form of `noexcept(false)` and the conditional form `noexcept(noexcept(foo()))` that evaluates to 'noexcept(false)' should be treated with suspicion in exceptionless environments.  Code that claims that it could throw when throwing isn't allowed seems wrong.  This isn't normative, but it would be a useful place for compilers to warn.  The behavior is being kept as is to leave room for future exception handling mechanisms, like [[P0709]].
-
-The `<exception>` header and its contents are not required to be present.  Note that this removes `std::terminate`, `uncaught_exceptions`, and the entire 'std::exception' hierarchy.
-
-Types derived from `std::exception` are not required to be present in their respective headers.
-
-`std::visit` is no longer required to throw `std::bad_variant_access`, as it will now be impossible to get into the `valueless_by_exception` state.  I call this out explicitly, as [[P0829]] added `std::visit` in the hopes that it would never throw in practice in an environment without exceptions.
 
 ### Alternative designs ### {#exception_alt}
 1. No change to `noexcept` expression
@@ -448,6 +480,30 @@ Types derived from `std::exception` are not required to be present in their resp
   If we made `try` and `catch` ill-formed, we would severely impact the portability of libraries across the exception and non-exception worlds.  However, this is basically the status quo today, so we have experience with this pain.
 
   If we adopt everything else in this paper, while banning `try` and `catch`, we would be able to claim that freestanding C++ is signal safe C++.
+
+`<exception>` header {#exception_header}
+----------------------------------------
+Feature test macro: `__cpp_freestanding_no_exceptions`.
+
+### What isn't changing? ### {#exception_header_same}
+The `std::exception` base class will still be available.  This class (and many of its children) need to exist so that hosted exception handling code can continue to log, translate, and handle errors, all while still compiling in freestanding mode.
+
+`std::terminate` will still be available.  Various language features, most recently [contracts](https://wg21.link/p0542), rely on `std::terminate`.  Freestanding will keep `std::terminate` rather than respecify how all those features signal unrecoverable errors.
+
+### What am I changing? ### {#exception_header_what}
+Other than `std::exception` and `std::terminate`, nothing in the `<exception>` header will be present in environments without exception support.  This means the following facilities will no longer be required:
+* `terminate_handler`, `get_terminate_handler` and `set_terminate_handler`
+* `uncaught_exceptions`
+* `exception_ptr`, `current_exception`, `rethrow_exception`, and `make_exception_ptr`
+* `bad_exception` and `nested_exception`
+* `throw_with_nested` and `rethrow_if_nested`
+
+### Why? ### {#exception_header_why}
+The terminate handler functions require synchronizing a global variable.  Freestanding environments do not have a reliable way to do that (see [[#blocking]]).  The default terminate handler is typically suitable.
+
+`uncaught_exceptions` relies on thread-local storage (see [[#tls]].  Hard coding a return value of zero would work for existing implementations, but it would close off potential future designs (see [[#p0709]]).
+
+The `exception_ptr` and `throw_with_nested` facilities require heap allocations and/or thread-local storage.
 
 RTTI {#rtti}
 ------------
