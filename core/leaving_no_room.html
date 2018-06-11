@@ -1487,6 +1487,7 @@ pre .property::before, pre .property::after {
         <li><a href="#exception_header_same"><span class="secno">4.2.1</span> <span class="content">What isn’t changing?</span></a>
         </li><li><a href="#exception_header_what"><span class="secno">4.2.2</span> <span class="content">What am I changing?</span></a>
         </li><li><a href="#exception_header_why"><span class="secno">4.2.3</span> <span class="content">Why?</span></a>
+        </li><li><a href="#exception_header_alt"><span class="secno">4.2.4</span> <span class="content">Alternative designs</span></a>
        </li></ol>
       </li><li>
        <a href="#rtti"><span class="secno">4.3</span> <span class="content">RTTI</span></a>
@@ -1809,6 +1810,17 @@ pre .property::before, pre .property::after {
     The terminate handler functions require synchronizing a global variable.  Freestanding environments do not have a reliable way to do that (see <a href="#blocking">§4.8 Language mandated blocking</a>).  The default terminate handler is typically suitable. 
    <p><code class="highlight"><span class="n">uncaught_exceptions</span></code> relies on thread-local storage (see <a href="#tls">§4.5 Thread local storage</a>).  Hard coding a return value of zero would work for existing implementations, but it would close off potential future designs (see <a href="#p0709">§5.1 [P0709] Zero-overhead deterministic exceptions</a>).</p>
    <p>The <code class="highlight"><span class="n">exception_ptr</span></code> and <code class="highlight"><span class="n">throw_with_nested</span></code> facilities require heap allocations and/or thread-local storage.</p>
+   <h4 class="heading settled" data-level="4.2.4" id="exception_header_alt"><span class="secno">4.2.4. </span><span class="content">Alternative designs</span><a class="self-link" href="#exception_header_alt"></a></h4>
+   <ol>
+    <li data-md="">
+     <p>Omit <code class="highlight"><span class="n">std</span><span class="o">::</span><span class="n">exception</span></code> and its children.</p>
+   </li></ol>
+   <p>This alternative would make it so that clients could only <code class="highlight"><span class="k">catch</span><span class="p">(...)</span></code> and <code class="highlight"><span class="k">catch</span></code> their own client defined types.  This removes the ability of those clients to log or translate exceptions.  However, it would likely require less work on the implementation side, seeing as the current exception classes don’t work in kernel and embedded environments.</p>
+   <ol start="2">
+    <li data-md="">
+     <p>Omit the entire <code class="highlight"><span class="o">&lt;</span><span class="n">exception</span><span class="o">&gt;</span></code> header.</p>
+   </li></ol>
+   <p>In addition to the issues in the above alternative, we would also need to ensure that all the other library features and core language features didn’t call <code class="highlight"><span class="n">std</span><span class="o">::</span><span class="n">terminate</span></code> in freestanding mode.</p>
    <h3 class="heading settled" data-level="4.3" id="rtti"><span class="secno">4.3. </span><span class="content">RTTI</span><a class="self-link" href="#rtti"></a></h3>
     Feature test macro: <code class="highlight"><span class="n">__cpp_freestanding_no_rtti</span></code>.  This macro is distinct from the <code class="highlight"><span class="n">__cpp_rtti</span></code> macro already defined in <a data-link-type="biblio" href="#biblio-sd6">[SD6]</a>. 
    <h4 class="heading settled" data-level="4.3.1" id="rtti_what"><span class="secno">4.3.1. </span><span class="content">What am I changing?</span><a class="self-link" href="#rtti_what"></a></h4>
