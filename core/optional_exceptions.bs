@@ -505,6 +505,16 @@ The terminate handler functions require synchronizing a global variable.  Freest
 
 The `exception_ptr` and `throw_with_nested` facilities require heap allocations and/or thread-local storage.
 
+### Alternative designs ### {#exception_header_alt}
+
+1. Omit `std::exception` and its children.
+
+This alternative would make it so that clients could only `catch(...)` and `catch` their own client defined types.  This removes the ability of those clients to log or translate exceptions.  However, it would likely require less work on the implementation side, seeing as the current exception classes don't work in kernel and embedded environments.
+
+2. Omit the entire `<exception>` header.
+
+In addition to the issues in the above alternative, we would also need to ensure that all the other library features and core language features didn't call `std::terminate` in freestanding mode.
+
 RTTI {#rtti}
 ------------
 Feature test macro: `__cpp_freestanding_no_rtti`.  This macro is distinct from the `__cpp_rtti` macro already defined in [[SD6]].
