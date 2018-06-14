@@ -14,11 +14,11 @@ Markup Shorthands: markdown yes
 
 Introduction {#intro}
 =====================
-Conforming C++ toolchains are ill-suited to target kernel and embedded domains.  In practice, kernel and embedded developers almost always use compiler switches that make the toolchain non-conforming.  This means that conforming C++ has left room for a lower-level language: non-conforming C++.  WG21 needs to decide between the lesser of several evils: formalizing a dialect, leaving room for a lower-level language, or massive breakage in real code.  If we do nothing, we will have left room for a lower-level language (C, non-conforming C++).  If we make all the existing facilities work everywhere, we will have massive breakage in real code.  This paper proposes formalizing a dialect.
+Conforming C++ toolchains are ill-suited to target kernel and embedded domains.  In practice, kernel and embedded developers almost always use compiler switches that make the toolchain non-conforming.  This means that conforming C++ has left room for a lower-level language: non-conforming C++.  WG21 needs to decide between the lesser of several evils: formalizing a dialect, leaving room for a lower-level language, or massive breakage in real code.  If we do nothing, we will have left room for a lower-level language (C, non-conforming C++).  If we change hosted mode in a way to achieve the zero overhead, no lower-level language goal, we will end up needing to remove valuable features, breaking massive amounts of code.  This paper proposes formalizing a dialect.
 
 It is my intent that this be the least bad form of dialect, the proper subset.  All valid freestanding libraries should be valid hosted libraries with compatible semantics.
 
-In [[P0829]], I propose adding library features to the paper that should work everywhere.  This paper covers the removal of features that don't work everywhere.  There is already standards precedent in [support.signal](http://eel.is/c++draft/support.signal#3) for avoiding portions of all the features that I am making optional.
+In [[P0829]], I propose adding library features to freestanding mode that should work everywhere.  This paper covers the removal of features that don't work everywhere.  There is already standards precedent in [support.signal](http://eel.is/c++draft/support.signal#3) for avoiding portions of all the features that I am making optional.
 
 There are years, if not decades of field experience using C++ subsets similar to what I am proposing ([[OSR]], [[APPLE_KERNEL]]).  The workarounds and compiler switches are mostly available today.  The main places where this paper innovates is in places where we can keep more features than current compiler based switches allow.
 
@@ -68,10 +68,13 @@ Before-and-after tables {#tony}
       <br/>undefined reference to "_read"
     </td>
     <td><b>Proposed option:</b>
-      <br/>Undefined behavior if `throw 0;` is executed and exceptions are not enabled.  This is similar to how `throw;` currently calls std::terminate() if executed outside of a `catch` block.
+      <br/>Undefined behavior if `throw 0;` is executed and exceptions are not enabled.  This is similar to how `throw;` currently calls `std::terminate()` if executed outside of a `catch` block.
       <br/>
-      <br/><b>Alternative to be polled:</b>
-      <br/>Ill-formed if exceptions are not enabled.
+      <br/><b>Alternatives to be polled:</b>
+      <ul>
+      <li>Ill-formed if exceptions are not enabled.</li>
+      <li>`throw 0;` and `throw;` call `std::terminate()`.</li>
+      </ul>
     </td>
   </tr>
 
@@ -136,7 +139,7 @@ Before-and-after tables {#tony}
     </td>
     <td><b>Proposed option:</b>
       <br/>Well formed.
-      <br/>When exceptions aren't present, `try` and `catch` generate no code.
+      <br/>When exceptions aren't present, `catch` generates no code.  The `try` block is still executed, but does no exception bookkeeping, as is common in `setjmp` / `longjmp` EH implementations.
       <br/>Names and syntax are still checked in catch blocks, similar to `if constexpr(false)`.
     </td>
   </tr>
@@ -297,7 +300,7 @@ void foo() {
       <br/>etc...
     </td>
     <td><b>Proposed option:</b>
-      <br/>Ill-formed if blocking support is not enabled.
+      <br/>Ill-formed if blocking synchronization support is not enabled.
     </td>
   </tr>
 
@@ -320,7 +323,7 @@ void foo(
       <br/>undefined reference to "__atomic_store"
     </td>
     <td><b>Proposed option:</b>
-      <br/>Ill-formed if blocking support is not enabled.
+      <br/>Ill-formed if blocking synchronization support is not enabled.
     </td>
   </tr>
 
@@ -471,9 +474,11 @@ Both the literal form of `noexcept(false)` and the conditional form `noexcept(no
 
   Visual Studio currently warns when it sees a `noexcept` specifier while exceptions are disabled.  This option would make it very difficult to share code between freestanding and hosted.  Libraries attempting to target both would most likely resort to a macro that conditionally expands to `noexcept`.
 
-4. `throw` UB vs. ill-formed
+4. `throw` UB vs. ill-formed vs. `std::terminate`
 
   We could make some or all `throw` expressions ill-formed.  The benefit is that compilers could more reliably produce diagnostics.  The cost is that it would be more difficult to share exception neutral code between hosted and freestanding.
+
+  We could make `throw` call `std::terminate` rather than have it be UB.  This would give reliable behavior that is similar to what no-except variants of today's standard libraries do.  UB likely optimizes better though, and would allow the compiler to remove any code that leads to the UB.
 
 5. `try` and `catch` allowed vs. ill-formed
 
@@ -481,7 +486,11 @@ Both the literal form of `noexcept(false)` and the conditional form `noexcept(no
 
   If we adopt everything else in this paper, while banning `try` and `catch`, we would be able to claim that freestanding C++ is signal safe C++.
 
-`<exception>` header {#exception_header}
+6. Only allow `catch(...)` and `throw;`
+
+  Logging exceptions and translating exceptions are less common use cases than simple `catch` and rethrow use cases.  Allowing `catch(type)` takes us down the path of pulling in `std::exception`, as well as making it difficult to diagnose inappropriate `throw obj;` statements.
+
+Parts of `<exception>` header {#exception_header}
 ----------------------------------------
 Feature test macro: `__cpp_freestanding_no_exceptions`.
 
@@ -599,14 +608,14 @@ The existence of `atexit`, `at_quick_exit`, `exit`, and `quick_exit` should also
 ### Why? ### {#startup_termination_why}
 These functions require space overhead, and are difficult to optimize away.  Process termination code iterates over the contents of the `atexit` list, pinning the memory in place.
 
-Language mandated blocking {#blocking}
+Language mandated blocking synchronization {#blocking}
 --------------------------------------
 Feature test macros:
 * `__cpp_freestanding_no_locked_atomics`.
 * `__cpp_freestanding_no_dynamic_static_init`.  This implies that __cpp_threadsafe_static_init is undefined.
 
 ### What am I changing? ### {#blocking_what}
-In environments without blocking support, dynamic initialization of function statics and non-lock-free atomics are ill-formed.
+In environments without blocking synchronization support, dynamic initialization of function statics and non-lock-free atomics are ill-formed.
 
 In practice, this won't require changes from toolchain vendors.  On unknown environments, the C++ runtime functions necessary to implement locked atomics and dynamic initialization of function statics generally aren't provided.  This results in linker errors, satisfying the ill-formed requirement.  This change will make such a toolchain conforming.
 
@@ -665,7 +674,7 @@ The C++ standard does not govern name mangling, and this paper makes no concrete
 Acknowledgments {#ack}
 ======================
 Thank you to the many reviewers of this paper:
-Brandon Streiff, Irwan Djajadi, Joshua Cannon, and Brad Keryan
+Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, and Alfred Bratterud
 
 <pre class=biblio>
 {
