@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: Leaving no room for a lower-level language: A C++ Subset
 Shortname: D1105
-Revision: 0.2
+Revision: 0.3
 Audience: SG14, EWG
 Status: D
 Group: WG21
@@ -22,7 +22,9 @@ In [[P0829]], I propose adding library features to freestanding mode that should
 
 There are years, if not decades of field experience using C++ subsets similar to what I am proposing ([[OSR]], [[APPLE_KERNEL]]).  The workarounds and compiler switches are mostly available today.  The main places where this paper innovates is in places where we can keep more features than current compiler based switches allow.
 
-In theory, this paper would result in large scale code breaks for existing freestanding users.  In practice, there are almost no existing freestanding users because the current definition is not serving the stated purpose of working ["without the benefit of an operating system"](http://eel.is/c++draft/intro.compliance#7).  I believe that the embedded and kernel C++ community is better served by explicitly omitting functionality, rather than providing conforming, but low quality, highly unsatisfactory implementations.  Missing functionality sends a clear signal to library writers, where low quality implementations provide an easier to miss message.
+In theory, this paper would result in large scale code breaks for existing freestanding users.  In practice, there are almost no existing freestanding users because the current definition is not serving the stated purpose of working ["without the benefit of an operating system"](http://eel.is/c++draft/intro.compliance#7).  Existing implementations already provide mechanisms for disabling many of the features that this paper proposes to make optional.  Existing users would be largely unaffected, except that they would now be using a truly compliant C++ implementation.
+
+I believe that the embedded and kernel C++ community is better served by making features optional, rather than providing conforming, but low quality, highly unsatisfactory implementations.  Missing functionality sends a clear signal to library writers, where low quality implementations provide an easier to miss message.
 
 Note that freestanding implementations can (and should) make available all the features that are implementable on their target environment.  For example, there are many embedded systems where floating point operations are desirable, but heap allocations are not.  Each cluster of features will get its own feature test macro.  This has the effect of making all implementations compliant that are "between" the bare minimum freestanding and the full hosted implementation.
 
@@ -207,7 +209,7 @@ const bool func(B &b) {
       <br/>undefined reference to "_sbrk"
     </td>
     <td><b>Proposed option:</b>
-      <br/>Ill-formed if the heap is not enabled.
+      <br/>Ill-formed if the heap is not enabled and `operator delete` has not been provided by the user.
     </td>
   </tr>
 
@@ -432,7 +434,7 @@ The feature macros are somewhat backwards from how the macros are normally defin
 
 Exceptions {#exceptions}
 ------------------------
-Feature test macro: `__cpp_freestanding_no_exceptions`.  This macro is distinct from the `__cpp_exceptions` macro already defined in [[SD6]].
+Feature test macro: `__cpp_freestanding_no_exceptions`.  Users can check `__cpp_freestanding_no_exception` when they want to determine what behavior `noexcept` and `throw` will have.  The lack of the pre-existing `__cpp_exceptions` macro from [[SD6]] would not provide that information.
 
 This section applies to "dynamic" exceptions.  In other words, the exceptions we have had since C++98.  [[P0709]] could add "static" exceptions.  I am keeping static exceptions in mind with this design, but I'm not providing any wording against that proposal.
 
@@ -478,7 +480,7 @@ Both the literal form of `noexcept(false)` and the conditional form `noexcept(no
 
   We could make some or all `throw` expressions ill-formed.  The benefit is that compilers could more reliably produce diagnostics.  The cost is that it would be more difficult to share exception neutral code between hosted and freestanding.
 
-  We could make `throw` call `std::terminate` rather than have it be UB.  This would give reliable behavior that is similar to what no-except variants of today's standard libraries do.  UB likely optimizes better though, and would allow the compiler to remove any code that leads to the UB.
+  We could make `throw` call `std::terminate` rather than have it be UB.  This would give reliable behavior that is similar to what no-except variants of today's standard libraries do.  UB likely optimizes better.  Compiler would be able to remove any code that leads to the UB.  If `throw` calls `std::terminate`, that would count as an ODR-use, and would prevent the linker from discarding the definition of `std::terminate`.
 
 5. `try` and `catch` allowed vs. ill-formed
 
@@ -526,13 +528,13 @@ In addition to the issues in the above alternative, we would also need to ensure
 
 RTTI {#rtti}
 ------------
-Feature test macro: `__cpp_freestanding_no_rtti`.  This macro is distinct from the `__cpp_rtti` macro already defined in [[SD6]].
+Feature test macro: `__cpp_freestanding_no_rtti`.  This macro is distinct from the `__cpp_rtti` macro already defined in [[SD6]].  Users cannot currently (in 2018) reliable test for the presence of RTTI with `__cpp_rtti`, so RTTI should generally assumed to be present, unless `__cpp_freestanding_no_rtti` is present.
 
 ### What am I changing? ### {#rtti_what}
 `typeid` and `dynamic_cast` are ill-formed in environments without RTTI.  The `<typeinfo>` header is not required to be present.
 
 ### Why? ### {#rtti_why}
-`type_info` objects generated by the compile consume space, and are difficult to optimize away.  In the implementations that I'm aware of, a class with virtual functions will have a spot in the vtable that points at the `type_info` object for the class.  If an instance of the class is every created, the linker isn't able to apply trivial dead data elimination techniques to get rid of the `type_info` object, as there exists a reference to the object from the vtable.
+`type_info` objects generated by the compiler consume space, and are difficult to optimize away.  In the implementations that I'm aware of, a class with virtual functions will have a spot in the vtable that points at the `type_info` object for the class.  If an instance of the class is ever created, the linker isn't able to apply trivial dead data elimination techniques to get rid of the `type_info` object, as there exists a reference to the object from the vtable.
 
 The slot in the vtable itself is also a place where space is wasted.
 
@@ -548,7 +550,7 @@ Non-allocating placement `::operator new` and `::operator delete` will still be 
 ### What am I changing? ### {#heap_what}
 On systems without default heap storage, neither the replaceable allocation functions nor the replaceable deallocation functions are provided by default.
 
-The presence of a `virtual` destructor shall not require `::operator delete` to be provided unless an instance of the object is created with `new`.
+The presence of a `virtual` destructor shall not require `::operator delete` to be provided unless an instance of the object is created with `new`.  Constructors and destructors will not ODR-use non-placement allocation and deallocation functions.  Instead `new` and `delete` expressions will ODR-use the non-placement allocation and dealloction functions.  ([basic.def.odr](http://eel.is/c++draft/basic.def.odr#7))
 
 ### Why? ### {#heap_why}
 Many embedded systems do not have a heap.  Such a system could provide an implementation of `::operator new` that immediately throws `bad_alloc`, but that would require pulling in all the exception handling machinery.  Returning `nullptr` would not be conforming, and would also take up a non-zero amount of space.
@@ -595,6 +597,8 @@ Feature test macros:
 ### What isn't changing ### {#startup_termination_same}
 [basic.start.main](http://wg21.link/basic.start.main) already makes start-up and termination implementation defined for freestanding implementations.  I interpret this as meaning that neither static initialization nor dynamic initialization is required to take place.  This also means that non-local object destruction is implementation defined.
 
+`std::abort` and `std::terminate` will remain in the library.  `_Exit` will be in the library assuming [[P0829]] is accepted.
+
 ### Rationalization for the status quo ### {#startup_termination_rationalization}
 Zero-overhead is a very sharp edge.  Initializing global, mutable data to zero requires the runtime code to know a range of bytes, and then the runtime code needs to memset those bytes to zero.  Applications that do not care about zero initialization could have better uses for those bytes and startup time.
 
@@ -602,8 +606,10 @@ All code which runs before the user's code could be considered unwanted overhead
 
 In practice, I expect zero initialization and static initialization to be the most used freestanding extension.
 
+`std::abort` and `_Exit` do not call global destructors, global registration functions, or flush file I/O.  `std::terminate` does not call destructors or flush file I/O, but it does call a global registration function.  [[#exception_header]] makes the getters and setters for the global registration function optional, so a freestanding `std::terminate` doesn't necessarily have a registration function either.  That leaves these as three functions that will end the program in an implementation defined way.
+
 ### What am I changing? ### {#startup_termination_what}
-The existence of `atexit`, `at_quick_exit`, `exit`, and `quick_exit` should also be implementation defined (i.e. optional).
+The existence of `atexit`, `at_quick_exit`, `exit`, and `quick_exit` should be implementation defined (i.e. optional).
 
 ### Why? ### {#startup_termination_why}
 These functions require space overhead, and are difficult to optimize away.  Process termination code iterates over the contents of the `atexit` list, pinning the memory in place.
@@ -674,7 +680,7 @@ The C++ standard does not govern name mangling, and this paper makes no concrete
 Acknowledgments {#ack}
 ======================
 Thank you to the many reviewers of this paper:
-Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, and Alfred Bratterud
+Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred Bratterud, and Ben Saks
 
 <pre class=biblio>
 {
