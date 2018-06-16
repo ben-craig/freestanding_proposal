@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: Leaving no room for a lower-level language: A C++ Subset
 Shortname: D1105
-Revision: 0.3
+Revision: 0.4
 Audience: SG14, EWG
 Status: D
 Group: WG21
@@ -49,6 +49,12 @@ Before-and-after tables {#tony}
     <td>`throw 0;`</td>
     <td><b>Visual Studio 2017, /kernel</b>
       <br/>error C2980: C++ exception handling is not supported with /kernel
+      <br/>
+      <br/><b>gcc 8.1, -fno-exceptions</b>
+      <br/>error: exception handling disabled, use -fexceptions to enable
+      <br/>
+      <br/><b>clang 6.0.0, -fno-exceptions</b>
+      <br/>error: cannot use 'throw' with exceptions disabled
       <br/>
       <br/><b>gcc 8.1 and clang 6.0.0, -nostdlib</b>
       <br/>undefined reference to "__cxa_allocate_exception"
@@ -122,6 +128,13 @@ Before-and-after tables {#tony}
     <td><b>Visual Studio 2017, /kernel</b>
       <br/>error C2980: C++ exception handling is not supported with /kernel
       <br/>
+      <br/><b>gcc 8.1, -fno-exceptions</b>
+      <br/>error: exception handling disabled, use -fexceptions to enable
+      <br/>
+      <br/><b>clang 6.0.0, -fno-exceptions</b>
+      <br/>error: cannot use 'throw' with exceptions disabled
+      <br/>error: cannot use 'try' with exceptions disabled
+      <br/>
       <br/><b>gcc 8.1 and clang 6.0.0, -nostdlib</b>
       <br/>undefined reference to "__cxa_begin_catch"
       <br/>undefined reference to "__cxa_rethrow"
@@ -155,6 +168,12 @@ D *func(B *b) {
     <td><b>Visual Studio 2017, /kernel</b>
       <br/>error C2981: the dynamic form of "dynamic_cast" is not supported with /kernel
       <br/>
+      <br/><b>gcc 8.1, -fno-rtti</b>
+      <br/>error: 'dynamic_cast' not permitted with -fno-rtti
+      <br/>
+      <br/><b>clang 6.0.0, -fno-rtti</b>
+      <br/>error: cannot use dynamic_cast with -fno-rtti
+      <br/>
       <br/><b>gcc 8.1 and clang 6.0.0, -nostdlib</b>
       <br/>undefined reference to "__dynamic_cast"
       <br/>undefined reference to "vtable for __cxxabiv1::__si_class_type_info"
@@ -180,6 +199,12 @@ const bool func(B &b) {
 }</pre></code></td>
     <td><b>Visual Studio 2017, /kernel</b>
       <br/>error C2981: the dynamic form of "typeid" is not supported with /kernel
+      <br/>
+      <br/><b>gcc 8.1, -fno-rtti</b>
+      <br/>error: cannot use 'typeid' with -fno-rtti
+      <br/>
+      <br/><b>clang 6.0.0, -fno-rtti</b>
+      <br/>error: cannot use typeid with -fno-rtti
       <br/>
       <br/><b>gcc 8.1 and clang 6.0.0, -nostdlib</b>
       <br/>undefined reference to "typeinfo for int"
