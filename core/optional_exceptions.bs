@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: Leaving no room for a lower-level language: A C++ Subset
 Shortname: D1105
-Revision: 0.4
+Revision: 0.5
 Audience: SG14, EWG
 Status: D
 Group: WG21
@@ -18,11 +18,11 @@ Conforming C++ toolchains are ill-suited to target kernel and embedded domains. 
 
 It is my intent that this be the least bad form of dialect, the proper subset.  All valid freestanding libraries should be valid hosted libraries with compatible semantics.
 
-In [[P0829]], I propose adding library features to freestanding mode that should work everywhere.  This paper covers the removal of features that don't work everywhere.  There is already standards precedent in [support.signal](http://eel.is/c++draft/support.signal#3) for avoiding portions of all the features that I am making optional.
+In [[P0829]], I propose adding library features to freestanding mode that should work everywhere.  This paper covers the removal and modification of features that don't work everywhere.  There is already standards precedent in [support.signal](http://eel.is/c++draft/support.signal#3) for avoiding portions of all the features that I am making optional.
 
 There are years, if not decades of field experience using C++ subsets similar to what I am proposing ([[OSR]], [[APPLE_KERNEL]]).  The workarounds and compiler switches are mostly available today.  The main places where this paper innovates is in places where we can keep more features than current compiler based switches allow.
 
-In theory, this paper would result in large scale code breaks for existing freestanding users.  In practice, there are almost no existing freestanding users because the current definition is not serving the stated purpose of working ["without the benefit of an operating system"](http://eel.is/c++draft/intro.compliance#7).  Existing implementations already provide mechanisms for disabling many of the features that this paper proposes to make optional.  Existing users would be largely unaffected, except that they would now be using a truly compliant C++ implementation.
+In theory, this paper would result in large scale code breaks for existing freestanding users.  In practice, there are almost no existing freestanding users because the current definition is not serving the stated purpose of working ["without the benefit of an operating system"](http://eel.is/c++draft/intro.compliance#7).  Existing implementations already provide mechanisms for disabling many of the features that this paper proposes to make optional.  Updating these implementations to conform to this proposal would leave existing users largely unaffected, except that they would now be using a truly compliant C++ implementation.
 
 I believe that the embedded and kernel C++ community is better served by making features optional, rather than providing conforming, but low quality, highly unsatisfactory implementations.  Missing functionality sends a clear signal to library writers, where low quality implementations provide an easier to miss message.
 
@@ -38,6 +38,9 @@ By making freestanding useful, I will be providing a target for toolchain and li
 
 Before-and-after tables {#tony}
 ===============================
+
+Well-formed {#tony_well_formed}
+----------------------------
 <table>
   <tr>
     <th>Standard says this should work</th>
@@ -54,7 +57,7 @@ Before-and-after tables {#tony}
       <br/>error: exception handling disabled, use -fexceptions to enable
       <br/>
       <br/><b>clang 6.0.0, -fno-exceptions</b>
-      <br/>error: cannot use 'throw' with exceptions disabled
+      <br/>error: cannot use "throw" with exceptions disabled
       <br/>
       <br/><b>gcc 8.1 and clang 6.0.0, -nostdlib</b>
       <br/>undefined reference to "__cxa_allocate_exception"
@@ -110,7 +113,7 @@ Before-and-after tables {#tony}
       <br/>undefined reference to "_read"
     </td>
     <td><b>Proposed option:</b>
-      <br/>Well defined, but uncommon code.
+      <br/>Well-formed, but uncommon code.
       <br/>
       <br/><b>Alternative to be polled:</b>
       <br/>Ill-formed if exceptions are not enabled.
@@ -132,8 +135,8 @@ Before-and-after tables {#tony}
       <br/>error: exception handling disabled, use -fexceptions to enable
       <br/>
       <br/><b>clang 6.0.0, -fno-exceptions</b>
-      <br/>error: cannot use 'throw' with exceptions disabled
-      <br/>error: cannot use 'try' with exceptions disabled
+      <br/>error: cannot use "throw" with exceptions disabled
+      <br/>error: cannot use "try" with exceptions disabled
       <br/>
       <br/><b>gcc 8.1 and clang 6.0.0, -nostdlib</b>
       <br/>undefined reference to "__cxa_begin_catch"
@@ -153,10 +156,37 @@ Before-and-after tables {#tony}
       <br/>etc...
     </td>
     <td><b>Proposed option:</b>
-      <br/>Well formed.
+      <br/>Well-formed.
       <br/>When exceptions aren't present, `catch` generates no code.  The `try` block is still executed, but does no exception bookkeeping, as is common in `setjmp` / `longjmp` EH implementations.
       <br/>Names and syntax are still checked in catch blocks, similar to `if constexpr(false)`.
     </td>
+  </tr>
+
+  <tr>
+    <td><code><pre>struct B {virtual ~B() {} };
+void foo() {B b;}</pre></code></td>
+    <td><b>Visual Studio 2017, /kernel</b>
+      <br/>error LNK2019: unresolved external symbol "void __cdecl operator delete(void *,unsigned)"
+      <br/>
+      <br/><b>gcc 8.1 and clang 6.0.0, -nostdlib</b>
+      <br/>undefined reference to "operator delete(void*, unsigned long)"
+      <br/>undefined reference to "vtable for __cxxabiv1::__class_type_info"
+    </td>
+    <td><b>Proposed option:</b>
+      <br/>Well-formed, even if the heap is not enabled.
+    </td>
+  </tr>
+
+</table>
+
+Potentially ill-formed {#tony_ill_formed}
+---------------------------------------
+
+<table>
+  <tr>
+    <th>Standard says this should work</th>
+    <th>Today's reality</th>
+    <th>Proposed conforming freestanding behavior</th>
   </tr>
 
   <tr>
@@ -169,7 +199,7 @@ D *func(B *b) {
       <br/>error C2981: the dynamic form of "dynamic_cast" is not supported with /kernel
       <br/>
       <br/><b>gcc 8.1, -fno-rtti</b>
-      <br/>error: 'dynamic_cast' not permitted with -fno-rtti
+      <br/>error: "dynamic_cast" not permitted with -fno-rtti
       <br/>
       <br/><b>clang 6.0.0, -fno-rtti</b>
       <br/>error: cannot use dynamic_cast with -fno-rtti
@@ -201,7 +231,7 @@ const bool func(B &b) {
       <br/>error C2981: the dynamic form of "typeid" is not supported with /kernel
       <br/>
       <br/><b>gcc 8.1, -fno-rtti</b>
-      <br/>error: cannot use 'typeid' with -fno-rtti
+      <br/>error: cannot use "typeid" with -fno-rtti
       <br/>
       <br/><b>clang 6.0.0, -fno-rtti</b>
       <br/>error: cannot use typeid with -fno-rtti
@@ -235,21 +265,6 @@ const bool func(B &b) {
     </td>
     <td><b>Proposed option:</b>
       <br/>Ill-formed if the heap is not enabled and `operator delete` has not been provided by the user.
-    </td>
-  </tr>
-
-  <tr>
-    <td><code><pre>struct B {virtual ~B() {} };
-void foo() {B b;}</pre></code></td>
-    <td><b>Visual Studio 2017, /kernel</b>
-      <br/>error LNK2019: unresolved external symbol "void __cdecl operator delete(void *,unsigned)"
-      <br/>
-      <br/><b>gcc 8.1 and clang 6.0.0, -nostdlib</b>
-      <br/>undefined reference to "operator delete(void*, unsigned long)"
-      <br/>undefined reference to "vtable for __cxxabiv1::__class_type_info"
-    </td>
-    <td><b>Proposed option:</b>
-      <br/>Well-formed, even if the heap is not enabled.
     </td>
   </tr>
 
@@ -459,7 +474,7 @@ The feature macros are somewhat backwards from how the macros are normally defin
 
 Exceptions {#exceptions}
 ------------------------
-Feature test macro: `__cpp_freestanding_no_exceptions`.  Users can check `__cpp_freestanding_no_exception` when they want to determine what behavior `noexcept` and `throw` will have.  The lack of the pre-existing `__cpp_exceptions` macro from [[SD6]] would not provide that information.
+Feature test macro: `__cpp_freestanding_no_exceptions`.  Users can check `__cpp_freestanding_no_exceptions` when they want to determine what behavior `noexcept` and `throw` will have.  The lack of the pre-existing `__cpp_exceptions` macro from [[SD6]] would not provide that information.
 
 This section applies to "dynamic" exceptions.  In other words, the exceptions we have had since C++98.  [[P0709]] could add "static" exceptions.  I am keeping static exceptions in mind with this design, but I'm not providing any wording against that proposal.
 
@@ -705,7 +720,7 @@ The C++ standard does not govern name mangling, and this paper makes no concrete
 Acknowledgments {#ack}
 ======================
 Thank you to the many reviewers of this paper:
-Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred Bratterud, and Ben Saks
+Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred Bratterud, Ben Saks, and Phil Hindman
 
 <pre class=biblio>
 {
