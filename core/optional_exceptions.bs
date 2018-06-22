@@ -1,11 +1,11 @@
 <pre class='metadata'>
 Title: Leaving no room for a lower-level language: A C++ Subset
-Shortname: P1105
-Revision: 0
+Shortname: D1105
+Revision: 1.0
 Audience: SG14, EWG
 Status: D
 Group: WG21
-URL: https://wg21.link/P1105R0
+URL: https://htmlpreview.github.io/?https://github.com/ben-craig/freestanding_proposal/blob/master/core/leaving_no_room.html
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/optional_exceptions.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/optional_exceptions.bs</a>
 Editor: Ben Craig &lt;ben dot craig at gmail dot com&gt;
 Abstract: Making core language features (like exceptions) optional in freestanding mode if they have an OS dependency or incur space overhead.
