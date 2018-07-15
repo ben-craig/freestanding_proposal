@@ -1,16 +1,52 @@
 <pre class='metadata'>
 Title: Leaving no room for a lower-level language: A C++ Subset
 Shortname: D1105
-Revision: 1.0
+Revision: 1.1
 Audience: SG14, EWG
 Status: D
 Group: WG21
 URL: https://htmlpreview.github.io/?https://github.com/ben-craig/freestanding_proposal/blob/master/core/leaving_no_room.html
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/optional_exceptions.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/optional_exceptions.bs</a>
 Editor: Ben Craig &lt;ben dot craig at gmail dot com&gt;
-Abstract: Making core language features (like exceptions) optional in freestanding mode if they have an OS dependency or incur space overhead.
+Abstract: Making exceptions, RTTI, TLS, heap, floating point, program teardown, and blocking operations optional in freestanding mode.
 Markup Shorthands: markdown yes
 </pre>
+
+Revision History {#revision_history}
+====================================
+Polls are all in the typical Strongly in Favor/Weakly in Favor/Neutral/Weakly Against/Strongly Against format.
+r0 -> r1 {#r0_r1}
+-----------------
+Freestanding-only `noexcept` semantics were dropped due to low value, low SG14 support, and ABI concerns.
+
+`throw` statements now call `std::terminate`, rather than cause UB.  `std::terminate` was the approach with the least opposition.
+
+Added sections discussing ABI ramifications of changes.
+
+Changed thread-safe statics feature test macro.
+
+### SG14 telecon polls (July 11, 2018) ### {#sg14_july_2018}
+Minutes: https://groups.google.com/a/isocpp.org/forum/#!topic/sg14/8Ye0goaSosU
+
+Poll 1: get rid of freestanding
+0/1/2/9/11
+Poll 2: modify freestanding along the lines of the paper, encouragement for further work, agree with most of it
+5/13/4/0/0
+
+### SG14 post-telecon online poll (July 11-15, 2018) ### {#sg14_online_july_2018}
+Thread: https://groups.google.com/a/isocpp.org/forum/#!topic/sg14/cCMQb4jaEM8
+
+Poll 3: noexcept should behave differently in environments without exceptions, along the lines of the paper
+0/4/3/5/0
+
+Poll 4: make throw UB when exceptions aren't available
+0/3/6/3/1
+
+Poll 5: make throw ill-formed when exceptions aren't available
+1/3/1/5/3
+
+Poll 6: make throw call std::terminate when exceptions aren't available
+0/4/7/2/0
 
 Introduction {#intro}
 =====================
@@ -79,12 +115,12 @@ Well-formed {#tony_well_formed}
       <br/>undefined reference to "_read"
     </td>
     <td><b>Proposed option:</b>
-      <br/>Undefined behavior if `throw 0;` is executed and exceptions are not enabled.  This is similar to how `throw;` currently calls `std::terminate()` if executed outside of a `catch` block.
+      <br/>`throw 0;` and `throw;` call `std::terminate()` if exceptions are not enabled.  `throw;` currently calls `std::terminate()` if executed outside of a `catch` block.
       <br/>
       <br/><b>Alternatives to be polled:</b>
       <ul>
       <li>Ill-formed if exceptions are not enabled.</li>
-      <li>`throw 0;` and `throw;` call `std::terminate()`.</li>
+      <li>Undefined behavior if `throw 0;` is executed and exceptions are not enabled.</li>
       </ul>
     </td>
   </tr>
@@ -158,7 +194,7 @@ Well-formed {#tony_well_formed}
     <td><b>Proposed option:</b>
       <br/>Well-formed.
       <br/>When exceptions aren't present, `catch` generates no code.  The `try` block is still executed, but does no exception bookkeeping, as is common in `setjmp` / `longjmp` EH implementations.
-      <br/>Names and syntax are still checked in catch blocks, similar to `if constexpr(false)`.
+      <br/>Names and syntax are still checked in catch blocks, similar to `if constexpr(false)`.  `auto` deduced return types still use any `return` statements in the `catch` block, so as not to cause return types to vary based on presence of exceptions.
     </td>
   </tr>
 
@@ -371,110 +407,19 @@ void foo(
 
 </table>
 
-`noexcept` comparisons{#tony_noexcept}
---------------------------------------
-[[#exceptions]] describes several potential changes to noexcept for environments without exceptions.  The following declarations will be used to illustrate the differences.
-<code><pre>extern "C" void extern_c();
-void plain();
-void noexcept_false() noexcept(false);
-void noexcept_true() noexcept;</pre></code>
-The following table shows the results of the `noexcept` operator in the expression `noexcept(column_header())`.  Bolded cells indicate places where there is a deviation from C++17 standard behavior.
-<table>
-  <tr>
-    <th></th>
-    <th>`extern_c`</th>
-    <th>`plain`</th>
-    <th>`noexcept_false`</th>
-    <th>`noexcept_true`</th>
-  </tr>
-  <tr><td><b>Modes with exceptions</b></td><td/><td/><td/><td/></tr>
-  <tr>
-    <td>C++17</td>
-    <td>false</td>
-    <td>false</td>
-    <td>false</td>
-    <td>true</td>
-  </tr>
-
-  <tr>
-    <td>gcc 8.1, clang 6.0, icc 18.0</td>
-    <td>false</td>
-    <td>false</td>
-    <td>false</td>
-    <td>true</td>
-  </tr>
-
-  <tr>
-    <td>MSVC 2017 RTW /EHs</td>
-    <td>false</td>
-    <td>false</td>
-    <td>false</td>
-    <td>true</td>
-  </tr>
-
-  <tr>
-    <td>MSVC 2017 RTW /EHsc</td>
-    <td><b>true</b></td>
-    <td>false</td>
-    <td>false</td>
-    <td>true</td>
-  </tr>
-
-  <tr><td><b>Modes without exceptions</b></td><td/><td/><td/><td/></tr>
-  <tr>
-    <td>MSVC 2017 RTW</td>
-    <td>false</td>
-    <td>false</td>
-    <td>false</td>
-    <td>true</td>
-  </tr>
-
-  <tr>
-    <td>gcc 8.1, clang 6.0, -fno-exceptions</td>
-    <td>false</td>
-    <td>false</td>
-    <td>false</td>
-    <td>true</td>
-  </tr>
-  <tr>
-    <td>icc 18.0 -fno-exceptions</td>
-    <td><b>true</b></td>
-    <td><b>true</b></td>
-    <td><b>true</b></td>
-    <td>true</td>
-  </tr>
-  <tr>
-    <td>Proposed</td>
-    <td><b>true</b></td>
-    <td><b>true</b></td>
-    <td>false</td>
-    <td>true</td>
-  </tr>
-  <tr>
-    <td>Alternative 1</td>
-    <td>false</td>
-    <td>false</td>
-    <td>false</td>
-    <td>true</td>
-  </tr>
-  <tr>
-    <td>Alternative 2</td>
-    <td><b>true</b></td>
-    <td><b>true</b></td>
-    <td><b>true</b></td>
-    <td>true</td>
-  </tr>
-</table>
-
 Features going optional {#features}
 ===================================
 The following applies only to freestanding mode.  Hosted mode will remain unchanged.
 
 The feature macros are somewhat backwards from how the macros are normally defined.  The macros are defined when the paper is adopted and the feature is missing.  We can't define the macros in the past to say the features are present.  Testing for the "non-feature" macros is a safer and more backwards compatible way of determining whether the following features are present.
 
+General ABI impact {#general_abi}
+---------------------------------
+If any entity is defined across two different translation units, and the translation units are built with varying levels of capabilities (e.g. one with exceptions and one without), then that would be an ODR violation.  This general ODR violation concern won't be repeated in each subsection.
+
 Exceptions {#exceptions}
 ------------------------
-Feature test macro: `__cpp_freestanding_no_exceptions`.  Users can check `__cpp_freestanding_no_exceptions` when they want to determine what behavior `noexcept` and `throw` will have.  The lack of the pre-existing `__cpp_exceptions` macro from [[SD6]] would not provide that information.
+Feature test macro: `__cpp_freestanding_no_exceptions`.  Users can check `__cpp_freestanding_no_exceptions` when they want to determine what behavior `throw` will have.  The lack of the pre-existing `__cpp_exceptions` macro from [[SD6]] would not provide that information.
 
 This section applies to "dynamic" exceptions.  In other words, the exceptions we have had since C++98.  [[P0709]] could add "static" exceptions.  I am keeping static exceptions in mind with this design, but I'm not providing any wording against that proposal.
 
@@ -488,47 +433,31 @@ See [[P0709]] for further discussion on the problems with exceptions.
 ### What isn't changing? ### {#exception_same}
 `try` and `catch` are both still allowed.  Compilers should treat `catch` blocks as discarded code (i.e. an `if constexpr(false)` block).  `try` and `catch` blocks are allowed so that exception neutral code can be shared between freestanding and hosted implementations without requiring preprocessor hackery.
 
+A rethrow without an active exception currently calls `std::terminate`.
+
 ### What am I changing (and why)? ### {#exception_what}
 `catch` blocks are treated the same as an `if constexpr(false)` block.  This is to allow many error handling cases to continue compiling without resorting to macros.
 
-Evaluating a `throw` expression with operands in an environment without exception support is undefined behavior.  We allow the programmer to compile with a `throw` to allow exception neutral code to be shared between freestanding and hosted implementations.  The `throw` should never be evaluated, since we shouldn't be able to get into a `catch` block.
-
-Evaluating a `throw` expression without operands in an environment without exception support is also undefined behavior.  This is a minor change in behavior.  A rethrow without an active exception currently calls `std::terminate`.  I don't want unreachable code to increase binary size, and requiring a call to `std::terminate` would do that.
+Evaluating a `throw` expression in an environment without exception support calls `std::terminate`.  We allow the programmer to compile with a `throw` to allow exception neutral code to be shared between freestanding and hosted implementations.  The `throw` should never be evaluated, since we shouldn't be able to get into a `catch` block.
 
 We allow `throw` expressions so that programmers in environments with exceptions can catch the exception, and either translate the exception to another type of exception, rethrow the exception in a ["Lippincott" function](http://cppsecrets.blogspot.com/2013/12/using-lippincott-function-for.html), or handle the exception some other way.  In these cases, we have the expectation that the code will never run in the exceptionless environment.
 
 Implementations are encouraged to produce warnings on any `throw` expression with operands, as well as allow suppressions for informing the compiler when those `throw`s are actually there for exception translation purposes.
 
-When a function without a `noexcept` specification is passed to a `noexcept` expression, `noexcept` will return true if exception support is not present.  This will speed up operations like `move_if_noexcept` and containers with strong exception guarantees.  This also differs somewhat from existing practices.  Visual Studio, clang, and gcc do not currently adjust the value of `noexcept` when exceptions are off.  The Intel compiler makes the `noexcept` operator unconditionally return true when exceptions are turned off.  In addition, Visual Studio has a compiler mode, /EHsc, that takes `extern "C"` functions and makes them `noexcept`.  Note that this approach leaves the door open for static exceptions to use `noexcept`.
-
-Both the literal form of `noexcept(false)` and the conditional form `noexcept(noexcept(foo()))` that evaluates to 'noexcept(false)' should be treated with suspicion in exceptionless environments.  Code that claims that it could throw when throwing isn't allowed seems wrong.  This isn't normative, but it would be a useful place for compilers to warn.  The behavior is being kept as is to leave room for future exception handling mechanisms, like [[P0709]].
-
 ### Alternative designs ### {#exception_alt}
-1. No change to `noexcept` expression
-
-  `noexcept` would continue to assume that a function without a `noexcept` specifier could throw.  We have the most experience with this option (Clang, gcc, and Visual Studio implement it), but it also leaves the most unexploited performance, as it pessimizes `move_if_noexcept`, `vector`, and other facilities that query `noexcept`.
-
-2. `noexcept` expressions always return true
-
-  Intel icc currently implements this option.  This opens us up to breakage if some other proposal gives meaning to `noexcept` on platforms without dynamic exceptions.  Having `noexcept` directly contradict a `noexcept(false)` specification seems wrong as well.
-
-3. Make `noexcept` ill-formed
-
-  Visual Studio currently warns when it sees a `noexcept` specifier while exceptions are disabled.  This option would make it very difficult to share code between freestanding and hosted.  Libraries attempting to target both would most likely resort to a macro that conditionally expands to `noexcept`.
-
-4. `throw` UB vs. ill-formed vs. `std::terminate`
+1. `throw` UB vs. ill-formed vs. `std::terminate`
 
   We could make some or all `throw` expressions ill-formed.  The benefit is that compilers could more reliably produce diagnostics.  The cost is that it would be more difficult to share exception neutral code between hosted and freestanding.
 
-  We could make `throw` call `std::terminate` rather than have it be UB.  This would give reliable behavior that is similar to what no-except variants of today's standard libraries do.  UB likely optimizes better.  Compiler would be able to remove any code that leads to the UB.  If `throw` calls `std::terminate`, that would count as an ODR-use, and would prevent the linker from discarding the definition of `std::terminate`.
+  We could make `throw` statements UB.  UB likely optimizes better than `std::terminate`.  Compilers would be able to remove any code that leads to the UB, reducing overall binary size.
 
-5. `try` and `catch` allowed vs. ill-formed
+2. `try` and `catch` allowed vs. ill-formed
 
   If we made `try` and `catch` ill-formed, we would severely impact the portability of libraries across the exception and non-exception worlds.  However, this is basically the status quo today, so we have experience with this pain.
 
   If we adopt everything else in this paper, while banning `try` and `catch`, we would be able to claim that freestanding C++ is signal safe C++.
 
-6. Only allow `catch(...)` and `throw;`
+3. Only allow `catch(...)` and `throw;`
 
   Logging exceptions and translating exceptions are less common use cases than simple `catch` and rethrow use cases.  Allowing `catch(type)` takes us down the path of pulling in `std::exception`, as well as making it difficult to diagnose inappropriate `throw obj;` statements.
 
@@ -566,9 +495,15 @@ This alternative would make it so that clients could only `catch(...)` and `catc
 
 In addition to the issues in the above alternative, we would also need to ensure that all the other library features and core language features didn't call `std::terminate` in freestanding mode.
 
+### ABI impact ### {#exception_abi}
+
+If an exception is thrown from exception-enabled code, across exception-disabled code, the results are undefined.  Structure sizes and mangled names of entities should be unaffected.
+
+TODO: figure out auto return type deduction for returns in discarded catches.
+
 RTTI {#rtti}
 ------------
-Feature test macro: `__cpp_freestanding_no_rtti`.  This macro is distinct from the `__cpp_rtti` macro already defined in [[SD6]].  Users cannot currently (in 2018) reliable test for the presence of RTTI with `__cpp_rtti`, so RTTI should generally assumed to be present, unless `__cpp_freestanding_no_rtti` is present.
+Feature test macro: `__cpp_freestanding_no_rtti`.  This macro is distinct from the `__cpp_rtti` macro already defined in [[SD6]].  Users cannot currently (in 2018) reliably test for the presence of RTTI with `__cpp_rtti`, so RTTI should generally assumed to be present, unless `__cpp_freestanding_no_rtti` is present.
 
 ### What am I changing? ### {#rtti_what}
 `typeid` and `dynamic_cast` are ill-formed in environments without RTTI.  The `<typeinfo>` header is not required to be present.
@@ -579,6 +514,13 @@ Feature test macro: `__cpp_freestanding_no_rtti`.  This macro is distinct from t
 The slot in the vtable itself is also a place where space is wasted.
 
 If `typeid` and `dynamic_cast` can't be called, implementations can safely remove the `type_info` objects, saving space.  Some ABIs will even permit reclaiming the vtable slot.
+
+### ABI impact ### {#rtti_abi}
+The current major implementations all provide ways to disable RTTI, so there is real world experience here.
+
+An object created in an RTTI-enabled implementation can be passed to a no-RTTI implementation, and the RTTI implementation can use it without any ill-effects.  A no-RTTI implementation can create an object, and pass it to an RTTI-enabled implementation, and everything will work fine, so long as `typeid` and `dynamic_cast` are not used on the object.
+
+A no-RTTI class can inherit from an RTTI class with no ill-effects.  An RTTI-enabled class cannot universally inherit from a no-RTTI class.
 
 Default heap storage {#heap}
 ----------------------------
@@ -599,6 +541,9 @@ Many kernel systems have multiple pools of memory, none of which is suitable as 
 
 In current implementations of `virtual` destructors, the class's vtable points at a stub function that calls the "real" destructor, then calls `::operator delete`.  This places a burden on freestanding users of hosted code, even when the freestanding users aren't using `new` and `delete`.  It seems reasonable to allow a freestanding class to have a `virtual` destructor, so long as the class is never `new`ed or `delete`ed.  Hosted uses of the class can `new` and `delete` all they want.
 
+### ABI impact ### {#heap_abi}
+TODO: revisit the solution, figure out abi ramifications or delete ODR-use.
+
 Thread local storage {#tls}
 ---------------------------
 Feature test macro: `__cpp_freestanding_no_thread_local_storage`.
@@ -613,6 +558,12 @@ For embedded platforms, there may not be an operating system.  Implementing thre
 
 For kernel platforms, and drivers in particular, the operating system may be owned by a third party.  The third party may not provide arbitrary thread local storage for plugins.  Neither Linux, Microsoft Windows, Apple OSX, FreeBSD, nor OpenRTOS support arbitrary thread local storage in the kernel.
 
+### ABI impact ### {#tls_abi}
+
+Disabling TLS should have no direct effect on the ABI.  In programs with mixed TLS settings, the no-TLS code should have no effect on the allocation or use of TLS in the TLS-enabled parts of the code.
+
+If a TLS-enabled function communicates information to callers or callees via TLS, then TLS-disabled code would not be capable of using that communication channel.
+
 Floating point {#float}
 -----------------------
 Feature test macro: `__cpp_freestanding_no_floating_point_support`.
@@ -626,6 +577,11 @@ The `float`, `double`, and `long double` types are ill-formed if the environment
 Many embedded processors do not have floating point units.  The cost for the first usage of floating point is very high, as that pulls in floating point emulation libraries.
 
 In kernel environments, floating point operations are avoided.  The system call interface from user mode to kernel mode normally does a partial context switch, where it saves off the old values of registers, so that they can be restored when returning to user mode.  In order to make user / kernel transitions fast, operating systems usually don't automatically save or restore the floating point state.  This means that carelessly using floating point in the kernel ends up corrupting the user mode program's floating point state.
+
+### ABI impact ### {#float_abi}
+Floating point functions would not be usable (obviously).  When no floating point is used, the difference between hard-float and soft-float ABIs on ARM and MIPS should be none.
+
+Environments where floating point support is prohibited may need to use different implementations of some common functions.  For example, in many environments, `memcpy` will use vectorized instructions that touch floating point registers.  In an environment where floating point is prohibited (like many OS kernels), the implementation of `memcpy` will need to avoid using floating point registers.
 
 Program start-up and termination {#startup_termination}
 -------------------------------------------------------
@@ -654,11 +610,16 @@ The existence of `atexit`, `at_quick_exit`, `exit`, and `quick_exit` should be i
 ### Why? ### {#startup_termination_why}
 These functions require space overhead, and are difficult to optimize away.  Process termination code iterates over the contents of the `atexit` list, pinning the memory in place.
 
+### ABI impact ### {#startup_termination_abi}
+None?
+
+Mixing TUs with different startup / termination settings may cause confusion ("Why do some globals get constructed but not others?"), but I do not foresee any ABI problems.
+
 Language mandated blocking synchronization {#blocking}
 --------------------------------------
 Feature test macros:
 * `__cpp_freestanding_no_locked_atomics`.
-* `__cpp_freestanding_no_dynamic_static_init`.  This implies that __cpp_threadsafe_static_init is undefined.
+* `__cpp_freestanding_no_non_global_dynamic_static_init`.  This implies that __cpp_threadsafe_static_init is undefined.
 
 ### What am I changing? ### {#blocking_what}
 In environments without blocking synchronization support, dynamic initialization of function statics and non-lock-free atomics are ill-formed.
@@ -682,11 +643,18 @@ Some OSes aren't scheduled in a time-sliced manner.  Spin locks on these systems
 
 All of these concerns are also concerns with regards to signals.  [support.signal](https://wg21.link/support.signal) already calls out that locked atomics result in UB when invoked from a signal.  Dynamic initialization of a static variable is also UB when invoked from a signal.  If we are willing to make special rules for signals, shouldn't we be willing to make special rules for embedded and kernel... especially if the rules are largely the same?
 
+### ABI impact ### {#blocking_abi}
+None?
+
+If this paper had reverted thread-safe statics back to thread-unsafe statics, then there would be typical ODR problems.  Making the functions ill-formed avoids that problem though.
+
 Related works in progress, and future work {#other_work}
 ========================================================
 
 [[P0709]] Zero-overhead deterministic exceptions {#p0709}
 ---------------------------------------------------------
+Static exceptions have the potential to be suitable for freestanding environments.  The usage of TLS for `uncaught_exceptions` is currently the main sticking point, but a potential option there is for a freestanding implementation to not track the number of in-flight exceptions.
+
 Efforts were made to not design out static exceptions.  If we were to ignore static exceptions and other potential implementations of exceptions, we could provide an implementation of `uncaught_exceptions` that always returned 0.  This would enable `scope_success` and `scope_failure` out of [[P0052]].
 
 [[P0784]] Standard containers and `constexpr` {#p0784}
@@ -700,6 +668,10 @@ Or maybe, this could be tackled with conditionally `constexpr!` functions...
 [[P1073]] `constexpr!` functions {#p1073}
 --------------------------------------------------
 P1073 provides a way to force a function to only be invokable at compile time.  Freestanding implementations could mark all `constexpr`, non-freestanding functions as `constexpr!`.
+
+[[P1066]] How to `catch` an `exception_ptr` without even `try`-ing {#p1066}
+---------------------------------------------------------------------------
+P1066 makes it possible to use `exception_ptr` without try, catch, or throw.  This may mean that it would be usable in an environment with no exceptions.  The feature would still require RTTI and the heap.
 
 Explicit control of program startup and termination {#explicit_startup_and_term}
 --------------------------------------------------------------------------------
@@ -753,6 +725,11 @@ Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred Bratterud, Be
         "authors": ["David Stone"],
         "href": "http://wg21.link/P1045",
         "title": "constexpr Function Parameters"
+    },
+    "P1066": {
+        "authors": ["Mathias Stearn"],
+        "href": "http://wg21.link/P1066",
+        "title": "How to `catch` an `exception_ptr` without even `try`-ing"
     },
     "P1073": {
         "authors": ["Richard Smith", "Andrew Sutton", "Daveed Vandevoorde"],
