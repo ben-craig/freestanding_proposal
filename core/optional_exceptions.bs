@@ -436,7 +436,7 @@ See [[P0709]] for further discussion on the problems with exceptions.
 A rethrow without an active exception currently calls `std::terminate`.
 
 ### What am I changing (and why)? ### {#exception_what}
-`catch` blocks are treated the same as an `if constexpr(false)` block.  This is to allow many error handling cases to continue compiling without resorting to macros.
+`catch` blocks are treated similarly to an `if constexpr(false)` block.  This is to allow many error handling cases to continue compiling without resorting to macros.  The contents of the `catch` block are discarded, but `auto` return type deduction will still respect the types in `return` statements within `catch` blocks.  The `return` type of the function should not typically depend on the presence or absence of exception support.
 
 Evaluating a `throw` expression in an environment without exception support calls `std::terminate`.  We allow the programmer to compile with a `throw` to allow exception neutral code to be shared between freestanding and hosted implementations.  The `throw` should never be evaluated, since we shouldn't be able to get into a `catch` block.
 
@@ -460,6 +460,10 @@ Implementations are encouraged to produce warnings on any `throw` expression wit
 3. Only allow `catch(...)` and `throw;`
 
   Logging exceptions and translating exceptions are less common use cases than simple `catch` and rethrow use cases.  Allowing `catch(type)` takes us down the path of pulling in `std::exception`, as well as making it difficult to diagnose inappropriate `throw obj;` statements.
+
+### ABI impact ### {#exception_abi}
+
+If an exception is thrown from exception-enabled code, across exception-disabled code, the results are undefined.  Structure sizes and mangled names of entities should be unaffected.
 
 Parts of `<exception>` header {#exception_header}
 ----------------------------------------
@@ -494,12 +498,6 @@ This alternative would make it so that clients could only `catch(...)` and `catc
 2. Omit the entire `<exception>` header.
 
 In addition to the issues in the above alternative, we would also need to ensure that all the other library features and core language features didn't call `std::terminate` in freestanding mode.
-
-### ABI impact ### {#exception_abi}
-
-If an exception is thrown from exception-enabled code, across exception-disabled code, the results are undefined.  Structure sizes and mangled names of entities should be unaffected.
-
-TODO: figure out auto return type deduction for returns in discarded catches.
 
 RTTI {#rtti}
 ------------
@@ -541,8 +539,19 @@ Many kernel systems have multiple pools of memory, none of which is suitable as 
 
 In current implementations of `virtual` destructors, the class's vtable points at a stub function that calls the "real" destructor, then calls `::operator delete`.  This places a burden on freestanding users of hosted code, even when the freestanding users aren't using `new` and `delete`.  It seems reasonable to allow a freestanding class to have a `virtual` destructor, so long as the class is never `new`ed or `delete`ed.  Hosted uses of the class can `new` and `delete` all they want.
 
+### How could this virtual destructor ODR-use change be implemented? ### {#heap_how}
+First, this is only a problem that needs to be solved on systems without a default heap.  This means that typical user-mode desktop and server implementations would be unaffected.
+
+Existing linkers already have the ability to take multiple identical virtual table implementations and pick one for use in the final binary.  A potential implementation strategy is for compilers and linkers to support a new "weaker" linkage.  When the default heap is disabled, the compiler would emit a vtable with a `nullptr` or pure virtual function in the virtual destructor slot.  When `new` is called, a "stronger" linkage vtable would be emitted that has the deleting destructor in the virtual destructor slot.  The linker would then select a vtable with the strongest linkage available.  Today's linkage would be considered "stronger".  Only partially filled vtables would have "weaker" linkage.
+
 ### ABI impact ### {#heap_abi}
-TODO: revisit the solution, figure out abi ramifications or delete ODR-use.
+Mixing multiple object files into the same program should be fine, even if some of them have a default heap and some don't.  All the regular / "strong" linkage vtables should be identical, and all the "weaker" linkage vtables should be identical.  If anyone in the program calls any form of `new`, the deleting destructor will be present and in the right slot.  If no-one calls `new` in the program, then no-one should be calling `delete`, and the empty vtable slot won't be a problem.
+
+Shared libraries are trickier.  In the [Itanium ABI](http://refspecs.linuxbase.org/cxxabi-1.83.html), vtables aren't always emitted into every translation unit.  Take shared library "leaf" that has a default heap.  It depends upon shared library "root" that does not have a default heap.  If a class with a virtual destructor is defined in "root", along with its "key function", then a call to `new` on the class in "leaf" will generate an object with a partial vtable.  Calling `delete` on that object will cause UB (usually crashes).
+
+The Microsoft ABI always (usually?) emits a vtable in each TU, so it should have substantially fewer problems here.
+
+Lack of a default heap should generally be considered a trait of the platform.  Mixing this configuration shouldn't be a common occurrence.
 
 Thread local storage {#tls}
 ---------------------------
