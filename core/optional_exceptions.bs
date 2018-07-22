@@ -25,6 +25,10 @@ Added sections discussing ABI ramifications of changes.
 
 Changed thread-safe statics feature test macro.
 
+Clarifying `if constexpr` comments.  `catch` blocks will still help determine auto return types.
+
+Added description of potential virtual destructor implementation.
+
 ### SG14 telecon polls (July 11, 2018) ### {#sg14_july_2018}
 Minutes: https://groups.google.com/a/isocpp.org/forum/#!topic/sg14/8Ye0goaSosU
 
