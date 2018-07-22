@@ -54,6 +54,8 @@ Conforming C++ toolchains are ill-suited to target kernel and embedded domains. 
 
 It is my intent that this be the least bad form of dialect, the proper subset.  All valid freestanding libraries should be valid hosted libraries with compatible semantics.
 
+This paper proposes making the following features optional: [exceptions](#exceptions), parts of the <a href="#exception_header"><code class="highlight"><span class="o">&lt;</span><span class="n">exception</span><span class="o">></span></code> header</a>, [ RTTI](#rtti), [default heap storage](#heap), [thread local storage](#tls), [floating point](#float), the [atexit family of functions](#startup_termination), [locked atomics](#blocking), and [thread-safe static initialization](#blocking).
+
 In [[P0829]], I propose adding library features to freestanding mode that should work everywhere.  This paper covers the removal and modification of features that don't work everywhere.  There is already standards precedent in [support.signal](http://eel.is/c++draft/support.signal#3) for avoiding portions of all the features that I am making optional.
 
 There are years, if not decades of field experience using C++ subsets similar to what I am proposing ([[OSR]], [[APPLE_KERNEL]]).  The workarounds and compiler switches are mostly available today.  The main places where this paper innovates is in places where we can keep more features than current compiler based switches allow.
