@@ -29,6 +29,8 @@ Clarifying `if constexpr` comments.  `catch` blocks will still help determine au
 
 Added description of potential virtual destructor implementation.
 
+Added frequently raised arguments section
+
 ### SG14 telecon polls (July 11, 2018) ### {#sg14_july_2018}
 Minutes: https://groups.google.com/a/isocpp.org/forum/#!topic/sg14/8Ye0goaSosU
 
@@ -703,6 +705,49 @@ Symbol name length {#symbol_length}
 Some systems (including certain configurations of the Linux kernel) keep around symbol names during runtime.  C++ symbol names usually encode return type information, parameter type information, enclosing namespaces and class names, and template arguments.  All this extra information makes for long, and often cryptic symbol names.  The long symbol names take up more space in the resulting binary, and the mangling scheme makes for more difficult debugging.
 
 The C++ standard does not govern name mangling, and this paper makes no concrete recommendations.  Implementations should strive to allow users to make useful tradeoffs between symbol name length, legibility, and ABI compatibility.
+
+Frequently raised arguments {#arguments}
+========================================
+
+C++ doesn't standardize subsets {#arguments_no_subsets}
+-------------------------------------------------------
+C++ already has subsets and optional features.  C++98 through C++17 have a freestanding subset, that claims to be for systems without an OS.  This paper (and [[P0829]]) are trying to fulfill that goal.
+
+[support.signal](http://eel.is/c++draft/support.signal#3) identifies a subset of the language that is usable in signal handlers.
+
+`constexpr` expressions are a subset of the language and library, with the additional burden of syntax.
+
+Most of `<cstdint>` is optional.  `random_device` is optionally useful.  `native_handle` functions and `native_handle_type` typedefs are optional.
+
+A subset will fracture the C++ user base {#arguments_user_fracture}
+-------------------------------------------------------------------
+The user base is already fractured, and has been for 20+ years.  This paper may allow more exception neutral code to be shared between code bases, even with the code bases have different exception settings.  I doubt we will ever be able to eliminate the user base fracture, but with the right feature additions and guidance, we can attempt to reduce the magnitude of the fracture.
+
+A dialect will be burdensome to vendors {#arguments_vendor_burden}
+------------------------------------------------------------------
+This proposal increases the amount of available work, but does not increase the amount of required work.
+
+Vendors are only required to provide one conforming mode.  If a vendor doesn't have a user base that is interested in freestanding, they won't be forced to provide it in order to be conforming.  Conversely, if a vendor's clients only care about freestanding, those vendors won't be forced to provide a hosted implementation in order to be conforming.
+
+This proposal does expand the amount of potential work for vendors.  A vendor could choose to try and provide a full hosted toolchain, a minimal freestanding toolchain, and many different sets of features in between hosted and minimal freestanding.  Which subsets to implement is left to the discretion of the vendor.
+
+Everybody wants a different subset {#arguments_different_subsets}
+-----------------------------------------------------------------
+This is mostly true.  That's why this paper aims for the lowest common denominator, and leaves extensions to the lowest common denominator up to vendors.
+
+This doesn't agree with common style guides, like MISRA {#arguments_style_guides}
+---------------------------------------------------------------------------------
+This paper concerns itself with what is technologically possible.  Style guides are too domain specific for something as general as a lowest common denominator subset.
+
+A subset will be burdensome for the committee {#arguments_committee_burden}
+---------------------------------------------------------------------------
+Maintaining freestanding will require a small amount of ongoing committee time.
+
+On the language front, we should be striving for freestanding compatible in the first place.  Language features that are not freestanding compatible are likely not zero-cost abstractions.
+
+On the library front, we should watch for library features that naturally lend themselves to being freestanding, and encourage the authors to design their library as such.  Some library features don't naturally lend themselves to being freestanding though, and that's fine.  I/O facilities and dynamically sized containers are examples of facilities that can safely ignore freestanding mode.
+
+My expectation is that we spend more time worrying about ABI compatibility than we do about what is in freestanding and what isn't.
 
 Acknowledgments {#ack}
 ======================
