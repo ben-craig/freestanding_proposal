@@ -969,7 +969,7 @@ Change in [compliance] paragraph 3:
     <span class='texttt'>at_&shy;quick_&shy;exit</span>,
     <span class='texttt'>exit</span>,
     and
-    <span class='texttt'>quick_&shy;exit</span> (21.5).</div>
+    <span class='texttt'>quick_&shy;exit</span> [support.start.term].</div>
     <div class='sentence'>The other headers listed in this table shall meet the same requirements as for a hosted implementation.</div>
 </del>
 
@@ -1016,7 +1016,7 @@ namespace std {
 </span>  extern "C" using <span class='textit'>c-compare-pred</span> = int(const void*, const void*);   <span class='comment'>// <span class='textit'>exposition only</span>
 </span>  extern "C++" using <span class='textit'>compare-pred</span> = int(const void*, const void*);   <span class='comment'>// <span class='textit'>exposition only</span>
 </span>
-  <span class='comment'>// 21.5, start and termination
+  <span class='comment'>// [support.start.term], start and termination
 </span>  [[noreturn]] void abort() noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   int atexit(<span class='textit'>c-atexit-handler</span>* func) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   int atexit(<span class='textit'>atexit-handler</span>* func) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -1029,7 +1029,7 @@ namespace std {
   char* <span id='lib:getenv'><span class='tcode_in_codeblock'>getenv</span></span>(const char* name);
   int system(const char* string);
 
-  <span class='comment'>// 23.10.12, C library memory allocation
+  <span class='comment'>// [c.malloc], C library memory allocation
 </span>  void* aligned_alloc(size_t alignment, size_t size);
   void* calloc(size_t nmemb, size_t size);
   void free(void* ptr);
@@ -1048,14 +1048,14 @@ namespace std {
   unsigned long int strtoul(const char* nptr, char** endptr, int base);
   unsigned long long int strtoull(const char* nptr, char** endptr, int base);
 
-  <span class='comment'>// 24.5.6, multibyte / wide string and character conversion functions
+  <span class='comment'>// [c.mb.wcs], multibyte / wide string and character conversion functions
 </span>  int mblen(const char* s, size_t n);
   int mbtowc(wchar_t* pwc, const char* s, size_t n);
   int wctomb(char* s, wchar_t wchar);
   size_t mbstowcs(wchar_t* pwcs, const char* s, size_t n);
   size_t wcstombs(char* s, const wchar_t* pwcs, size_t n);
 
-  <span class='comment'>// 28.8, C standard library algorithms
+  <span class='comment'>// [alg.c.library], C standard library algorithms
 </span>  void* bsearch(const void* key, const void* base, size_t nmemb, size_t size,
                 <span class='textit'>c-compare-pred</span>* compar); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   void* bsearch(const void* key, const void* base, size_t nmemb, size_t size,
@@ -1063,11 +1063,11 @@ namespace std {
   void qsort(void* base, size_t nmemb, size_t size, <span class='textit'>c-compare-pred</span>* compar); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   void qsort(void* base, size_t nmemb, size_t size, <span class='textit'>compare-pred</span>* compar); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 29.6.9, low-quality random number generation
+  <span class='comment'>// [c.math.rand], low-quality random number generation
 </span>  int rand();
   void srand(unsigned int seed);
 
-  <span class='comment'>// 29.9.2, absolute values
+  <span class='comment'>// [c.math.abs], absolute values
 </span>  int abs(int j); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   long int abs(long int j); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   long long int abs(long long int j); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -1079,8 +1079,8 @@ namespace std {
   long long int llabs(long long int j); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
   div_t div(int numer, int denom); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  ldiv_t div(long int numer, long int denom);             <span class='comment'>// see 20.2<ins>, <span class='textit'>freestanding</span></ins>
-</span>  lldiv_t div(long long int numer, long long int denom);  <span class='comment'>// see 20.2<ins>, <span class='textit'>freestanding</span></ins>
+  ldiv_t div(long int numer, long int denom);             <span class='comment'>// see [library.c]<ins>, <span class='textit'>freestanding</span></ins>
+</span>  lldiv_t div(long long int numer, long long int denom);  <span class='comment'>// see [library.c]<ins>, <span class='textit'>freestanding</span></ins>
 </span>  ldiv_t ldiv(long int numer, long int denom); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   lldiv_t lldiv(long long int numer, long long int denom); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 }</pre>
@@ -1111,11 +1111,13 @@ headers are entirely freestanding.
 <li><ins>[cstdarg.syn]</ins></li>
 <li><ins>[csetjmp.syn]</ins></li>
 <li><ins>[concepts.syn]</ins></li>
+<li><ins>[utility.syn]</ins></li>
+<li><ins>[tuple.syn]</ins></li>
 </ul>
 
-Change in [cerrno.syn] (22.4.1):
+Change in [cerrno.syn]:
 <blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>22.4.1</a> Header <span class='texttt'>&lt;cerrno&gt;</span> synopsis <a class='abbr_ref'>[cerrno.syn]</a></h3>
+<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;cerrno&gt;</span> synopsis <a class='abbr_ref'>[cerrno.syn]</a></h3>
 <pre class='codeblock'>
 #define errno <span class='textit'><span class='texttt'>see below</span></span>
 
@@ -1198,18 +1200,11 @@ Change in [cerrno.syn] (22.4.1):
 #define EWOULDBLOCK <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 #define EXDEV <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 </pre>
-
-<div class='para'>
-    <div class='marginalizedparent'><a class='marginalized'>1</a></div>
-    <div class='sentence'>The meaning of the macros in this header is defined by the POSIX standard.</div>
-    <div style='height:0.6em;display:block'></div>
-    <div class='sentence'><span class='textsc'>See also:</span> ISO C 7.5</div>
-</div>
 </blockquote>
 
-Change in [system_error.syn] (22.5.1):
+Change in [system_error.syn]:
 <blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>22.5.1</a> Header <span class='texttt'>&lt;system_&shy;error&gt;</span> synopsis <a class='abbr_ref'>[system_error.syn]</a></h3>
+<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;system_&shy;error&gt;</span> synopsis <a class='abbr_ref'>[system_error.syn]</a></h3>
 <div  class='sentence'>
 <pre class='codeblock'>
 namespace std {
@@ -1235,40 +1230,23 @@ namespace std {
 </div>
 </blockquote>
 
-Change in [utility.syn] (23.2.1):
+Change in [optional.syn]:
 <blockquote class="std">
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-namespace std {
-</pre>
-</blockquote>
-
-Change in [tuple.syn] (23.5.2):
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>23.5.2</a> Header <span class='texttt'>&lt;tuple&gt;</span> synopsis <a class='abbr_ref'>[tuple.syn]</a></h3>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-namespace std {
-</pre>
-</blockquote>
-
-Change in [optional.syn] (23.6.2):
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>23.6.2</a> Header <span class='texttt'>&lt;optional&gt;</span> synopsis <a class='abbr_ref'>[optional.syn]</a></h3>
+<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;optional&gt;</span> synopsis <a class='abbr_ref'>[optional.syn]</a></h3>
 <pre class='codeblock'>
 namespace std {
-  <span class='comment'>// 23.6.3, class template <span class='tcode_in_codeblock'>optional</span>
+  <span class='comment'>// [optional.optional], class template <span class='tcode_in_codeblock'>optional</span>
 </span>  template&lt;class T&gt;
     class optional; <ins><span class='comment'>// <span class='textit'>freestanding, partial</span></span></ins>
 
-  <span class='comment'>// 23.6.4, no-value state indicator
+  <span class='comment'>// [optional.nullopt], no-value state indicator
 </span>  struct nullopt_t{<span class='textit'><span class='texttt'>see below</span></span>}; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   inline constexpr nullopt_t nullopt(<span class='textit'><span class='texttt'>unspecified</span></span>); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 23.6.5, class <span class='tcode_in_codeblock'>bad_&shy;optional_&shy;access</span>
+  <span class='comment'>// [optional.bad.access], class <span class='tcode_in_codeblock'>bad_&shy;optional_&shy;access</span>
 </span>  class bad_optional_access;
 
-  <span class='comment'>// 23.6.6, relational operators
+  <span class='comment'>// [optional.relops], relational operators
 </span>  template&lt;class T, class U&gt;
   constexpr bool operator==(const optional&lt;T&gt;&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T, class U&gt;
@@ -1282,35 +1260,35 @@ namespace std {
   template&lt;class T, class U&gt;
   constexpr bool operator&gt;=(const optional&lt;T&gt;&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 23.6.7, comparison with <span class='tcode_in_codeblock'>nullopt</span>
+  <span class='comment'>// [optional.nullops], comparison with <span class='tcode_in_codeblock'>nullopt</span>
 </span>  template&lt;class T&gt; constexpr bool operator==(const optional&lt;T&gt;&amp;, nullopt_t) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T&gt; constexpr bool operator==(nullopt_t, const optional&lt;T&gt;&amp;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T&gt; constexpr bool operator!=(const optional&lt;T&gt;&amp;, nullopt_t) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T&gt; constexpr bool operator!=(nullopt_t, const optional&lt;T&gt;&amp;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T&gt; constexpr bool operator&lt;(const optional&lt;T&gt;&amp;, nullopt_t) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T&gt; constexpr bool operator&lt;(nullopt_t, const optional&lt;T&gt;&amp;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T&gt; constexpr bool operator&lt;=(const optional&lt;T&gt;&amp;, nullopt_t) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T&gt; constexpr bool operator&lt;=(nullopt_t, const optional&lt;T&gt;&amp;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T&gt; constexpr bool operator&gt;(const optional&lt;T&gt;&amp;, nullopt_t) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T&gt; constexpr bool operator&gt;(nullopt_t, const optional&lt;T&gt;&amp;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; constexpr bool operator&lt;=(const optional&lt;T&gt;&amp;, nullopt_t) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; constexpr bool operator&lt;=(nullopt_t, const optional&lt;T&gt;&amp;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T&gt; constexpr bool operator&gt;=(const optional&lt;T&gt;&amp;, nullopt_t) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T&gt; constexpr bool operator&gt;=(nullopt_t, const optional&lt;T&gt;&amp;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 23.6.8, comparison with <span class='tcode_in_codeblock'>T</span>
+  <span class='comment'>// [optional.comp_with_t], comparison with <span class='tcode_in_codeblock'>T</span>
 </span>  template&lt;class T, class U&gt; constexpr bool operator==(const optional&lt;T&gt;&amp;, const U&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T, class U&gt; constexpr bool operator==(const T&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T, class U&gt; constexpr bool operator!=(const optional&lt;T&gt;&amp;, const U&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T, class U&gt; constexpr bool operator!=(const T&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T, class U&gt; constexpr bool operator&lt;(const optional&lt;T&gt;&amp;, const U&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T, class U&gt; constexpr bool operator&lt;(const T&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T, class U&gt; constexpr bool operator&lt;=(const optional&lt;T&gt;&amp;, const U&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T, class U&gt; constexpr bool operator&lt;=(const T&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T, class U&gt; constexpr bool operator&gt;(const optional&lt;T&gt;&amp;, const U&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T, class U&gt; constexpr bool operator&gt;(const T&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class U&gt; constexpr bool operator&lt;=(const optional&lt;T&gt;&amp;, const U&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class U&gt; constexpr bool operator&lt;=(const T&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T, class U&gt; constexpr bool operator&gt;=(const optional&lt;T&gt;&amp;, const U&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T, class U&gt; constexpr bool operator&gt;=(const T&amp;, const optional&lt;U&gt;&amp;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 23.6.9, specialized algorithms
+  <span class='comment'>// [optional.specalg], specialized algorithms
 </span>  template&lt;class T&gt;
     void swap(optional&lt;T&gt;&amp;, optional&lt;T&gt;&amp;) noexcept(<span class='textit'><span class='texttt'>see below</span></span>); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
@@ -1321,16 +1299,16 @@ namespace std {
   template&lt;class T, class U, class... Args&gt;
     constexpr optional&lt;T&gt; make_optional(initializer_list&lt;U&gt; il, Args&amp;&amp;... args); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 23.6.10, hash support
+  <span class='comment'>// [optional.hash], hash support
 </span>  template&lt;class T&gt; struct hash; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T&gt; struct hash&lt;optional&lt;T&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 }</pre>
 </blockquote>
 
-Change in [optional.optional] (23.6.3)
+Change in [optional.optional]
 <blockquote class="std">
 <pre class='codeblock'>
-    <span class='comment'>// 23.6.3.5, observers
+    <span class='comment'>// [optional.observe], observers
 </span>    constexpr const T* operator-&gt;() const;
     constexpr T* operator-&gt;();
     constexpr const T&amp; operator*() const&amp;;
