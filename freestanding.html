@@ -1093,108 +1093,25 @@ Add a new paragraph to the end of [support.limits.general]:
 </div>
 </blockquote>
 
-Change in [limits.syn]:
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;limits&gt;</span> synopsis <a class='abbr_ref'>[limits.syn]</a></h3>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-namespace std {
-</pre>
-</blockquote>
-
-Change in [climits.syn]:
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;climits&gt;</span> synopsis <a class='abbr_ref'>[climits.syn]</a></h3>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-#define CHAR_BIT <span class='textit'><span class='texttt'>see below</span></span>
-</pre>
-</blockquote>
-
-Change in [cfloat.syn]:
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;cfloat&gt;</span> synopsis <a class='abbr_ref'>[cfloat.syn]</a></h3>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-#define FLT_ROUNDS <span class='textit'><span class='texttt'>see below</span></span>
-</pre>
-</blockquote>
-
-Change in [cstdint.syn]:
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;cstdint&gt;</span> synopsis <a class='abbr_ref'>[cstdint.syn]</a></h3>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-namespace std {
-</pre>
-</blockquote>
-
-Change in [new.syn]:
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;new&gt;</span> synopsis <a class='abbr_ref'>[new.syn]</a></h3>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-namespace std {
-</pre>
-</blockquote>
-
-Change in [typeinfo.syn]:
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;typeinfo&gt;</span> synopsis <a class='abbr_ref'>[typeinfo.syn]</a></h3>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-namespace std {
-</pre>
-</blockquote>
-
-Change in [exception.syn]:
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;exception&gt;</span> synopsis <a class='abbr_ref'>[exception.syn]</a></h3>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-namespace std {
-</pre>
-</blockquote>
-
-Change in [initializer_list.syn]:
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;initializer_list&gt;</span> synopsis <a class='abbr_ref'>[initializer_list.syn]</a></h3>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-namespace std {
-</pre>
-</blockquote>
-
-Change in [compare.syn]:
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;compare&gt;</span> synopsis <a class='abbr_ref'>[compare.syn]</a></h3>
-<div class='para'>
-    <div class='marginalizedparent'><a class='marginalized'>1</a></div>
-    <div class='sentence'>The header <span class='texttt'>&lt;compare&gt;</span> specifies types, objects, and functions for use primarily in connection with the three-way comparison operator [expr.spaceship].</div>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-namespace std {
-</pre>
-</div>
-</blockquote>
-
-Change in [cstdarg.syn]:
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;cstdarg&gt;</span> synopsis <a class='abbr_ref'>[cstdarg.syn]</a></h3>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-namespace std {
-</pre>
-</blockquote>
-
-Change in [csetjmp.syn]:
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;csetjmp&gt;</span> synopsis <a class='abbr_ref'>[csetjmp.syn]</a></h3>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-namespace std {
-</pre>
-</blockquote>
+Instructions to the editor:<br/>
+Please add a <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins> comment to the beginning of the following synopses.  These 
+headers are entirely freestanding.
+<ul>
+<li><ins>[limits.syn]</ins></li>
+<li><ins>[climits.syn]</ins></li>
+<li><ins>[cfloat.syn]</ins></li>
+<li><ins>[cstdint.syn]</ins></li>
+<li><ins>[climits.syn]</ins></li>
+<li><ins>[cstdint.syn]</ins></li>
+<li><ins>[new.syn]</ins></li>
+<li><ins>[typeinfo.syn]</ins></li>
+<li><ins>[exception.syn]</ins></li>
+<li><ins>[initializer_list.syn]</ins></li>
+<li><ins>[compare.syn]</ins></li>
+<li><ins>[cstdarg.syn]</ins></li>
+<li><ins>[csetjmp.syn]</ins></li>
+<li><ins>[concepts.syn]</ins></li>
+</ul>
 
 Change in [cerrno.syn] (22.4.1):
 <blockquote class="std">
