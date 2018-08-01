@@ -1326,16 +1326,16 @@ Change in [optional.optional]
 </pre>
 </blockquote>
 
-Change in [variant.syn] (23.7.2):
+Change in [variant.syn]:
 <blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>23.7.2</a> Header <span class='texttt'>&lt;variant&gt;</span> synopsis <a class='abbr_ref'>[variant.syn]</a></h3>
+<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;variant&gt;</span> synopsis <a class='abbr_ref'>[variant.syn]</a></h3>
 <pre class='codeblock'>
 namespace std {
-  <span class='comment'>// 23.7.3, class template <span class='tcode_in_codeblock'>variant</span>
+  <span class='comment'>// [variant.variant], class template <span class='tcode_in_codeblock'>variant</span>
 </span>  template&lt;class... Types&gt;
     class variant; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 23.7.4, variant helper classes
+  <span class='comment'>// [variant.helper], variant helper classes
 </span>  template&lt;class T&gt; struct variant_size;                   <span class='comment'>// not defined<ins>, <span class='textit'>freestanding</span></ins>
 </span>  template&lt;class T&gt; struct variant_size&lt;const T&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T&gt; struct variant_size&lt;volatile T&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -1358,7 +1358,7 @@ namespace std {
 
   inline constexpr size_t variant_npos = -1; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 23.7.5, value access
+  <span class='comment'>// [value.get], value access
 </span>  template&lt;class T, class... Types&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     constexpr bool holds_alternative(const variant&lt;Types...&gt;&amp;) noexcept; 
 
@@ -1394,7 +1394,7 @@ namespace std {
     constexpr add_pointer_t&lt;const T&gt;
       get_if(const variant&lt;Types...&gt;*) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 23.7.6, relational operators
+  <span class='comment'>// [variant.relops], relational operators
 </span>  template&lt;class... Types&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     constexpr bool operator==(const variant&lt;Types...&gt;&amp;, const variant&lt;Types...&gt;&amp;);
   template&lt;class... Types&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -1408,38 +1408,38 @@ namespace std {
   template&lt;class... Types&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     constexpr bool operator&gt;=(const variant&lt;Types...&gt;&amp;, const variant&lt;Types...&gt;&amp;);
 
-  <span class='comment'>// 23.7.7, visitation
+  <span class='comment'>// [variant.visit], visitation
 </span>  template&lt;class Visitor, class... Variants&gt;
     constexpr <span class='textit'><span class='texttt'>see below</span></span> visit(Visitor&amp;&amp;, Variants&amp;&amp;...); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 23.7.8, class <span class='tcode_in_codeblock'>monostate</span>
+  <span class='comment'>// [variant.monostate], class <span class='tcode_in_codeblock'>monostate</span>
 </span>  struct monostate; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 23.7.9, <span class='tcode_in_codeblock'>monostate</span> relational operators
-</span>  constexpr bool operator&lt;(monostate, monostate) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  <span class='comment'>// [variant.monostate.relops], <span class='tcode_in_codeblock'>monostate</span> relational operators
+</span>  constexpr bool operator==(monostate, monostate) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  constexpr bool operator!=(monostate, monostate) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  constexpr bool operator&lt;(monostate, monostate) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   constexpr bool operator&gt;(monostate, monostate) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   constexpr bool operator&lt;=(monostate, monostate) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   constexpr bool operator&gt;=(monostate, monostate) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  constexpr bool operator==(monostate, monostate) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  constexpr bool operator!=(monostate, monostate) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 23.7.10, specialized algorithms
+  <span class='comment'>// [variant.specalg], specialized algorithms
 </span>  template&lt;class... Types&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     void swap(variant&lt;Types...&gt;&amp;, variant&lt;Types...&gt;&amp;) noexcept(<span class='textit'><span class='texttt'>see below</span></span>);
 
-  <span class='comment'>// 23.7.11, class <span class='tcode_in_codeblock'>bad_&shy;variant_&shy;access</span>
+  <span class='comment'>// [variant.bad.access], class <span class='tcode_in_codeblock'>bad_&shy;variant_&shy;access</span>
 </span>  class bad_variant_access; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 23.7.12, hash support
+  <span class='comment'>// [variant.hash], hash support
 </span>  template&lt;class T&gt; struct hash; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class... Types&gt; struct hash&lt;variant&lt;Types...&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;&gt; struct hash&lt;monostate&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 }
 </pre></blockquote>
 
-Change in [bitset.syn] (23.9.1):
+Change in [bitset.syn]:
 <blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>23.9.1</a> Header <span class='texttt'>&lt;bitset&gt;</span> synopsis <a class='abbr_ref'>[bitset.syn]</a></h3>
+<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;bitset&gt;</span> synopsis <a class='abbr_ref'>[bitset.syn]</a></h3>
 <pre class='codeblock'>
 #include &lt;string&gt;
 #include &lt;iosfwd&gt;   <span class='comment'>// for <span class='tcode_in_codeblock'>istream</span>, <span class='tcode_in_codeblock'>ostream</span>, see [iosfwd.syn]
@@ -1462,9 +1462,9 @@ namespace std {
       operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os, const bitset&lt;N&gt;&amp; x);
 }</pre></blockquote>
 
-Change in [template.bitset] (23.9.2):
+Change in [template.bitset]:
 <blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>23.9.2</a> Class template <span class='texttt'>bitset</span> <a class='abbr_ref'>[template.bitset]</a></h3><pre class='codeblock'>
+<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Class template <span class='texttt'>bitset</span> <a class='abbr_ref'>[template.bitset]</a></h3><pre class='codeblock'>
 namespace std {
   template&lt;size_t N&gt; class bitset {
   public:
@@ -1474,7 +1474,8 @@ namespace std {
       reference() noexcept;
 
     public:
-      ~reference() noexcept;
+      reference(const reference&amp;) = default;
+      ~reference();
       reference&amp; operator=(bool x) noexcept;            <span class='comment'>// for <span class='tcode_in_codeblock'>b[i] = x;</span>
 </span>      reference&amp; operator=(const reference&amp;) noexcept;  <span class='comment'>// for <span class='tcode_in_codeblock'>b[i] = b[j];</span>
 </span>      bool operator~() const noexcept;                  <span class='comment'>// flips the bit
