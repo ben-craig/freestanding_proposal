@@ -984,14 +984,30 @@ Change in [compliance] paragraph 3:
 </div>
 </blockquote>
 
-Change in [cstddef.syn]:
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>???</a> Header <span class='texttt'>&lt;cstddef&gt;</span> synopsis <a class='abbr_ref'>[cstddef.syn]</a></h3>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-namespace std {
-</pre>
-</blockquote>
+Instructions to the editor:<br/>
+Please add a <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins> comment to the beginning of the following synopses.  These 
+headers are entirely freestanding.
+<ul>
+<li><ins>[cstddef.syn]</ins></li>
+<li><ins>[limits.syn]</ins></li>
+<li><ins>[climits.syn]</ins></li>
+<li><ins>[cfloat.syn]</ins></li>
+<li><ins>[cstdint.syn]</ins></li>
+<li><ins>[climits.syn]</ins></li>
+<li><ins>[cstdint.syn]</ins></li>
+<li><ins>[new.syn]</ins></li>
+<li><ins>[typeinfo.syn]</ins></li>
+<li><ins>[exception.syn]</ins></li>
+<li><ins>[initializer_list.syn]</ins></li>
+<li><ins>[compare.syn]</ins></li>
+<li><ins>[cstdarg.syn]</ins></li>
+<li><ins>[csetjmp.syn]</ins></li>
+<li><ins>[concepts.syn]</ins></li>
+<li><ins>[utility.syn]</ins></li>
+<li><ins>[tuple.syn]</ins></li>
+<li><ins>[meta.type.synop]</ins></li>
+<li><ins>[ratio.syn]</ins></li>
+</ul>
 
 Change in [cstdlib.syn]:
 <blockquote class="std">
@@ -1093,28 +1109,6 @@ Add a new paragraph to the end of [support.limits.general]:
   <div class='sentence'>A freestanding implementation shall define the <span class='texttt'>__cpp_freestanding_library</span> macro with the value <span class='texttt'>201803L</span> in the <span class='texttt'>&lt;version&gt;</span> header.</div>
 </div>
 </blockquote>
-
-Instructions to the editor:<br/>
-Please add a <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins> comment to the beginning of the following synopses.  These 
-headers are entirely freestanding.
-<ul>
-<li><ins>[limits.syn]</ins></li>
-<li><ins>[climits.syn]</ins></li>
-<li><ins>[cfloat.syn]</ins></li>
-<li><ins>[cstdint.syn]</ins></li>
-<li><ins>[climits.syn]</ins></li>
-<li><ins>[cstdint.syn]</ins></li>
-<li><ins>[new.syn]</ins></li>
-<li><ins>[typeinfo.syn]</ins></li>
-<li><ins>[exception.syn]</ins></li>
-<li><ins>[initializer_list.syn]</ins></li>
-<li><ins>[compare.syn]</ins></li>
-<li><ins>[cstdarg.syn]</ins></li>
-<li><ins>[csetjmp.syn]</ins></li>
-<li><ins>[concepts.syn]</ins></li>
-<li><ins>[utility.syn]</ins></li>
-<li><ins>[tuple.syn]</ins></li>
-</ul>
 
 Change in [cerrno.syn]:
 <blockquote class="std">
@@ -2068,24 +2062,6 @@ namespace std {
   template&lt;class T&gt;
     inline constexpr int is_placeholder_v = is_placeholder&lt;T&gt;::value; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 }</pre>
-</blockquote>
-
-Change in [meta.type.synop] (23.15.2):
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>23.15.2</a> Header <span class='texttt'>&lt;type_traits&gt;</span> synopsis <a class='abbr_ref'>[meta.type.synop]</a></h3>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-namespace std {
-</pre>
-</blockquote>
-
-Change in [ratio.syn] (23.16.2):
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>23.16.2</a> Header <span class='texttt'>&lt;ratio&gt;</span> synopsis <a class='abbr_ref'>[ratio.syn]</a></h3>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-namespace std {
-</pre>
 </blockquote>
 
 Change 1 of 2 in [time.syn] (23.17.2):
