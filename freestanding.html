@@ -2064,9 +2064,9 @@ namespace std {
 }</pre>
 </blockquote>
 
-Change in [charconv.syn] (23.20.1):
+Change in [charconv.syn]:
 <blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>23.20.1</a> Header <span class='texttt'>&lt;charconv&gt;</span> synopsis <a class='abbr_ref'>[charconv.syn]</a></h3>
+<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;charconv&gt;</span> synopsis <a class='abbr_ref'>[charconv.syn]</a></h3>
 <pre class='codeblock'>
 namespace std {
   <span class='comment'>// floating-point format for primitive numerical conversion
@@ -2077,7 +2077,7 @@ namespace std {
     <span><span><span class='tcode_in_codeblock'>general</span></span></span> = fixed | scientific
   };
 
-  <span class='comment'>// 23.20.2, primitive numerical output conversion
+  <span class='comment'>// [charconv.to.chars], primitive numerical output conversion
 </span>  struct <span><span class='tcode_in_codeblock'>to_&shy;chars_&shy;result</span></span> {
     char* <span><span><span class='tcode_in_codeblock'>ptr</span></span></span>;
     errc <span><span><span class='tcode_in_codeblock'>ec</span></span></span>;
@@ -2100,7 +2100,7 @@ namespace std {
   to_chars_result to_chars(char* first, char* last, long double value,
                            chars_format fmt, int precision);
 
-  <span class='comment'>// 23.20.3, primitive numerical input conversion
+  <span class='comment'>// [charconv.from.chars], primitive numerical input conversion
 </span>  struct <span><span class='tcode_in_codeblock'>from_&shy;chars_&shy;result</span></span> {
     const char* <span><span><span class='tcode_in_codeblock'>ptr</span></span></span>;
     errc <span><span><span class='tcode_in_codeblock'>ec</span></span></span>;
