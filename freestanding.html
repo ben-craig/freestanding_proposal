@@ -2327,30 +2327,28 @@ Change 2 of 2 in [time.syn]:
   }
 }</pre></blockquote>
 
-Change in [string.syn] (24.3.1):
+Change in [string.syn]:
 <blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>24.3.1</a> Header <span class='texttt'>&lt;string&gt;</span> synopsis <a class='abbr_ref'>[string.syn]</a></h3>
+<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;string&gt;</span> synopsis <a class='abbr_ref'>[string.syn]</a></h3>
 <pre class='codeblock'>
 #include &lt;initializer_list&gt;
 
 namespace std {
-  <span class='comment'>// 24.2, character traits
+  <span class='comment'>// [char.traits], character traits
 </span>  template&lt;class charT&gt; struct char_traits; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;&gt; struct char_traits&lt;char&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;&gt; struct char_traits&lt;char16_t&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;&gt; struct char_traits&lt;char32_t&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;&gt; struct char_traits&lt;wchar_t&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 24.3.2, <span class='tcode_in_codeblock'>basic_&shy;string</span></span>
 </pre>
 </blockquote>
 
-Change in [cstring.syn] (24.5.3):
+Change in [cstring.syn]:
 <blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>24.5.3</a> Header <span class='texttt'>&lt;cstring&gt;</span> synopsis <a class='abbr_ref'>[cstring.syn]</a></h3>
+<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;cstring&gt;</span> synopsis <a class='abbr_ref'>[cstring.syn]</a></h3>
 <pre class='codeblock'>
 namespace std {
-  using size_t = <span class='textit'>see 21.2.4</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  using size_t = <span class='textit'>see [support.types.layout]</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
   void* memcpy(void* s1, const void* s2, size_t n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   void* memmove(void* s1, const void* s2, size_t n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -2363,37 +2361,37 @@ namespace std {
   int strcoll(const char* s1, const char* s2);
   int strncmp(const char* s1, const char* s2, size_t n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   size_t strxfrm(char* s1, const char* s2, size_t n);
-  const void* memchr(const void* s, int c, size_t n);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
-</span>  void* memchr(void* s, int c, size_t n);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
-</span>  const char* strchr(const char* s, int c);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
-</span>  char* strchr(char* s, int c);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
+  const void* memchr(const void* s, int c, size_t n);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
+</span>  void* memchr(void* s, int c, size_t n);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
+</span>  const char* strchr(const char* s, int c);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
+</span>  char* strchr(char* s, int c);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
 </span>  size_t strcspn(const char* s1, const char* s2); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  const char* strpbrk(const char* s1, const char* s2);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
-</span>  char* strpbrk(char* s1, const char* s2);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
-</span>  const char* strrchr(const char* s, int c);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
-</span>  char* strrchr(char* s, int c);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
+  const char* strpbrk(const char* s1, const char* s2);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
+</span>  char* strpbrk(char* s1, const char* s2);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
+</span>  const char* strrchr(const char* s, int c);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
+</span>  char* strrchr(char* s, int c);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
 </span>  size_t strspn(const char* s1, const char* s2); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  const char* strstr(const char* s1, const char* s2);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
-</span>  char* strstr(char* s1, const char* s2);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
+  const char* strstr(const char* s1, const char* s2);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
+</span>  char* strstr(char* s1, const char* s2);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
 </span>  char* strtok(char* s1, const char* s2);
   void* memset(void* s, int c, size_t n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   char* strerror(int errnum);
   size_t strlen(const char* s); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 }
 
-#define NULL <span class='textit'>see 21.2.3</span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins></pre>
+#define NULL <span class='textit'>see [support.types.nullptr]</span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins></pre>
 </blockquote>
 
-Change in [string.view.synop] (24.4.1):
+Change in [string.view.synop]:
 <blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>24.4.1</a> Header <span class='texttt'>&lt;string_&shy;view&gt;</span> synopsis <a class='abbr_ref'>[string.view.synop]</a></h3>
+<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;string_&shy;view&gt;</span> synopsis <a class='abbr_ref'>[string.view.synop]</a></h3>
 <pre class='codeblock'>
 namespace std {
-  <span class='comment'>// 24.4.2, class template <span class='tcode_in_codeblock'>basic_&shy;string_&shy;view</span>
+  <span class='comment'>// [string.view.template], class template <span class='tcode_in_codeblock'>basic_&shy;string_&shy;view</span>
 </span>  template&lt;class charT, class traits = char_traits&lt;charT&gt;&gt;
   class basic_string_view; <ins><span class='comment'>// <span class='textit'>freestanding, partial</span></span></ins>
 
-  <span class='comment'>// 24.4.3, non-member comparison functions
+  <span class='comment'>// [string.view.comparison], non-member comparison functions
 </span>  template&lt;class charT, class traits&gt;
     constexpr bool operator==(basic_string_view&lt;charT, traits&gt; x,
                               basic_string_view&lt;charT, traits&gt; y) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -2412,9 +2410,9 @@ namespace std {
   template&lt;class charT, class traits&gt;
     constexpr bool operator&gt;=(basic_string_view&lt;charT, traits&gt; x,
                               basic_string_view&lt;charT, traits&gt; y) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  <span class='comment'>// see 24.4.3, sufficient additional overloads of comparison functions<ins>, <span class='textit'>freestanding</span></ins>
+  <span class='comment'>// see [string.view.comparison], sufficient additional overloads of comparison functions<ins>, <span class='textit'>freestanding</span></ins>
 </span>
-  <span class='comment'>// 24.4.4, inserters and extractors
+  <span class='comment'>// [string.view.io], inserters and extractors
 </span>  template&lt;class charT, class traits&gt;
     basic_ostream&lt;charT, traits&gt;&amp;
       operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os,
@@ -2426,7 +2424,7 @@ namespace std {
   using u32string_view = basic_string_view&lt;char32_t&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   using wstring_view   = basic_string_view&lt;wchar_t&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 24.4.5, hash support
+  <span class='comment'>// [string.view.hash], hash support
 </span>  template&lt;class T&gt; struct hash; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;&gt; struct hash&lt;string_view&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;&gt; struct hash&lt;u16string_view&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -2435,7 +2433,7 @@ namespace std {
 
   inline namespace literals {
   inline namespace string_view_literals {
-    <span class='comment'>// 24.4.6, suffix for <span class='tcode_in_codeblock'>basic_&shy;string_&shy;view</span> literals
+    <span class='comment'>// [string.view.literals], suffix for <span class='tcode_in_codeblock'>basic_&shy;string_&shy;view</span> literals
 </span>    constexpr string_view    operator""sv(const char* str, size_t len) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     constexpr u16string_view operator""sv(const char16_t* str, size_t len) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     constexpr u32string_view operator""sv(const char32_t* str, size_t len) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -2446,22 +2444,22 @@ namespace std {
 </pre>
 </blockquote>
 
-Change in [string.view.template] (24.4.2):
+Change in [string.view.template]:
 <blockquote class="std">
 <pre class='codeblock'>
-  <span class='comment'>// 24.4.2.4, element access
+  <span class='comment'>// [string.view.access], element access
 </span>  constexpr const_reference operator[](size_type pos) const;
   constexpr const_reference at(size_type pos) const; <ins><span class='comment'>// <span class='textit'>freestanding, omit</span></span></ins>
   constexpr const_reference front() const;
   constexpr const_reference back() const;
   constexpr const_pointer data() const noexcept;
 
-  <span class='comment'>// 24.4.2.5, modifiers
+  <span class='comment'>// [string.view.modifiers], modifiers
 </span>  constexpr void remove_prefix(size_type n);
   constexpr void remove_suffix(size_type n);
   constexpr void swap(basic_string_view&amp; s) noexcept;
 
-  <span class='comment'>// 24.4.2.6, string operations
+  <span class='comment'>// [string.view.ops], string operations
 </span>  size_type copy(charT* s, size_type n, size_type pos = 0) const; <ins><span class='comment'>// <span class='textit'>freestanding, omit</span></span></ins>
 
   constexpr basic_string_view substr(size_type pos = 0, size_type n = npos) const; <ins><span class='comment'>// <span class='textit'>freestanding, omit</span></span></ins>
@@ -2476,12 +2474,12 @@ Change in [string.view.template] (24.4.2):
 </pre>
 </blockquote>
 
-Change in [cwchar.syn] (24.5.4):
+Change in [cwchar.syn]:
 <blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>24.5.4</a> Header <span class='texttt'>&lt;cwchar&gt;</span> synopsis <a class='abbr_ref'>[cwchar.syn]</a></h3>
+<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;cwchar&gt;</span> synopsis <a class='abbr_ref'>[cwchar.syn]</a></h3>
 <pre class='codeblock'>
 namespace std {
-  using size_t = <span class='textit'>see 21.2.4</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  using size_t = <span class='textit'>see [support.types.layout]</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   using mbstate_t = <span class='textit'><span class='texttt'>see below</span></span>;
   using wint_t = <span class='textit'><span class='texttt'>see below</span></span>;
 
@@ -2527,26 +2525,26 @@ namespace std {
   int wcsncmp(const wchar_t* s1, const wchar_t* s2, size_t n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   size_t wcsxfrm(wchar_t* s1, const wchar_t* s2, size_t n);
   int wmemcmp(const wchar_t* s1, const wchar_t* s2, size_t n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  const wchar_t* wcschr(const wchar_t* s, wchar_t c);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
-</span>  wchar_t* wcschr(wchar_t* s, wchar_t c);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
+  const wchar_t* wcschr(const wchar_t* s, wchar_t c);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
+</span>  wchar_t* wcschr(wchar_t* s, wchar_t c);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
 </span>  size_t wcscspn(const wchar_t* s1, const wchar_t* s2); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  const wchar_t* wcspbrk(const wchar_t* s1, const wchar_t* s2);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
-</span>  wchar_t* wcspbrk(wchar_t* s1, const wchar_t* s2);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
-</span>  const wchar_t* wcsrchr(const wchar_t* s, wchar_t c);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
-</span>  wchar_t* wcsrchr(wchar_t* s, wchar_t c);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
+  const wchar_t* wcspbrk(const wchar_t* s1, const wchar_t* s2);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
+</span>  wchar_t* wcspbrk(wchar_t* s1, const wchar_t* s2);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
+</span>  const wchar_t* wcsrchr(const wchar_t* s, wchar_t c);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
+</span>  wchar_t* wcsrchr(wchar_t* s, wchar_t c);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
 </span>  size_t wcsspn(const wchar_t* s1, const wchar_t* s2); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  const wchar_t* wcsstr(const wchar_t* s1, const wchar_t* s2);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
-</span>  wchar_t* wcsstr(wchar_t* s1, const wchar_t* s2);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
+  const wchar_t* wcsstr(const wchar_t* s1, const wchar_t* s2);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
+</span>  wchar_t* wcsstr(wchar_t* s1, const wchar_t* s2);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
 </span>  wchar_t* wcstok(wchar_t* s1, const wchar_t* s2, wchar_t** ptr); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  const wchar_t* wmemchr(const wchar_t* s, wchar_t c, size_t n);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
-</span>  wchar_t* wmemchr(wchar_t* s, wchar_t c, size_t n);  <span class='comment'>// see 20.2<ins><span class='textit'>, freestanding</span></ins>
+  const wchar_t* wmemchr(const wchar_t* s, wchar_t c, size_t n);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
+</span>  wchar_t* wmemchr(wchar_t* s, wchar_t c, size_t n);  <span class='comment'>// see [library.c]<ins><span class='textit'>, freestanding</span></ins>
 </span>  size_t wcslen(const wchar_t* s); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   wchar_t* wmemset(wchar_t* s, wchar_t c, size_t n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   size_t wcsftime(wchar_t* s, size_t maxsize, const wchar_t* format, const struct tm* timeptr);
   wint_t btowc(int c);
   int wctob(wint_t c);
 
-  <span class='comment'>// 24.5.6, multibyte / wide string and character conversion functions
+  <span class='comment'>// [c.mb.wcs], multibyte / wide string and character conversion functions
 </span>  int mbsinit(const mbstate_t* ps);
   size_t mbrlen(const char* s, size_t n, mbstate_t* ps);
   size_t mbrtowc(wchar_t* pwc, const char* s, size_t n, mbstate_t* ps);
@@ -2555,7 +2553,7 @@ namespace std {
   size_t wcsrtombs(char* dst, const wchar_t** src, size_t len, mbstate_t* ps);
 }
 
-#define NULL <span class='textit'>see 21.2.3</span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define NULL <span class='textit'>see [support.types.nullptr]</span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 #define WCHAR_MAX <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 #define WCHAR_MIN <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 #define WEOF <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins></pre>
