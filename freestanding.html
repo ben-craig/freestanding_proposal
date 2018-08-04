@@ -1007,6 +1007,7 @@ headers are entirely freestanding.
 <li><ins>[tuple.syn]</ins></li>
 <li><ins>[meta.type.synop]</ins></li>
 <li><ins>[ratio.syn]</ins></li>
+<li><ins>[span.syn]</ins></li>
 </ul>
 
 Change in [cstdlib.syn]:
@@ -2559,28 +2560,28 @@ namespace std {
 #define WEOF <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins></pre>
 </blockquote>
 
-Change in [array.syn] (26.3.2):
+Change in [array.syn]:
 <blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>26.3.2</a> Header <span class='texttt'>&lt;array&gt;</span> synopsis <a class='abbr_ref'>[array.syn]</a></h3>
+<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;array&gt;</span> synopsis <a class='abbr_ref'>[array.syn]</a></h3>
 <pre class='codeblock'>
 #include &lt;initializer_list&gt;
 
 namespace std {
-  <span class='comment'>// 26.3.7, class template <span class='tcode_in_codeblock'>array</span>
+  <span class='comment'>// [array], class template <span class='tcode_in_codeblock'>array</span>
 </span>  template&lt;class T, size_t N&gt; struct array; <ins><span class='comment'>// <span class='textit'>freestanding, partial</span></span></ins>
 
   template&lt;class T, size_t N&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    bool operator==(const array&lt;T, N&gt;&amp; x, const array&lt;T, N&gt;&amp; y);
+    constexpr bool operator==(const array&lt;T, N&gt;&amp; x, const array&lt;T, N&gt;&amp; y);
   template&lt;class T, size_t N&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    bool operator!=(const array&lt;T, N&gt;&amp; x, const array&lt;T, N&gt;&amp; y);
+    constexpr bool operator!=(const array&lt;T, N&gt;&amp; x, const array&lt;T, N&gt;&amp; y);
   template&lt;class T, size_t N&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    bool operator&lt; (const array&lt;T, N&gt;&amp; x, const array&lt;T, N&gt;&amp; y);
+    constexpr bool operator&lt; (const array&lt;T, N&gt;&amp; x, const array&lt;T, N&gt;&amp; y);
   template&lt;class T, size_t N&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    bool operator&gt; (const array&lt;T, N&gt;&amp; x, const array&lt;T, N&gt;&amp; y);
+    constexpr bool operator&gt; (const array&lt;T, N&gt;&amp; x, const array&lt;T, N&gt;&amp; y);
   template&lt;class T, size_t N&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    bool operator&lt;=(const array&lt;T, N&gt;&amp; x, const array&lt;T, N&gt;&amp; y);
+    constexpr bool operator&lt;=(const array&lt;T, N&gt;&amp; x, const array&lt;T, N&gt;&amp; y);
   template&lt;class T, size_t N&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    bool operator&gt;=(const array&lt;T, N&gt;&amp; x, const array&lt;T, N&gt;&amp; y);
+    constexpr bool operator&gt;=(const array&lt;T, N&gt;&amp; x, const array&lt;T, N&gt;&amp; y);
   template&lt;class T, size_t N&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     void swap(array&lt;T, N&gt;&amp; x, array&lt;T, N&gt;&amp; y) noexcept(noexcept(x.swap(y)));
 
@@ -2602,7 +2603,7 @@ namespace std {
 </pre>
 </blockquote>
 
-Change in [array.overview] (26.3.7.1):
+Change in [array.overview]:
 <blockquote class="std">
 <pre class='codeblock'>
     <span class='comment'>// element access
@@ -2615,16 +2616,6 @@ Change in [array.overview] (26.3.7.1):
     constexpr reference       back();
     constexpr const_reference back() const;
 </pre>
-</blockquote>
-
-Change in [span.syn] (26.7.2):
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>26.7.2</a> Header <span class='texttt'>&lt;span&gt;</span> synopsis <a class='abbr_ref'>[span.syn]</a></h3>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-namespace std {
-</pre>
-</div>
 </blockquote>
 
 Change in [iterator.synopsis] (27.3):
