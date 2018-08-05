@@ -2887,7 +2887,25 @@ Please add a <ins><span class='comment'>// <span class='textit'>freestanding</sp
 
 Note that stable_sort, stable_partition, and inplace_merge are purposefully omitted.<br/>
 <br/>
-TODO: move numeric here<br/><br/>
+Change in [numeric.ops.overview]:<br/>
+Instructions to the editor: <br/>
+Please add a <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins> comment to all of the non-ExecutionPolicy overloads of the following functions:
+<ul>
+<li><ins><code>accumulate</code></ins></li>
+<li><ins><code>reduce</code></ins></li>
+<li><ins><code>inner_product</code></ins></li>
+<li><ins><code>transform_reduce</code></ins></li>
+<li><ins><code>partial_sum</code></ins></li>
+<li><ins><code>exclusive_scan</code></ins></li>
+<li><ins><code>inclusive_scan</code></ins></li>
+<li><ins><code>transform_exclusive_scan</code></ins></li>
+<li><ins><code>transform_inclusive_scan</code></ins></li>
+<li><ins><code>adjacent_difference</code></ins></li>
+<li><ins><code>iota</code></ins></li>
+<li><ins><code>gcd</code></ins></li>
+<li><ins><code>lcm</code></ins></li>
+</ul>
+
 Change in [rand.synopsis] (29.6.2):
 <blockquote class="std">
 <h3 ><a class='secnum' style='min-width:103pt'>29.6.2</a> Header <span class='texttt'>&lt;random&gt;</span> synopsis <a class='abbr_ref'>[rand.synopsis]</a></h3>
@@ -2954,235 +2972,6 @@ namespace std {
     class uniform_real_distribution;
 </pre></blockquote>
 
-Change in [numeric.ops.overview] (29.8.1):
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>29.8.1</a> Header <span class='texttt'>&lt;numeric&gt;</span> synopsis <a class='abbr_ref'>[numeric.ops.overview]</a></h3>
-<pre class='codeblock'>
-namespace std {
-  <span class='comment'>// 29.8.2, accumulate
-</span>  template&lt;class InputIterator, class T&gt;
-    T accumulate(InputIterator first, InputIterator last, T init); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class T, class BinaryOperation&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    T accumulate(InputIterator first, InputIterator last, T init, BinaryOperation binary_op);
-
-  <span class='comment'>// 29.8.3, reduce
-</span>  template&lt;class InputIterator&gt;
-    typename iterator_traits&lt;InputIterator&gt;::value_type
-      reduce(InputIterator first, InputIterator last); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class T&gt;
-    T reduce(InputIterator first, InputIterator last, T init); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class T, class BinaryOperation&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    T reduce(InputIterator first, InputIterator last, T init, BinaryOperation binary_op);
-  template&lt;class ExecutionPolicy, class ForwardIterator&gt;
-    typename iterator_traits&lt;ForwardIterator&gt;::value_type
-      reduce(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>             ForwardIterator first, ForwardIterator last);
-  template&lt;class ExecutionPolicy, class ForwardIterator, class T&gt;
-    T reduce(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>             ForwardIterator first, ForwardIterator last, T init);
-  template&lt;class ExecutionPolicy, class ForwardIterator, class T, class BinaryOperation&gt;
-    T reduce(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>             ForwardIterator first, ForwardIterator last, T init, BinaryOperation binary_op);
-
-  <span class='comment'>// 29.8.4, inner product
-</span>  template&lt;class InputIterator1, class InputIterator2, class T&gt;
-    T inner_product(InputIterator1 first1, InputIterator1 last1,
-                    InputIterator2 first2, T init); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator1, class InputIterator2, class T,
-           class BinaryOperation1, class BinaryOperation2&gt;
-    T inner_product(InputIterator1 first1, InputIterator1 last1,
-                    InputIterator2 first2, T init,
-                    BinaryOperation1 binary_op1,
-                    BinaryOperation2 binary_op2); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 29.8.5, transform reduce
-</span>  template&lt;class InputIterator1, class InputIterator2, class T&gt;
-    T transform_reduce(InputIterator1 first1, InputIterator1 last1,
-                       InputIterator2 first2,
-                       T init); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator1, class InputIterator2, class T,
-           class BinaryOperation1, class BinaryOperation2&gt;
-    T transform_reduce(InputIterator1 first1, InputIterator1 last1,
-                       InputIterator2 first2,
-                       T init,
-                       BinaryOperation1 binary_op1,
-                       BinaryOperation2 binary_op2); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class T,
-           class BinaryOperation, class UnaryOperation&gt;
-    T transform_reduce(InputIterator first, InputIterator last,
-                       T init,
-                       BinaryOperation binary_op, UnaryOperation unary_op); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy,
-           class ForwardIterator1, class ForwardIterator2, class T&gt;
-    T transform_reduce(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                       ForwardIterator1 first1, ForwardIterator1 last1,
-                       ForwardIterator2 first2,
-                       T init);
-  template&lt;class ExecutionPolicy,
-           class ForwardIterator1, class ForwardIterator2, class T,
-           class BinaryOperation1, class BinaryOperation2&gt;
-    T transform_reduce(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                       ForwardIterator1 first1, ForwardIterator1 last1,
-                       ForwardIterator2 first2,
-                       T init,
-                       BinaryOperation1 binary_op1,
-                       BinaryOperation2 binary_op2);
-  template&lt;class ExecutionPolicy,
-           class ForwardIterator, class T,
-           class BinaryOperation, class UnaryOperation&gt;
-    T transform_reduce(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                       ForwardIterator first, ForwardIterator last,
-                       T init,
-                       BinaryOperation binary_op, UnaryOperation unary_op);
-
-  <span class='comment'>// 29.8.6, partial sum
-</span>  template&lt;class InputIterator, class OutputIterator&gt;
-    OutputIterator partial_sum(InputIterator first,
-                               InputIterator last,
-                               OutputIterator result); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class OutputIterator, class BinaryOperation&gt;
-    OutputIterator partial_sum(InputIterator first,
-                               InputIterator last,
-                               OutputIterator result,
-                               BinaryOperation binary_op); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 29.8.7, exclusive scan
-</span>  template&lt;class InputIterator, class OutputIterator, class T&gt;
-    OutputIterator exclusive_scan(InputIterator first, InputIterator last,
-                                  OutputIterator result,
-                                  T init); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class OutputIterator, class T, class BinaryOperation&gt;
-    OutputIterator exclusive_scan(InputIterator first, InputIterator last,
-                                  OutputIterator result,
-                                  T init, BinaryOperation binary_op); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2, class T&gt;
-    ForwardIterator2 exclusive_scan(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                    ForwardIterator1 first, ForwardIterator1 last,
-                                    ForwardIterator2 result,
-                                    T init);
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2, class T,
-           class BinaryOperation&gt;
-    ForwardIterator2 exclusive_scan(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                    ForwardIterator1 first, ForwardIterator1 last,
-                                    ForwardIterator2 result,
-                                    T init, BinaryOperation binary_op);
-
-  <span class='comment'>// 29.8.8, inclusive scan
-</span>  template&lt;class InputIterator, class OutputIterator&gt;
-    OutputIterator inclusive_scan(InputIterator first, InputIterator last,
-                                  OutputIterator result); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class OutputIterator, class BinaryOperation&gt;
-    OutputIterator inclusive_scan(InputIterator first, InputIterator last,
-                                  OutputIterator result,
-                                  BinaryOperation binary_op); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class OutputIterator, class BinaryOperation, class T&gt;
-    OutputIterator inclusive_scan(InputIterator first, InputIterator last,
-                                  OutputIterator result,
-                                  BinaryOperation binary_op, T init); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2&gt;
-    ForwardIterator2 inclusive_scan(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                    ForwardIterator1 first, ForwardIterator1 last,
-                                    ForwardIterator2 result);
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2,
-           class BinaryOperation&gt;
-    ForwardIterator2 inclusive_scan(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                    ForwardIterator1 first, ForwardIterator1 last,
-                                    ForwardIterator2 result,
-                                    BinaryOperation binary_op);
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2,
-           class BinaryOperation, class T&gt;
-    ForwardIterator2 inclusive_scan(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                    ForwardIterator1 first, ForwardIterator1 last,
-                                    ForwardIterator2 result,
-                                    BinaryOperation binary_op, T init);
-
-  <span class='comment'>// 29.8.9, transform exclusive scan
-</span>  template&lt;class InputIterator, class OutputIterator, class T,
-           class BinaryOperation, class UnaryOperation&gt;
-    OutputIterator transform_exclusive_scan(InputIterator first, InputIterator last,
-                                            OutputIterator result,
-                                            T init,
-                                            BinaryOperation binary_op,
-                                            UnaryOperation unary_op); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy,
-           class ForwardIterator1, class ForwardIterator2, class T,
-           class BinaryOperation, class UnaryOperation&gt;
-    ForwardIterator2 transform_exclusive_scan(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                              ForwardIterator1 first, ForwardIterator1 last,
-                                              ForwardIterator2 result,
-                                              T init,
-                                              BinaryOperation binary_op,
-                                              UnaryOperation unary_op);
-
-  <span class='comment'>// 29.8.10, transform inclusive scan
-</span>  template&lt;class InputIterator, class OutputIterator,
-           class BinaryOperation, class UnaryOperation&gt;
-    OutputIterator transform_inclusive_scan(InputIterator first, InputIterator last,
-                                            OutputIterator result,
-                                            BinaryOperation binary_op,
-                                            UnaryOperation unary_op); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class OutputIterator,
-           class BinaryOperation, class UnaryOperation, class T&gt;
-    OutputIterator transform_inclusive_scan(InputIterator first, InputIterator last,
-                                            OutputIterator result,
-                                            BinaryOperation binary_op,
-                                            UnaryOperation unary_op,
-                                            T init); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy,
-           class ForwardIterator1, class ForwardIterator2,
-           class BinaryOperation, class UnaryOperation&gt;
-    ForwardIterator2 transform_inclusive_scan(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                              ForwardIterator1 first, ForwardIterator1 last,
-                                              ForwardIterator2 result,
-                                              BinaryOperation binary_op,
-                                              UnaryOperation unary_op);
-  template&lt;class ExecutionPolicy,
-           class ForwardIterator1, class ForwardIterator2,
-           class BinaryOperation, class UnaryOperation, class T&gt;
-    ForwardIterator2 transform_inclusive_scan(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                              ForwardIterator1 first, ForwardIterator1 last,
-                                              ForwardIterator2 result,
-                                              BinaryOperation binary_op,
-                                              UnaryOperation unary_op,
-                                              T init);
-
-  <span class='comment'>// 29.8.11, adjacent difference
-</span>  template&lt;class InputIterator, class OutputIterator&gt;
-    OutputIterator adjacent_difference(InputIterator first,
-                                       InputIterator last,
-                                       OutputIterator result); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator, class OutputIterator, class BinaryOperation&gt;
-    OutputIterator adjacent_difference(InputIterator first,
-                                       InputIterator last,
-                                       OutputIterator result,
-                                       BinaryOperation binary_op); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2&gt;
-    ForwardIterator2 adjacent_difference(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                         ForwardIterator1 first,
-                                         ForwardIterator1 last,
-                                         ForwardIterator2 result);
-  template&lt;class ExecutionPolicy, class ForwardIterator1, class ForwardIterator2,
-           class BinaryOperation&gt;
-    ForwardIterator2 adjacent_difference(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see 28.4.5
-</span>                                         ForwardIterator1 first,
-                                         ForwardIterator1 last,
-                                         ForwardIterator2 result,
-                                         BinaryOperation binary_op);
-
-  <span class='comment'>// 29.8.12, iota
-</span>  template&lt;class ForwardIterator, class T&gt;
-    void iota(ForwardIterator first, ForwardIterator last, T value); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 29.8.13, greatest common divisor
-</span>  template&lt;class M, class N&gt;
-    constexpr common_type_t&lt;M,N&gt; gcd(M m, N n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// 29.8.14, least common multiple
-</span>  template&lt;class M, class N&gt;
-    constexpr common_type_t&lt;M,N&gt; lcm(M m, N n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-}</pre>
-</blockquote>
-
 Change in [cmath.syn] (29.9.1):
 <blockquote class="std">
 <pre class='codeblock'>
@@ -3226,22 +3015,6 @@ Change in [atomics.syn] (32.2):
 <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 namespace std {
 </pre>
-</blockquote>
-
-Change in [depr.cstdalign.syn] (D.4.2):
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>D.4.2</a> Header <span class='texttt'>&lt;cstdalign&gt;</span> synopsis <a class='abbr_ref'>[depr.cstdalign.syn]</a></h3>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-#define <span class='tcode_in_codeblock'>__alignas_&shy;is_&shy;defined</span> 1</pre>
-</blockquote>
-
-Change in [depr.cstdbool.syn] (D.4.3):
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>D.4.3</a> Header <span class='texttt'>&lt;cstdbool&gt;</span> synopsis <a class='abbr_ref'>[depr.cstdbool.syn]</a></h3>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-#define <span class='tcode_in_codeblock'>__bool_&shy;true_&shy;false_&shy;are_&shy;defined</span> 1</pre>
 </blockquote>
 
 <h1>Acknowledgements</h1>
