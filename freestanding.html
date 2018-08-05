@@ -2618,12 +2618,12 @@ Change in [array.overview]:
 </pre>
 </blockquote>
 
-Change in [iterator.synopsis] (27.3):
+Change in [iterator.synopsis]:
 <blockquote class="std">
-<h2 ><a class='secnum' style='min-width:88pt'>27.3</a> Header <span class='texttt'>&lt;iterator&gt;</span>&nbsp;synopsis <a class='abbr_ref'>[iterator.synopsis]</a></h2>
+<h2 ><a class='secnum' style='min-width:88pt'>?.?</a> Header <span class='texttt'>&lt;iterator&gt;</span>&nbsp;synopsis <a class='abbr_ref'>[iterator.synopsis]</a></h2>
 <pre class='codeblock'>
 namespace std {
-  <span class='comment'>// 27.4, primitives
+  <span class='comment'>// [iterator.primitives], primitives
 </span>  template&lt;class Iterator&gt; struct iterator_traits; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T&gt; struct iterator_traits&lt;T*&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
@@ -2633,7 +2633,7 @@ namespace std {
   struct bidirectional_iterator_tag: public forward_iterator_tag { }; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   struct random_access_iterator_tag: public bidirectional_iterator_tag { }; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 27.4.3, iterator operations
+  <span class='comment'>// [iterator.operations], iterator operations
 </span>  template&lt;class InputIterator, class Distance&gt;
     constexpr void
       advance(InputIterator&amp; i, Distance n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -2649,7 +2649,7 @@ namespace std {
       prev(BidirectionalIterator x,
            typename iterator_traits&lt;BidirectionalIterator&gt;::difference_type n = 1); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 27.5, predefined iterators
+  <span class='comment'>// [predef.iterators], predefined iterators
 </span>  template&lt;class Iterator&gt; class reverse_iterator; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
   template&lt;class Iterator1, class Iterator2&gt;
@@ -2657,11 +2657,11 @@ namespace std {
       const reverse_iterator&lt;Iterator1&gt;&amp; x,
       const reverse_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class Iterator1, class Iterator2&gt;
-    constexpr bool operator&lt;(
+    constexpr bool operator!=(
       const reverse_iterator&lt;Iterator1&gt;&amp; x,
       const reverse_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class Iterator1, class Iterator2&gt;
-    constexpr bool operator!=(
+    constexpr bool operator&lt;(
       const reverse_iterator&lt;Iterator1&gt;&amp; x,
       const reverse_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class Iterator1, class Iterator2&gt;
@@ -2669,11 +2669,11 @@ namespace std {
       const reverse_iterator&lt;Iterator1&gt;&amp; x,
       const reverse_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class Iterator1, class Iterator2&gt;
-    constexpr bool operator&gt;=(
+    constexpr bool operator&lt;=(
       const reverse_iterator&lt;Iterator1&gt;&amp; x,
       const reverse_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class Iterator1, class Iterator2&gt;
-    constexpr bool operator&lt;=(
+    constexpr bool operator&gt;=(
       const reverse_iterator&lt;Iterator1&gt;&amp; x,
       const reverse_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
@@ -2713,10 +2713,10 @@ namespace std {
     constexpr bool operator&lt;(
       const move_iterator&lt;Iterator1&gt;&amp; x, const move_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class Iterator1, class Iterator2&gt;
-    constexpr bool operator&lt;=(
+    constexpr bool operator&gt;(
       const move_iterator&lt;Iterator1&gt;&amp; x, const move_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class Iterator1, class Iterator2&gt;
-    constexpr bool operator&gt;(
+    constexpr bool operator&lt;=(
       const move_iterator&lt;Iterator1&gt;&amp; x, const move_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class Iterator1, class Iterator2&gt;
     constexpr bool operator&gt;=(
@@ -2732,7 +2732,7 @@ namespace std {
   template&lt;class Iterator&gt;
     constexpr move_iterator&lt;Iterator&gt; make_move_iterator(Iterator i); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 27.6, stream iterators
+  <span class='comment'>// [stream.iterators], stream iterators
 </span>  template&lt;class T, class charT = char, class traits = char_traits&lt;charT&gt;,
            class Distance = ptrdiff_t&gt;
   class istream_iterator;
@@ -2758,7 +2758,7 @@ namespace std {
   template&lt;class charT, class traits = char_traits&lt;charT&gt;&gt;
     class ostreambuf_iterator;
 
-  <span class='comment'>// 27.7, range access
+  <span class='comment'>// [iterator.range], range access
 </span>  template&lt;class C&gt; constexpr auto begin(C&amp; c) -&gt; decltype(c.begin()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class C&gt; constexpr auto begin(const C&amp; c) -&gt; decltype(c.begin()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class C&gt; constexpr auto end(C&amp; c) -&gt; decltype(c.end()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -2780,7 +2780,7 @@ namespace std {
   template&lt;class C&gt; constexpr auto crbegin(const C&amp; c) -&gt; decltype(std::rbegin(c)); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class C&gt; constexpr auto crend(const C&amp; c) -&gt; decltype(std::rend(c)); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 27.8, container access
+  <span class='comment'>// [iterator.container], container access
 </span>  template&lt;class C&gt; constexpr auto size(const C&amp; c) -&gt; decltype(c.size()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T, size_t N&gt; constexpr size_t size(const T (&amp;array)[N]) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class C&gt; [[nodiscard]] constexpr auto empty(const C&amp; c) -&gt; decltype(c.empty()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
