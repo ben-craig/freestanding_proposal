@@ -1008,6 +1008,7 @@ Please add a <ins><span class='comment'>// <span class='textit'>freestanding</sp
 <li><ins>[ratio.syn]</ins></li>
 <li><ins>[span.syn]</ins></li>
 <li><ins>[bit.syn]</ins></li>
+<li><ins>[atomics.syn]</ins></li>
 </ul>
 
 Change in [cstdlib.syn]:
@@ -2977,10 +2978,10 @@ namespace std {
     class uniform_real_distribution;
 </pre></blockquote>
 
-Change in [cmath.syn] (29.9.1):
+Change in [cmath.syn]:
 <blockquote class="std">
 <pre class='codeblock'>
-  <span class='comment'>// 29.9.2, absolute values
+  <span class='comment'>// [c.math.abs], absolute values
 </span>  int abs(int j); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   long int abs(long int j);<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   long long int abs(long long int j); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -2990,9 +2991,9 @@ Change in [cmath.syn] (29.9.1):
 </pre>
 </blockquote>
 
-Change in [cinttypes.syn] (30.12.2):
+Change in [cinttypes.syn]:
 <blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>30.12.2</a> Header <span class='texttt'>&lt;cinttypes&gt;</span> synopsis <a class='abbr_ref'>[cinttypes.syn]</a></h3>
+<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;cinttypes&gt;</span> synopsis <a class='abbr_ref'>[cinttypes.syn]</a></h3>
 <pre class='codeblock'>
 #include &lt;cstdint&gt;  <span class='comment'>// see <a
 >[cstdint.syn]</a>
@@ -3010,15 +3011,6 @@ namespace std {
   intmax_t abs(intmax_t);  <span class='comment'>// optional, see below<ins><span class='textit'>, freestanding</span></ins>
 </span>  imaxdiv_t div(intmax_t, intmax_t);  <span class='comment'>// optional, see below<ins><span class='textit'>, freestanding</span></ins>
 </span>}
-</pre>
-</blockquote>
-
-Change in [atomics.syn] (32.2):
-<blockquote class="std">
-<h2 ><a class='secnum' style='min-width:88pt'>32.2</a> Header <span class='texttt'>&lt;atomic&gt;</span> synopsis <a class='abbr_ref'>[atomics.syn]</a></h2>
-<pre class='codeblock'>
-<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-namespace std {
 </pre>
 </blockquote>
 
