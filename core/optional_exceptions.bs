@@ -2,7 +2,7 @@
 Title: Leaving no room for a lower-level language: A C++ Subset
 Shortname: D1105
 Revision: 1.1
-Audience: SG14, EWG
+Audience: SG14, SG10, SG1, EWG, LEWG
 Status: D
 Group: WG21
 URL: https://htmlpreview.github.io/?https://github.com/ben-craig/freestanding_proposal/blob/master/core/leaving_no_room.html
@@ -421,10 +421,6 @@ The following applies only to freestanding mode.  Hosted mode will remain unchan
 
 The feature macros are somewhat backwards from how the macros are normally defined.  The macros are defined when the paper is adopted and the feature is missing.  We can't define the macros in the past to say the features are present.  Testing for the "non-feature" macros is a safer and more backwards compatible way of determining whether the following features are present.
 
-General ABI impact {#general_abi}
----------------------------------
-If any entity is defined across two different translation units, and the translation units are built with varying levels of capabilities (e.g. one with exceptions and one without), then that would be an ODR violation.  This general ODR violation concern won't be repeated in each subsection.
-
 Exceptions {#exceptions}
 ------------------------
 Feature test macro: `__cpp_freestanding_no_exceptions`.  Users can check `__cpp_freestanding_no_exceptions` when they want to determine what behavior `throw` will have.  The lack of the pre-existing `__cpp_exceptions` macro from [[SD6]] would not provide that information.
@@ -455,9 +451,11 @@ Implementations are encouraged to produce warnings on any `throw` expression wit
 ### Alternative designs ### {#exception_alt}
 1. `throw` UB vs. ill-formed vs. `std::terminate`
 
-  We could make some or all `throw` expressions ill-formed.  The benefit is that compilers could more reliably produce diagnostics.  The cost is that it would be more difficult to share exception neutral code between hosted and freestanding.
+  We could make some or all `throw` expressions ill-formed.  The benefit is that compilers could more reliably produce diagnostics.  The cost is that it would be more difficult to share exception neutral code between hosted and freestanding.  We have experience with this choice in the GCC and clang world with `-fno-exceptions`.
 
-  We could make `throw` statements UB.  UB likely optimizes better than `std::terminate`.  Compilers would be able to remove any code that leads to the UB, reducing overall binary size.
+  We could make `throw` statements UB.  UB likely optimizes better than `std::terminate`.  Compilers would be able to remove any code that leads to the UB, reducing overall binary size.  We have experience with this choice in the Visual Studio world, when exceptions are disabled.
+
+  We have library experience in libc++, libstdc++, and the Visual Studio STL with turning throws into varying forms of terminates.
 
 2. `try` and `catch` allowed vs. ill-formed
 
@@ -467,7 +465,7 @@ Implementations are encouraged to produce warnings on any `throw` expression wit
 
 3. Only allow `catch(...)` and `throw;`
 
-  Logging exceptions and translating exceptions are less common use cases than simple `catch` and rethrow use cases.  Allowing `catch(type)` takes us down the path of pulling in `std::exception`, as well as making it difficult to diagnose inappropriate `throw obj;` statements.
+  Logging exceptions and translating exceptions are less common use cases than simple `catch` and rethrow use cases.  Allowing `catch(type)` takes us down the path of pulling in `std::exception`, as well as making it difficult to diagnose inappropriate `throw obj;` statements.  Pulling in `std::exception` means that we must also remove the hard dependency of `virtual` destructor's on `::operator delete` (see [[#heap]]).
 
 ### ABI impact ### {#exception_abi}
 
