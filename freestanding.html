@@ -1007,6 +1007,7 @@ Please add a <ins><span class='comment'>// <span class='textit'>freestanding</sp
 <li><ins>[meta.type.synop]</ins></li>
 <li><ins>[ratio.syn]</ins></li>
 <li><ins>[span.syn]</ins></li>
+<li><ins>[bit.syn]</ins></li>
 </ul>
 
 Change in [cstdlib.syn]:
@@ -2906,41 +2907,45 @@ Please add a <ins><span class='comment'>// <span class='textit'>freestanding</sp
 <li><ins><code>lcm</code></ins></li>
 </ul>
 
-Change in [rand.synopsis] (29.6.2):
+Change in [rand.synopsis]:
 <blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>29.6.2</a> Header <span class='texttt'>&lt;random&gt;</span> synopsis <a class='abbr_ref'>[rand.synopsis]</a></h3>
+<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;random&gt;</span> synopsis <a class='abbr_ref'>[rand.synopsis]</a></h3>
 <pre class='codeblock'>
 #include &lt;initializer_list&gt;
 
 namespace std {
-  <span class='comment'>// 29.6.3.1, class template <span class='tcode_in_codeblock'>linear_&shy;congruential_&shy;engine</span>
+  <span class='comment'>// [rand.req.urng], uniform random bit generator requirements
+</span>  template&lt;class G&gt;
+    concept UniformRandomBitGenerator = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// [rand.eng.lcong], class template <span class='tcode_in_codeblock'>linear_&shy;congruential_&shy;engine</span>
 </span>  template&lt;class UIntType, UIntType a, UIntType c, UIntType m&gt;
     class linear_congruential_engine; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 29.6.3.2, class template <span class='tcode_in_codeblock'>mersenne_&shy;twister_&shy;engine</span>
+  <span class='comment'>// [rand.eng.mers], class template <span class='tcode_in_codeblock'>mersenne_&shy;twister_&shy;engine</span>
 </span>  template&lt;class UIntType, size_t w, size_t n, size_t m, size_t r,
            UIntType a, size_t u, UIntType d, size_t s,
            UIntType b, size_t t,
            UIntType c, size_t l, UIntType f&gt;
     class mersenne_twister_engine; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 29.6.3.3, class template <span class='tcode_in_codeblock'>subtract_&shy;with_&shy;carry_&shy;engine</span>
+  <span class='comment'>// [rand.eng.sub], class template <span class='tcode_in_codeblock'>subtract_&shy;with_&shy;carry_&shy;engine</span>
 </span>  template&lt;class UIntType, size_t w, size_t s, size_t r&gt;
     class subtract_with_carry_engine; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 29.6.4.2, class template <span class='tcode_in_codeblock'>discard_&shy;block_&shy;engine</span>
+  <span class='comment'>// [rand.adapt.disc], class template <span class='tcode_in_codeblock'>discard_&shy;block_&shy;engine</span>
 </span>  template&lt;class Engine, size_t p, size_t r&gt;
     class discard_block_engine; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 29.6.4.3, class template <span class='tcode_in_codeblock'>independent_&shy;bits_&shy;engine</span>
+  <span class='comment'>// [rand.adapt.ibits], class template <span class='tcode_in_codeblock'>independent_&shy;bits_&shy;engine</span>
 </span>  template&lt;class Engine, size_t w, class UIntType&gt;
     class independent_bits_engine; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 29.6.4.4, class template <span class='tcode_in_codeblock'>shuffle_&shy;order_&shy;engine</span>
+  <span class='comment'>// [rand.adapt.shuf], class template <span class='tcode_in_codeblock'>shuffle_&shy;order_&shy;engine</span>
 </span>  template&lt;class Engine, size_t k&gt;
     class shuffle_order_engine; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 29.6.5, engines and engine adaptors with predefined parameters
+  <span class='comment'>// [rand.predef], engines and engine adaptors with predefined parameters
 </span>  using minstd_rand0  = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   using minstd_rand   = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   using mt19937       = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -2953,21 +2958,21 @@ namespace std {
 
   using default_random_engine = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 29.6.6, class <span class='tcode_in_codeblock'>random_&shy;device</span>
+  <span class='comment'>// [rand.device], class <span class='tcode_in_codeblock'>random_&shy;device</span>
 </span>  class random_device;
 
-  <span class='comment'>// 29.6.7.1, class <span class='tcode_in_codeblock'>seed_&shy;seq</span>
+  <span class='comment'>// [rand.util.seedseq], class <span class='tcode_in_codeblock'>seed_&shy;seq</span>
 </span>  class seed_seq;
 
-  <span class='comment'>// 29.6.7.2, function template <span class='tcode_in_codeblock'>generate_&shy;canonical</span>
+  <span class='comment'>// [rand.util.canonical], function template <span class='tcode_in_codeblock'>generate_&shy;canonical</span>
 </span>  template&lt;class RealType, size_t bits, class URBG&gt;
     RealType generate_canonical(URBG&amp; g);
 
-  <span class='comment'>// 29.6.8.2.1, class template <span class='tcode_in_codeblock'>uniform_&shy;int_&shy;distribution</span>
+  <span class='comment'>// [rand.dist.uni.int], class template <span class='tcode_in_codeblock'>uniform_&shy;int_&shy;distribution</span>
 </span>  template&lt;class IntType = int&gt;
     class uniform_int_distribution; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  <span class='comment'>// 29.6.8.2.2, class template <span class='tcode_in_codeblock'>uniform_&shy;real_&shy;distribution</span>
+  <span class='comment'>// [rand.dist.uni.real], class template <span class='tcode_in_codeblock'>uniform_&shy;real_&shy;distribution</span>
 </span>  template&lt;class RealType = double&gt;
     class uniform_real_distribution;
 </pre></blockquote>
