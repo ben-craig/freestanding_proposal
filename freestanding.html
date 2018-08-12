@@ -1,20 +1,6 @@
 <!---
 TODO: 
-new delete stuff: http://open-std.org/JTC1/SC22/WG21/docs/papers/2018/p0722r3.html
-contract: http://wiki.edg.com/pub/Wg21rapperswil2018/StrawPolls/p0542r5.html
 feature tests: http://wiki.edg.com/pub/Wg21rapperswil2018/StrawPolls/p0941r2.html
-explicit bool: http://wiki.edg.com/pub/Wg21rapperswil2018/StrawPolls/p0892r2.html
-bit cast: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0476r2.html
-constexpr array: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p1023r0.pdf
-shift: http://wiki.edg.com/pub/Wg21rapperswil2018/StrawPolls/p0769r2.pdf
-type_identity (probably no work): http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0887r1.pdf
-constexpr swap: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0879r0.html
-nothrow_convertible (probably no work): http://wiki.edg.com/pub/Wg21rapperswil2018/StrawPolls/p0758r1.html
-more bitops: http://wiki.edg.com/pub/Wg21rapperswil2018/StrawPolls/p0556r3.html
-atomic ref (and floats...): http://wiki.edg.com/pub/Wg21rapperswil2018/StrawPolls/P0019r8.html#proposal
-default ctors: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0935r0.html
-deprecations: http://wiki.edg.com/pub/Wg21rapperswil2018/StrawPolls/p0619r4.html#3.0
-concepts: http://wiki.edg.com/pub/Wg21rapperswil2018/StrawPolls/p0898r3.pdf
 -->
 <!DOCTYPE html>
 <html>
@@ -384,10 +370,10 @@ Audience: SG14, Library Evolution Working Group
 <h1>Change history</h1>
 <h2> R2 -&gt; R3 </h2>
 Changed feature test macro to better align with P1105.<br/>
-Added <code>identity</code><br/>
-TODO: updating to July 26, 2018 snapshot.
-TODO: Added &lt;contract&gt; and &lt;concepts&gt;
-TODO: Added new algorithms
+Updating to July 26, 2018 snapshot of the standard<br/>
+Added <code>identity</code>.<br/>
+Added <code>&lt;contract&gt;</code> and <code>&lt;concepts&gt;</code>.<br/>
+Added new <code>shift_left</code> and <code>shift_right</code> algorithms.<br/>
 <h2> R1 -&gt; R2 </h2>
 Removed <code>atoi</code> because of reliance on <code>isspace</code>.<br/>
 Added <code>visit</code> and <code>bad_variant_access</code>.<br/>
@@ -548,6 +534,8 @@ I would like to call out <code>std::variant</code> as well.  While I do include 
 <li>&lt;ratio&gt;</li>
 <li>&lt;compare&gt;</li>
 <li>&lt;span&gt;</li>
+<li>&lt;contract&gt;</li>
+<li>&lt;concept&gt;</li>
 </ul></code>
 <h2>Partial headers newly required for freestanding implementations</h2>
 Portions of <code>&lt;cstdlib&gt;</code>
