@@ -1,7 +1,3 @@
-<!---
-TODO: 
-feature tests: http://wiki.edg.com/pub/Wg21rapperswil2018/StrawPolls/p0941r2.html
--->
 <!DOCTYPE html>
 <html>
 <style type="text/css">
@@ -370,7 +366,8 @@ Audience: SG14, Library Evolution Working Group
 <h1>Change history</h1>
 <h2> R2 -&gt; R3 </h2>
 Changed feature test macro to better align with P1105.<br/>
-Updating to July 26, 2018 snapshot of the standard<br/>
+Split feature test macros into freestanding and hosted macros.<br/>
+Updating to July 26, 2018 snapshot of the standard.<br/>
 Added <code>identity</code>.<br/>
 Added <code>&lt;contract&gt;</code> and <code>&lt;concepts&gt;</code>.<br/>
 Added new <code>shift_left</code> and <code>shift_right</code> algorithms.<br/>
@@ -749,15 +746,17 @@ A freestanding implementation that provides support for this paper shall define 
         <th>Header</th>
     </tr></thead>
     <tbody><tr>
-        <td>__cpp_freestanding_library</td>
+        <td><code>__cpp_freestanding_library</code></td>
         <td><var>201803</var></td>
         <td><code>&lt;version&gt;<code></td>
     </tr></tbody>
 </table>
 <p>
-The __cpp_freestanding_library macro is useful for detecting the absence of throwing facilities.  A user could conditionally use a hand-rolled implementation in freestanding mode or the standard implementation in hosted mode.
+The <code>__cpp_freestanding_library</code> macro is useful for detecting the absence of throwing facilities.  A user could conditionally use a hand-rolled implementation in freestanding mode or the standard implementation in hosted mode.
 </p><p>
-An implementation that has a hosted and a freestanding mode shall define all feature macros according to what is available in the current implementation mode.
+The library feature macros have been partitioned into those that must be present in both freestanding and hosted mode, and those that only need to be present in hosted mode.  If the implementation provides more than the minimal freestanding subset, then the implementation shall also provide the corresponding feature test macros.
+</p><p>
+The pre-existing feature macros were not provided on freestanding / hosted boundaries.  As a result, a choice has to be made about feature test macros that contain both freestanding and non-freestanding code (e.g. <code>__cpp_lib_chrono</code>, <code>__cpp_lib_boyer_moore_searcher</code>, and others).  This revision includes feature test macros in freestanding if any of the feature is included in freestanding.  Users that need to detect the non-freestanding parts will also need to test against <code>__cpp_freestanding_library</code>.
 </p>
 <h1>Wording</h1>
 <p>
@@ -877,7 +876,6 @@ Rework Table 21 referenced from [compliance]:
 </table></div></div>
 </del>
 <ins>
-  TODO!!!
 <div class='numberedTable'>Table 21 - C++ headers for freestanding implementations<br><table >
 <tr class='rowsep'>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;algorithm&gt;</span></div></td>
@@ -963,10 +961,9 @@ Change in [compliance] paragraph 3:
 </del>
 
 <ins>
-  TODO!!!
     <div class='sentence'>The supplied versions of the header
     <span class='texttt'>&lt;version&gt;</span>
-    shall meet the same requirements as for a hosted implementation.</div>
+    shall meet the requirements specified in [support.limits.general].</div>
     <div class='sentence'>The other headers listed in this table shall meet the requirements for a freestanding implementation, as specified in the respective header synopsis.</div>
 </ins>
 </div>
@@ -1093,12 +1090,112 @@ namespace std {
 }</pre>
 </blockquote>
 
+Replace paragraph 3 in [support.limits.general]:
+<blockquote class="std">
+<del>
+<div class='para'><div class='marginalizedparent'><a class='marginalized'>3</a></div><div class='sourceLinkParent'></div>
+  <div class='sentence'>The macros in Table 35 are defined after inclusion of the header <span class='texttt'>&lt;version&gt;</span> or
+one of the corresponding headers specified in the table.</div>
+  <div class='note'>[<a class='note_link'><span class='textit'>Note</span></a><span class='textit'>:</span> Future versions of this International Standard might replace the values of these macros with greater values. —<i>end note</i>]</div>
+</div>
+</del>
+<ins>
+<div class='para'><div class='marginalizedparent'><a class='marginalized'>3</a></div><div class='sourceLinkParent'></div>
+  <div class='sentence'>On freestanding and hosted implementations, the macros in Table ??35?? are defined after inclusion of the header <span class='texttt'>&lt;version&gt;</span> or one of the corresponding headers specified in the table.</div>
+  <div class='sentence'>On hosted implementations, the macros in Table ??36?? are defined after inclusion of the header <span class='texttt'>&lt;version&gt;</span> or one of the corresponding headers specified in the table.</div>
+  <div class='sentence'>The presence of the macros in Table ??36?? is implementation defined on freestanding implementations.</div>
+  <div class='note'>[<a class='note_link'><span class='textit'>Note</span></a><span class='textit'>:</span> Future versions of this International Standard might replace the values of these macros with greater values. —<i>end note</i>]</div>
+</div>
+</ins>
+</blockquote>
+
 Add a new paragraph to the end of [support.limits.general]:
 <blockquote class="stdins">
 <div class='para'><div class='marginalizedparent'><a class='marginalized'>???</a></div><div class='sourceLinkParent'></div>
   <div class='sentence'>A freestanding implementation shall define the <span class='texttt'>__cpp_freestanding_library</span> macro with the value <span class='texttt'>201803L</span> in the <span class='texttt'>&lt;version&gt;</span> header.</div>
 </div>
 </blockquote>
+
+Split Table 35.<br/>
+The new Table ??35?? will be named <ins>Table ??35?? — Freestanding and hosted standard library feature-test macros</ins>.  Leave the following macros in Table ??35??.
+<ul>
+  <li><code>__cpp_lib_addressof_constexpr</code></li>
+  <li><code>__cpp_lib_allocator_traits_is_always_equal</code></li>
+  <li><code>__cpp_lib_apply</code></li>
+  <li><code>__cpp_lib_array_constexpr</code></li>
+  <li><code>__cpp_lib_as_const</code></li>
+  <li><code>__cpp_lib_atomic_is_always_lock_free</code></li>
+  <li><code>__cpp_lib_atomic_ref</code></li>
+  <li><code>__cpp_lib_bit_cast</code></li>
+  <li><code>__cpp_lib_bool_constant</code></li>
+  <li><code>__cpp_lib_boyer_moore_searcher</code></li>
+  <li><code>__cpp_lib_byte</code></li>
+  <li><code>__cpp_lib_chrono</code></li>
+  <li><code>__cpp_lib_clamp</code></li>
+  <li><code>__cpp_lib_concepts</code></li>
+  <li><code>__cpp_lib_constexpr_swap_algorithms</code></li>
+  <li><code>__cpp_lib_exchange_function</code></li>
+  <li><code>__cpp_lib_gcd_lcm</code></li>
+  <li><code>__cpp_lib_hardware_interference_size</code></li>
+  <li><code>__cpp_lib_has_unique_object_representations</code></li>
+  <li><code>__cpp_lib_integer_sequence</code></li>
+  <li><code>__cpp_lib_integral_constant_callable</code></li>
+  <li><code>__cpp_lib_invoke</code></li>
+  <li><code>__cpp_lib_is_aggregate</code></li>
+  <li><code>__cpp_lib_is_final</code></li>
+  <li><code>__cpp_lib_is_invocable</code></li>
+  <li><code>__cpp_lib_is_null_pointer</code></li>
+  <li><code>__cpp_lib_is_swappable</code></li>
+  <li><code>__cpp_lib_launder</code></li>
+  <li><code>__cpp_lib_logical_traits</code></li>
+  <li><code>__cpp_lib_make_from_tuple</code></li>
+  <li><code>__cpp_lib_make_reverse_iterator</code></li>
+  <li><code>__cpp_lib_nonmember_container_access</code></li>
+  <li><code>__cpp_lib_not_fn</code></li>
+  <li><code>__cpp_lib_null_iterators</code></li>
+  <li><code>__cpp_lib_optional</code></li>
+  <li><code>__cpp_lib_raw_memory_algorithms</code></li>
+  <li><code>__cpp_lib_result_of_sfinae</code></li>
+  <li><code>__cpp_lib_robust_nonmodifying_seq_ops</code></li>
+  <li><code>__cpp_lib_sample</code></li>
+  <li><code>__cpp_lib_string_view</code></li>
+  <li><code>__cpp_lib_to_chars</code></li>
+  <li><code>__cpp_lib_transformation_trait_aliases</code></li>
+  <li><code>__cpp_lib_transparent_operators</code></li>
+  <li><code>__cpp_lib_tuple_element_t</code></li>
+  <li><code>__cpp_lib_tuples_by_type</code></li>
+  <li><code>__cpp_lib_type_trait_variable_templates</code></li>
+  <li><code>__cpp_lib_uncaught_exceptions</code></li>
+  <li><code>__cpp_lib_variant</code></li>
+  <li><code>__cpp_lib_void_t</code></li>
+</ul>
+
+The new Table ??36?? will be named <ins>Table ??36?? — Hosted standard library feature-test macros</ins>.  Move the following macros into Table ??36??.
+<ul>
+  <li><code>__cpp_lib_any</code></li>
+  <li><code>__cpp_lib_complex_udls</code></li>
+  <li><code>__cpp_lib_enable_shared_from_this</code></li>
+  <li><code>__cpp_lib_execution</code></li>
+  <li><code>__cpp_lib_filesystem</code></li>
+  <li><code>__cpp_lib_generic_associative_lookup</code></li>
+  <li><code>__cpp_lib_hypot</code></li>
+  <li><code>__cpp_lib_incomplete_container_elements</code></li>
+  <li><code>__cpp_lib_list_remove_return_type</code></li>
+  <li><code>__cpp_lib_make_unique</code></li>
+  <li><code>__cpp_lib_map_try_emplace</code></li>
+  <li><code>__cpp_lib_math_special_functions</code></li>
+  <li><code>__cpp_lib_memory_resource</code></li>
+  <li><code>__cpp_lib_node_extract</code></li>
+  <li><code>__cpp_lib_parallel_algorithm</code></li>
+  <li><code>__cpp_lib_quoted_string_io</code></li>
+  <li><code>__cpp_lib_scoped_lock</code></li>
+  <li><code>__cpp_lib_shared_mutex</code></li>
+  <li><code>__cpp_lib_shared_ptr_arrays</code></li>
+  <li><code>__cpp_lib_shared_ptr_weak_type</code></li>
+  <li><code>__cpp_lib_shared_timed_mutex</code></li>
+  <li><code>__cpp_lib_string_udls</code></li>
+  <li><code>__cpp_lib_unordered_map_try_emplace</code></li>
+</ul>
 
 Change in [cerrno.syn]:
 <blockquote class="std">
