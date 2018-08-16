@@ -32,26 +32,27 @@ Added description of potential virtual destructor implementation.
 Added frequently raised arguments section
 
 ### SG14 telecon polls (July 11, 2018) ### {#sg14_july_2018}
-Minutes: https://groups.google.com/a/isocpp.org/forum/#!topic/sg14/8Ye0goaSosU
+[Minutes](https://groups.google.com/a/isocpp.org/forum/#!topic/sg14/8Ye0goaSosU)
 
-Poll 1: get rid of freestanding
+Poll 1: get rid of freestanding<br/>
 0/1/2/9/11
-Poll 2: modify freestanding along the lines of the paper, encouragement for further work, agree with most of it
+
+Poll 2: modify freestanding along the lines of the paper, encouragement for further work, agree with most of it<br/>
 5/13/4/0/0
 
 ### SG14 post-telecon online poll (July 11-15, 2018) ### {#sg14_online_july_2018}
-Thread: https://groups.google.com/a/isocpp.org/forum/#!topic/sg14/cCMQb4jaEM8
+[Thread](https://groups.google.com/a/isocpp.org/forum/#!topic/sg14/cCMQb4jaEM8)
 
-Poll 3: noexcept should behave differently in environments without exceptions, along the lines of the paper
+Poll 3: noexcept should behave differently in environments without exceptions, along the lines of the paper<br/>
 0/4/3/5/0
 
-Poll 4: make throw UB when exceptions aren't available
+Poll 4: make throw UB when exceptions aren't available<br/>
 0/3/6/3/1
 
-Poll 5: make throw ill-formed when exceptions aren't available
+Poll 5: make throw ill-formed when exceptions aren't available<br/>
 1/3/1/5/3
 
-Poll 6: make throw call std::terminate when exceptions aren't available
+Poll 6: make throw call std::terminate when exceptions aren't available<br/>
 0/4/7/2/0
 
 Introduction {#intro}
@@ -553,9 +554,7 @@ Existing linkers already have the ability to take multiple identical virtual tab
 ### ABI impact ### {#heap_abi}
 Mixing multiple object files into the same program should be fine, even if some of them have a default heap and some don't.  All the regular / "strong" linkage vtables should be identical, and all the "weaker" linkage vtables should be identical.  If anyone in the program calls any form of `new`, the deleting destructor will be present and in the right slot.  If no-one calls `new` in the program, then no-one should be calling `delete`, and the empty vtable slot won't be a problem.
 
-Shared libraries are trickier.  In the [Itanium ABI](http://refspecs.linuxbase.org/cxxabi-1.83.html), vtables aren't always emitted into every translation unit.  Take shared library "leaf" that has a default heap.  It depends upon shared library "root" that does not have a default heap.  If a class with a virtual destructor is defined in "root", along with its "key function", then a call to `new` on the class in "leaf" will generate an object with a partial vtable.  Calling `delete` on that object will cause UB (usually crashes).
-
-The Microsoft ABI always (usually?) emits a vtable in each TU, so it should have substantially fewer problems here.
+Shared libraries are trickier.  Vtables aren't always emitted into every translation unit.  Take shared library "leaf" that has a default heap.  It depends upon shared library "root" that does not have a default heap.  If a class with a virtual destructor is defined in "root", along with its "key function", then a call to `new` on the class in "leaf" will generate an object with a partial vtable.  Calling `delete` on that object will cause UB (usually crashes).
 
 Lack of a default heap should generally be considered a trait of the platform.  Mixing this configuration shouldn't be a common occurrence.
 
