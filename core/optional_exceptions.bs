@@ -1,13 +1,14 @@
 <pre class='metadata'>
 Title: Leaving no room for a lower-level language: A C++ Subset
 Shortname: D1105
-Revision: 1.1
+Revision: 1.2
 Audience: SG14, SG10, SG1, EWG, LEWG
 Status: D
 Group: WG21
 URL: https://htmlpreview.github.io/?https://github.com/ben-craig/freestanding_proposal/blob/master/core/leaving_no_room.html
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/optional_exceptions.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/optional_exceptions.bs</a>
-Editor: Ben Craig &lt;ben dot craig at gmail dot com&gt;
+Editor: Ben Craig, National Instruments, ben.craig@gmail.com
+Editor: Ben Saks, Saks & Associates, ben@saksandassociates.com
 Abstract: Making exceptions, RTTI, TLS, heap, floating point, program teardown, and blocking operations optional in freestanding mode.
 Markup Shorthands: markdown yes
 </pre>
@@ -158,7 +159,7 @@ Well-formed {#tony_well_formed}
       <br/>undefined reference to "_read"
     </td>
     <td><b>Proposed option:</b>
-      <br/>Well-formed, but uncommon code.
+      <br/>Well-formed, but uncommon code.  Most likely to be seen in a discarded `catch` block.
       <br/>
       <br/><b>Alternative to be polled:</b>
       <br/>Ill-formed if exceptions are not enabled.
@@ -397,7 +398,7 @@ void foo() {
 };
 
 void foo(
-    std::atomic<BigData> &lhs,
+    std::atomic&lt;BigData&gt; &lhs,
     const BigData &rhs)
 {lhs = rhs;}</pre></code></td>
     <td><b>Visual Studio 2017, /kernel</b>
@@ -720,6 +721,14 @@ A subset will fracture the C++ user base {#arguments_user_fracture}
 -------------------------------------------------------------------
 The user base is already fractured, and has been for 20+ years.  This paper may allow more exception neutral code to be shared between code bases, even with the code bases have different exception settings.  I doubt we will ever be able to eliminate the user base fracture, but with the right feature additions and guidance, we can attempt to reduce the magnitude of the fracture.
 
+This doesn't propose one subset, it defines many subsets {#arguments_multi_subset}
+----------------------------------------------------------------------------------
+No and yes.
+
+This paper proposes one lowest common denominator implementation.  Users can rely on that lowest common denominator to exist.  This is the one subset the paper defines.
+
+Vendors are allowed to provide hosted features that aren't in the minimal freestanding subset.  This paper provides feature test macros and scoping of the feature test macros.  This paper doesn't go into depth about the interaction of the various hosted features.  This paper hints at these many subsets.  None of the subsets that are between freestanding and hosted can be relied upon in a standards compliant portable manner.  If a user relies on a freestanding implementation that also provides RTTI (for example), then there is no guarantee that another vendor will provide a subset with the same set of features.
+
 A dialect will be burdensome to vendors {#arguments_vendor_burden}
 ------------------------------------------------------------------
 This proposal increases the amount of available work, but does not increase the amount of required work.
@@ -749,7 +758,7 @@ My expectation is that we spend more time worrying about ABI compatibility than 
 Acknowledgments {#ack}
 ======================
 Thank you to the many reviewers of this paper:
-Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred Bratterud, Ben Saks, and Phil Hindman
+Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred Bratterud, and Phil Hindman
 
 <pre class=biblio>
 {
