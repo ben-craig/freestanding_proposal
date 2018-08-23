@@ -39,8 +39,8 @@ a.hidden_link {
 }
 
 li {
-    margin-top: 0.6em;
-    margin-bottom: 0.6em;
+    margin-top: 0.0em;
+    margin-bottom: 0.0em;
 }
 
 h1 { line-height: 1; }
@@ -371,6 +371,7 @@ Updating to July 26, 2018 snapshot of the standard.<br/>
 Added <code>identity</code>.<br/>
 Added <code>&lt;contract&gt;</code> and <code>&lt;concepts&gt;</code>.<br/>
 Added new <code>shift_left</code> and <code>shift_right</code> algorithms.<br/>
+Added insert iterators.<br/>
 <h2> R1 -&gt; R2 </h2>
 Removed <code>atoi</code> because of reliance on <code>isspace</code>.<br/>
 Added <code>visit</code> and <code>bad_variant_access</code>.<br/>
@@ -651,7 +652,7 @@ Portions of <code>&lt;cwchar&gt;</code>.
 <li>wmemcmp</li>
 <li>wcschr</li>
 <li>wcscspn</li>
-<li>wcxpbrk</li>
+<li>wcspbrk</li>
 <li>wcsrchr</li>
 <li>wcsspn</li>
 <li>wcsstr</li>
@@ -663,7 +664,7 @@ Portions of <code>&lt;cwchar&gt;</code>.
 <p>
 All of <code>&lt;array&gt;</code> except for <code>array::at</code>.
 </p><p>
-All of <code>&lt;iterator&gt;</code> except for the stream iterators and the insert iterators.
+All of <code>&lt;iterator&gt;</code> except for the stream iterators.
 </p><p>
 Most of <code>&lt;algorithm&gt;</code> and <code>&lt;numeric&gt;</code>.  The ExecutionPolicy overloads will not be included.  The following functions will be <b>omitted</b> due to the usage of temporary buffers:
 </p>
@@ -721,12 +722,15 @@ Many string functions (<code>strtol</code> and family) rely on <code>errno</code
 Here are some things that I am currently requiring, but could be convinced to remove.
 <ul><li><code>&lt;cwchar&gt;</code></li></ul>
 The <code>&lt;cwchar&gt;</code> functions are implementable for freestanding environments, but infrequently used for systems programming.  They do not exist in freestanding C11 implementations.
+<ul><li>Insert iterators</li></ul>
+<code>back_insert_iterator</code>, <code>front_insert_iterator</code>, and <code>insert_iterator</code> don't directly allocate memory, but their typical usage with standard containers does allocate memory.  This paper doesn't add any standard containers that can be used with the insert iterators.  It is also unclear how a user would signal an insertion failure.  Regardless, the iterators could be used with a user's (or future standard) <code>fixed_capacity_vector</code>.
 <ul><li><code>visit</code></li></ul>
 <code>visit</code> only throws when the <code>variant</code> is valueless.  If exceptions are disabled, the <code>variant</code> will always have a value.  Since the standard doesn't acknowledge exceptions being disabled, we include the (hopefully) dead <code>bad_variant_access</code> class.
 <ul><li><code>unique_ptr</code></li></ul>
 <code>unique_ptr</code> is generally used for heap management, but is occasionally used as a makeshift RAII object for other resources.  In order to break the compile time dependency on <code>default_delete</code>, I add some implementation defined behavior for the freestanding implementation.  This may be too invasive for some committee members' tastes.  In the Jacksonville 2018 wg21 meeting, there was a strong interest in providing <code>unique_ptr</code>.
 <ul><li>Partial classes</li></ul>
 <code>array</code>, <code>bitset</code>, <code>optional</code>, <code>string_view</code>, and <code>variant</code> all have functions that throw.  These functions aren't critical to the use of the class.  The exceptions that <code>array</code>, <code>bitset</code>, and <code>string_view</code> throw are doubly bad, as those exceptions require <code>std::string</code>.  These headers and classes can be omitted if the committee strongly objects to marking a class partially freestanding.
+
 <h2>Potential additions</h2>
 Here are some things that I am not currently requiring, but could be convinced to add.
 <ul><li><code>complex&lt;integer&gt;</code></li></ul>
@@ -2776,17 +2780,17 @@ namespace std {
   template&lt;class Iterator&gt;
     constexpr reverse_iterator&lt;Iterator&gt; make_reverse_iterator(Iterator i); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  template&lt;class Container&gt; class back_insert_iterator;
+  template&lt;class Container&gt; class back_insert_iterator; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class Container&gt;
-    back_insert_iterator&lt;Container&gt; back_inserter(Container&amp; x);
+    back_insert_iterator&lt;Container&gt; back_inserter(Container&amp; x); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  template&lt;class Container&gt; class front_insert_iterator;
+  template&lt;class Container&gt; class front_insert_iterator; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class Container&gt;
-    front_insert_iterator&lt;Container&gt; front_inserter(Container&amp; x);
+    front_insert_iterator&lt;Container&gt; front_inserter(Container&amp; x); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
-  template&lt;class Container&gt; class insert_iterator;
+  template&lt;class Container&gt; class insert_iterator; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class Container&gt;
-    insert_iterator&lt;Container&gt; inserter(Container&amp; x, typename Container::iterator i);
+    insert_iterator&lt;Container&gt; inserter(Container&amp; x, typename Container::iterator i); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
   template&lt;class Iterator&gt; class move_iterator; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class Iterator1, class Iterator2&gt;
