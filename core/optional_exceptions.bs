@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: Leaving no room for a lower-level language: A C++ Subset
 Shortname: D1105
-Revision: 1.2
+Revision: 1.3
 Audience: SG14, SG10, SG1, EWG, LEWG
 Status: D
 Group: WG21
@@ -9,7 +9,7 @@ URL: https://htmlpreview.github.io/?https://github.com/ben-craig/freestanding_pr
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/optional_exceptions.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/optional_exceptions.bs</a>
 Editor: Ben Craig, National Instruments, ben.craig@gmail.com
 Editor: Ben Saks, Saks & Associates, ben@saksandassociates.com
-Abstract: Making exceptions, RTTI, TLS, heap, floating point, program teardown, and blocking operations optional in freestanding mode.
+Abstract: Making exceptions, dynamic RTTI, TLS, heap, floating point, program teardown, and blocking operations optional in freestanding mode.
 Markup Shorthands: markdown yes
 </pre>
 
@@ -21,6 +21,8 @@ r0 -> r1 {#r0_r1}
 Freestanding-only `noexcept` semantics were dropped due to low value, low SG14 support, and ABI concerns.
 
 `throw` statements now call `std::terminate`, rather than cause UB.  `std::terminate` was the approach with the least opposition.
+
+`typeid(type)` now allowed.
 
 Added sections discussing ABI ramifications of changes.
 
@@ -62,7 +64,7 @@ Conforming C++ toolchains are ill-suited to target kernel and embedded domains. 
 
 It is my intent that this be the least bad form of dialect, the proper subset.  All valid freestanding libraries should be valid hosted libraries with compatible semantics.
 
-This paper proposes making the following features optional: [exceptions](#exceptions), parts of the <a href="#exception_header"><code class="highlight"><span class="o">&lt;</span><span class="n">exception</span><span class="o">></span></code> header</a>, [ RTTI](#rtti), [default heap storage](#heap), [thread local storage](#tls), [floating point](#float), the [atexit family of functions](#startup_termination), [locked atomics](#blocking), and [thread-safe static initialization](#blocking).
+This paper proposes making the following features optional: [exceptions](#exceptions), parts of the <a href="#exception_header"><code class="highlight"><span class="o">&lt;</span><span class="n">exception</span><span class="o">></span></code> header</a>, [ dynamic RTTI](#rtti), [default heap storage](#heap), [thread local storage](#tls), [floating point](#float), the [atexit family of functions](#startup_termination), [locked atomics](#blocking), and [thread-safe static initialization](#blocking).
 
 In [[P0829]], I propose adding library features to freestanding mode that should work everywhere.  This paper covers the removal and modification of features that don't work everywhere.  There is already standards precedent in [support.signal](http://eel.is/c++draft/support.signal#3) for avoiding portions of all the features that I am making optional.
 
@@ -209,6 +211,30 @@ Well-formed {#tony_well_formed}
   </tr>
 
   <tr>
+    <td><code><pre>typeid(int);</pre></code></td>
+    <td><b>Visual Studio 2017, /kernel</b>
+      <br/>Works!
+      <br/><b>Visual Studio 2017, /GR-</b>
+      <br/>Works!
+      <br/>
+      <br/><b>gcc 8.1 and clang 6.0.0, -fno-rtti</b>
+      <br/>error: cannot use typeid with -fno-rtti
+      <br/><b>gcc 8.1 and clang 6.0.0, -nostdlib</b>
+      <br/>undefined reference to "typeinfo for int"
+      <br/>
+      <br/><b>Bare metal gcc 4.8 with newlib</b>
+      <br/>undefined reference to "__exidx_end"
+      <br/>undefined reference to "__exidx_start"
+      <br/>undefined reference to "_exit"
+      <br/>undefined reference to "_sbrk"
+      <br/>etc...
+    </td>
+    <td><b>Proposed option:</b>
+      <br/>Well-formed, even if dynamic RTTI is not available.
+    </td>
+  </tr>
+
+  <tr>
     <td><code><pre>struct B {virtual ~B() {} };
 void foo() {B b;}</pre></code></td>
     <td><b>Visual Studio 2017, /kernel</b>
@@ -263,7 +289,7 @@ D *func(B *b) {
       <br/>etc...
     </td>
     <td><b>Proposed option:</b>
-      <br/>Ill-formed if RTTI is not enabled.
+      <br/>Ill-formed if dynamic RTTI is not enabled.
     </td>
   </tr>
 
@@ -294,7 +320,7 @@ const bool func(B &b) {
       <br/>etc...
     </td>
     <td><b>Proposed option:</b>
-      <br/>Ill-formed if RTTI is not enabled.
+      <br/>Ill-formed if dynamic RTTI is not enabled.
     </td>
   </tr>
 
@@ -507,19 +533,29 @@ This alternative would make it so that clients could only `catch(...)` and `catc
 
 In addition to the issues in the above alternative, we would also need to ensure that all the other library features and core language features didn't call `std::terminate` in freestanding mode.
 
-RTTI {#rtti}
+Dynamic RTTI {#rtti}
 ------------
-Feature test macro: `__cpp_freestanding_no_rtti`.  This macro is distinct from the `__cpp_rtti` macro already defined in [[SD6]].  Users cannot currently (in 2018) reliably test for the presence of RTTI with `__cpp_rtti`, so RTTI should generally assumed to be present, unless `__cpp_freestanding_no_rtti` is present.
+Feature test macro: `__cpp_freestanding_no_dynamic_rtti`.  This macro is distinct from the `__cpp_rtti` macro already defined in [[SD6]].  Users cannot currently (in 2018) reliably test for the presence of dynamic RTTI with `__cpp_rtti`, so dynamic RTTI should generally assumed to be present, unless `__cpp_freestanding_no_dynamic_rtti` is present.
+
+"Dynamic" RTTI is RTTI that requires some form of dynamic dispatch to resolve.  In particular, this covers `dynamic_cast` expressions and `typeid(expr)` expressions that involve classes with virtual functions.  `typeid(type)` expressions can be resolved without indirection.
+
+### What isn't changing? ### {#rtti_same}
+`typeid(type)` is required to be present and work.  Users only pay for the `type_info` objects they use with this syntax.  The `<typeinfo>` header is also required to be present.
 
 ### What am I changing? ### {#rtti_what}
-`typeid` and `dynamic_cast` are ill-formed in environments without RTTI.  The `<typeinfo>` header is not required to be present.
+`typeid(expr)` and `dynamic_cast` are ill-formed in environments without dynamic RTTI.
 
 ### Why? ### {#rtti_why}
-`type_info` objects generated by the compiler consume space, and are difficult to optimize away.  In the implementations that I'm aware of, a class with virtual functions will have a spot in the vtable that points at the `type_info` object for the class.  If an instance of the class is ever created, the linker isn't able to apply trivial dead data elimination techniques to get rid of the `type_info` object, as there exists a reference to the object from the vtable.
+`typeid(expr)` and `dynamic_cast` generally require vtables to point at a `type_info` object.  Those `type_info` objects consume space, and are difficult to optimize away.  If an instance of the class is ever created, the linker isn't able to apply trivial dead data elimination techniques to get rid of the `type_info` object, as there exists a reference to the object from the vtable.  `typeid(type)` doesn't require registering the `type_info` object in the vtable, so it is fine.
 
 The slot in the vtable itself is also a place where space is wasted.
 
-If `typeid` and `dynamic_cast` can't be called, implementations can safely remove the `type_info` objects, saving space.  Some ABIs will even permit reclaiming the vtable slot.
+If `typeid(expr)` and `dynamic_cast` can't be called, implementations can safely remove the `type_info` objects, saving space.  Some ABIs will even permit reclaiming the vtable slot.
+
+`typeid(expr)` can throw if used on a null pointer.  Since we aren't allowing `typeid(expr)`, this isn't a concern.
+
+### Alternative designs ### {#rtti_alt}
+We could also allow the subset of `typeid(expr)` expressions that do not require dynamic dispatch.  If the static type of the expression resolves to a reference to a class with virtual functions, the program would be ill-formed.  I feel that this alternative would be more brittle, and more difficult to teach.
 
 ### ABI impact ### {#rtti_abi}
 The current major implementations all provide ways to disable RTTI, so there is real world experience here.
@@ -527,6 +563,8 @@ The current major implementations all provide ways to disable RTTI, so there is 
 An object created in an RTTI-enabled implementation can be passed to a no-RTTI implementation, and the RTTI implementation can use it without any ill-effects.  A no-RTTI implementation can create an object, and pass it to an RTTI-enabled implementation, and everything will work fine, so long as `typeid` and `dynamic_cast` are not used on the object.
 
 A no-RTTI class can inherit from an RTTI class with no ill-effects.  An RTTI-enabled class cannot universally inherit from a no-RTTI class.
+
+`typeid(type)` across RTTI boundaries can cause trouble on some ABIs.  The Microsoft ABI eagerly emits `type_info` objects and falls back to string comparisons for `type_info` objects, so it gets by just fine.  The Itanium ABI doesn't always emit `type_info` objects in each TU, so some cross RTTI-boundary cases will result in missing symbols.
 
 Default heap storage {#heap}
 ----------------------------
@@ -727,7 +765,7 @@ No and yes.
 
 This paper proposes one lowest common denominator implementation.  Users can rely on that lowest common denominator to exist.  This is the one subset the paper defines.
 
-Vendors are allowed to provide hosted features that aren't in the minimal freestanding subset.  This paper provides feature test macros and scoping of the feature test macros.  This paper doesn't go into depth about the interaction of the various hosted features.  This paper hints at these many subsets.  None of the subsets that are between freestanding and hosted can be relied upon in a standards compliant portable manner.  If a user relies on a freestanding implementation that also provides RTTI (for example), then there is no guarantee that another vendor will provide a subset with the same set of features.
+Vendors are allowed to provide hosted features that aren't in the minimal freestanding subset.  This paper provides feature test macros and scoping of the feature test macros.  This paper doesn't go into depth about the interaction of the various hosted features.  This paper hints at these many subsets.  None of the subsets that are between freestanding and hosted can be relied upon in a standards compliant portable manner.  If a user relies on a freestanding implementation that also provides dynamic RTTI (for example), then there is no guarantee that another vendor will provide a subset with the same set of features.
 
 A dialect will be burdensome to vendors {#arguments_vendor_burden}
 ------------------------------------------------------------------
@@ -781,16 +819,6 @@ Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred Bratterud, an
         "authors": ["Ben Craig"],
         "href": "http://wg21.link/P0829",
         "title": "Freestanding Proposal"
-    },
-    "P0829R0": {
-        "authors": ["Ben Craig"],
-        "href": "http://wg21.link/P0829R0",
-        "title": "Freestanding Proposal (R0)"
-    },
-    "P1045": {
-        "authors": ["David Stone"],
-        "href": "http://wg21.link/P1045",
-        "title": "constexpr Function Parameters"
     },
     "P1066": {
         "authors": ["Mathias Stearn"],
