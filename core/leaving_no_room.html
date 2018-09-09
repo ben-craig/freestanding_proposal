@@ -2,7 +2,7 @@
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-  <title>D1105R1.1: Leaving no room for a lower-level language: A C++ Subset</title>
+  <title>D1105R1.3: Leaving no room for a lower-level language: A C++ Subset</title>
 <style data-fill-with="stylesheet">/******************************************************************************
  *                   Style sheet for the W3C specifications                   *
  *
@@ -1227,7 +1227,7 @@ Possible extra rowspan handling
       text-align: center;
     }
   </style>
-  <meta content="Bikeshed version a816d78e14132d4d4d2ee44ccaf1b8bc90ac75d5" name="generator">
+  <meta content="Bikeshed version db3f42f38318d417fb038711a846849b7a68ff34" name="generator">
   <link href="https://htmlpreview.github.io/?https://github.com/ben-craig/freestanding_proposal/blob/master/core/leaving_no_room.html" rel="canonical">
   <link href="https://isocpp.org/favicon.ico" rel="icon">
 <style>/* style-md-lists */
@@ -1438,15 +1438,17 @@ pre .property::before, pre .property::after {
  </head><body class="h-entry toc-sidebar"><p id="toc-nav"><a id="toc-jump" href="#toc"><span aria-hidden="true">↑</span> <span>Jump to Table of Contents</span></a><a id="toc-toggle" href="#toc"><span aria-hidden="true">←</span> <span>Collapse Sidebar</span></a></p>
   <div class="head">
    <p data-fill-with="logo"></p>
-   <h1 class="p-name no-ref" id="title">D1105R1.1<br>Leaving no room for a lower-level language: A C++ Subset</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2018-08-16">2018-08-16</time></span></h2>
+   <h1 class="p-name no-ref" id="title">D1105R1.3<br>Leaving no room for a lower-level language: A C++ Subset</h1>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2018-09-08">2018-09-08</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
      </dt><dd><a class="u-url" href="https://htmlpreview.github.io/?https://github.com/ben-craig/freestanding_proposal/blob/master/core/leaving_no_room.html">https://htmlpreview.github.io/?https://github.com/ben-craig/freestanding_proposal/blob/master/core/leaving_no_room.html</a>
-     </dd><dt>Author:
+     </dd><dt>Authors:
      </dt><dd>
-      </dd><dd class="editor p-author h-card vcard"><span class="p-name fn">Ben Craig &lt;ben dot craig at gmail dot com&gt;</span>
+      </dd><dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:ben.craig@gmail.com">Ben Craig</a> (<span class="p-org org">National Instruments</span>)
+     </dd><dd>
+      </dd><dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:ben@saksandassociates.com">Ben Saks</a> (<span class="p-org org">Saks &amp; Associates</span>)
      </dd><dt>Audience:
      </dt><dd>SG14, SG10, SG1, EWG, LEWG
      </dd><dt>Project:
@@ -1460,7 +1462,7 @@ pre .property::before, pre .property::after {
   </div>
   <div class="p-summary" data-fill-with="abstract">
    <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
-   <p>Making exceptions, RTTI, TLS, heap, floating point, program teardown, and blocking operations optional in freestanding mode.</p>
+   <p>Making exceptions, dynamic RTTI, TLS, heap, floating point, program teardown, and blocking operations optional in freestanding mode.</p>
   </div>
   <nav data-fill-with="table-of-contents" id="toc">
    <h2 class="no-num no-toc no-ref" id="contents">Table of Contents</h2>
@@ -1504,11 +1506,13 @@ pre .property::before, pre .property::after {
         </li><li><a href="#exception_header_alt"><span class="secno">5.2.4</span> <span class="content">Alternative designs</span></a>
        </li></ol>
       </li><li>
-       <a href="#rtti"><span class="secno">5.3</span> <span class="content">RTTI</span></a>
+       <a href="#rtti"><span class="secno">5.3</span> <span class="content">Dynamic RTTI</span></a>
        <ol class="toc">
-        <li><a href="#rtti_what"><span class="secno">5.3.1</span> <span class="content">What am I changing?</span></a>
-        </li><li><a href="#rtti_why"><span class="secno">5.3.2</span> <span class="content">Why?</span></a>
-        </li><li><a href="#rtti_abi"><span class="secno">5.3.3</span> <span class="content">ABI impact</span></a>
+        <li><a href="#rtti_same"><span class="secno">5.3.1</span> <span class="content">What isn’t changing?</span></a>
+        </li><li><a href="#rtti_what"><span class="secno">5.3.2</span> <span class="content">What am I changing?</span></a>
+        </li><li><a href="#rtti_why"><span class="secno">5.3.3</span> <span class="content">Why?</span></a>
+        </li><li><a href="#rtti_alt"><span class="secno">5.3.4</span> <span class="content">Alternative designs</span></a>
+        </li><li><a href="#rtti_abi"><span class="secno">5.3.5</span> <span class="content">ABI impact</span></a>
        </li></ol>
       </li><li>
        <a href="#heap"><span class="secno">5.4</span> <span class="content">Default heap storage</span></a>
@@ -1570,10 +1574,11 @@ pre .property::before, pre .property::after {
      <ol class="toc">
       <li><a href="#arguments_no_subsets"><span class="secno">8.1</span> <span class="content">C++ doesn’t standardize subsets</span></a>
       </li><li><a href="#arguments_user_fracture"><span class="secno">8.2</span> <span class="content">A subset will fracture the C++ user base</span></a>
-      </li><li><a href="#arguments_vendor_burden"><span class="secno">8.3</span> <span class="content">A dialect will be burdensome to vendors</span></a>
-      </li><li><a href="#arguments_different_subsets"><span class="secno">8.4</span> <span class="content">Everybody wants a different subset</span></a>
-      </li><li><a href="#arguments_style_guides"><span class="secno">8.5</span> <span class="content">This doesn’t agree with common style guides, like MISRA</span></a>
-      </li><li><a href="#arguments_committee_burden"><span class="secno">8.6</span> <span class="content">A subset will be burdensome for the committee</span></a>
+      </li><li><a href="#arguments_multi_subset"><span class="secno">8.3</span> <span class="content">This doesn’t propose one subset, it defines many subsets</span></a>
+      </li><li><a href="#arguments_vendor_burden"><span class="secno">8.4</span> <span class="content">A dialect will be burdensome to vendors</span></a>
+      </li><li><a href="#arguments_different_subsets"><span class="secno">8.5</span> <span class="content">Everybody wants a different subset</span></a>
+      </li><li><a href="#arguments_style_guides"><span class="secno">8.6</span> <span class="content">This doesn’t agree with common style guides, like MISRA</span></a>
+      </li><li><a href="#arguments_committee_burden"><span class="secno">8.7</span> <span class="content">A subset will be burdensome for the committee</span></a>
      </li></ol>
     </li><li><a href="#ack"><span class="secno">9</span> <span class="content">Acknowledgments</span></a>
     </li><li>
@@ -1589,6 +1594,7 @@ pre .property::before, pre .property::after {
    <h3 class="heading settled" data-level="1.1" id="r0_r1"><span class="secno">1.1. </span><span class="content">r0 -&gt; r1</span><a class="self-link" href="#r0_r1"></a></h3>
     Freestanding-only <code class="highlight"><c- k="">noexcept</c-></code> semantics were dropped due to low value, low SG14 support, and ABI concerns. 
    <p><code class="highlight"><c- k="">throw</c-></code> statements now call <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">terminate</c-></code>, rather than cause UB. <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">terminate</c-></code> was the approach with the least opposition.</p>
+   <p><code class="highlight"><c- k="">typeid</c-><c- p="">(</c-><c- n="">type</c-><c- p="">)</c-></code> now allowed.</p>
    <p>Added sections discussing ABI ramifications of changes.</p>
    <p>Changed thread-safe statics feature test macro.</p>
    <p>Clarifying <code class="highlight"><c- k="">if</c-> <c- k="">constexpr</c-></code> comments. <code class="highlight"><c- k="">catch</c-></code> blocks will still help determine auto return types.</p>
@@ -1607,7 +1613,7 @@ pre .property::before, pre .property::after {
    <h2 class="heading settled" data-level="2" id="intro"><span class="secno">2. </span><span class="content">Introduction</span><a class="self-link" href="#intro"></a></h2>
     Conforming C++ toolchains are ill-suited to target kernel and embedded domains.  In practice, kernel and embedded developers almost always use compiler switches that make the toolchain non-conforming.  This means that conforming C++ has left room for a lower-level language: non-conforming C++.  WG21 needs to decide between the lesser of several evils: formalizing a dialect, leaving room for a lower-level language, or massive breakage in real code.  If we do nothing, we will have left room for a lower-level language (C, non-conforming C++).  If we change hosted mode in a way to achieve the zero overhead, no lower-level language goal, we will end up needing to remove valuable features, breaking massive amounts of code.  This paper proposes formalizing a dialect. 
    <p>It is my intent that this be the least bad form of dialect, the proper subset.  All valid freestanding libraries should be valid hosted libraries with compatible semantics.</p>
-   <p>This paper proposes making the following features optional: <a href="#exceptions">exceptions</a>, parts of the <a href="#exception_header"><code class="highlight"><span class="o"><c- o="">&lt;</c-></span><span class="n"><c- n="">exception</c-></span><span class="o"><c- o="">&gt;</c-></span></code> header</a>, <a href="#rtti"> RTTI</a>, <a href="#heap">default heap storage</a>, <a href="#tls">thread local storage</a>, <a href="#float">floating point</a>, the <a href="#startup_termination">atexit family of functions</a>, <a href="#blocking">locked atomics</a>, and <a href="#blocking">thread-safe static initialization</a>.</p>
+   <p>This paper proposes making the following features optional: <a href="#exceptions">exceptions</a>, parts of the <a href="#exception_header"><code class="highlight"><span class="o"><c- o="">&lt;</c-></span><span class="n"><c- n="">exception</c-></span><span class="o"><c- o="">&gt;</c-></span></code> header</a>, <a href="#rtti"> dynamic RTTI</a>, <a href="#heap">default heap storage</a>, <a href="#tls">thread local storage</a>, <a href="#float">floating point</a>, the <a href="#startup_termination">atexit family of functions</a>, <a href="#blocking">locked atomics</a>, and <a href="#blocking">thread-safe static initialization</a>.</p>
    <p>In <a data-link-type="biblio" href="#biblio-p0829">[P0829]</a>, I propose adding library features to freestanding mode that should work everywhere.  This paper covers the removal and modification of features that don’t work everywhere.  There is already standards precedent in <a href="http://eel.is/c++draft/support.signal#3">support.signal</a> for avoiding portions of all the features that I am making optional.</p>
    <p>There are years, if not decades of field experience using C++ subsets similar to what I am proposing (<a data-link-type="biblio" href="#biblio-osr">[OSR]</a>, <a data-link-type="biblio" href="#biblio-apple_kernel">[APPLE_KERNEL]</a>).  The workarounds and compiler switches are mostly available today.  The main places where this paper innovates is in places where we can keep more features than current compiler based switches allow.</p>
    <p>In theory, this paper would result in large scale code breaks for existing freestanding users.  In practice, there are almost no existing freestanding users because the current definition is not serving the stated purpose of working <a href="http://eel.is/c++draft/intro.compliance#7">"without the benefit of an operating system"</a>.  Existing implementations already provide mechanisms for disabling many of the features that this paper proposes to make optional.  Updating these implementations to conform to this proposal would leave existing users largely unaffected, except that they would now be using a truly compliant C++ implementation.</p>
@@ -1637,7 +1643,7 @@ pre .property::before, pre .property::after {
      </td></tr><tr>
       <td><code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">bad_alloc</c-> <c- n="">e</c-><c- p="">;</c-></code>
       </td><td><b>Visual Studio 2017, /kernel</b> <br>error LNK2019: unresolved external symbol "void __cdecl operator delete(void *,unsigned __int64)" <br>error LNK2019: unresolved external symbol __std_exception_destroy <br> <br><b>gcc 8.1 and clang 6.0.0, -nostdlib</b> <br>undefined reference to "std::bad_alloc::~bad_alloc()" <br> <br><b>Bare metal gcc 4.8 with newlib</b> <br>undefined reference to "__exidx_end" <br>undefined reference to "__exidx_start" <br>undefined reference to "_exit" <br>undefined reference to "_sbrk" <br>undefined reference to "_kill" <br>undefined reference to "_getpid" <br>undefined reference to "_write" <br>undefined reference to "_close" <br>undefined reference to "_fstat" <br>undefined reference to "_isatty" <br>undefined reference to "_lseek" <br>undefined reference to "_read" 
-      </td><td><b>Proposed option:</b> <br>Well-formed, but uncommon code. <br> <br><b>Alternative to be polled:</b> <br>Ill-formed if exceptions are not enabled. 
+      </td><td><b>Proposed option:</b> <br>Well-formed, but uncommon code.  Most likely to be seen in a discarded <code class="highlight"><c- k="">catch</c-></code> block. <br> <br><b>Alternative to be polled:</b> <br>Ill-formed if exceptions are not enabled. 
      </td></tr><tr>
       <td><code class="highlight"><pre class="highlight"><c- b=""><c- b="">void</c-></c-> <c- nf=""><c- nf="">caller</c-></c-><c- p=""><c- p="">()</c-></c-> <c- p=""><c- p="">{</c-></c->
     <c- k=""><c- k="">try</c-></c-> <c- p=""><c- p="">{</c-></c-><c- n=""><c- n="">foo</c-></c-><c- p=""><c- p="">();}</c-></c->
@@ -1648,6 +1654,10 @@ pre .property::before, pre .property::after {
 <c- p=""><c- p="">}</c-></c-></pre></code>
       </td><td><b>Visual Studio 2017, /kernel</b> <br>error C2980: C++ exception handling is not supported with /kernel <br> <br><b>gcc 8.1, -fno-exceptions</b> <br>error: exception handling disabled, use -fexceptions to enable <br> <br><b>clang 6.0.0, -fno-exceptions</b> <br>error: cannot use "throw" with exceptions disabled <br>error: cannot use "try" with exceptions disabled <br> <br><b>gcc 8.1 and clang 6.0.0, -nostdlib</b> <br>undefined reference to "__cxa_begin_catch" <br>undefined reference to "__cxa_rethrow" <br>undefined reference to "__cxa_end_catch <br>undefined reference to "_Unwind_Resume" <br>undefined reference to "typeinfo for std::exception" <br>undefined reference to "__cxa_begin_catch" <br>undefined reference to "std::terminate()" <br>undefined reference to "__gxx_personality_v0" <br> <br><b>Bare metal gcc 4.8 with newlib</b> <br>undefined reference to "__exidx_end" <br>undefined reference to "__exidx_start" <br>undefined reference to "_exit" <br>undefined reference to "_sbrk" <br>etc... 
       </td><td><b>Proposed option:</b> <br>Well-formed. <br>When exceptions aren’t present, <code class="highlight"><c- k="">catch</c-></code> generates no code.  The <code class="highlight"><c- k="">try</c-></code> block is still executed, but does no exception bookkeeping, as is common in <code class="highlight"><c- n="">setjmp</c-></code> / <code class="highlight"><c- n="">longjmp</c-></code> EH implementations. <br>Names and syntax are still checked in catch blocks, similar to <code class="highlight"><c- k="">if</c-> <c- k="">constexpr</c-><c- p="">(</c->false<c- p="">)</c-></code>. <code class="highlight"><c- k="">auto</c-></code> deduced return types still use any <code class="highlight"><c- k="">return</c-></code> statements in the <code class="highlight"><c- k="">catch</c-></code> block, so as not to cause return types to vary based on presence of exceptions. 
+     </td></tr><tr>
+      <td><code class="highlight"><pre class="highlight"><c- k=""><c- k="">typeid</c-></c-><c- p=""><c- p="">(</c-></c-><c- b=""><c- b="">int</c-></c-><c- p=""><c- p="">);</c-></c-></pre></code>
+      </td><td><b>Visual Studio 2017, /kernel</b> <br>Works! <br><b>Visual Studio 2017, /GR-</b> <br>Works! <br> <br><b>gcc 8.1 and clang 6.0.0, -fno-rtti</b> <br>error: cannot use typeid with -fno-rtti <br><b>gcc 8.1 and clang 6.0.0, -nostdlib</b> <br>undefined reference to "typeinfo for int" <br> <br><b>Bare metal gcc 4.8 with newlib</b> <br>undefined reference to "__exidx_end" <br>undefined reference to "__exidx_start" <br>undefined reference to "_exit" <br>undefined reference to "_sbrk" <br>etc... 
+      </td><td><b>Proposed option:</b> <br>Well-formed, even if dynamic RTTI is not available. 
      </td></tr><tr>
       <td><code class="highlight"><pre class="highlight"><c- k=""><c- k="">struct</c-></c-> <c- n=""><c- n="">B</c-></c-> <c- p=""><c- p="">{</c-></c-><c- k=""><c- k="">virtual</c-></c-> <c- o=""><c- o="">~</c-></c-><c- n=""><c- n="">B</c-></c-><c- p=""><c- p="">()</c-></c-> <c- p=""><c- p="">{}</c-></c-> <c- p=""><c- p="">};</c-></c->
 <c- b=""><c- b="">void</c-></c-> <c- nf=""><c- nf="">foo</c-></c-><c- p=""><c- p="">()</c-></c-> <c- p=""><c- p="">{</c-></c-><c- n=""><c- n="">B</c-></c-> <c- n=""><c- n="">b</c-></c-><c- p=""><c- p="">;}</c-></c-></pre></code>
@@ -1669,7 +1679,7 @@ pre .property::before, pre .property::after {
     <c- k=""><c- k="">return</c-></c-> <c- k=""><c- k="">dynamic_cast</c-></c-><c- o=""><c- o="">&lt;</c-></c-><c- n=""><c- n="">D</c-></c-><c- o=""><c- o="">*&gt;</c-></c-><c- p=""><c- p="">(</c-></c-><c- n=""><c- n="">b</c-></c-><c- p=""><c- p="">);</c-></c->
 <c- p=""><c- p="">}</c-></c-></pre></code>
       </td><td><b>Visual Studio 2017, /kernel</b> <br>error C2981: the dynamic form of "dynamic_cast" is not supported with /kernel <br> <br><b>gcc 8.1, -fno-rtti</b> <br>error: "dynamic_cast" not permitted with -fno-rtti <br> <br><b>clang 6.0.0, -fno-rtti</b> <br>error: cannot use dynamic_cast with -fno-rtti <br> <br><b>gcc 8.1 and clang 6.0.0, -nostdlib</b> <br>undefined reference to "__dynamic_cast" <br>undefined reference to "vtable for __cxxabiv1::__si_class_type_info" <br>undefined reference to "vtable for __cxxabiv1::__class_type_info" <br> <br><b>Bare metal gcc 4.8 with newlib</b> <br>undefined reference to "__exidx_end" <br>undefined reference to "__exidx_start" <br>undefined reference to "_exit" <br>undefined reference to "_sbrk" <br>etc... 
-      </td><td><b>Proposed option:</b> <br>Ill-formed if RTTI is not enabled. 
+      </td><td><b>Proposed option:</b> <br>Ill-formed if dynamic RTTI is not enabled. 
      </td></tr><tr>
       <td><code class="highlight"><pre class="highlight"><c- cp=""><c- cp="">#include</c-></c-> &lt;typeinfo&gt;
 <c- k=""><c- k="">struct</c-></c-> <c- n=""><c- n="">B</c-></c-> <c- p=""><c- p="">{</c-></c-><c- k=""><c- k="">virtual</c-></c-> <c- b=""><c- b="">void</c-></c-> <c- n=""><c- n="">f</c-></c-><c- p=""><c- p="">()</c-></c-> <c- p=""><c- p="">{}};</c-></c->
@@ -1677,7 +1687,7 @@ pre .property::before, pre .property::after {
     <c- k=""><c- k="">return</c-></c-> <c- k=""><c- k="">typeid</c-></c-><c- p=""><c- p="">(</c-></c-><c- n=""><c- n="">b</c-></c-><c- p=""><c- p="">)</c-></c-> <c- o=""><c- o="">==</c-></c-> <c- k=""><c- k="">typeid</c-></c-><c- p=""><c- p="">(</c-></c-><c- b=""><c- b="">int</c-></c-><c- p=""><c- p="">);</c-></c->
 <c- p=""><c- p="">}</c-></c-></pre></code>
       </td><td><b>Visual Studio 2017, /kernel</b> <br>error C2981: the dynamic form of "typeid" is not supported with /kernel <br> <br><b>gcc 8.1, -fno-rtti</b> <br>error: cannot use "typeid" with -fno-rtti <br> <br><b>clang 6.0.0, -fno-rtti</b> <br>error: cannot use typeid with -fno-rtti <br> <br><b>gcc 8.1 and clang 6.0.0, -nostdlib</b> <br>undefined reference to "typeinfo for int" <br>undefined reference to "strcmp" <br> <br><b>Bare metal gcc 4.8 with newlib</b> <br>undefined reference to "__exidx_end" <br>undefined reference to "__exidx_start" <br>undefined reference to "_exit" <br>undefined reference to "_sbrk" <br>etc... 
-      </td><td><b>Proposed option:</b> <br>Ill-formed if RTTI is not enabled. 
+      </td><td><b>Proposed option:</b> <br>Ill-formed if dynamic RTTI is not enabled. 
      </td></tr><tr>
       <td><code class="highlight"><c- b="">void</c-> <c- nf="">f</c-><c- p="">(</c-><c- b="">int</c-> <c- o="">*</c-><c- n="">i</c-><c- p="">)</c-> <c- p="">{</c-><c- k="">delete</c-> <c- n="">i</c-><c- p="">;}</c-></code>
       </td><td><b>Visual Studio 2017, /kernel</b> <br>error LNK2019: unresolved external symbol "void __cdecl operator delete(void *)" <br> <br><b>gcc 8.1 and clang 6.0.0, -nostdlib</b> <br>undefined reference to "operator delete(void*, unsigned long)" <br> <br><b>Bare metal gcc 4.8 with newlib</b> <br>undefined reference to "_sbrk" 
@@ -1716,9 +1726,9 @@ pre .property::before, pre .property::after {
 <c- p=""><c- p="">};</c-></c->
 
 <p><c- b=""><c- b="">void</c-></c-> <c- nf=""><c- nf="">foo</c-></c-><c- p=""><c- p="">(</c-></c->
-    <c- n=""><c- n="">std</c-></c-><c- o=""><c- o="">::</c-></c-><c- n=""><c- n="">atomic</c-></c-><bigdata> <c- o=""><c- o="">&amp;</c-></c-><c- n=""><c- n="">lhs</c-></c-><c- p=""><c- p="">,</c-></c->
+    <c- n=""><c- n="">std</c-></c-><c- o=""><c- o="">::</c-></c-><c- n=""><c- n="">atomic</c-></c-><c- o=""><c- o="">&lt;</c-></c-><c- n=""><c- n="">BigData</c-></c-><c- o=""><c- o="">&gt;</c-></c-> <c- o=""><c- o="">&amp;</c-></c-><c- n=""><c- n="">lhs</c-></c-><c- p=""><c- p="">,</c-></c->
     <c- k=""><c- k="">const</c-></c-> <c- n=""><c- n="">BigData</c-></c-> <c- o=""><c- o="">&amp;</c-></c-><c- n=""><c- n="">rhs</c-></c-><c- p=""><c- p="">)</c-></c->
-<c- p=""><c- p="">{</c-></c-><c- n=""><c- n="">lhs</c-></c-> <c- o=""><c- o="">=</c-></c-> <c- n=""><c- n="">rhs</c-></c-><c- p=""><c- p="">;}</c-></c-></bigdata></p></pre></code>
+<c- p=""><c- p="">{</c-></c-><c- n=""><c- n="">lhs</c-></c-> <c- o=""><c- o="">=</c-></c-> <c- n=""><c- n="">rhs</c-></c-><c- p=""><c- p="">;}</c-></c-></p></pre></code>
       </td><td><b>Visual Studio 2017, /kernel</b> <br>successfully compiles, but generates spin locks that are dangerous when shared with interrupts. <br> <br><b>gcc 8.1 and clang 6.0.0, -nostdlib</b> <br>undefined reference to "__atomic_store" <br> <br><b>Bare metal gcc 4.8 with newlib</b> <br>undefined reference to "__atomic_store" 
       </td><td><b>Proposed option:</b> <br>Ill-formed if blocking synchronization support is not enabled. 
    </td></tr></tbody></table>
@@ -1795,18 +1805,25 @@ pre .property::before, pre .property::after {
      <p>Omit the entire <code class="highlight"><c- o="">&lt;</c-><c- n="">exception</c-><c- o="">&gt;</c-></code> header.</p>
    </li></ol>
    <p>In addition to the issues in the above alternative, we would also need to ensure that all the other library features and core language features didn’t call <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">terminate</c-></code> in freestanding mode.</p>
-   <h3 class="heading settled" data-level="5.3" id="rtti"><span class="secno">5.3. </span><span class="content">RTTI</span><a class="self-link" href="#rtti"></a></h3>
-    Feature test macro: <code class="highlight"><c- n="">__cpp_freestanding_no_rtti</c-></code>.  This macro is distinct from the <code class="highlight"><c- n="">__cpp_rtti</c-></code> macro already defined in <a data-link-type="biblio" href="#biblio-sd6">[SD6]</a>.  Users cannot currently (in 2018) reliably test for the presence of RTTI with <code class="highlight"><c- n="">__cpp_rtti</c-></code>, so RTTI should generally assumed to be present, unless <code class="highlight"><c- n="">__cpp_freestanding_no_rtti</c-></code> is present. 
-   <h4 class="heading settled" data-level="5.3.1" id="rtti_what"><span class="secno">5.3.1. </span><span class="content">What am I changing?</span><a class="self-link" href="#rtti_what"></a></h4>
-    <code class="highlight"><c- k="">typeid</c-></code> and <code class="highlight"><c- k="">dynamic_cast</c-></code> are ill-formed in environments without RTTI.  The <code class="highlight"><c- o="">&lt;</c-><c- n="">typeinfo</c-><c- o="">&gt;</c-></code> header is not required to be present. 
-   <h4 class="heading settled" data-level="5.3.2" id="rtti_why"><span class="secno">5.3.2. </span><span class="content">Why?</span><a class="self-link" href="#rtti_why"></a></h4>
-    <code class="highlight"><c- n="">type_info</c-></code> objects generated by the compiler consume space, and are difficult to optimize away.  In the implementations that I’m aware of, a class with virtual functions will have a spot in the vtable that points at the <code class="highlight"><c- n="">type_info</c-></code> object for the class.  If an instance of the class is ever created, the linker isn’t able to apply trivial dead data elimination techniques to get rid of the <code class="highlight"><c- n="">type_info</c-></code> object, as there exists a reference to the object from the vtable. 
+   <h3 class="heading settled" data-level="5.3" id="rtti"><span class="secno">5.3. </span><span class="content">Dynamic RTTI</span><a class="self-link" href="#rtti"></a></h3>
+    Feature test macro: <code class="highlight"><c- n="">__cpp_freestanding_no_dynamic_rtti</c-></code>.  This macro is distinct from the <code class="highlight"><c- n="">__cpp_rtti</c-></code> macro already defined in <a data-link-type="biblio" href="#biblio-sd6">[SD6]</a>.  Users cannot currently (in 2018) reliably test for the presence of dynamic RTTI with <code class="highlight"><c- n="">__cpp_rtti</c-></code>, so dynamic RTTI should generally assumed to be present, unless <code class="highlight"><c- n="">__cpp_freestanding_no_dynamic_rtti</c-></code> is present. 
+   <p>"Dynamic" RTTI is RTTI that requires some form of dynamic dispatch to resolve.  In particular, this covers <code class="highlight"><c- k="">dynamic_cast</c-></code> expressions and <code class="highlight"><c- k="">typeid</c-><c- p="">(</c-><c- n="">expr</c-><c- p="">)</c-></code> expressions that involve classes with virtual functions. <code class="highlight"><c- k="">typeid</c-><c- p="">(</c-><c- n="">type</c-><c- p="">)</c-></code> expressions can be resolved without indirection.</p>
+   <h4 class="heading settled" data-level="5.3.1" id="rtti_same"><span class="secno">5.3.1. </span><span class="content">What isn’t changing?</span><a class="self-link" href="#rtti_same"></a></h4>
+    <code class="highlight"><c- k="">typeid</c-><c- p="">(</c-><c- n="">type</c-><c- p="">)</c-></code> is required to be present and work.  Users only pay for the <code class="highlight"><c- n="">type_info</c-></code> objects they use with this syntax.  The <code class="highlight"><c- o="">&lt;</c-><c- n="">typeinfo</c-><c- o="">&gt;</c-></code> header is also required to be present. 
+   <h4 class="heading settled" data-level="5.3.2" id="rtti_what"><span class="secno">5.3.2. </span><span class="content">What am I changing?</span><a class="self-link" href="#rtti_what"></a></h4>
+    <code class="highlight"><c- k="">typeid</c-><c- p="">(</c-><c- n="">expr</c-><c- p="">)</c-></code> and <code class="highlight"><c- k="">dynamic_cast</c-></code> are ill-formed in environments without dynamic RTTI. 
+   <h4 class="heading settled" data-level="5.3.3" id="rtti_why"><span class="secno">5.3.3. </span><span class="content">Why?</span><a class="self-link" href="#rtti_why"></a></h4>
+    <code class="highlight"><c- k="">typeid</c-><c- p="">(</c-><c- n="">expr</c-><c- p="">)</c-></code> and <code class="highlight"><c- k="">dynamic_cast</c-></code> generally require vtables to point at a <code class="highlight"><c- n="">type_info</c-></code> object.  Those <code class="highlight"><c- n="">type_info</c-></code> objects consume space, and are difficult to optimize away.  If an instance of the class is ever created, the linker isn’t able to apply trivial dead data elimination techniques to get rid of the <code class="highlight"><c- n="">type_info</c-></code> object, as there exists a reference to the object from the vtable. <code class="highlight"><c- k="">typeid</c-><c- p="">(</c-><c- n="">type</c-><c- p="">)</c-></code> doesn’t require registering the <code class="highlight"><c- n="">type_info</c-></code> object in the vtable, so it is fine. 
    <p>The slot in the vtable itself is also a place where space is wasted.</p>
-   <p>If <code class="highlight"><c- k="">typeid</c-></code> and <code class="highlight"><c- k="">dynamic_cast</c-></code> can’t be called, implementations can safely remove the <code class="highlight"><c- n="">type_info</c-></code> objects, saving space.  Some ABIs will even permit reclaiming the vtable slot.</p>
-   <h4 class="heading settled" data-level="5.3.3" id="rtti_abi"><span class="secno">5.3.3. </span><span class="content">ABI impact</span><a class="self-link" href="#rtti_abi"></a></h4>
+   <p>If <code class="highlight"><c- k="">typeid</c-><c- p="">(</c-><c- n="">expr</c-><c- p="">)</c-></code> and <code class="highlight"><c- k="">dynamic_cast</c-></code> can’t be called, implementations can safely remove the <code class="highlight"><c- n="">type_info</c-></code> objects, saving space.  Some ABIs will even permit reclaiming the vtable slot.</p>
+   <p><code class="highlight"><c- k="">typeid</c-><c- p="">(</c-><c- n="">expr</c-><c- p="">)</c-></code> can throw if used on a null pointer.  Since we aren’t allowing <code class="highlight"><c- k="">typeid</c-><c- p="">(</c-><c- n="">expr</c-><c- p="">)</c-></code>, this isn’t a concern.</p>
+   <h4 class="heading settled" data-level="5.3.4" id="rtti_alt"><span class="secno">5.3.4. </span><span class="content">Alternative designs</span><a class="self-link" href="#rtti_alt"></a></h4>
+    We could also allow the subset of <code class="highlight"><c- k="">typeid</c-><c- p="">(</c-><c- n="">expr</c-><c- p="">)</c-></code> expressions that do not require dynamic dispatch.  If the static type of the expression resolves to a reference to a class with virtual functions, the program would be ill-formed.  I feel that this alternative would be more brittle, and more difficult to teach. 
+   <h4 class="heading settled" data-level="5.3.5" id="rtti_abi"><span class="secno">5.3.5. </span><span class="content">ABI impact</span><a class="self-link" href="#rtti_abi"></a></h4>
     The current major implementations all provide ways to disable RTTI, so there is real world experience here. 
    <p>An object created in an RTTI-enabled implementation can be passed to a no-RTTI implementation, and the RTTI implementation can use it without any ill-effects.  A no-RTTI implementation can create an object, and pass it to an RTTI-enabled implementation, and everything will work fine, so long as <code class="highlight"><c- k="">typeid</c-></code> and <code class="highlight"><c- k="">dynamic_cast</c-></code> are not used on the object.</p>
    <p>A no-RTTI class can inherit from an RTTI class with no ill-effects.  An RTTI-enabled class cannot universally inherit from a no-RTTI class.</p>
+   <p><code class="highlight"><c- k="">typeid</c-><c- p="">(</c-><c- n="">type</c-><c- p="">)</c-></code> across RTTI boundaries can cause trouble on some ABIs.  The Microsoft ABI eagerly emits <code class="highlight"><c- n="">type_info</c-></code> objects and falls back to string comparisons for <code class="highlight"><c- n="">type_info</c-></code> objects, so it gets by just fine.  The Itanium ABI doesn’t always emit <code class="highlight"><c- n="">type_info</c-></code> objects in each TU, so some cross RTTI-boundary cases will result in missing symbols.</p>
    <h3 class="heading settled" data-level="5.4" id="heap"><span class="secno">5.4. </span><span class="content">Default heap storage</span><a class="self-link" href="#heap"></a></h3>
     Feature test macro: <code class="highlight"><c- n="">__cpp_freestanding_no_default_heap</c-></code>. 
    <h4 class="heading settled" data-level="5.4.1" id="heap_same"><span class="secno">5.4.1. </span><span class="content">What isn’t changing?</span><a class="self-link" href="#heap_same"></a></h4>
@@ -1923,22 +1940,26 @@ pre .property::before, pre .property::after {
    <p>Most of <code class="highlight"><c- o="">&lt;</c-><c- n="">cstdint</c-><c- o="">&gt;</c-></code> is optional. <code class="highlight"><c- n="">random_device</c-></code> is optionally useful. <code class="highlight"><c- n="">native_handle</c-></code> functions and <code class="highlight"><c- n="">native_handle_type</c-></code> typedefs are optional.</p>
    <h3 class="heading settled" data-level="8.2" id="arguments_user_fracture"><span class="secno">8.2. </span><span class="content">A subset will fracture the C++ user base</span><a class="self-link" href="#arguments_user_fracture"></a></h3>
     The user base is already fractured, and has been for 20+ years.  This paper may allow more exception neutral code to be shared between code bases, even with the code bases have different exception settings.  I doubt we will ever be able to eliminate the user base fracture, but with the right feature additions and guidance, we can attempt to reduce the magnitude of the fracture. 
-   <h3 class="heading settled" data-level="8.3" id="arguments_vendor_burden"><span class="secno">8.3. </span><span class="content">A dialect will be burdensome to vendors</span><a class="self-link" href="#arguments_vendor_burden"></a></h3>
+   <h3 class="heading settled" data-level="8.3" id="arguments_multi_subset"><span class="secno">8.3. </span><span class="content">This doesn’t propose one subset, it defines many subsets</span><a class="self-link" href="#arguments_multi_subset"></a></h3>
+    No and yes. 
+   <p>This paper proposes one lowest common denominator implementation.  Users can rely on that lowest common denominator to exist.  This is the one subset the paper defines.</p>
+   <p>Vendors are allowed to provide hosted features that aren’t in the minimal freestanding subset.  This paper provides feature test macros and scoping of the feature test macros.  This paper doesn’t go into depth about the interaction of the various hosted features.  This paper hints at these many subsets.  None of the subsets that are between freestanding and hosted can be relied upon in a standards compliant portable manner.  If a user relies on a freestanding implementation that also provides dynamic RTTI (for example), then there is no guarantee that another vendor will provide a subset with the same set of features.</p>
+   <h3 class="heading settled" data-level="8.4" id="arguments_vendor_burden"><span class="secno">8.4. </span><span class="content">A dialect will be burdensome to vendors</span><a class="self-link" href="#arguments_vendor_burden"></a></h3>
     This proposal increases the amount of available work, but does not increase the amount of required work. 
    <p>Vendors are only required to provide one conforming mode.  If a vendor doesn’t have a user base that is interested in freestanding, they won’t be forced to provide it in order to be conforming.  Conversely, if a vendor’s clients only care about freestanding, those vendors won’t be forced to provide a hosted implementation in order to be conforming.</p>
    <p>This proposal does expand the amount of potential work for vendors.  A vendor could choose to try and provide a full hosted toolchain, a minimal freestanding toolchain, and many different sets of features in between hosted and minimal freestanding.  Which subsets to implement is left to the discretion of the vendor.</p>
-   <h3 class="heading settled" data-level="8.4" id="arguments_different_subsets"><span class="secno">8.4. </span><span class="content">Everybody wants a different subset</span><a class="self-link" href="#arguments_different_subsets"></a></h3>
+   <h3 class="heading settled" data-level="8.5" id="arguments_different_subsets"><span class="secno">8.5. </span><span class="content">Everybody wants a different subset</span><a class="self-link" href="#arguments_different_subsets"></a></h3>
     This is mostly true.  That’s why this paper aims for the lowest common denominator, and leaves extensions to the lowest common denominator up to vendors. 
-   <h3 class="heading settled" data-level="8.5" id="arguments_style_guides"><span class="secno">8.5. </span><span class="content">This doesn’t agree with common style guides, like MISRA</span><a class="self-link" href="#arguments_style_guides"></a></h3>
+   <h3 class="heading settled" data-level="8.6" id="arguments_style_guides"><span class="secno">8.6. </span><span class="content">This doesn’t agree with common style guides, like MISRA</span><a class="self-link" href="#arguments_style_guides"></a></h3>
     This paper concerns itself with what is technologically possible.  Style guides are too domain specific for something as general as a lowest common denominator subset. 
-   <h3 class="heading settled" data-level="8.6" id="arguments_committee_burden"><span class="secno">8.6. </span><span class="content">A subset will be burdensome for the committee</span><a class="self-link" href="#arguments_committee_burden"></a></h3>
+   <h3 class="heading settled" data-level="8.7" id="arguments_committee_burden"><span class="secno">8.7. </span><span class="content">A subset will be burdensome for the committee</span><a class="self-link" href="#arguments_committee_burden"></a></h3>
     Maintaining freestanding will require a small amount of ongoing committee time. 
    <p>On the language front, we should be striving for freestanding compatible in the first place.  Language features that are not freestanding compatible are likely not zero-cost abstractions.</p>
    <p>On the library front, we should watch for library features that naturally lend themselves to being freestanding, and encourage the authors to design their library as such.  Some library features don’t naturally lend themselves to being freestanding though, and that’s fine.  I/O facilities and dynamically sized containers are examples of facilities that can safely ignore freestanding mode.</p>
    <p>My expectation is that we spend more time worrying about ABI compatibility than we do about what is in freestanding and what isn’t.</p>
    <h2 class="heading settled" data-level="9" id="ack"><span class="secno">9. </span><span class="content">Acknowledgments</span><a class="self-link" href="#ack"></a></h2>
     Thank you to the many reviewers of this paper:
-Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred Bratterud, Ben Saks, and Phil Hindman 
+Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred Bratterud, and Phil Hindman 
   </main>
 <script>
 (function() {
