@@ -372,6 +372,7 @@ Added <code>identity</code>.<br/>
 Added <code>&lt;contract&gt;</code> and <code>&lt;concepts&gt;</code>.<br/>
 Added new <code>shift_left</code> and <code>shift_right</code> algorithms.<br/>
 Added insert iterators.<br/>
+Added <code>mbstate_t</code> and <code>wint_t</code> for <code>char_traits</code>.<br/>
 <h2> R1 -&gt; R2 </h2>
 Removed <code>atoi</code> because of reliance on <code>isspace</code>.<br/>
 Added <code>visit</code> and <code>bad_variant_access</code>.<br/>
@@ -478,7 +479,35 @@ C++ standard library headers will likely need to add preprocessor feature toggle
 A minimal freestanding C11 standard library will not be sufficient to provide the C portions of the C++ standard library.  <code>std::char_traits</code> and many of the function specializations in <code>&lt;algorithm&gt;</code> are implemented in terms of non-freestanding C functions.  In practice, most C libraries are not minimal freestanding C11 libraries.  The optimized versions of the <code>&lt;cstring&gt;</code> and <code>&lt;cwchar&gt;</code> functions will typically be the same for both hosted and freestanding environments.
 </p><p>
 My expectation is that no new freestanding library will be authored as a result of this paper.  Instead hosted libraries will be stripped down through some feature toggle mechanism to become freestanding.
+</p><p>
+The Microsoft Visual Studio standard library implementation has taken recent steps in version 15.8 (released Aug 14, 2018) to try to better enable uses of the standard library in the kernel.  From the <a href="https://blogs.msdn.microsoft.com/vcblog/2018/09/18/stl-features-and-fixes-in-vs-2017-15-8/">Features and Fixes blog post</a>
+<blockquote>
+The header structure of the STL was changed to allow use of a subset of the library in conditions where the user can’t link with msvcp140.dll, such as driver development. [...] The following headers are now considered “core” and don’t inject our runtime dependencies (though we do still assume some form of CRT headers are present):
+<ul>
+<li><code>&lt;cstddef&gt;</code></li>
+<li><code>&lt;cstdlib&gt;</code></li>
+<li><code>&lt;initializer_list&gt;</code></li>
+<li><code>&lt;ratio&gt;</code></li>
+<li><code>&lt;type_traits&gt;</code></li>
+</ul>
+</blockquote>
+</p><p>
+I had the following email discussion with Jonathan Wakely, the maintainer of libstdc++, the gcc implementation of the C++ standard library.
+<blockquote>
+<b>From: Ben Craig</b><br/>
+<p>
+If *someone* (possibly me) added the maze of #ifdefs to a branch of libstdc++ to support p0829, would the libstdc++ maintainers be willing to accept and maintain such a thing (assuming it is in the working draft, has tests, high quality, etc)?
 </p>
+<b>From: Jonathan Wakely</b><br/>
+<p>
+Yes, definitely. If it's in the WP (and even better, useful to constrained environments) we will support it.
+</p><p>
+GCC is heavily used on bare-metal systems (especially ARM) and if those users can leverage the C++ standard library then we provide more value to them.
+</p>
+</blockquote>
+</p>
+
+
 <h1>Design decisions</h1>
 <p>
 Even more so than for a hosted implementation, systems and embedded programmers do not want to pay for what they don't use.  As a consequence, I am not adding features that require global storage, even if that storage is immutable.
@@ -2571,8 +2600,8 @@ Change in [cwchar.syn]:
 <pre class='codeblock'>
 namespace std {
   using size_t = <span class='textit'>see [support.types.layout]</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  using mbstate_t = <span class='textit'><span class='texttt'>see below</span></span>;
-  using wint_t = <span class='textit'><span class='texttt'>see below</span></span>;
+  using mbstate_t = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  using wint_t = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
   struct tm;
 
