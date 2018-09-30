@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: Leaving no room for a lower-level language: A C++ Subset
 Shortname: D1105
-Revision: 1.3
+Revision: 1.4
 Audience: SG14, SG10, SG1, EWG, LEWG
 Status: D
 Group: WG21
@@ -58,6 +58,11 @@ Poll 5: make throw ill-formed when exceptions aren't available<br/>
 Poll 6: make throw call std::terminate when exceptions aren't available<br/>
 0/4/7/2/0
 
+### SG14 cppcon meeting (Sep 26, 2018) ### {#sg14_cppcon_sep_2018}
+[Minutes](http://wiki.edg.com/bin/view/Wg21sandiego2018/CPPCON2018SG14Meeting2018-09-26)<br/>
+Poll: I want to know if we're on board with a way to disable dynamic, type-based exceptions (this proposal is neutral with respect to static exceptions)<br/>
+(no opposition in this room)
+
 Introduction {#intro}
 =====================
 Conforming C++ toolchains are ill-suited to target kernel and embedded domains.  In practice, kernel and embedded developers almost always use compiler switches that make the toolchain non-conforming.  This means that conforming C++ has left room for a lower-level language: non-conforming C++.  WG21 needs to decide between the lesser of several evils: formalizing a dialect, leaving room for a lower-level language, or massive breakage in real code.  If we do nothing, we will have left room for a lower-level language (C, non-conforming C++).  If we change hosted mode in a way to achieve the zero overhead, no lower-level language goal, we will end up needing to remove valuable features, breaking massive amounts of code.  This paper proposes formalizing a dialect.
@@ -86,6 +91,30 @@ By making freestanding useful, I will be providing a target for toolchain and li
 
 Before-and-after tables {#tony}
 ===============================
+
+No-change, implementation defined {#tony_no_change_impl_defined}
+----------------------------------------------------------------
+<table>
+  <tr>
+    <th>Code</th>
+    <th>Today's conforming freestanding reality</th>
+    <th>Proposed conforming freestanding behavior</th>
+  </tr>
+  <tr>
+    <td><code><pre>//namespace scope
+struct Obj {
+    Obj();
+    ~Obj();
+};
+Obj dynamic_default_init;
+int value_init = 42;
+int zero_init;</pre></code></td>
+    <td>Implementation defined, depending largely on behavior of the loader and whether the normal CRT entry is used / replicated.
+    
+    Whether `Obj::Obj()` or `Obj::~Obj()` are ever called is implementation defined.  It is implementation defined whether `value_init` contains `42` or an indeterminate value.  It is implementation defined whether `zero_init` contains `0` or an indeterminate value.</td>
+    <td>No change</td>
+  </tr>
+</table>
 
 Well-formed {#tony_well_formed}
 ----------------------------
@@ -576,21 +605,33 @@ Non-allocating placement `::operator new` and `::operator delete` will still be 
 ### What am I changing? ### {#heap_what}
 On systems without default heap storage, neither the replaceable allocation functions nor the replaceable deallocation functions are provided by default.
 
-The presence of a `virtual` destructor shall not require `::operator delete` to be provided unless an instance of the object is created with `new`.  Constructors and destructors will not ODR-use non-placement allocation and deallocation functions.  Instead `new` and `delete` expressions will ODR-use the non-placement allocation and dealloction functions.  ([basic.def.odr](http://eel.is/c++draft/basic.def.odr#7))
-
 ### Why? ### {#heap_why}
 Many embedded systems do not have a heap.  Such a system could provide an implementation of `::operator new` that immediately throws `bad_alloc`, but that would require pulling in all the exception handling machinery.  Returning `nullptr` would not be conforming, and would also take up a non-zero amount of space.
 
 Many kernel systems have multiple pools of memory, none of which is suitable as a default.  In the Microsoft Windows kernel, developers have the choice of paged pool, which is plentiful and dangerous; and non-paged pool, which is safe and scarce.  The National Instruments codebase has had experience using each of those options as a default, and both have proven problematic.  The Microsoft Visual Studio compiler switch `/kernel` already implements the lack of default allocation functions. [[kernel_switch]]
 
+### ABI impact ### {#heap_abi}
+No subtle affects.  If a program is expecting a heap to be present where it is not, then the program won't work.
+
+Virtual destructors {#virtual_dtor}
+-----------------------------------
+Feature test macro: `__cpp_freestanding_no_default_heap`.
+
+### What isn't changing? ### {#virtual_dtor_same}
+`virtual` destructors are still permitted and well formed.
+
+### What am I changing? ### {#virtual_dtor_what}
+On systems without default heap storage, the presence of a `virtual` destructor shall not require `::operator delete` to be provided unless an instance of the object is created with `new`.  Constructors and destructors will not ODR-use non-placement allocation and deallocation functions.  Instead `new` and `delete` expressions will ODR-use the non-placement allocation and dealloction functions.  ([basic.def.odr](http://eel.is/c++draft/basic.def.odr#7))
+
+### Why? ### {#virtual_dtor_why}
 In current implementations of `virtual` destructors, the class's vtable points at a stub function that calls the "real" destructor, then calls `::operator delete`.  This places a burden on freestanding users of hosted code, even when the freestanding users aren't using `new` and `delete`.  It seems reasonable to allow a freestanding class to have a `virtual` destructor, so long as the class is never `new`ed or `delete`ed.  Hosted uses of the class can `new` and `delete` all they want.
 
-### How could this virtual destructor ODR-use change be implemented? ### {#heap_how}
+### How could this virtual destructor ODR-use change be implemented? ### {#virtual_dtor_how}
 First, this is only a problem that needs to be solved on systems without a default heap.  This means that typical user-mode desktop and server implementations would be unaffected.
 
 Existing linkers already have the ability to take multiple identical virtual table implementations and pick one for use in the final binary.  A potential implementation strategy is for compilers and linkers to support a new "weaker" linkage.  When the default heap is disabled, the compiler would emit a vtable with a `nullptr` or pure virtual function in the virtual destructor slot.  When `new` is called, a "stronger" linkage vtable would be emitted that has the deleting destructor in the virtual destructor slot.  The linker would then select a vtable with the strongest linkage available.  Today's linkage would be considered "stronger".  Only partially filled vtables would have "weaker" linkage.
 
-### ABI impact ### {#heap_abi}
+### ABI impact ### {#virtual_dtor_abi}
 Mixing multiple object files into the same program should be fine, even if some of them have a default heap and some don't.  All the regular / "strong" linkage vtables should be identical, and all the "weaker" linkage vtables should be identical.  If anyone in the program calls any form of `new`, the deleting destructor will be present and in the right slot.  If no-one calls `new` in the program, then no-one should be calling `delete`, and the empty vtable slot won't be a problem.
 
 Shared libraries are trickier.  Vtables aren't always emitted into every translation unit.  Take shared library "leaf" that has a default heap.  It depends upon shared library "root" that does not have a default heap.  If a class with a virtual destructor is defined in "root", along with its "key function", then a call to `new` on the class in "leaf" will generate an object with a partial vtable.  Calling `delete` on that object will cause UB (usually crashes).
