@@ -32,7 +32,9 @@ Clarifying `if constexpr` comments.  `catch` blocks will still help determine au
 
 Added description of potential virtual destructor implementation.
 
-Added frequently raised arguments section
+Added frequently raised arguments section.
+
+Added design alternative for program termination.
 
 ### SG14 telecon polls (July 11, 2018) ### {#sg14_july_2018}
 [Minutes](https://groups.google.com/a/isocpp.org/forum/#!topic/sg14/8Ye0goaSosU)
@@ -703,6 +705,13 @@ The existence of `atexit`, `at_quick_exit`, `exit`, and `quick_exit` should be i
 
 ### Why? ### {#startup_termination_why}
 These functions require space overhead, and are difficult to optimize away.  Process termination code iterates over the contents of the `atexit` list, pinning the memory in place.
+
+### Alternative designs ### {#startup_termination_alt}
+We could also remove `std::abort`, `std::terminate`, and `_Exit`.  The C library implementers don't necessarily know how to exit the program in whatever random environment a customer uses.  On some environments, jumping to address zero is a legitimate way to reset the processor.  In other environments, a system call is more appropriate.
+
+If we removed these functions, we would have no way to signal any kind of fatal error.  We would need to evaluate what that means for `throw` statements, contracts, and other language facilities.
+
+We could potentially require a function be provided that knows how to terminate on the given platform, and implement `std::abort` and `_Exit` in terms of this user defined function on freestanding.  I do not believe that C++ has done that before.  This would also require WG14 cooperation, as `std::abort` and `_Exit` are inherited from C.
 
 ### ABI impact ### {#startup_termination_abi}
 None?
