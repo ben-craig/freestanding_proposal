@@ -2,7 +2,7 @@
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-  <title>D1105R1.3: Leaving no room for a lower-level language: A C++ Subset</title>
+  <title>D1105R1.4: Leaving no room for a lower-level language: A C++ Subset</title>
 <style data-fill-with="stylesheet">/******************************************************************************
  *                   Style sheet for the W3C specifications                   *
  *
@@ -1227,7 +1227,7 @@ Possible extra rowspan handling
       text-align: center;
     }
   </style>
-  <meta content="Bikeshed version db3f42f38318d417fb038711a846849b7a68ff34" name="generator">
+  <meta content="Bikeshed version dff342f4b23fb230b71436fb31b55f5f169715bd" name="generator">
   <link href="https://htmlpreview.github.io/?https://github.com/ben-craig/freestanding_proposal/blob/master/core/leaving_no_room.html" rel="canonical">
   <link href="https://isocpp.org/favicon.ico" rel="icon">
 <style>/* style-md-lists */
@@ -1438,8 +1438,8 @@ pre .property::before, pre .property::after {
  </head><body class="h-entry toc-sidebar"><p id="toc-nav"><a id="toc-jump" href="#toc"><span aria-hidden="true">↑</span> <span>Jump to Table of Contents</span></a><a id="toc-toggle" href="#toc"><span aria-hidden="true">←</span> <span>Collapse Sidebar</span></a></p>
   <div class="head">
    <p data-fill-with="logo"></p>
-   <h1 class="p-name no-ref" id="title">D1105R1.3<br>Leaving no room for a lower-level language: A C++ Subset</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2018-09-08">2018-09-08</time></span></h2>
+   <h1 class="p-name no-ref" id="title">D1105R1.4<br>Leaving no room for a lower-level language: A C++ Subset</h1>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2018-10-03">2018-10-03</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1475,6 +1475,7 @@ pre .property::before, pre .property::after {
        <ol class="toc">
         <li><a href="#sg14_july_2018"><span class="secno">1.1.1</span> <span class="content">SG14 telecon polls (July 11, 2018)</span></a>
         </li><li><a href="#sg14_online_july_2018"><span class="secno">1.1.2</span> <span class="content">SG14 post-telecon online poll (July 11-15, 2018)</span></a>
+        </li><li><a href="#sg14_cppcon_sep_2018"><span class="secno">1.1.3</span> <span class="content">SG14 cppcon meeting (Sep 26, 2018)</span></a>
        </li></ol>
      </li></ol>
     </li><li><a href="#intro"><span class="secno">2</span> <span class="content">Introduction</span></a>
@@ -1482,8 +1483,9 @@ pre .property::before, pre .property::after {
     </li><li>
      <a href="#tony"><span class="secno">4</span> <span class="content">Before-and-after tables</span></a>
      <ol class="toc">
-      <li><a href="#tony_well_formed"><span class="secno">4.1</span> <span class="content">Well-formed</span></a>
-      </li><li><a href="#tony_ill_formed"><span class="secno">4.2</span> <span class="content">Potentially ill-formed</span></a>
+      <li><a href="#tony_no_change_impl_defined"><span class="secno">4.1</span> <span class="content">No-change, implementation defined</span></a>
+      </li><li><a href="#tony_well_formed"><span class="secno">4.2</span> <span class="content">Well-formed</span></a>
+      </li><li><a href="#tony_ill_formed"><span class="secno">4.3</span> <span class="content">Potentially ill-formed</span></a>
      </li></ol>
     </li><li>
      <a href="#features"><span class="secno">5</span> <span class="content">Features going optional</span></a>
@@ -1520,38 +1522,47 @@ pre .property::before, pre .property::after {
         <li><a href="#heap_same"><span class="secno">5.4.1</span> <span class="content">What isn’t changing?</span></a>
         </li><li><a href="#heap_what"><span class="secno">5.4.2</span> <span class="content">What am I changing?</span></a>
         </li><li><a href="#heap_why"><span class="secno">5.4.3</span> <span class="content">Why?</span></a>
-        </li><li><a href="#heap_how"><span class="secno">5.4.4</span> <span class="content">How could this virtual destructor ODR-use change be implemented?</span></a>
-        </li><li><a href="#heap_abi"><span class="secno">5.4.5</span> <span class="content">ABI impact</span></a>
+        </li><li><a href="#heap_abi"><span class="secno">5.4.4</span> <span class="content">ABI impact</span></a>
        </li></ol>
       </li><li>
-       <a href="#tls"><span class="secno">5.5</span> <span class="content">Thread local storage</span></a>
+       <a href="#virtual_dtor"><span class="secno">5.5</span> <span class="content">Virtual destructors</span></a>
        <ol class="toc">
-        <li><a href="#tls_what"><span class="secno">5.5.1</span> <span class="content">What am I changing?</span></a>
-        </li><li><a href="#tls_why"><span class="secno">5.5.2</span> <span class="content">Why?</span></a>
-        </li><li><a href="#tls_abi"><span class="secno">5.5.3</span> <span class="content">ABI impact</span></a>
+        <li><a href="#virtual_dtor_same"><span class="secno">5.5.1</span> <span class="content">What isn’t changing?</span></a>
+        </li><li><a href="#virtual_dtor_what"><span class="secno">5.5.2</span> <span class="content">What am I changing?</span></a>
+        </li><li><a href="#virtual_dtor_why"><span class="secno">5.5.3</span> <span class="content">Why?</span></a>
+        </li><li><a href="#virtual_dtor_how"><span class="secno">5.5.4</span> <span class="content">How could this virtual destructor ODR-use change be implemented?</span></a>
+        </li><li><a href="#virtual_dtor_abi"><span class="secno">5.5.5</span> <span class="content">ABI impact</span></a>
        </li></ol>
       </li><li>
-       <a href="#float"><span class="secno">5.6</span> <span class="content">Floating point</span></a>
+       <a href="#tls"><span class="secno">5.6</span> <span class="content">Thread local storage</span></a>
        <ol class="toc">
-        <li><a href="#float_what"><span class="secno">5.6.1</span> <span class="content">What am I changing?</span></a>
-        </li><li><a href="#float_why"><span class="secno">5.6.2</span> <span class="content">Why?</span></a>
-        </li><li><a href="#float_abi"><span class="secno">5.6.3</span> <span class="content">ABI impact</span></a>
+        <li><a href="#tls_what"><span class="secno">5.6.1</span> <span class="content">What am I changing?</span></a>
+        </li><li><a href="#tls_why"><span class="secno">5.6.2</span> <span class="content">Why?</span></a>
+        </li><li><a href="#tls_abi"><span class="secno">5.6.3</span> <span class="content">ABI impact</span></a>
        </li></ol>
       </li><li>
-       <a href="#startup_termination"><span class="secno">5.7</span> <span class="content">Program start-up and termination</span></a>
+       <a href="#float"><span class="secno">5.7</span> <span class="content">Floating point</span></a>
        <ol class="toc">
-        <li><a href="#startup_termination_same"><span class="secno">5.7.1</span> <span class="content">What isn’t changing</span></a>
-        </li><li><a href="#startup_termination_rationalization"><span class="secno">5.7.2</span> <span class="content">Rationalization for the status quo</span></a>
-        </li><li><a href="#startup_termination_what"><span class="secno">5.7.3</span> <span class="content">What am I changing?</span></a>
-        </li><li><a href="#startup_termination_why"><span class="secno">5.7.4</span> <span class="content">Why?</span></a>
-        </li><li><a href="#startup_termination_abi"><span class="secno">5.7.5</span> <span class="content">ABI impact</span></a>
+        <li><a href="#float_what"><span class="secno">5.7.1</span> <span class="content">What am I changing?</span></a>
+        </li><li><a href="#float_why"><span class="secno">5.7.2</span> <span class="content">Why?</span></a>
+        </li><li><a href="#float_abi"><span class="secno">5.7.3</span> <span class="content">ABI impact</span></a>
        </li></ol>
       </li><li>
-       <a href="#blocking"><span class="secno">5.8</span> <span class="content">Language mandated blocking synchronization</span></a>
+       <a href="#startup_termination"><span class="secno">5.8</span> <span class="content">Program start-up and termination</span></a>
        <ol class="toc">
-        <li><a href="#blocking_what"><span class="secno">5.8.1</span> <span class="content">What am I changing?</span></a>
-        </li><li><a href="#blocking_why"><span class="secno">5.8.2</span> <span class="content">Why?</span></a>
-        </li><li><a href="#blocking_abi"><span class="secno">5.8.3</span> <span class="content">ABI impact</span></a>
+        <li><a href="#startup_termination_same"><span class="secno">5.8.1</span> <span class="content">What isn’t changing</span></a>
+        </li><li><a href="#startup_termination_rationalization"><span class="secno">5.8.2</span> <span class="content">Rationalization for the status quo</span></a>
+        </li><li><a href="#startup_termination_what"><span class="secno">5.8.3</span> <span class="content">What am I changing?</span></a>
+        </li><li><a href="#startup_termination_why"><span class="secno">5.8.4</span> <span class="content">Why?</span></a>
+        </li><li><a href="#startup_termination_alt"><span class="secno">5.8.5</span> <span class="content">Alternative designs</span></a>
+        </li><li><a href="#startup_termination_abi"><span class="secno">5.8.6</span> <span class="content">ABI impact</span></a>
+       </li></ol>
+      </li><li>
+       <a href="#blocking"><span class="secno">5.9</span> <span class="content">Language mandated blocking synchronization</span></a>
+       <ol class="toc">
+        <li><a href="#blocking_what"><span class="secno">5.9.1</span> <span class="content">What am I changing?</span></a>
+        </li><li><a href="#blocking_why"><span class="secno">5.9.2</span> <span class="content">Why?</span></a>
+        </li><li><a href="#blocking_abi"><span class="secno">5.9.3</span> <span class="content">ABI impact</span></a>
        </li></ol>
      </li></ol>
     </li><li>
@@ -1599,7 +1610,8 @@ pre .property::before, pre .property::after {
    <p>Changed thread-safe statics feature test macro.</p>
    <p>Clarifying <code class="highlight"><c- k="">if</c-> <c- k="">constexpr</c-></code> comments. <code class="highlight"><c- k="">catch</c-></code> blocks will still help determine auto return types.</p>
    <p>Added description of potential virtual destructor implementation.</p>
-   <p>Added frequently raised arguments section</p>
+   <p>Added frequently raised arguments section.</p>
+   <p>Added design alternative for program termination.</p>
    <h4 class="heading settled" data-level="1.1.1" id="sg14_july_2018"><span class="secno">1.1.1. </span><span class="content">SG14 telecon polls (July 11, 2018)</span><a class="self-link" href="#sg14_july_2018"></a></h4>
     <a href="https://groups.google.com/a/isocpp.org/forum/#!topic/sg14/8Ye0goaSosU">Minutes</a> 
    <p>Poll 1: get rid of freestanding<br> 0/1/2/9/11</p>
@@ -1610,6 +1622,8 @@ pre .property::before, pre .property::after {
    <p>Poll 4: make throw UB when exceptions aren’t available<br> 0/3/6/3/1</p>
    <p>Poll 5: make throw ill-formed when exceptions aren’t available<br> 1/3/1/5/3</p>
    <p>Poll 6: make throw call std::terminate when exceptions aren’t available<br> 0/4/7/2/0</p>
+   <h4 class="heading settled" data-level="1.1.3" id="sg14_cppcon_sep_2018"><span class="secno">1.1.3. </span><span class="content">SG14 cppcon meeting (Sep 26, 2018)</span><a class="self-link" href="#sg14_cppcon_sep_2018"></a></h4>
+    <a href="http://wiki.edg.com/bin/view/Wg21sandiego2018/CPPCON2018SG14Meeting2018-09-26">Minutes</a><br> Poll: I want to know if we’re on board with a way to disable dynamic, type-based exceptions (this proposal is neutral with respect to static exceptions)<br> (no opposition in this room) 
    <h2 class="heading settled" data-level="2" id="intro"><span class="secno">2. </span><span class="content">Introduction</span><a class="self-link" href="#intro"></a></h2>
     Conforming C++ toolchains are ill-suited to target kernel and embedded domains.  In practice, kernel and embedded developers almost always use compiler switches that make the toolchain non-conforming.  This means that conforming C++ has left room for a lower-level language: non-conforming C++.  WG21 needs to decide between the lesser of several evils: formalizing a dialect, leaving room for a lower-level language, or massive breakage in real code.  If we do nothing, we will have left room for a lower-level language (C, non-conforming C++).  If we change hosted mode in a way to achieve the zero overhead, no lower-level language goal, we will end up needing to remove valuable features, breaking massive amounts of code.  This paper proposes formalizing a dialect. 
    <p>It is my intent that this be the least bad form of dialect, the proper subset.  All valid freestanding libraries should be valid hosted libraries with compatible semantics.</p>
@@ -1624,7 +1638,29 @@ pre .property::before, pre .property::after {
    <p>First, I will answer those questions with another question: Why bring any proposal into the standard?  Presumably the authors of those proposals could get work done without the proposal.  Proposal authors are resourceful people, and can probably implement their papers in a fork of an existing compiler or standard library.  Yet they go through the hassle and expense of presenting papers to WG21 anyway.</p>
    <p>By making freestanding useful, I will be providing a target for toolchain and library authors.  Library authors that wish to make their libraries as portable as possible will have a standardized lowest common denominator to write against.  Purchasers will be better able to make requests of their vendors for freestanding compliant products.  Educators will be better able to teach about the requirements of kernel and embedded programming.  Tool vendors can better prioritize work on conforming compiler modes, and possibly reject new, ad-hoc non-conforming modes.  Users can get uniform behavior on what is currently an inconsistent set of vendor extensions.</p>
    <h2 class="heading settled" data-level="4" id="tony"><span class="secno">4. </span><span class="content">Before-and-after tables</span><a class="self-link" href="#tony"></a></h2>
-   <h3 class="heading settled" data-level="4.1" id="tony_well_formed"><span class="secno">4.1. </span><span class="content">Well-formed</span><a class="self-link" href="#tony_well_formed"></a></h3>
+   <h3 class="heading settled" data-level="4.1" id="tony_no_change_impl_defined"><span class="secno">4.1. </span><span class="content">No-change, implementation defined</span><a class="self-link" href="#tony_no_change_impl_defined"></a></h3>
+   <p></p>
+   <table>
+    <tbody>
+     <tr>
+      <th>Code
+      </th><th>Today’s conforming freestanding reality
+      </th><th>Proposed conforming freestanding behavior
+     </th></tr><tr>
+      <td><code class="highlight"><pre class="highlight"><c- c1=""><c- c1="">//namespace scope</c-></c->
+<c- k=""><c- k="">struct</c-></c-> <c- n=""><c- n="">Obj</c-></c-> <c- p=""><c- p="">{</c-></c->
+    <c- n=""><c- n="">Obj</c-></c-><c- p=""><c- p="">();</c-></c->
+    <c- o=""><c- o="">~</c-></c-><c- n=""><c- n="">Obj</c-></c-><c- p=""><c- p="">();</c-></c->
+<c- p=""><c- p="">};</c-></c->
+<c- n=""><c- n="">Obj</c-></c-> <c- n=""><c- n="">dynamic_default_init</c-></c-><c- p=""><c- p="">;</c-></c->
+<c- b=""><c- b="">int</c-></c-> <c- n=""><c- n="">value_init</c-></c-> <c- o=""><c- o="">=</c-></c-> <c- mi=""><c- mi="">42</c-></c-><c- p=""><c- p="">;</c-></c->
+<c- b=""><c- b="">int</c-></c-> <c- n=""><c- n="">zero_init</c-></c-><c- p=""><c- p="">;</c-></c-></pre></code>
+      </td><td>
+       Implementation defined, depending largely on behavior of the loader and whether the normal CRT entry is used / replicated. 
+       <p>Whether <code class="highlight"><c- n="">Obj</c-><c- o="">::</c-><c- n="">Obj</c-><c- p="">()</c-></code> or <code class="highlight"><c- n="">Obj</c-><c- o="">::~</c-><c- n="">Obj</c-><c- p="">()</c-></code> are ever called is implementation defined.  It is implementation defined whether <code class="highlight"><c- n="">value_init</c-></code> contains <code class="highlight"><c- mi="">42</c-></code> or an indeterminate value.  It is implementation defined whether <code class="highlight"><c- n="">zero_init</c-></code> contains <code class="highlight"><c- mi="">0</c-></code> or an indeterminate value.</p>
+      </td><td>No change
+   </td></tr></tbody></table>
+   <h3 class="heading settled" data-level="4.2" id="tony_well_formed"><span class="secno">4.2. </span><span class="content">Well-formed</span><a class="self-link" href="#tony_well_formed"></a></h3>
    <table>
     <tbody>
      <tr>
@@ -1664,7 +1700,7 @@ pre .property::before, pre .property::after {
       </td><td><b>Visual Studio 2017, /kernel</b> <br>error LNK2019: unresolved external symbol "void __cdecl operator delete(void *,unsigned)" <br> <br><b>gcc 8.1 and clang 6.0.0, -nostdlib</b> <br>undefined reference to "operator delete(void*, unsigned long)" <br>undefined reference to "vtable for __cxxabiv1::__class_type_info" 
       </td><td><b>Proposed option:</b> <br>Well-formed, even if the heap is not enabled. 
    </td></tr></tbody></table>
-   <h3 class="heading settled" data-level="4.2" id="tony_ill_formed"><span class="secno">4.2. </span><span class="content">Potentially ill-formed</span><a class="self-link" href="#tony_ill_formed"></a></h3>
+   <h3 class="heading settled" data-level="4.3" id="tony_ill_formed"><span class="secno">4.3. </span><span class="content">Potentially ill-formed</span><a class="self-link" href="#tony_ill_formed"></a></h3>
    <p></p>
    <table>
     <tbody>
@@ -1739,7 +1775,7 @@ pre .property::before, pre .property::after {
     Feature test macro: <code class="highlight"><c- n="">__cpp_freestanding_no_exceptions</c-></code>.  Users can check <code class="highlight"><c- n="">__cpp_freestanding_no_exceptions</c-></code> when they want to determine what behavior <code class="highlight"><c- k="">throw</c-></code> will have.  The lack of the pre-existing <code class="highlight"><c- n="">__cpp_exceptions</c-></code> macro from <a data-link-type="biblio" href="#biblio-sd6">[SD6]</a> would not provide that information. 
    <p>This section applies to "dynamic" exceptions.  In other words, the exceptions we have had since C++98. <a data-link-type="biblio" href="#biblio-p0709">[P0709]</a> could add "static" exceptions.  I am keeping static exceptions in mind with this design, but I’m not providing any wording against that proposal.</p>
    <h4 class="heading settled" data-level="5.1.1" id="exception_why"><span class="secno">5.1.1. </span><span class="content">Why make this optional?</span><a class="self-link" href="#exception_why"></a></h4>
-    Kernel and embedded environments can’t universally afford exceptions.  Throwing an exception requires a heap allocation on the Itanium ABI, and a large stack allocation on the Microsoft ABI, neither of which are suitable in kernel and embedded environments.  Throwing an exception requires TLS (<a href="#tls">§5.5 Thread local storage</a>) in order to propagate the number of uncaught exceptions.  Windows, Linux, Mac, and FreeBSD don’t allow drivers to store arbitrary TLS data, and they don’t have any special handling for C++ specific TLS requirements, like the number of uncaught exceptions. 
+    Kernel and embedded environments can’t universally afford exceptions.  Throwing an exception requires a heap allocation on the Itanium ABI, and a large stack allocation on the Microsoft ABI, neither of which are suitable in kernel and embedded environments.  Throwing an exception requires TLS (<a href="#tls">§5.6 Thread local storage</a>) in order to propagate the number of uncaught exceptions.  Windows, Linux, Mac, and FreeBSD don’t allow drivers to store arbitrary TLS data, and they don’t have any special handling for C++ specific TLS requirements, like the number of uncaught exceptions. 
    <p>Even when exceptions aren’t thrown, there is a large space cost.  Table based exception costs grow roughly in proportion to the size and complexity of the program, and not in the number of <code class="highlight"><c- k="">throw</c-></code> sites, <code class="highlight"><c- k="">catch</c-></code> sites, or frames traversed in an exception <code class="highlight"><c- k="">throw</c-></code>.  Since table based exception costs grows with program size, rather than how much it is used, it is not zero overhead. <code class="highlight"><c- n="">setjmp</c-></code> / <code class="highlight"><c- n="">longjmp</c-></code> exception size costs are similar in these regards.</p>
    <p>See <a data-link-type="biblio" href="#biblio-p0709">[P0709]</a> for further discussion on the problems with exceptions.</p>
    <h4 class="heading settled" data-level="5.1.2" id="exception_same"><span class="secno">5.1.2. </span><span class="content">What isn’t changing?</span><a class="self-link" href="#exception_same"></a></h4>
@@ -1791,8 +1827,8 @@ pre .property::before, pre .property::after {
      <p><code class="highlight"><c- n="">throw_with_nested</c-></code> and <code class="highlight"><c- n="">rethrow_if_nested</c-></code></p>
    </li></ul>
    <h4 class="heading settled" data-level="5.2.3" id="exception_header_why"><span class="secno">5.2.3. </span><span class="content">Why?</span><a class="self-link" href="#exception_header_why"></a></h4>
-    The terminate handler functions require synchronizing a global variable.  Freestanding environments do not have a reliable way to do that (see <a href="#blocking">§5.8 Language mandated blocking synchronization</a>).  The default terminate handler is typically suitable. 
-   <p><code class="highlight"><c- n="">uncaught_exceptions</c-></code> relies on thread-local storage (see <a href="#tls">§5.5 Thread local storage</a>).  Hard coding a return value of zero would work for existing implementations, but it would close off potential future designs (see <a href="#p0709">§6.1 [P0709] Zero-overhead deterministic exceptions</a>).</p>
+    The terminate handler functions require synchronizing a global variable.  Freestanding environments do not have a reliable way to do that (see <a href="#blocking">§5.9 Language mandated blocking synchronization</a>).  The default terminate handler is typically suitable. 
+   <p><code class="highlight"><c- n="">uncaught_exceptions</c-></code> relies on thread-local storage (see <a href="#tls">§5.6 Thread local storage</a>).  Hard coding a return value of zero would work for existing implementations, but it would close off potential future designs (see <a href="#p0709">§6.1 [P0709] Zero-overhead deterministic exceptions</a>).</p>
    <p>The <code class="highlight"><c- n="">exception_ptr</c-></code> and <code class="highlight"><c- n="">throw_with_nested</c-></code> facilities require heap allocations and/or thread-local storage.</p>
    <h4 class="heading settled" data-level="5.2.4" id="exception_header_alt"><span class="secno">5.2.4. </span><span class="content">Alternative designs</span><a class="self-link" href="#exception_header_alt"></a></h4>
    <ol>
@@ -1830,41 +1866,49 @@ pre .property::before, pre .property::after {
     Non-allocating placement <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> and <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> will still be present.  Users will still be allowed to implement the replaceable allocation and deallocation functions, as well as provide class specific implementations of <code class="highlight"><c- k="">operator</c-> <c- k="">new</c-></code> and <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code>. 
    <h4 class="heading settled" data-level="5.4.2" id="heap_what"><span class="secno">5.4.2. </span><span class="content">What am I changing?</span><a class="self-link" href="#heap_what"></a></h4>
     On systems without default heap storage, neither the replaceable allocation functions nor the replaceable deallocation functions are provided by default. 
-   <p>The presence of a <code class="highlight"><c- k="">virtual</c-></code> destructor shall not require <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> to be provided unless an instance of the object is created with <code class="highlight"><c- k="">new</c-></code>.  Constructors and destructors will not ODR-use non-placement allocation and deallocation functions.  Instead <code class="highlight"><c- k="">new</c-></code> and <code class="highlight"><c- k="">delete</c-></code> expressions will ODR-use the non-placement allocation and dealloction functions.  (<a href="http://eel.is/c++draft/basic.def.odr#7">basic.def.odr</a>)</p>
    <h4 class="heading settled" data-level="5.4.3" id="heap_why"><span class="secno">5.4.3. </span><span class="content">Why?</span><a class="self-link" href="#heap_why"></a></h4>
     Many embedded systems do not have a heap.  Such a system could provide an implementation of <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> that immediately throws <code class="highlight"><c- n="">bad_alloc</c-></code>, but that would require pulling in all the exception handling machinery.  Returning <code class="highlight"><c- k="">nullptr</c-></code> would not be conforming, and would also take up a non-zero amount of space. 
    <p>Many kernel systems have multiple pools of memory, none of which is suitable as a default.  In the Microsoft Windows kernel, developers have the choice of paged pool, which is plentiful and dangerous; and non-paged pool, which is safe and scarce.  The National Instruments codebase has had experience using each of those options as a default, and both have proven problematic.  The Microsoft Visual Studio compiler switch <code class="highlight"><c- o="">/</c-><c- n="">kernel</c-></code> already implements the lack of default allocation functions. <a data-link-type="biblio" href="#biblio-kernel_switch">[kernel_switch]</a></p>
-   <p>In current implementations of <code class="highlight"><c- k="">virtual</c-></code> destructors, the class’s vtable points at a stub function that calls the "real" destructor, then calls <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code>.  This places a burden on freestanding users of hosted code, even when the freestanding users aren’t using <code class="highlight"><c- k="">new</c-></code> and <code class="highlight"><c- k="">delete</c-></code>.  It seems reasonable to allow a freestanding class to have a <code class="highlight"><c- k="">virtual</c-></code> destructor, so long as the class is never <code class="highlight"><c- k="">new</c-></code>ed or <code class="highlight"><c- k="">delete</c-></code>ed.  Hosted uses of the class can <code class="highlight"><c- k="">new</c-></code> and <code class="highlight"><c- k="">delete</c-></code> all they want.</p>
-   <h4 class="heading settled" data-level="5.4.4" id="heap_how"><span class="secno">5.4.4. </span><span class="content">How could this virtual destructor ODR-use change be implemented?</span><a class="self-link" href="#heap_how"></a></h4>
+   <h4 class="heading settled" data-level="5.4.4" id="heap_abi"><span class="secno">5.4.4. </span><span class="content">ABI impact</span><a class="self-link" href="#heap_abi"></a></h4>
+    No subtle affects.  If a program is expecting a heap to be present where it is not, then the program won’t work. 
+   <h3 class="heading settled" data-level="5.5" id="virtual_dtor"><span class="secno">5.5. </span><span class="content">Virtual destructors</span><a class="self-link" href="#virtual_dtor"></a></h3>
+    Feature test macro: <code class="highlight"><c- n="">__cpp_freestanding_no_default_heap</c-></code>. 
+   <h4 class="heading settled" data-level="5.5.1" id="virtual_dtor_same"><span class="secno">5.5.1. </span><span class="content">What isn’t changing?</span><a class="self-link" href="#virtual_dtor_same"></a></h4>
+    <code class="highlight"><c- k="">virtual</c-></code> destructors are still permitted and well formed. 
+   <h4 class="heading settled" data-level="5.5.2" id="virtual_dtor_what"><span class="secno">5.5.2. </span><span class="content">What am I changing?</span><a class="self-link" href="#virtual_dtor_what"></a></h4>
+    On systems without default heap storage, the presence of a <code class="highlight"><c- k="">virtual</c-></code> destructor shall not require <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> to be provided unless an instance of the object is created with <code class="highlight"><c- k="">new</c-></code>.  Constructors and destructors will not ODR-use non-placement allocation and deallocation functions.  Instead <code class="highlight"><c- k="">new</c-></code> and <code class="highlight"><c- k="">delete</c-></code> expressions will ODR-use the non-placement allocation and dealloction functions.  (<a href="http://eel.is/c++draft/basic.def.odr#7">basic.def.odr</a>) 
+   <h4 class="heading settled" data-level="5.5.3" id="virtual_dtor_why"><span class="secno">5.5.3. </span><span class="content">Why?</span><a class="self-link" href="#virtual_dtor_why"></a></h4>
+    In current implementations of <code class="highlight"><c- k="">virtual</c-></code> destructors, the class’s vtable points at a stub function that calls the "real" destructor, then calls <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code>.  This places a burden on freestanding users of hosted code, even when the freestanding users aren’t using <code class="highlight"><c- k="">new</c-></code> and <code class="highlight"><c- k="">delete</c-></code>.  It seems reasonable to allow a freestanding class to have a <code class="highlight"><c- k="">virtual</c-></code> destructor, so long as the class is never <code class="highlight"><c- k="">new</c-></code>ed or <code class="highlight"><c- k="">delete</c-></code>ed.  Hosted uses of the class can <code class="highlight"><c- k="">new</c-></code> and <code class="highlight"><c- k="">delete</c-></code> all they want. 
+   <h4 class="heading settled" data-level="5.5.4" id="virtual_dtor_how"><span class="secno">5.5.4. </span><span class="content">How could this virtual destructor ODR-use change be implemented?</span><a class="self-link" href="#virtual_dtor_how"></a></h4>
     First, this is only a problem that needs to be solved on systems without a default heap.  This means that typical user-mode desktop and server implementations would be unaffected. 
    <p>Existing linkers already have the ability to take multiple identical virtual table implementations and pick one for use in the final binary.  A potential implementation strategy is for compilers and linkers to support a new "weaker" linkage.  When the default heap is disabled, the compiler would emit a vtable with a <code class="highlight"><c- k="">nullptr</c-></code> or pure virtual function in the virtual destructor slot.  When <code class="highlight"><c- k="">new</c-></code> is called, a "stronger" linkage vtable would be emitted that has the deleting destructor in the virtual destructor slot.  The linker would then select a vtable with the strongest linkage available.  Today’s linkage would be considered "stronger".  Only partially filled vtables would have "weaker" linkage.</p>
-   <h4 class="heading settled" data-level="5.4.5" id="heap_abi"><span class="secno">5.4.5. </span><span class="content">ABI impact</span><a class="self-link" href="#heap_abi"></a></h4>
+   <h4 class="heading settled" data-level="5.5.5" id="virtual_dtor_abi"><span class="secno">5.5.5. </span><span class="content">ABI impact</span><a class="self-link" href="#virtual_dtor_abi"></a></h4>
     Mixing multiple object files into the same program should be fine, even if some of them have a default heap and some don’t.  All the regular / "strong" linkage vtables should be identical, and all the "weaker" linkage vtables should be identical.  If anyone in the program calls any form of <code class="highlight"><c- k="">new</c-></code>, the deleting destructor will be present and in the right slot.  If no-one calls <code class="highlight"><c- k="">new</c-></code> in the program, then no-one should be calling <code class="highlight"><c- k="">delete</c-></code>, and the empty vtable slot won’t be a problem. 
    <p>Shared libraries are trickier.  Vtables aren’t always emitted into every translation unit.  Take shared library "leaf" that has a default heap.  It depends upon shared library "root" that does not have a default heap.  If a class with a virtual destructor is defined in "root", along with its "key function", then a call to <code class="highlight"><c- k="">new</c-></code> on the class in "leaf" will generate an object with a partial vtable.  Calling <code class="highlight"><c- k="">delete</c-></code> on that object will cause UB (usually crashes).</p>
    <p>Lack of a default heap should generally be considered a trait of the platform.  Mixing this configuration shouldn’t be a common occurrence.</p>
-   <h3 class="heading settled" data-level="5.5" id="tls"><span class="secno">5.5. </span><span class="content">Thread local storage</span><a class="self-link" href="#tls"></a></h3>
+   <h3 class="heading settled" data-level="5.6" id="tls"><span class="secno">5.6. </span><span class="content">Thread local storage</span><a class="self-link" href="#tls"></a></h3>
     Feature test macro: <code class="highlight"><c- n="">__cpp_freestanding_no_thread_local_storage</c-></code>. 
-   <h4 class="heading settled" data-level="5.5.1" id="tls_what"><span class="secno">5.5.1. </span><span class="content">What am I changing?</span><a class="self-link" href="#tls_what"></a></h4>
+   <h4 class="heading settled" data-level="5.6.1" id="tls_what"><span class="secno">5.6.1. </span><span class="content">What am I changing?</span><a class="self-link" href="#tls_what"></a></h4>
     Programs using the <code class="highlight"><c- k="">thread_local</c-></code> storage class specifier are ill-formed if the environment does not provide thread local storage. 
-   <h4 class="heading settled" data-level="5.5.2" id="tls_why"><span class="secno">5.5.2. </span><span class="content">Why?</span><a class="self-link" href="#tls_why"></a></h4>
+   <h4 class="heading settled" data-level="5.6.2" id="tls_why"><span class="secno">5.6.2. </span><span class="content">Why?</span><a class="self-link" href="#tls_why"></a></h4>
     Thread local storage requires cooperation from the operating system. 
    <p>For embedded platforms, there may not be an operating system.  Implementing thread local storage on those platforms would be extra runtime overhead.</p>
    <p>For kernel platforms, and drivers in particular, the operating system may be owned by a third party.  The third party may not provide arbitrary thread local storage for plugins.  Neither Linux, Microsoft Windows, Apple OSX, FreeBSD, nor OpenRTOS support arbitrary thread local storage in the kernel.</p>
-   <h4 class="heading settled" data-level="5.5.3" id="tls_abi"><span class="secno">5.5.3. </span><span class="content">ABI impact</span><a class="self-link" href="#tls_abi"></a></h4>
+   <h4 class="heading settled" data-level="5.6.3" id="tls_abi"><span class="secno">5.6.3. </span><span class="content">ABI impact</span><a class="self-link" href="#tls_abi"></a></h4>
    <p>Disabling TLS should have no direct effect on the ABI.  In programs with mixed TLS settings, the no-TLS code should have no effect on the allocation or use of TLS in the TLS-enabled parts of the code.</p>
    <p>If a TLS-enabled function communicates information to callers or callees via TLS, then TLS-disabled code would not be capable of using that communication channel.</p>
-   <h3 class="heading settled" data-level="5.6" id="float"><span class="secno">5.6. </span><span class="content">Floating point</span><a class="self-link" href="#float"></a></h3>
+   <h3 class="heading settled" data-level="5.7" id="float"><span class="secno">5.7. </span><span class="content">Floating point</span><a class="self-link" href="#float"></a></h3>
     Feature test macro: <code class="highlight"><c- n="">__cpp_freestanding_no_floating_point_support</c-></code>. 
-   <h4 class="heading settled" data-level="5.6.1" id="float_what"><span class="secno">5.6.1. </span><span class="content">What am I changing?</span><a class="self-link" href="#float_what"></a></h4>
+   <h4 class="heading settled" data-level="5.7.1" id="float_what"><span class="secno">5.7.1. </span><span class="content">What am I changing?</span><a class="self-link" href="#float_what"></a></h4>
     The <code class="highlight"><c- b="">float</c-></code>, <code class="highlight"><c- b="">double</c-></code>, and <code class="highlight"><c- b="">long</c-> <c- b="">double</c-></code> types are ill-formed if the environment does not have floating point support. 
    <p><code class="highlight"><c- o="">&lt;</c-><c- n="">cfloat</c-><c- o="">&gt;</c-></code> is not required to be present in environments without floating point support. <code class="highlight"><c- n="">numeric_limits</c-><c- o="">&lt;</c-><c- n="">floating</c-> <c- n="">point</c-> <c- n="">type</c-><c- o="">&gt;</c-></code> is not required to be present in environments without floating point support.</p>
-   <h4 class="heading settled" data-level="5.6.2" id="float_why"><span class="secno">5.6.2. </span><span class="content">Why?</span><a class="self-link" href="#float_why"></a></h4>
+   <h4 class="heading settled" data-level="5.7.2" id="float_why"><span class="secno">5.7.2. </span><span class="content">Why?</span><a class="self-link" href="#float_why"></a></h4>
     Many embedded processors do not have floating point units.  The cost for the first usage of floating point is very high, as that pulls in floating point emulation libraries. 
    <p>In kernel environments, floating point operations are avoided.  The system call interface from user mode to kernel mode normally does a partial context switch, where it saves off the old values of registers, so that they can be restored when returning to user mode.  In order to make user / kernel transitions fast, operating systems usually don’t automatically save or restore the floating point state.  This means that carelessly using floating point in the kernel ends up corrupting the user mode program’s floating point state.</p>
-   <h4 class="heading settled" data-level="5.6.3" id="float_abi"><span class="secno">5.6.3. </span><span class="content">ABI impact</span><a class="self-link" href="#float_abi"></a></h4>
+   <h4 class="heading settled" data-level="5.7.3" id="float_abi"><span class="secno">5.7.3. </span><span class="content">ABI impact</span><a class="self-link" href="#float_abi"></a></h4>
     Floating point functions would not be usable (obviously).  When no floating point is used, the difference between hard-float and soft-float ABIs on ARM and MIPS should be none. 
    <p>Environments where floating point support is prohibited may need to use different implementations of some common functions.  For example, in many environments, <code class="highlight"><c- n="">memcpy</c-></code> will use vectorized instructions that touch floating point registers.  In an environment where floating point is prohibited (like many OS kernels), the implementation of <code class="highlight"><c- n="">memcpy</c-></code> will need to avoid using floating point registers.</p>
-   <h3 class="heading settled" data-level="5.7" id="startup_termination"><span class="secno">5.7. </span><span class="content">Program start-up and termination</span><a class="self-link" href="#startup_termination"></a></h3>
+   <h3 class="heading settled" data-level="5.8" id="startup_termination"><span class="secno">5.8. </span><span class="content">Program start-up and termination</span><a class="self-link" href="#startup_termination"></a></h3>
     Feature test macros: 
    <ul>
     <li data-md="">
@@ -1874,22 +1918,26 @@ pre .property::before, pre .property::after {
     </li><li data-md="">
      <p><code class="highlight"><c- n="">__cpp_freestanding_no_termination</c-></code>.</p>
    </li></ul>
-   <h4 class="heading settled" data-level="5.7.1" id="startup_termination_same"><span class="secno">5.7.1. </span><span class="content">What isn’t changing</span><a class="self-link" href="#startup_termination_same"></a></h4>
+   <h4 class="heading settled" data-level="5.8.1" id="startup_termination_same"><span class="secno">5.8.1. </span><span class="content">What isn’t changing</span><a class="self-link" href="#startup_termination_same"></a></h4>
     <a href="http://wg21.link/basic.start.main">basic.start.main</a> already makes start-up and termination implementation defined for freestanding implementations.  I interpret this as meaning that neither static initialization nor dynamic initialization is required to take place.  This also means that non-local object destruction is implementation defined. 
    <p><code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">abort</c-></code> and <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">terminate</c-></code> will remain in the library. <code class="highlight"><c- n="">_Exit</c-></code> will be in the library assuming <a data-link-type="biblio" href="#biblio-p0829">[P0829]</a> is accepted.</p>
-   <h4 class="heading settled" data-level="5.7.2" id="startup_termination_rationalization"><span class="secno">5.7.2. </span><span class="content">Rationalization for the status quo</span><a class="self-link" href="#startup_termination_rationalization"></a></h4>
+   <h4 class="heading settled" data-level="5.8.2" id="startup_termination_rationalization"><span class="secno">5.8.2. </span><span class="content">Rationalization for the status quo</span><a class="self-link" href="#startup_termination_rationalization"></a></h4>
     Zero-overhead is a very sharp edge.  Initializing global, mutable data to zero requires the runtime code to know a range of bytes, and then the runtime code needs to memset those bytes to zero.  Applications that do not care about zero initialization could have better uses for those bytes and startup time. 
    <p>All code which runs before the user’s code could be considered unwanted overhead in some applications.  All code that runs after the user’s code could also be considered unwanted overhead.  Also, the "early" code that does initialization needs to be written in some language, and if we require zero initialization to happen before anything else, then that excludes C++ from being used to write early startup code.</p>
    <p>In practice, I expect zero initialization and static initialization to be the most used freestanding extension.</p>
    <p><code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">abort</c-></code> and <code class="highlight"><c- n="">_Exit</c-></code> do not call global destructors, global registration functions, or flush file I/O. <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">terminate</c-></code> does not call destructors or flush file I/O, but it does call a global registration function. <a href="#exception_header">§5.2 Parts of &lt;exception&gt; header</a> makes the getters and setters for the global registration function optional, so a freestanding <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">terminate</c-></code> doesn’t necessarily have a registration function either.  That leaves these as three functions that will end the program in an implementation defined way.</p>
-   <h4 class="heading settled" data-level="5.7.3" id="startup_termination_what"><span class="secno">5.7.3. </span><span class="content">What am I changing?</span><a class="self-link" href="#startup_termination_what"></a></h4>
+   <h4 class="heading settled" data-level="5.8.3" id="startup_termination_what"><span class="secno">5.8.3. </span><span class="content">What am I changing?</span><a class="self-link" href="#startup_termination_what"></a></h4>
     The existence of <code class="highlight"><c- n="">atexit</c-></code>, <code class="highlight"><c- n="">at_quick_exit</c-></code>, <code class="highlight"><c- n="">exit</c-></code>, and <code class="highlight"><c- n="">quick_exit</c-></code> should be implementation defined (i.e. optional). 
-   <h4 class="heading settled" data-level="5.7.4" id="startup_termination_why"><span class="secno">5.7.4. </span><span class="content">Why?</span><a class="self-link" href="#startup_termination_why"></a></h4>
+   <h4 class="heading settled" data-level="5.8.4" id="startup_termination_why"><span class="secno">5.8.4. </span><span class="content">Why?</span><a class="self-link" href="#startup_termination_why"></a></h4>
     These functions require space overhead, and are difficult to optimize away.  Process termination code iterates over the contents of the <code class="highlight"><c- n="">atexit</c-></code> list, pinning the memory in place. 
-   <h4 class="heading settled" data-level="5.7.5" id="startup_termination_abi"><span class="secno">5.7.5. </span><span class="content">ABI impact</span><a class="self-link" href="#startup_termination_abi"></a></h4>
+   <h4 class="heading settled" data-level="5.8.5" id="startup_termination_alt"><span class="secno">5.8.5. </span><span class="content">Alternative designs</span><a class="self-link" href="#startup_termination_alt"></a></h4>
+    We could also remove <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">abort</c-></code>, <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">terminate</c-></code>, and <code class="highlight"><c- n="">_Exit</c-></code>.  The C library implementers don’t necessarily know how to exit the program in whatever random environment a customer uses.  On some environments, jumping to address zero is a legitimate way to reset the processor.  In other environments, a system call is more appropriate. 
+   <p>If we removed these functions, we would have no way to signal any kind of fatal error.  We would need to evaluate what that means for <code class="highlight"><c- k="">throw</c-></code> statements, contracts, and other language facilities.</p>
+   <p>We could potentially require a function be provided that knows how to terminate on the given platform, and implement <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">abort</c-></code> and <code class="highlight"><c- n="">_Exit</c-></code> in terms of this user defined function on freestanding.  I do not believe that C++ has done that before.  This would also require WG14 cooperation, as <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">abort</c-></code> and <code class="highlight"><c- n="">_Exit</c-></code> are inherited from C.</p>
+   <h4 class="heading settled" data-level="5.8.6" id="startup_termination_abi"><span class="secno">5.8.6. </span><span class="content">ABI impact</span><a class="self-link" href="#startup_termination_abi"></a></h4>
     None? 
    <p>Mixing TUs with different startup / termination settings may cause confusion ("Why do some globals get constructed but not others?"), but I do not foresee any ABI problems.</p>
-   <h3 class="heading settled" data-level="5.8" id="blocking"><span class="secno">5.8. </span><span class="content">Language mandated blocking synchronization</span><a class="self-link" href="#blocking"></a></h3>
+   <h3 class="heading settled" data-level="5.9" id="blocking"><span class="secno">5.9. </span><span class="content">Language mandated blocking synchronization</span><a class="self-link" href="#blocking"></a></h3>
     Feature test macros: 
    <ul>
     <li data-md="">
@@ -1897,11 +1945,11 @@ pre .property::before, pre .property::after {
     </li><li data-md="">
      <p><code class="highlight"><c- n="">__cpp_freestanding_no_non_global_dynamic_static_init</c-></code>.  This implies that __cpp_threadsafe_static_init is undefined.</p>
    </li></ul>
-   <h4 class="heading settled" data-level="5.8.1" id="blocking_what"><span class="secno">5.8.1. </span><span class="content">What am I changing?</span><a class="self-link" href="#blocking_what"></a></h4>
+   <h4 class="heading settled" data-level="5.9.1" id="blocking_what"><span class="secno">5.9.1. </span><span class="content">What am I changing?</span><a class="self-link" href="#blocking_what"></a></h4>
     In environments without blocking synchronization support, dynamic initialization of function statics and non-lock-free atomics are ill-formed. 
    <p>In practice, this won’t require changes from toolchain vendors.  On unknown environments, the C++ runtime functions necessary to implement locked atomics and dynamic initialization of function statics generally aren’t provided.  This results in linker errors, satisfying the ill-formed requirement.  This change will make such a toolchain conforming.</p>
    <p>This change would break code migrating from C++98 to C++Next, as it will remove function static initialization that previously worked.  That same code would likely break in the C++98 to C++11 migration, as the function static initialization would require facilities not present in the environment.  Implementations would likely continue to provide compiler flags to aid the migration.</p>
-   <h4 class="heading settled" data-level="5.8.2" id="blocking_why"><span class="secno">5.8.2. </span><span class="content">Why?</span><a class="self-link" href="#blocking_why"></a></h4>
+   <h4 class="heading settled" data-level="5.9.2" id="blocking_why"><span class="secno">5.9.2. </span><span class="content">Why?</span><a class="self-link" href="#blocking_why"></a></h4>
     Blocking is hard and not universally portable. 
    <p>On a system without an OS, your main blocking choices are disabling interrupts and spin locks.  Spin locks are needed to synchronize among multiple hardware threads, and disabling interrupts is required when synchronizing a processor with itself.  Neither blocking technique is universally applicable, even when limited to the realm of OS-less systems.</p>
    <p>In the Windows kernel, there are multiple types of locks.  No one lock type is appropriate in all situations.</p>
@@ -1909,7 +1957,7 @@ pre .property::before, pre .property::after {
    <p>Some OSes and applications are trying to meet hard real time guarantees.  Spin locks and disabled interrupts can add potentially unbounded jitter and latency to time critical operations, even when the operation isn’t performed on a time critical code path.</p>
    <p>Some OSes aren’t scheduled in a time-sliced manner.  Spin locks on these systems are a bad idea.  You could get in the middle of static initialization, get an interrupt that causes you to change threads, then get stuck on the initialization of the same static.  Forward progress will be halted until another interrupt happens at some indeterminate point in the future.</p>
    <p>All of these concerns are also concerns with regards to signals. <a href="https://wg21.link/support.signal">support.signal</a> already calls out that locked atomics result in UB when invoked from a signal.  Dynamic initialization of a static variable is also UB when invoked from a signal.  If we are willing to make special rules for signals, shouldn’t we be willing to make special rules for embedded and kernel... especially if the rules are largely the same?</p>
-   <h4 class="heading settled" data-level="5.8.3" id="blocking_abi"><span class="secno">5.8.3. </span><span class="content">ABI impact</span><a class="self-link" href="#blocking_abi"></a></h4>
+   <h4 class="heading settled" data-level="5.9.3" id="blocking_abi"><span class="secno">5.9.3. </span><span class="content">ABI impact</span><a class="self-link" href="#blocking_abi"></a></h4>
     None? 
    <p>If this paper had reverted thread-safe statics back to thread-unsafe statics, then there would be typical ODR problems.  Making the functions ill-formed avoids that problem though.</p>
    <h2 class="heading settled" data-level="6" id="other_work"><span class="secno">6. </span><span class="content">Related works in progress, and future work</span><a class="self-link" href="#other_work"></a></h2>
