@@ -1,12 +1,12 @@
 <pre class='metadata'>
 Title: Modules and Freestanding
-Shortname: D0000
+Shortname: D1212
 Revision: 0.0
 Audience: EWG, LEWG
 Status: D
 Group: WG21
-URL: TBD
-!Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/freestanding_modules.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/freestanding_modules.bs</a>
+URL: https://wg21.link/P1212R0
+!Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/freestanding_modules.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/freestanding_modules.bs</a>
 Editor: Ben Craig, National Instruments, ben.craig@gmail.com
 Abstract: Standard library modules needs to know a direction for freestanding.
 Markup Shorthands: markdown yes
@@ -38,10 +38,6 @@ Allegedly, some portion of WG21 is against sub-setting the language in general, 
 This option would require the least amount of work from WG21.
 
 SG14 polls were strongly against this option.
-
-Annotate freestanding (TBD) {#annotate_freestanding}
-----------------------------------------------------
-Facilities that use freestanding-hostile features could be annotated.  Vendors could then provide tooling that would allow users to audit their codebase for features that are not supported on their platform.  The annotations could even be new syntax only available in modular code.
 
 Expand the library, maintain the language (Weakly recommend) {#library_only}
 ----------------------------------------------------------------------------
