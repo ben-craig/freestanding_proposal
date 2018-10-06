@@ -3,7 +3,7 @@ Title: Leaving no room for a lower-level language: A C++ Subset
 Shortname: P1105
 Revision: 1
 Audience: SG14, SG10, SG1, EWG, LEWG
-Status: D
+Status: P
 Group: WG21
 URL: https://wg21.link/P1105R1
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/optional_exceptions.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/optional_exceptions.bs</a>
