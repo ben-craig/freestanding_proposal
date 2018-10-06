@@ -711,7 +711,7 @@ We could also remove `std::abort`, `std::terminate`, and `_Exit`.  The C library
 
 If we removed these functions, we would have no way to signal any kind of fatal error.  We would need to evaluate what that means for `throw` statements, contracts, and other language facilities.
 
-We could potentially require a function be provided that knows how to terminate on the given platform, and implement `std::abort` and `_Exit` in terms of this user defined function on freestanding.  I do not believe that C++ has done that before.  This would also require WG14 cooperation, as `std::abort` and `_Exit` are inherited from C.
+We could potentially use technology similar to replaceable `::operator new` and `::operator delete`.  Hosted implementations could provide a replaceable default terminate handler that could be replaced by a user-provided default terminate handler at build time.  Freestanding implementations would not provide a default implementation.  Usages of facilities that call `std::terminate` would be ill formed if a default terminate handler were not provided.
 
 ### ABI impact ### {#startup_termination_abi}
 None?
