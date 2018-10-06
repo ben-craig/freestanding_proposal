@@ -359,8 +359,8 @@ span.indented {
 
 <body>
 <h1>Freestanding Proposal</h1>
-Document number: D0829R3.0<br/>
-Date: 2017-10-14 TODO<br/>
+Document number: P0829R3<br/>
+Date: 2018-10-06<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: SG14, Library Evolution Working Group
 <h1>Change history</h1>
@@ -505,7 +505,24 @@ Yes, definitely. If it's in the WP (and even better, useful to constrained envir
 GCC is heavily used on bare-metal systems (especially ARM) and if those users can leverage the C++ standard library then we provide more value to them.
 </p>
 </blockquote>
+I had similar email discussion with Marshall Clow, the maintainer of libc++, the clang implementation of the C++ standard library.
+<blockquote>
+<b>From: Ben Craig</b><br/>
+<p>
+[...]<p/>
+If *someone* (possibly me) added the maze of #ifdefs to a branch of libc++ to support p0829, would the libc++ maintainers be willing to accept and maintain such a thing (assuming it is in the working draft, has tests, high quality, etc)?  In the next draft of p0829, may I publicly state that libc++ would be willing to add that support?<p/>
+[...]
 </p>
+<b>From: Marshall Clow</b><br/>
+<p>
+I haven’t been ignoring you, but rather talking to a bunch of people who use libc++>
+</p><p>
+In general, they are in favor of supporting a freestanding mode for libc++.
+Some of them, however, have serious concerns about p0829.
+</p><p>
+So, yes, you can put my name on the list, but I suspect you’ll get comments about the specifics.
+</p>
+</blockquote></p>
 
 
 <h1>Design decisions</h1>
