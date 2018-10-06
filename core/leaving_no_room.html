@@ -2,7 +2,7 @@
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-  <title>D1105R1.4: Leaving no room for a lower-level language: A C++ Subset</title>
+  <title>P1105R1: Leaving no room for a lower-level language: A C++ Subset</title>
 <style data-fill-with="stylesheet">/******************************************************************************
  *                   Style sheet for the W3C specifications                   *
  *
@@ -1227,8 +1227,8 @@ Possible extra rowspan handling
       text-align: center;
     }
   </style>
-  <meta content="Bikeshed version dff342f4b23fb230b71436fb31b55f5f169715bd" name="generator">
-  <link href="https://htmlpreview.github.io/?https://github.com/ben-craig/freestanding_proposal/blob/master/core/leaving_no_room.html" rel="canonical">
+  <meta content="Bikeshed version e9290f0f6bc01459c8b7bdfa2bb91f6985fc5c67" name="generator">
+  <link href="https://wg21.link/P1105R1" rel="canonical">
   <link href="https://isocpp.org/favicon.ico" rel="icon">
 <style>/* style-md-lists */
 
@@ -1438,12 +1438,12 @@ pre .property::before, pre .property::after {
  </head><body class="h-entry toc-sidebar"><p id="toc-nav"><a id="toc-jump" href="#toc"><span aria-hidden="true">↑</span> <span>Jump to Table of Contents</span></a><a id="toc-toggle" href="#toc"><span aria-hidden="true">←</span> <span>Collapse Sidebar</span></a></p>
   <div class="head">
    <p data-fill-with="logo"></p>
-   <h1 class="p-name no-ref" id="title">D1105R1.4<br>Leaving no room for a lower-level language: A C++ Subset</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2018-10-03">2018-10-03</time></span></h2>
+   <h1 class="p-name no-ref" id="title">P1105R1<br>Leaving no room for a lower-level language: A C++ Subset</h1>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2018-10-06">2018-10-06</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
-     </dt><dd><a class="u-url" href="https://htmlpreview.github.io/?https://github.com/ben-craig/freestanding_proposal/blob/master/core/leaving_no_room.html">https://htmlpreview.github.io/?https://github.com/ben-craig/freestanding_proposal/blob/master/core/leaving_no_room.html</a>
+     </dt><dd><a class="u-url" href="https://wg21.link/P1105R1">https://wg21.link/P1105R1</a>
      </dd><dt>Authors:
      </dt><dd>
       </dd><dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:ben.craig@gmail.com">Ben Craig</a> (<span class="p-org org">National Instruments</span>)
@@ -1933,7 +1933,7 @@ pre .property::before, pre .property::after {
    <h4 class="heading settled" data-level="5.8.5" id="startup_termination_alt"><span class="secno">5.8.5. </span><span class="content">Alternative designs</span><a class="self-link" href="#startup_termination_alt"></a></h4>
     We could also remove <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">abort</c-></code>, <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">terminate</c-></code>, and <code class="highlight"><c- n="">_Exit</c-></code>.  The C library implementers don’t necessarily know how to exit the program in whatever random environment a customer uses.  On some environments, jumping to address zero is a legitimate way to reset the processor.  In other environments, a system call is more appropriate. 
    <p>If we removed these functions, we would have no way to signal any kind of fatal error.  We would need to evaluate what that means for <code class="highlight"><c- k="">throw</c-></code> statements, contracts, and other language facilities.</p>
-   <p>We could potentially require a function be provided that knows how to terminate on the given platform, and implement <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">abort</c-></code> and <code class="highlight"><c- n="">_Exit</c-></code> in terms of this user defined function on freestanding.  I do not believe that C++ has done that before.  This would also require WG14 cooperation, as <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">abort</c-></code> and <code class="highlight"><c- n="">_Exit</c-></code> are inherited from C.</p>
+   <p>We could potentially use technology similar to replaceable <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> and <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code>.  Hosted implementations could provide a replaceable default terminate handler that could be replaced by a user-provided default terminate handler at build time.  Freestanding implementations would not provide a default implementation.  Usages of facilities that call <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">terminate</c-></code> would be ill formed if a default terminate handler were not provided.</p>
    <h4 class="heading settled" data-level="5.8.6" id="startup_termination_abi"><span class="secno">5.8.6. </span><span class="content">ABI impact</span><a class="self-link" href="#startup_termination_abi"></a></h4>
     None? 
    <p>Mixing TUs with different startup / termination settings may cause confusion ("Why do some globals get constructed but not others?"), but I do not foresee any ABI problems.</p>
