@@ -1,9 +1,9 @@
 <pre class='metadata'>
 Title: Modules and Freestanding
-Shortname: D1212
-Revision: 0.0
+Shortname: P1212
+Revision: 0
 Audience: EWG, LEWG
-Status: D
+Status: P
 Group: WG21
 URL: https://wg21.link/P1212R0
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/freestanding_modules.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/freestanding_modules.bs</a>
