@@ -364,6 +364,9 @@ Date: TODO 2018-10-06<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: SG14, Library Evolution Working Group
 <h1>Change history</h1>
+<h2> R3 -&gt; R4 </h2>
+Added <code>default_delete</code> and removed <code>unique_ptr</code> template argument changes.<br/>
+Removed <code>_Exit</code>.<br/>
 <h2> R2 -&gt; R3 </h2>
 Changed feature test macro to better align with P1105.<br/>
 Split feature test macros into freestanding and hosted macros.<br/>
@@ -515,7 +518,7 @@ If *someone* (possibly me) added the maze of #ifdefs to a branch of libc++ to su
 </p>
 <b>From: Marshall Clow</b><br/>
 <p>
-I haven’t been ignoring you, but rather talking to a bunch of people who use libc++>
+I haven’t been ignoring you, but rather talking to a bunch of people who use libc++
 </p><p>
 In general, they are in favor of supporting a freestanding mode for libc++.
 Some of them, however, have serious concerns about p0829.
@@ -589,9 +592,6 @@ Portions of <code>&lt;cstdlib&gt;</code>
 <li>ldiv_t</li>
 <li>lldiv_t</li>
 <li>NULL</li>
-<li>EXIT_FAILURE</li>
-<li>EXIT_SUCCESS</li>
-<li>_Exit</li>
 <li>bsearch</li>
 <li>qsort</li>
 <li>abs(int)</li>
@@ -626,7 +626,7 @@ Portions of <code>&lt;memory&gt;</code>.
 <li><code>allocator_traits</code></li>
 <li><a href="https://wg21.link/specialized.algorithms">[specialized.algorithms]</a>, except for the ExecutionPolicy overloads</li>
 <li><code>unique_ptr</code></li>
-Note that <code>default_delete</code> is not included, and wording has been added to allow the default deleter of <code>unique_ptr</code> to be implementation defined on freestanding implementations.
+<li><code>default_delete</code></li>
 <li><code>uses_allocator_v</code></li>
 </ul>
 <p>
@@ -758,9 +758,11 @@ Many string functions (<code>strtol</code> and family) rely on <code>errno</code
 </p><p>
 <code>assert</code> is not included as it requires a stderror stream.
 </p><p>
+<code>_Exit</code> is not included as I do not wish to add more termination functions, when I hope to remove most of them in the future.  Program termination requires involvement from the operating system / environment.
+</p><p>
 <code>&lt;cctype&gt;</code> and <code>&lt;cwctype&gt;</code> rely heavily on global locale data.
 </p><p>
-<code>default_delete</code> and <code>make_unique</code> are not included, although <code>unique_ptr</code> is included.  <code>default_delete</code> and <code>make_unique</code> have direct dependencies on heap management functionality.
+<code>make_unique</code> is not included, although <code>unique_ptr</code> is included.  <code>make_unique</code> has a dependency on heap management functionality, and can throw on heap exhaustion.
 </p><p>
 <code>seed_seq</code> uses the heap.  Users can create their own classes satisfying the seed sequence requirements if they wish to use the Sseq constructors on the engine templates.
 </p>
@@ -773,7 +775,10 @@ The <code>&lt;cwchar&gt;</code> functions are implementable for freestanding env
 <ul><li><code>visit</code></li></ul>
 <code>visit</code> only throws when the <code>variant</code> is valueless.  If exceptions are disabled, the <code>variant</code> will always have a value.  Since the standard doesn't acknowledge exceptions being disabled, we include the (hopefully) dead <code>bad_variant_access</code> class.
 <ul><li><code>unique_ptr</code></li></ul>
-<code>unique_ptr</code> is generally used for heap management, but is occasionally used as a makeshift RAII object for other resources.  In order to break the compile time dependency on <code>default_delete</code>, I add some implementation defined behavior for the freestanding implementation.  This may be too invasive for some committee members' tastes.  In the Jacksonville 2018 wg21 meeting, there was a strong interest in providing <code>unique_ptr</code>.
+<code>unique_ptr</code> is generally used for heap management, but is occasionally used as a makeshift RAII object for other resources.  In the Jacksonville 2018 wg21 meeting, there was a strong interest in providing <code>unique_ptr</code>.
+<ul><li><code>default_delete</code></li></ul>
+<code>default_delete</code> looks like it has a dependency on the heap, due to its use of the <code>delete</code> operator.  <code>default_delete</code> only ends up depending on the heap if the templated type would depend on the heap for <code>new</code> and <code>delete</code> though.  A class with a custom, non-throwing <code>operator new</code> and <code>operator delete</code> will work just fine without pulling in the heap machinery.<br/>
+Pulling in <code>default_delete</code> also keeps us from forking the definition of <code>unique_ptr</code>.
 <ul><li>Partial classes</li></ul>
 <code>array</code>, <code>bitset</code>, <code>optional</code>, <code>string_view</code>, and <code>variant</code> all have functions that throw.  These functions aren't critical to the use of the class.  The exceptions that <code>array</code>, <code>bitset</code>, and <code>string_view</code> throw are doubly bad, as those exceptions require <code>std::string</code>.  These headers and classes can be omitted if the committee strongly objects to marking a class partially freestanding.
 
@@ -1058,8 +1063,8 @@ namespace std {
 }
 
 #define NULL <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-#define EXIT_FAILURE <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-#define EXIT_SUCCESS <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EXIT_FAILURE <span class='textit'><span class='texttt'>see below</span></span>
+#define EXIT_SUCCESS <span class='textit'><span class='texttt'>see below</span></span>
 #define RAND_MAX <span class='textit'><span class='texttt'>see below</span></span>
 #define MB_CUR_MAX <span class='textit'><span class='texttt'>see below</span></span>
 
@@ -1077,7 +1082,7 @@ namespace std {
   int at_quick_exit(<span class='textit'>c-atexit-handler</span>* func) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   int at_quick_exit(<span class='textit'>atexit-handler</span>* func) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   [[noreturn]] void exit(int status); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  [[noreturn]] void _Exit(int status) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  [[noreturn]] void _Exit(int status) noexcept;
   [[noreturn]] void quick_exit(int status) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
   char* <span id='lib:getenv'><span class='tcode_in_codeblock'>getenv</span></span>(const char* name);
@@ -1808,9 +1813,9 @@ namespace std {
 </span>                              ForwardIterator first, Size n);
 
   <span class='comment'>// [unique.ptr], class template <span class='tcode_in_codeblock'>unique_&shy;ptr</span>
-</span>  template&lt;class T&gt; struct default_delete;
-  template&lt;class T&gt; struct default_delete&lt;T[]&gt;;
-  template&lt;class T, class D = <ins><span class='textit'><span class='texttt'>see below</span></span></ins><del>default_delete&lt;T&gt;</del>&gt; class unique_ptr; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+</span>  template&lt;class T&gt; struct default_delete; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; struct default_delete&lt;T[]&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class D = default_delete&lt;T&gt;&gt; class unique_ptr; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T, class D&gt; class unique_ptr&lt;T[], D&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
   template&lt;class T, class... Args&gt; unique_ptr&lt;T&gt;
@@ -1983,82 +1988,6 @@ namespace std {
 </span>  template&lt;class T, class Alloc&gt;
     inline constexpr bool uses_allocator_v = uses_allocator&lt;T, Alloc&gt;::value; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 }</pre></div>
-</blockquote>
-
-Change in [unique.ptr.dltr.general] paragraph 1:
-<blockquote class="std">
-<div id='1.sentence-1' class='sentence'>The class template <span class='texttt'>default_&shy;delete</span> serves as the default deleter (destruction policy)
-for the class template <span class='texttt'>unique_&shy;ptr</span> <ins>for hosted implementations</ins>.</div>
-</blockquote>
-
-Change in [unique.ptr.single]:
-<blockquote class="std">
-<h4 ><a class='secnum' style='min-width:118pt'>?.?.?.?</a> <span class='texttt'>unique_&shy;ptr</span> for single objects <a class='abbr_ref'>[unique.ptr.single]</a></h4><pre class='codeblock'>
-namespace std {
-  template&lt;class T, class D = <ins><span class='textit'><span class='texttt'>see below</span></span></ins><del>default_delete&lt;T&gt;</del>&gt; class unique_ptr {
-  public:
-    using pointer      = <span class='textit'><span class='texttt'>see below</span></span>;
-    using element_type = T;
-    using deleter_type = D;
-
-    <span class='comment'>// [unique.ptr.single.ctor], constructors
-</span>    constexpr unique_ptr() noexcept;
-    explicit unique_ptr(pointer p) noexcept;
-    unique_ptr(pointer p, <span class='textit'><span class='texttt'>see below</span></span> d1) noexcept;
-    unique_ptr(pointer p, <span class='textit'><span class='texttt'>see below</span></span> d2) noexcept;
-    unique_ptr(unique_ptr&amp;&amp; u) noexcept;
-    constexpr unique_ptr(nullptr_t) noexcept;
-    template&lt;class U, class E&gt;
-      unique_ptr(unique_ptr&lt;U, E&gt;&amp;&amp; u) noexcept;
-
-    <span class='comment'>// [unique.ptr.single.dtor], destructor
-</span>    ~unique_ptr();
-
-    <span class='comment'>// [unique.ptr.single.asgn], assignment
-</span>    unique_ptr&amp; operator=(unique_ptr&amp;&amp; u) noexcept;
-    template&lt;class U, class E&gt;
-      unique_ptr&amp; operator=(unique_ptr&lt;U, E&gt;&amp;&amp; u) noexcept;
-    unique_ptr&amp; operator=(nullptr_t) noexcept;
-
-    <span class='comment'>// [unique.ptr.single.observers], observers
-</span>    add_lvalue_reference_t&lt;T&gt; operator*() const;
-    pointer operator-&gt;() const noexcept;
-    pointer get() const noexcept;
-    deleter_type&amp; get_deleter() noexcept;
-    const deleter_type&amp; get_deleter() const noexcept;
-    explicit operator bool() const noexcept;
-
-    <span class='comment'>// [unique.ptr.single.modifiers], modifiers
-</span>    pointer release() noexcept;
-    void reset(pointer p = pointer()) noexcept;
-    void swap(unique_ptr&amp; u) noexcept;
-
-    <span class='comment'>// disable copy from lvalue
-</span>    unique_ptr(const unique_ptr&amp;) = delete;
-    unique_ptr&amp; operator=(const unique_ptr&amp;) = delete;
-  };
-}</pre>
-<div class='para' id='1'><div class='marginalizedparent'><a class='marginalized'>1</a></div>
-<div id='1.sentence-1' class='sentence'>The default type for the template parameter <span class='texttt'>D</span> is
-<span class='texttt'>default_&shy;delete</span> <ins>for hosted implementations</ins>.</div>
-
-<ins>
-<div id='1.sentence-x1' class='sentence'>The default type for the template parameter <span class='texttt'>D</span> is implementation defined for freestanding implementations.</div>
-<div id='1.sentence-x2' class='sentence'>If the type of the template argument <span class='texttt'>D</span> matches the default type for the template parameter <span class='texttt'>D</span>, and that type is not <span class='texttt'>default_&shy;delete</span>, then the program is ill-formed.</div>
-<div id='1.sentence-x3' class='sentence'>[ Footnote: The intent is to require freestanding users to provide a deleter argument, rather than rely on <span class='texttt'>default_&shy;delete</span>, as <span class='texttt'>default_&shy;delete</span> may not be present in a freestanding implementation. ]</div>
-</ins>
-
-<div id='1.sentence-2' class='sentence'>A client-supplied template argument
-<span class='texttt'>D</span> shall be a
-function object type,
-lvalue reference to function, or
-lvalue reference to function object type
-for which, given
-a value <span class='texttt'>d</span> of type <span class='texttt'>D</span> and a value
-<span class='texttt'>ptr</span> of type <span class='texttt'>unique_&shy;ptr&lt;T, D&gt;&#x200b;::&#x200b;pointer</span>, the expression
-<span class='texttt'>d(ptr)</span> is valid and has the effect of disposing of the
-pointer as appropriate for that deleter.</div>
-</div>
 </blockquote>
 
 Change in [functional.syn]:
