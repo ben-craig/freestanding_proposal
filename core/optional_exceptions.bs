@@ -16,6 +16,10 @@ Markup Shorthands: markdown yes
 Revision History {#revision_history}
 ====================================
 Polls are all in the typical Strongly in Favor/Weakly in Favor/Neutral/Weakly Against/Strongly Against format.
+r1 -> r2 {#r1_r2}
+-----------------
+Removing `get_new_handler` and `set_new_handler`.
+
 r0 -> r1 {#r0_r1}
 -----------------
 Freestanding-only `noexcept` semantics were dropped due to low value, low SG14 support, and ABI concerns.
@@ -605,7 +609,7 @@ Feature test macro: `__cpp_freestanding_no_default_heap`.
 Non-allocating placement `::operator new` and `::operator delete` will still be present.  Users will still be allowed to implement the replaceable allocation and deallocation functions, as well as provide class specific implementations of `operator new` and `operator delete`.
 
 ### What am I changing? ### {#heap_what}
-On systems without default heap storage, neither the replaceable allocation functions nor the replaceable deallocation functions are provided by default.
+On systems without default heap storage, neither the replaceable allocation functions nor the replaceable deallocation functions are provided by default.  `get_new_handler` and `set_new_handler` will not be provided by default on systems without default heap storage.
 
 ### Why? ### {#heap_why}
 Many embedded systems do not have a heap.  Such a system could provide an implementation of `::operator new` that immediately throws `bad_alloc`, but that would require pulling in all the exception handling machinery.  Returning `nullptr` would not be conforming, and would also take up a non-zero amount of space.
