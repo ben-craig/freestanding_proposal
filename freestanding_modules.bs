@@ -12,6 +12,12 @@ Abstract: Standard library modules needs to know a direction for freestanding.
 Markup Shorthands: markdown yes
 </pre>
 
+Change history {#changes}
+=========================
+r0 -> r1 {#r0_r1}
+-----------------
+Added the [[#annotate]] and [[#delay]] options.
+
 Introduction {#intro}
 =====================
 [[P0581]] proposes a modularization of the standard library.  The paper calls out "Robust support for C++ in diverse environments" as a goal.
@@ -38,6 +44,16 @@ Allegedly, some portion of WG21 is against sub-setting the language in general, 
 This option would require the least amount of work from WG21.
 
 SG14 polls were strongly against this option.
+
+Annotate constructs in order to merge freestanding and hosted (Undecided) {#annotate}
+-------------------------------------------------------------------------------------
+[[P1246]] and [[P1247]] introduce attributes that control certain aspects of the language that are troublesome in a freestanding environment.  It is my understanding that this is part of an attempt at getting rid of the freestanding subset by making it possible to express freestanding requirements in the hosted language.  If successful, this approach would leave us with one language and no subset.
+
+The two referenced papers are not (yet) attempting to deal with the thorny issues of exceptions and heap allocations.  It is difficult for me to take a hard stance without seeing a discussion of those two features.
+
+Delay the module decision (Weakly recommend) {#delay}
+-----------------------------------------------------
+We could choose to partition the standard library modules without respect to freestanding for now, and in a future C++ release, add new modules in a backwards compatible way that would include the freestanding partitioning.  For example, C++20 could have a `std.core` module that has some freestanding and some hosted facilities.  In C++23, we could split the module such that `std.core.freestanding` has the freestanding parts, and `std.core` re-exports `std.core.freestanding`.
 
 Expand the library, maintain the language (Weakly recommend) {#library_only}
 ----------------------------------------------------------------------------
@@ -127,6 +143,16 @@ UNANIMOUS CONSENT
         "authors": ["Ben Craig", "Ben Saks"],
         "href": "http://wg21.link/P1105",
         "title": "Leaving no room for a lower-level language: A C++ Subset"
+    },
+    "P1246": {
+        "authors": ["Bruno Cardoso Lopes", "JF Bastien"],
+        "href": "http://wg21.link/P1246",
+        "title": "The `no_float` function attribute"
+    },
+    "P1247": {
+        "authors": ["Bruno Cardoso Lopes", "JF Bastien", "Erik Pilkington"],
+        "href": "http://wg21.link/P1247",
+        "title": "Disabling static destructors: introducing `no_destroy` and `always_destroy` attributes"
     }
 }
 </pre>
