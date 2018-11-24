@@ -6,7 +6,7 @@ Audience: WG21
 Status: D
 Group: WG21
 URL: http://wg21.link/P1376R0
-!Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/freestanding_modules.bs">github.com/ben-craig/freestanding_proposal/blob/master/san_diego_evening_summary.bs</a>
+!Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/san_diego_evening.bs">github.com/ben-craig/freestanding_proposal/blob/master/san_diego_evening.bs</a>
 Editor: Ben Craig, National Instruments, ben.craig@gmail.com
 Abstract: Summary of discussion in San Diego 2018 evening session discussing freestanding direction
 Markup Shorthands: markdown yes
