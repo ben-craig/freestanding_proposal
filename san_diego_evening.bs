@@ -3,7 +3,7 @@ Title: Summary of freestanding evening session discussions
 Shortname: P1376
 Revision: 0
 Audience: WG21
-Status: D
+Status: P
 Group: WG21
 URL: http://wg21.link/P1376R0
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/san_diego_evening.bs">github.com/ben-craig/freestanding_proposal/blob/master/san_diego_evening.bs</a>
