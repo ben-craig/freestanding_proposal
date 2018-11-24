@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: Summary of freestanding evening session discussions
 Shortname: P1376
-Revision: 0.0
+Revision: 0
 Audience: WG21
 Status: D
 Group: WG21
@@ -56,7 +56,7 @@ Assorted statements from the evening {#statements}
 * Say "subset" and you'll never get changes.  What you want is to write programs that don't have implementation-imposed overhead or things that your platform does not support.  What you want is for the implementation to only put things into the program that are needed to run the program.  Goal should be for locally supported subsets to work.  Compilers are getting smarter and can spot this stuff.
     * Agreement with previous statement, particularly with LTO.  LTO can figure out what can be omitted.
 
-* We will get nothing so long as we insist on calling what we want 'freestanding'.
+* We will get nothing so long as we insist on calling what we want freestanding.
 
 * Unofficial subset that should be brought back into C++.
 
