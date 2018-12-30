@@ -6,7 +6,7 @@ Audience: WG21
 Status: D
 Group: WG21
 URL: http://wg21.link/P1377R0
-!Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/sg14_recap.bs">github.com/ben-craig/freestanding_proposal/blob/master/san_diego_evening.bs</a>
+!Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/sg14_recap.bs">github.com/ben-craig/freestanding_proposal/blob/master/sg14_recap.bs</a>
 Editor: Ben Craig, National Instruments, ben.craig@gmail.com
 Abstract: Summary of discussion in Dec 2018 SG14 telecon
 Markup Shorthands: markdown yes
