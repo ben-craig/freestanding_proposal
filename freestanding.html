@@ -360,13 +360,15 @@ span.indented {
 <body>
 <h1>Freestanding Proposal</h1>
 Document number: D0829R4.0<br/>
-Date: TODO 2018-10-06<br/>
+Date: TODO 2018-11-08<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: SG14, Library Evolution Working Group
 <h1>Change history</h1>
 <h2> R3 -&gt; R4 </h2>
+Updated to N4791.<br/>
 Added <code>default_delete</code> and removed <code>unique_ptr</code> template argument changes.<br/>
 Removed <code>_Exit</code>.<br/>
+Removed <code>shuffle_order_engine</code> and <code>knuth_b</code>, as they are usually implemented with floating point.<br/>
 <h2> R2 -&gt; R3 </h2>
 Changed feature test macro to better align with P1105.<br/>
 Split feature test macros into freestanding and hosted macros.<br/>
@@ -729,10 +731,10 @@ Portions of <code>&lt;random&gt;</code>.  The following portions will be include
 <li>subtract_with_carry_engine</li>
 <li>discard_block_engine</li>
 <li>independent_bits_engine</li>
-<li>shuffle_order_engine</li>
-<li>[rand.predef]</li>
-<li>uniform_int_distribution</li>
-</code></ul>
+</code>
+<li>[rand.predef], except for <code>knuth_b</code></li>
+<li><code>uniform_int_distribution</code></li>
+</ul>
 A small portion of <code>&lt;cmath&gt;</code> will be present.
 <ul>
 <code><li>abs(int)</li>
@@ -758,13 +760,15 @@ Many string functions (<code>strtol</code> and family) rely on <code>errno</code
 </p><p>
 <code>assert</code> is not included as it requires a stderror stream.
 </p><p>
-<code>_Exit</code> is not included as I do not wish to add more termination functions, when I hope to remove most of them in the future.  Program termination requires involvement from the operating system / environment.
+<code>_Exit</code> is not included as I do not wish to add more termination functions.  I hope to remove most of them in the future.  Program termination requires involvement from the operating system / environment.
 </p><p>
 <code>&lt;cctype&gt;</code> and <code>&lt;cwctype&gt;</code> rely heavily on global locale data.
 </p><p>
 <code>make_unique</code> is not included, although <code>unique_ptr</code> is included.  <code>make_unique</code> has a dependency on heap management functionality, and can throw on heap exhaustion.
 </p><p>
 <code>seed_seq</code> uses the heap.  Users can create their own classes satisfying the seed sequence requirements if they wish to use the Sseq constructors on the engine templates.
+</p><p>
+<code>shuffle_order_engine</code> doesn't have floating point in its interface, but the algorithm in the standard uses math on the real numbers, which is typically translated into code as floating point.  <code>knuth_b</code> is just a convenience typedef on <code>shuffle_order_engine</code>.  <code>shuffle_order_engine</code> can be added if an efficient non-floating point implementation of the algorithm is discovered.
 </p>
 <h2>Potential removals</h2>
 Here are some things that I am currently requiring, but could be convinced to remove.
@@ -861,9 +865,9 @@ namespace std {
 </div>
 </blockquote>
 
-Rework Table 21 referenced from [compliance]:
+Rework Table 22 referenced from [compliance]:
 <del>
-<div class='numberedTable'>Table 21 - C++ headers for freestanding implementations<br><table >
+<div class='numberedTable'>Table 22 - C++ headers for freestanding implementations<br><table >
 <tr class='rowsep'>
   <td colspan='2' class='center'><div id='2.sentence-3' class='sentence'><b>Subclause</b></div></td>
   <td class='left'><div id='2.sentence-4' class='sentence'><b>Header(s)</b></div></td>
@@ -914,6 +918,11 @@ Rework Table 21 referenced from [compliance]:
   <td class='left'><div id='2.sentence-31' class='sentence'><span class='texttt'>&lt;cstdarg&gt;</span></div></td>
 </tr>
 <tr class='rowsep'>
+  <td class='left'><div id='2.sentence-29' class='sentence'>[concepts]</div></td>
+  <td class='left'><div id='2.sentence-30' class='sentence'>Concepts library</div></td>
+  <td class='left'><div id='2.sentence-31' class='sentence'><span class='texttt'>&lt;concepts&gt;</span></div></td>
+</tr>
+<tr class='rowsep'>
   <td class='left'><div id='2.sentence-32' class='sentence'>[meta]</div></td>
   <td class='left'><div id='2.sentence-33' class='sentence'>Type traits</div></td>
   <td class='left'><div id='2.sentence-34' class='sentence'><span class='texttt'>&lt;type_&shy;traits&gt;</span></div></td>
@@ -930,6 +939,7 @@ Rework Table 21 referenced from [compliance]:
 </tr>
 </table></div></div>
 </del>
+TODO!!!
 <ins>
 <div class='numberedTable'>Table 21 - C++ headers for freestanding implementations<br><table >
 <tr class='rowsep'>
@@ -1149,7 +1159,7 @@ Replace paragraph 3 in [support.limits.general]:
 <blockquote class="std">
 <del>
 <div class='para'><div class='marginalizedparent'><a class='marginalized'>3</a></div><div class='sourceLinkParent'></div>
-  <div class='sentence'>The macros in Table 35 are defined after inclusion of the header <span class='texttt'>&lt;version&gt;</span> or
+  <div class='sentence'>The macros in Table 36 are defined after inclusion of the header <span class='texttt'>&lt;version&gt;</span> or
 one of the corresponding headers specified in the table.</div>
   <div class='note'>[<a class='note_link'><span class='textit'>Note</span></a><span class='textit'>:</span> Future versions of this International Standard might replace the values of these macros with greater values. —<i>end note</i>]</div>
 </div>
@@ -1171,8 +1181,8 @@ Add a new paragraph to the end of [support.limits.general]:
 </div>
 </blockquote>
 
-Split Table 35.<br/>
-The new Table ??35?? will be named <ins>Table ??35?? — Freestanding and hosted standard library feature-test macros</ins>.  Leave the following macros in Table ??35??.
+Split Table 36.<br/>
+The new Table ??36?? will be named <ins>Table ??36?? — Freestanding and hosted standard library feature-test macros</ins>.  Leave the following macros in Table ??36??.
 <ul>
   <li><code>__cpp_lib_addressof_constexpr</code></li>
   <li><code>__cpp_lib_allocator_traits_is_always_equal</code></li>
@@ -1181,13 +1191,17 @@ The new Table ??35?? will be named <ins>Table ??35?? — Freestanding and hosted
   <li><code>__cpp_lib_as_const</code></li>
   <li><code>__cpp_lib_atomic_is_always_lock_free</code></li>
   <li><code>__cpp_lib_atomic_ref</code></li>
+  <li><code>__cpp_lib_bind_front</code></li>
   <li><code>__cpp_lib_bit_cast</code></li>
   <li><code>__cpp_lib_bool_constant</code></li>
   <li><code>__cpp_lib_boyer_moore_searcher</code></li>
   <li><code>__cpp_lib_byte</code></li>
+  <li><code>__cpp_lib_char8_t</code></li>
   <li><code>__cpp_lib_chrono</code></li>
+  <li><code>__cpp_lib_chrono_udls</code></li>
   <li><code>__cpp_lib_clamp</code></li>
   <li><code>__cpp_lib_concepts</code></li>
+  <li><code>__cpp_lib_constexpr_misc</code></li>
   <li><code>__cpp_lib_constexpr_swap_algorithms</code></li>
   <li><code>__cpp_lib_exchange_function</code></li>
   <li><code>__cpp_lib_gcd_lcm</code></li>
@@ -1197,6 +1211,7 @@ The new Table ??35?? will be named <ins>Table ??35?? — Freestanding and hosted
   <li><code>__cpp_lib_integral_constant_callable</code></li>
   <li><code>__cpp_lib_invoke</code></li>
   <li><code>__cpp_lib_is_aggregate</code></li>
+  <li><code>__cpp_lib_is_constant_evaluated</code></li>
   <li><code>__cpp_lib_is_final</code></li>
   <li><code>__cpp_lib_is_invocable</code></li>
   <li><code>__cpp_lib_is_null_pointer</code></li>
@@ -1209,11 +1224,13 @@ The new Table ??35?? will be named <ins>Table ??35?? — Freestanding and hosted
   <li><code>__cpp_lib_not_fn</code></li>
   <li><code>__cpp_lib_null_iterators</code></li>
   <li><code>__cpp_lib_optional</code></li>
+  <li><code>__cpp_lib_ranges</code></li>
   <li><code>__cpp_lib_raw_memory_algorithms</code></li>
   <li><code>__cpp_lib_result_of_sfinae</code></li>
   <li><code>__cpp_lib_robust_nonmodifying_seq_ops</code></li>
   <li><code>__cpp_lib_sample</code></li>
   <li><code>__cpp_lib_string_view</code></li>
+  <li><code>__cpp_lib_three_way_comparison</code></li>
   <li><code>__cpp_lib_to_chars</code></li>
   <li><code>__cpp_lib_transformation_trait_aliases</code></li>
   <li><code>__cpp_lib_transparent_operators</code></li>
@@ -1225,14 +1242,17 @@ The new Table ??35?? will be named <ins>Table ??35?? — Freestanding and hosted
   <li><code>__cpp_lib_void_t</code></li>
 </ul>
 
-The new Table ??36?? will be named <ins>Table ??36?? — Hosted standard library feature-test macros</ins>.  Move the following macros into Table ??36??.
+The new Table ??37?? will be named <ins>Table ??37?? — Hosted standard library feature-test macros</ins>.  Move the following macros into Table ??37??.
 <ul>
   <li><code>__cpp_lib_any</code></li>
   <li><code>__cpp_lib_complex_udls</code></li>
+  <li><code>__cpp_lib_destroying_delete</code></li>
   <li><code>__cpp_lib_enable_shared_from_this</code></li>
+  <li><code>__cpp_lib_erase_if</code></li>
   <li><code>__cpp_lib_execution</code></li>
   <li><code>__cpp_lib_filesystem</code></li>
   <li><code>__cpp_lib_generic_associative_lookup</code></li>
+  <li><code>__cpp_lib_generic_unordered_lookup</code></li>
   <li><code>__cpp_lib_hypot</code></li>
   <li><code>__cpp_lib_incomplete_container_elements</code></li>
   <li><code>__cpp_lib_list_remove_return_type</code></li>
@@ -3008,7 +3028,7 @@ namespace std {
 
   <span class='comment'>// [rand.adapt.shuf], class template <span class='tcode_in_codeblock'>shuffle_&shy;order_&shy;engine</span>
 </span>  template&lt;class Engine, size_t k&gt;
-    class shuffle_order_engine; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    class shuffle_order_engine;
 
   <span class='comment'>// [rand.predef], engines and engine adaptors with predefined parameters
 </span>  using minstd_rand0  = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -3019,7 +3039,7 @@ namespace std {
   using ranlux48_base = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   using ranlux24      = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   using ranlux48      = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  using knuth_b       = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  using knuth_b       = <span class='textit'><span class='texttt'>see below</span></span>;
 
   using default_random_engine = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
