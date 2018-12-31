@@ -366,6 +366,7 @@ Audience: SG14, Library Evolution Working Group
 <h1>Change history</h1>
 <h2> R3 -&gt; R4 </h2>
 Updated to N4791.<br/>
+Added most of the ranges proposal.<br/>
 Added <code>default_delete</code> and removed <code>unique_ptr</code> template argument changes.<br/>
 Removed <code>_Exit</code>.<br/>
 Removed <code>shuffle_order_engine</code> and <code>knuth_b</code>, as they are usually implemented with floating point.<br/>
@@ -2409,215 +2410,6 @@ namespace std {
 }</pre>
 </blockquote>
 
-Change 1 of 2 in [time.syn]:
-<blockquote class="std">
-<h3 ><a class='secnum' style='min-width:103pt'>?.?</a> Header <span class='texttt'>&lt;chrono&gt;</span> synopsis <a class='abbr_ref'>[time.syn]</a></h3>
-<pre class='codeblock'>
-namespace std {
-  namespace chrono {
-    <span class='comment'>// [time.duration], class template <span class='tcode_in_codeblock'>duration</span>
-</span>    template&lt;class Rep, class Period = ratio&lt;1&gt;&gt; class duration; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-    <span class='comment'>// [time.point], class template <span class='tcode_in_codeblock'>time_&shy;point</span>
-</span>    template&lt;class Clock, class Duration = typename Clock::duration&gt; class time_point; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  }
-
-  <span class='comment'>// [time.traits.specializations], <span class='tcode_in_codeblock'>common_&shy;type</span> specializations
-</span>  template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
-    struct common_type&lt;chrono::duration&lt;Rep1, Period1&gt;,
-                       chrono::duration&lt;Rep2, Period2&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  template&lt;class Clock, class Duration1, class Duration2&gt;
-    struct common_type&lt;chrono::time_point&lt;Clock, Duration1&gt;,
-                       chrono::time_point&lt;Clock, Duration2&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  namespace chrono {
-    <span class='comment'>// [time.traits], customization traits
-</span>    template&lt;class Rep&gt; struct treat_as_floating_point; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class Rep&gt; struct duration_values; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class Rep&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-      inline constexpr bool treat_as_floating_point_v = treat_as_floating_point&lt;Rep&gt;::value;
-
-    template&lt;class T&gt; struct is_clock;
-    template&lt;class T&gt; inline constexpr bool is_clock_v = is_clock&lt;T&gt;::value;
-
-    <span class='comment'>// [time.duration.nonmember], <span class='tcode_in_codeblock'>duration</span> arithmetic
-</span>    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
-      constexpr common_type_t&lt;duration&lt;Rep1, Period1&gt;, duration&lt;Rep2, Period2&gt;&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-        operator+(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
-    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
-      constexpr common_type_t&lt;duration&lt;Rep1, Period1&gt;, duration&lt;Rep2, Period2&gt;&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-        operator-(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
-    template&lt;class Rep1, class Period, class Rep2&gt;
-      constexpr duration&lt;common_type_t&lt;Rep1, Rep2&gt;, Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-        operator*(const duration&lt;Rep1, Period&gt;&amp; d, const Rep2&amp; s);
-    template&lt;class Rep1, class Rep2, class Period&gt;
-      constexpr duration&lt;common_type_t&lt;Rep1, Rep2&gt;, Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-        operator*(const Rep1&amp; s, const duration&lt;Rep2, Period&gt;&amp; d);
-    template&lt;class Rep1, class Period, class Rep2&gt;
-      constexpr duration&lt;common_type_t&lt;Rep1, Rep2&gt;, Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-        operator/(const duration&lt;Rep1, Period&gt;&amp; d, const Rep2&amp; s);
-    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
-      constexpr common_type_t&lt;Rep1, Rep2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-        operator/(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
-    template&lt;class Rep1, class Period, class Rep2&gt;
-      constexpr duration&lt;common_type_t&lt;Rep1, Rep2&gt;, Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-        operator%(const duration&lt;Rep1, Period&gt;&amp; d, const Rep2&amp; s);
-    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
-      constexpr common_type_t&lt;duration&lt;Rep1, Period1&gt;, duration&lt;Rep2, Period2&gt;&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-        operator%(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
-
-    <span class='comment'>// [time.duration.comparisons], <span class='tcode_in_codeblock'>duration</span> comparisons
-</span>    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
-      constexpr bool operator==(const duration&lt;Rep1, Period1&gt;&amp; lhs,
-                                const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
-      constexpr bool operator!=(const duration&lt;Rep1, Period1&gt;&amp; lhs,
-                                const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
-      constexpr bool operator&lt; (const duration&lt;Rep1, Period1&gt;&amp; lhs,
-                                const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
-      constexpr bool operator&gt; (const duration&lt;Rep1, Period1&gt;&amp; lhs,
-                                const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
-      constexpr bool operator&lt;=(const duration&lt;Rep1, Period1&gt;&amp; lhs,
-                                const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
-      constexpr bool operator&gt;=(const duration&lt;Rep1, Period1&gt;&amp; lhs,
-                                const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-    <span class='comment'>// [time.duration.cast], <span class='tcode_in_codeblock'>duration_&shy;cast</span>
-</span>    template&lt;class ToDuration, class Rep, class Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-      constexpr ToDuration duration_cast(const duration&lt;Rep, Period&gt;&amp; d);
-    template&lt;class ToDuration, class Rep, class Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-      constexpr ToDuration floor(const duration&lt;Rep, Period&gt;&amp; d);
-    template&lt;class ToDuration, class Rep, class Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-      constexpr ToDuration ceil(const duration&lt;Rep, Period&gt;&amp; d);
-    template&lt;class ToDuration, class Rep, class Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-      constexpr ToDuration round(const duration&lt;Rep, Period&gt;&amp; d);
-
-    <span class='comment'>// [time.duration.io], <span class='tcode_in_codeblock'>duration</span> I/O
-</span>    template&lt;class charT, class traits, class Rep, class Period&gt;
-      basic_ostream&lt;charT, traits&gt;&amp;
-        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os,
-                   const duration&lt;Rep, Period&gt;&amp; d);
-    template&lt;class charT, class traits, class Rep, class Period&gt;
-      basic_ostream&lt;charT, traits&gt;&amp;
-        to_stream(basic_ostream&lt;charT, traits&gt;&amp; os, const charT* fmt,
-                  const duration&lt;Rep, Period&gt;&amp; d);
-    template&lt;class charT, class traits, class Rep, class Period, class Alloc = allocator&lt;charT&gt;&gt;
-      basic_istream&lt;charT, traits&gt;&amp;
-        from_stream(basic_istream&lt;charT, traits&gt;&amp; is, const charT* fmt,
-                    duration&lt;Rep, Period&gt;&amp; d,
-                    basic_string&lt;charT, traits, Alloc&gt;* abbrev = nullptr,
-                    minutes* offset = nullptr);
-
-    <span class='comment'>// convenience typedefs
-</span>    using nanoseconds  = duration&lt;<i>signed integer type of at least 64 bits</i>, nano&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    using microseconds = duration&lt;<i>signed integer type of at least 55 bits</i>, micro&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    using milliseconds = duration&lt;<i>signed integer type of at least 45 bits</i>, milli&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    using seconds      = duration&lt;<i>signed integer type of at least 35 bits</i>&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    using minutes      = duration&lt;<i>signed integer type of at least 29 bits</i>, ratio&lt;  60&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    using hours        = duration&lt;<i>signed integer type of at least 23 bits</i>, ratio&lt;3600&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    using days         = duration&lt;<i>signed integer type of at least 25 bits</i>,
-                                  ratio_multiply&lt;ratio&lt;24&gt;, hours::period&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    using weeks        = duration&lt;<i>signed integer type of at least 22 bits</i>,
-                                  ratio_multiply&lt;ratio&lt;7&gt;, days::period&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    using years        = duration&lt;<i>signed integer type of at least 17 bits</i>,
-                                  ratio_multiply&lt;ratio&lt;146097, 400&gt;, days::period&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    using months       = duration&lt;<i>signed integer type of at least 20 bits</i>,
-                                  ratio_divide&lt;years::period, ratio&lt;12&gt;&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-    <span class='comment'>// [time.point.nonmember], <span class='tcode_in_codeblock'>time_&shy;point</span> arithmetic
-</span>    template&lt;class Clock, class Duration1, class Rep2, class Period2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-      constexpr time_point&lt;Clock, common_type_t&lt;Duration1, duration&lt;Rep2, Period2&gt;&gt;&gt;
-        operator+(const time_point&lt;Clock, Duration1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
-    template&lt;class Rep1, class Period1, class Clock, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-      constexpr time_point&lt;Clock, common_type_t&lt;duration&lt;Rep1, Period1&gt;, Duration2&gt;&gt;
-        operator+(const duration&lt;Rep1, Period1&gt;&amp; lhs, const time_point&lt;Clock, Duration2&gt;&amp; rhs);
-    template&lt;class Clock, class Duration1, class Rep2, class Period2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-      constexpr time_point&lt;Clock, common_type_t&lt;Duration1, duration&lt;Rep2, Period2&gt;&gt;&gt;
-        operator-(const time_point&lt;Clock, Duration1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
-    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-      constexpr common_type_t&lt;Duration1, Duration2&gt;
-        operator-(const time_point&lt;Clock, Duration1&gt;&amp; lhs,
-                  const time_point&lt;Clock, Duration2&gt;&amp; rhs);
-
-    <span class='comment'>// [time.point.comparisons], <span class='tcode_in_codeblock'>time_&shy;point</span> comparisons
-</span>    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-       constexpr bool operator==(const time_point&lt;Clock, Duration1&gt;&amp; lhs,
-                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs);
-    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-       constexpr bool operator!=(const time_point&lt;Clock, Duration1&gt;&amp; lhs,
-                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs);
-    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-       constexpr bool operator&lt; (const time_point&lt;Clock, Duration1&gt;&amp; lhs,
-                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs);
-    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-       constexpr bool operator&gt; (const time_point&lt;Clock, Duration1&gt;&amp; lhs,
-                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs);
-    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-       constexpr bool operator&lt;=(const time_point&lt;Clock, Duration1&gt;&amp; lhs,
-                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs);
-    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-       constexpr bool operator&gt;=(const time_point&lt;Clock, Duration1&gt;&amp; lhs,
-                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs);
-
-    <span class='comment'>// [time.point.cast], <span class='tcode_in_codeblock'>time_&shy;point_&shy;cast</span>
-</span>    template&lt;class ToDuration, class Clock, class Duration&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-      constexpr time_point&lt;Clock, ToDuration&gt;
-        time_point_cast(const time_point&lt;Clock, Duration&gt;&amp; t);
-    template&lt;class ToDuration, class Clock, class Duration&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-      constexpr time_point&lt;Clock, ToDuration&gt; floor(const time_point&lt;Clock, Duration&gt;&amp; tp);
-    template&lt;class ToDuration, class Clock, class Duration&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-      constexpr time_point&lt;Clock, ToDuration&gt; ceil(const time_point&lt;Clock, Duration&gt;&amp; tp);
-    template&lt;class ToDuration, class Clock, class Duration&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-      constexpr time_point&lt;Clock, ToDuration&gt; round(const time_point&lt;Clock, Duration&gt;&amp; tp);
-
-    <span class='comment'>// [time.duration.alg], specialized algorithms
-</span>    template&lt;class Rep, class Period&gt;
-      constexpr duration&lt;Rep, Period&gt; abs(duration&lt;Rep, Period&gt; d); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-</pre>
-</blockquote>
-
-Change 2 of 2 in [time.syn]:
-<blockquote class="std">
-<pre class='codeblock'>
-  inline namespace literals {
-  inline namespace chrono_literals {
-    <span class='comment'>// [time.duration.literals], suffixes for duration literals
-</span>    constexpr chrono::hours                                 operator""h(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>, ratio&lt;3600, 1&gt;&gt; operator""h(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-    constexpr chrono::minutes                             operator""min(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>, ratio&lt;60, 1&gt;&gt; operator""min(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-    constexpr chrono::seconds               operator""s(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>&gt; operator""s(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-    constexpr chrono::milliseconds                 operator""ms(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>, milli&gt; operator""ms(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-    constexpr chrono::microseconds                 operator""us(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>, micro&gt; operator""us(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-    constexpr chrono::nanoseconds                 operator""ns(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>, nano&gt; operator""ns(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-    <span class='comment'>// [time.cal.day.nonmembers], non-member functions
-</span>    constexpr chrono::day  operator""d(unsigned long long d) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-    <span class='comment'>// [time.cal.year.nonmembers], non-member functions
-</span>    constexpr chrono::year operator""y(unsigned long long y) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  }
-  }
-
-  namespace chrono {
-    using namespace literals::chrono_literals; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  }
-}</pre></blockquote>
-
 Change in [string.syn]:
 <blockquote class="std">
 <h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;string&gt;</span> synopsis <a class='abbr_ref'>[string.syn]</a></h3>
@@ -3279,6 +3071,215 @@ Change in [cmath.syn]:
   long double abs(long double j);
 </pre>
 </blockquote>
+
+Change 1 of 2 in [time.syn]:
+<blockquote class="std">
+<h3 ><a class='secnum' style='min-width:103pt'>?.?</a> Header <span class='texttt'>&lt;chrono&gt;</span> synopsis <a class='abbr_ref'>[time.syn]</a></h3>
+<pre class='codeblock'>
+namespace std {
+  namespace chrono {
+    <span class='comment'>// [time.duration], class template <span class='tcode_in_codeblock'>duration</span>
+</span>    template&lt;class Rep, class Period = ratio&lt;1&gt;&gt; class duration; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='comment'>// [time.point], class template <span class='tcode_in_codeblock'>time_&shy;point</span>
+</span>    template&lt;class Clock, class Duration = typename Clock::duration&gt; class time_point; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  }
+
+  <span class='comment'>// [time.traits.specializations], <span class='tcode_in_codeblock'>common_&shy;type</span> specializations
+</span>  template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
+    struct common_type&lt;chrono::duration&lt;Rep1, Period1&gt;,
+                       chrono::duration&lt;Rep2, Period2&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  template&lt;class Clock, class Duration1, class Duration2&gt;
+    struct common_type&lt;chrono::time_point&lt;Clock, Duration1&gt;,
+                       chrono::time_point&lt;Clock, Duration2&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  namespace chrono {
+    <span class='comment'>// [time.traits], customization traits
+</span>    template&lt;class Rep&gt; struct treat_as_floating_point; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    template&lt;class Rep&gt; struct duration_values; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    template&lt;class Rep&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      inline constexpr bool treat_as_floating_point_v = treat_as_floating_point&lt;Rep&gt;::value;
+
+    template&lt;class T&gt; struct is_clock;
+    template&lt;class T&gt; inline constexpr bool is_clock_v = is_clock&lt;T&gt;::value;
+
+    <span class='comment'>// [time.duration.nonmember], <span class='tcode_in_codeblock'>duration</span> arithmetic
+</span>    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
+      constexpr common_type_t&lt;duration&lt;Rep1, Period1&gt;, duration&lt;Rep2, Period2&gt;&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+        operator+(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
+    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
+      constexpr common_type_t&lt;duration&lt;Rep1, Period1&gt;, duration&lt;Rep2, Period2&gt;&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+        operator-(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
+    template&lt;class Rep1, class Period, class Rep2&gt;
+      constexpr duration&lt;common_type_t&lt;Rep1, Rep2&gt;, Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+        operator*(const duration&lt;Rep1, Period&gt;&amp; d, const Rep2&amp; s);
+    template&lt;class Rep1, class Rep2, class Period&gt;
+      constexpr duration&lt;common_type_t&lt;Rep1, Rep2&gt;, Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+        operator*(const Rep1&amp; s, const duration&lt;Rep2, Period&gt;&amp; d);
+    template&lt;class Rep1, class Period, class Rep2&gt;
+      constexpr duration&lt;common_type_t&lt;Rep1, Rep2&gt;, Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+        operator/(const duration&lt;Rep1, Period&gt;&amp; d, const Rep2&amp; s);
+    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
+      constexpr common_type_t&lt;Rep1, Rep2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+        operator/(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
+    template&lt;class Rep1, class Period, class Rep2&gt;
+      constexpr duration&lt;common_type_t&lt;Rep1, Rep2&gt;, Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+        operator%(const duration&lt;Rep1, Period&gt;&amp; d, const Rep2&amp; s);
+    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
+      constexpr common_type_t&lt;duration&lt;Rep1, Period1&gt;, duration&lt;Rep2, Period2&gt;&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+        operator%(const duration&lt;Rep1, Period1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
+
+    <span class='comment'>// [time.duration.comparisons], <span class='tcode_in_codeblock'>duration</span> comparisons
+</span>    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
+      constexpr bool operator==(const duration&lt;Rep1, Period1&gt;&amp; lhs,
+                                const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
+      constexpr bool operator!=(const duration&lt;Rep1, Period1&gt;&amp; lhs,
+                                const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
+      constexpr bool operator&lt; (const duration&lt;Rep1, Period1&gt;&amp; lhs,
+                                const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
+      constexpr bool operator&gt; (const duration&lt;Rep1, Period1&gt;&amp; lhs,
+                                const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
+      constexpr bool operator&lt;=(const duration&lt;Rep1, Period1&gt;&amp; lhs,
+                                const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    template&lt;class Rep1, class Period1, class Rep2, class Period2&gt;
+      constexpr bool operator&gt;=(const duration&lt;Rep1, Period1&gt;&amp; lhs,
+                                const duration&lt;Rep2, Period2&gt;&amp; rhs); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='comment'>// [time.duration.cast], <span class='tcode_in_codeblock'>duration_&shy;cast</span>
+</span>    template&lt;class ToDuration, class Rep, class Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr ToDuration duration_cast(const duration&lt;Rep, Period&gt;&amp; d);
+    template&lt;class ToDuration, class Rep, class Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr ToDuration floor(const duration&lt;Rep, Period&gt;&amp; d);
+    template&lt;class ToDuration, class Rep, class Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr ToDuration ceil(const duration&lt;Rep, Period&gt;&amp; d);
+    template&lt;class ToDuration, class Rep, class Period&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr ToDuration round(const duration&lt;Rep, Period&gt;&amp; d);
+
+    <span class='comment'>// [time.duration.io], <span class='tcode_in_codeblock'>duration</span> I/O
+</span>    template&lt;class charT, class traits, class Rep, class Period&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        operator&lt;&lt;(basic_ostream&lt;charT, traits&gt;&amp; os,
+                   const duration&lt;Rep, Period&gt;&amp; d);
+    template&lt;class charT, class traits, class Rep, class Period&gt;
+      basic_ostream&lt;charT, traits&gt;&amp;
+        to_stream(basic_ostream&lt;charT, traits&gt;&amp; os, const charT* fmt,
+                  const duration&lt;Rep, Period&gt;&amp; d);
+    template&lt;class charT, class traits, class Rep, class Period, class Alloc = allocator&lt;charT&gt;&gt;
+      basic_istream&lt;charT, traits&gt;&amp;
+        from_stream(basic_istream&lt;charT, traits&gt;&amp; is, const charT* fmt,
+                    duration&lt;Rep, Period&gt;&amp; d,
+                    basic_string&lt;charT, traits, Alloc&gt;* abbrev = nullptr,
+                    minutes* offset = nullptr);
+
+    <span class='comment'>// convenience typedefs
+</span>    using nanoseconds  = duration&lt;<i>signed integer type of at least 64 bits</i>, nano&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    using microseconds = duration&lt;<i>signed integer type of at least 55 bits</i>, micro&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    using milliseconds = duration&lt;<i>signed integer type of at least 45 bits</i>, milli&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    using seconds      = duration&lt;<i>signed integer type of at least 35 bits</i>&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    using minutes      = duration&lt;<i>signed integer type of at least 29 bits</i>, ratio&lt;  60&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    using hours        = duration&lt;<i>signed integer type of at least 23 bits</i>, ratio&lt;3600&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    using days         = duration&lt;<i>signed integer type of at least 25 bits</i>,
+                                  ratio_multiply&lt;ratio&lt;24&gt;, hours::period&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    using weeks        = duration&lt;<i>signed integer type of at least 22 bits</i>,
+                                  ratio_multiply&lt;ratio&lt;7&gt;, days::period&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    using years        = duration&lt;<i>signed integer type of at least 17 bits</i>,
+                                  ratio_multiply&lt;ratio&lt;146097, 400&gt;, days::period&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    using months       = duration&lt;<i>signed integer type of at least 20 bits</i>,
+                                  ratio_divide&lt;years::period, ratio&lt;12&gt;&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='comment'>// [time.point.nonmember], <span class='tcode_in_codeblock'>time_&shy;point</span> arithmetic
+</span>    template&lt;class Clock, class Duration1, class Rep2, class Period2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr time_point&lt;Clock, common_type_t&lt;Duration1, duration&lt;Rep2, Period2&gt;&gt;&gt;
+        operator+(const time_point&lt;Clock, Duration1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
+    template&lt;class Rep1, class Period1, class Clock, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr time_point&lt;Clock, common_type_t&lt;duration&lt;Rep1, Period1&gt;, Duration2&gt;&gt;
+        operator+(const duration&lt;Rep1, Period1&gt;&amp; lhs, const time_point&lt;Clock, Duration2&gt;&amp; rhs);
+    template&lt;class Clock, class Duration1, class Rep2, class Period2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr time_point&lt;Clock, common_type_t&lt;Duration1, duration&lt;Rep2, Period2&gt;&gt;&gt;
+        operator-(const time_point&lt;Clock, Duration1&gt;&amp; lhs, const duration&lt;Rep2, Period2&gt;&amp; rhs);
+    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr common_type_t&lt;Duration1, Duration2&gt;
+        operator-(const time_point&lt;Clock, Duration1&gt;&amp; lhs,
+                  const time_point&lt;Clock, Duration2&gt;&amp; rhs);
+
+    <span class='comment'>// [time.point.comparisons], <span class='tcode_in_codeblock'>time_&shy;point</span> comparisons
+</span>    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+       constexpr bool operator==(const time_point&lt;Clock, Duration1&gt;&amp; lhs,
+                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs);
+    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+       constexpr bool operator!=(const time_point&lt;Clock, Duration1&gt;&amp; lhs,
+                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs);
+    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+       constexpr bool operator&lt; (const time_point&lt;Clock, Duration1&gt;&amp; lhs,
+                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs);
+    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+       constexpr bool operator&gt; (const time_point&lt;Clock, Duration1&gt;&amp; lhs,
+                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs);
+    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+       constexpr bool operator&lt;=(const time_point&lt;Clock, Duration1&gt;&amp; lhs,
+                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs);
+    template&lt;class Clock, class Duration1, class Duration2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+       constexpr bool operator&gt;=(const time_point&lt;Clock, Duration1&gt;&amp; lhs,
+                                 const time_point&lt;Clock, Duration2&gt;&amp; rhs);
+
+    <span class='comment'>// [time.point.cast], <span class='tcode_in_codeblock'>time_&shy;point_&shy;cast</span>
+</span>    template&lt;class ToDuration, class Clock, class Duration&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr time_point&lt;Clock, ToDuration&gt;
+        time_point_cast(const time_point&lt;Clock, Duration&gt;&amp; t);
+    template&lt;class ToDuration, class Clock, class Duration&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr time_point&lt;Clock, ToDuration&gt; floor(const time_point&lt;Clock, Duration&gt;&amp; tp);
+    template&lt;class ToDuration, class Clock, class Duration&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr time_point&lt;Clock, ToDuration&gt; ceil(const time_point&lt;Clock, Duration&gt;&amp; tp);
+    template&lt;class ToDuration, class Clock, class Duration&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+      constexpr time_point&lt;Clock, ToDuration&gt; round(const time_point&lt;Clock, Duration&gt;&amp; tp);
+
+    <span class='comment'>// [time.duration.alg], specialized algorithms
+</span>    template&lt;class Rep, class Period&gt;
+      constexpr duration&lt;Rep, Period&gt; abs(duration&lt;Rep, Period&gt; d); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+</pre>
+</blockquote>
+
+Change 2 of 2 in [time.syn]:
+<blockquote class="std">
+<pre class='codeblock'>
+  inline namespace literals {
+  inline namespace chrono_literals {
+    <span class='comment'>// [time.duration.literals], suffixes for duration literals
+</span>    constexpr chrono::hours                                 operator""h(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>, ratio&lt;3600, 1&gt;&gt; operator""h(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    constexpr chrono::minutes                             operator""min(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>, ratio&lt;60, 1&gt;&gt; operator""min(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    constexpr chrono::seconds               operator""s(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>&gt; operator""s(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    constexpr chrono::milliseconds                 operator""ms(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>, milli&gt; operator""ms(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    constexpr chrono::microseconds                 operator""us(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>, micro&gt; operator""us(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    constexpr chrono::nanoseconds                 operator""ns(unsigned long long); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    constexpr chrono::duration&lt;<span class='textit'><span class='texttt'>unspecified</span></span>, nano&gt; operator""ns(long double); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='comment'>// [time.cal.day.nonmembers], non-member functions
+</span>    constexpr chrono::day  operator""d(unsigned long long d) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='comment'>// [time.cal.year.nonmembers], non-member functions
+</span>    constexpr chrono::year operator""y(unsigned long long y) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  }
+  }
+
+  namespace chrono {
+    using namespace literals::chrono_literals; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  }
+}</pre></blockquote>
 
 Change in [cinttypes.syn]:
 <blockquote class="std">
