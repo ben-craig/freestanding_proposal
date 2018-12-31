@@ -2465,6 +2465,7 @@ namespace std {
 
   <span class='comment'>// <span class='tcode_in_codeblock'>basic_&shy;string_&shy;view</span> typedef names
 </span>  using string_view    = basic_string_view&lt;char&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  using u8string_view = basic_string_view&lt;char8_t&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   using u16string_view = basic_string_view&lt;char16_t&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   using u32string_view = basic_string_view&lt;char32_t&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   using wstring_view   = basic_string_view&lt;wchar_t&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -2472,6 +2473,7 @@ namespace std {
   <span class='comment'>// [string.view.hash], hash support
 </span>  template&lt;class T&gt; struct hash; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;&gt; struct hash&lt;string_view&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct hash&lt;u8string_view&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;&gt; struct hash&lt;u16string_view&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;&gt; struct hash&lt;u32string_view&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;&gt; struct hash&lt;wstring_view&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -2480,6 +2482,7 @@ namespace std {
   inline namespace string_view_literals {
     <span class='comment'>// [string.view.literals], suffix for <span class='tcode_in_codeblock'>basic_&shy;string_&shy;view</span> literals
 </span>    constexpr string_view    operator""sv(const char* str, size_t len) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    constexpr u8string_view operator""sv(const char8_t* str, size_t len) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     constexpr u16string_view operator""sv(const char16_t* str, size_t len) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     constexpr u32string_view operator""sv(const char32_t* str, size_t len) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     constexpr wstring_view   operator""sv(const wchar_t* str, size_t len) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -2505,7 +2508,7 @@ Change in [string.view.template]:
   constexpr void swap(basic_string_view&amp; s) noexcept;
 
   <span class='comment'>// [string.view.ops], string operations
-</span>  size_type copy(charT* s, size_type n, size_type pos = 0) const; <ins><span class='comment'>// <span class='textit'>freestanding, omit</span></span></ins>
+</span>  constexpr size_type copy(charT* s, size_type n, size_type pos = 0) const; <ins><span class='comment'>// <span class='textit'>freestanding, omit</span></span></ins>
 
   constexpr basic_string_view substr(size_type pos = 0, size_type n = npos) const; <ins><span class='comment'>// <span class='textit'>freestanding, omit</span></span></ins>
 
