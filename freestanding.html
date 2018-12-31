@@ -2669,7 +2669,7 @@ namespace std {
   template&lt;class T, size_t N&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
     constexpr bool operator&gt;=(const array&lt;T, N&gt;&amp; x, const array&lt;T, N&gt;&amp; y);
   template&lt;class T, size_t N&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-    void swap(array&lt;T, N&gt;&amp; x, array&lt;T, N&gt;&amp; y) noexcept(noexcept(x.swap(y)));
+    constexpr void swap(array&lt;T, N&gt;&amp; x, array&lt;T, N&gt;&amp; y) noexcept(noexcept(x.swap(y)));
 
   template&lt;class T&gt; class tuple_size; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;size_t I, class T&gt; class tuple_element; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
