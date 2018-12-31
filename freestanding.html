@@ -1568,6 +1568,8 @@ namespace std {
   <span class='comment'>// [variant.visit], visitation
 </span>  template&lt;class Visitor, class... Variants&gt;
     constexpr <span class='textit'><span class='texttt'>see below</span></span> visit(Visitor&amp;&amp;, Variants&amp;&amp;...); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+</span>  template&lt;class R, class Visitor, class... Variants&gt;
+    constexpr R visit(Visitor&amp;&amp;, Variants&amp;&amp;...); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
   <span class='comment'>// [variant.monostate], class <span class='tcode_in_codeblock'>monostate</span>
 </span>  struct monostate; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -1736,8 +1738,10 @@ namespace std {
   void undeclare_no_pointers(char* p, size_t n);
   pointer_safety get_pointer_safety() noexcept;
 
-  <span class='comment'>// [ptr.align], pointer alignment function
+  <span class='comment'>// [ptr.align], pointer alignment
 </span>  void* align(size_t alignment, size_t size, void*&amp; ptr, size_t&amp; space); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+</span>  template&lt;size_t N, class T&gt;
+    [[nodiscard]] constexpr T* assume_aligned(T* ptr);<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
   <span class='comment'>// [allocator.tag], allocator argument tag
 </span>  struct allocator_arg_t { explicit allocator_arg_t() = default; }; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -1745,6 +1749,8 @@ namespace std {
 
   <span class='comment'>// [allocator.uses], <span class='tcode_in_codeblock'>uses_&shy;allocator</span>
 </span>  template&lt;class T, class Alloc&gt; struct uses_allocator; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <del>TODO: pick up at uses_allocator_v</del>
 
   <span class='comment'>// [allocator.traits], allocator traits
 </span>  template&lt;class Alloc&gt; struct allocator_traits; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
