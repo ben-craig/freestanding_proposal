@@ -2195,6 +2195,10 @@ namespace std {
   template&lt;class T&gt; reference_wrapper&lt;T&gt; ref(reference_wrapper&lt;T&gt;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T&gt; reference_wrapper&lt;const T&gt; cref(reference_wrapper&lt;T&gt;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T<span class='anglebracket'>&gt;</span> <span class='keyword'>struct</span> unwrap_reference; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T<span class='anglebracket'>&gt;</span> <span class='keyword'>struct</span> unwrap_ref_decay <span class='operator'>:</span> unwrap_reference<span class='anglebracket'>&lt;</span>decay_t<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span> <span class='curlybracket'>{</span><span class='curlybracket'>}</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T<span class='anglebracket'>&gt;</span> <span class='keyword'>using</span> unwrap_ref_decay_t <span class='operator'>=</span> <span class='keyword'>typename</span> unwrap_ref_decay<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span><span class='operator'>:</span><span class='operator'>:</span>type; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
   <span class='comment'>// [arithmetic.operations], arithmetic operations
 </span>  template&lt;class T = void&gt; struct plus; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T = void&gt; struct minus; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -2246,6 +2250,9 @@ namespace std {
 
   <span class='comment'>// [func.not_fn], function template <span class='tcode_in_codeblock'>not_&shy;fn</span>
 </span>  template&lt;class F&gt; <span class='textit'><span class='texttt'>unspecified</span></span> not_fn(F&amp;&amp; f); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment' style='font-style:italic;font-family:serif;'>// [func.bind_front], function template <span class='tcode_in_codeblock'>bind_&shy;front</span></span>
+  <span class='keyword'>template</span> <span class='anglebracket'>&lt;</span><span class='keyword'>class</span> F, <span class='keyword'>class</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span> Args<span class='anglebracket'>&gt;</span> <span class='textit'><span class='texttt'>unspecified</span></span> bind_front<span class='parenthesis'>(</span>F<span class='operator'>&amp;</span><span class='operator'>&amp;</span>, Args<span class='operator'>&amp;</span><span class='operator'>&amp;</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span><span class='parenthesis'>)</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
 
   <span class='comment'>// [func.bind], bind
 </span>  template&lt;class T&gt; struct is_bind_expression; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
@@ -2311,6 +2318,40 @@ namespace std {
     inline constexpr bool is_bind_expression_v = is_bind_expression&lt;T&gt;::value; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
   template&lt;class T&gt;
     inline constexpr int is_placeholder_v = is_placeholder&lt;T&gt;::value; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='keyword'>namespace</span> ranges <span class='curlybracket'>{</span>
+    <span class='comment' style='font-style:italic;font-family:serif;'>// [range.cmp], range comparisons</span>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T <span class='operator'>=</span> <span class='keyword'>void</span><span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> <span class='textit'><span class='texttt'>see below</span></span>
+    <span class='keyword'>struct</span> equal_to; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T <span class='operator'>=</span> <span class='keyword'>void</span><span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> <span class='textit'><span class='texttt'>see below</span></span>
+    <span class='keyword'>struct</span> not_equal_to; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T <span class='operator'>=</span> <span class='keyword'>void</span><span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> <span class='textit'><span class='texttt'>see below</span></span>
+    <span class='keyword'>struct</span> greater; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T <span class='operator'>=</span> <span class='keyword'>void</span><span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> <span class='textit'><span class='texttt'>see below</span></span>
+    <span class='keyword'>struct</span> less; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T <span class='operator'>=</span> <span class='keyword'>void</span><span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> <span class='textit'><span class='texttt'>see below</span></span>
+    <span class='keyword'>struct</span> greater_equal; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T <span class='operator'>=</span> <span class='keyword'>void</span><span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> <span class='textit'><span class='texttt'>see below</span></span>
+    <span class='keyword'>struct</span> less_equal; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='anglebracket'>&gt;</span> <span class='keyword'>struct</span> equal_to<span class='anglebracket'>&lt;</span><span class='keyword'>void</span><span class='anglebracket'>&gt;</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='anglebracket'>&gt;</span> <span class='keyword'>struct</span> not_equal_to<span class='anglebracket'>&lt;</span><span class='keyword'>void</span><span class='anglebracket'>&gt;</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='anglebracket'>&gt;</span> <span class='keyword'>struct</span> greater<span class='anglebracket'>&lt;</span><span class='keyword'>void</span><span class='anglebracket'>&gt;</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='anglebracket'>&gt;</span> <span class='keyword'>struct</span> less<span class='anglebracket'>&lt;</span><span class='keyword'>void</span><span class='anglebracket'>&gt;</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='anglebracket'>&gt;</span> <span class='keyword'>struct</span> greater_equal<span class='anglebracket'>&lt;</span><span class='keyword'>void</span><span class='anglebracket'>&gt;</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='anglebracket'>&gt;</span> <span class='keyword'>struct</span> less_equal<span class='anglebracket'>&lt;</span><span class='keyword'>void</span><span class='anglebracket'>&gt;</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  <span class='curlybracket'>}</span>
 }</pre>
 </blockquote>
 
