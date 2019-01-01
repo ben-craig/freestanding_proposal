@@ -585,7 +585,6 @@ I would like to call out <code>std::variant</code> as well.  While I do include 
 <li>&lt;compare&gt;</li>
 <li>&lt;span&gt;</li>
 <li>&lt;contract&gt;</li>
-<li>&lt;concept&gt;</li>
 </ul></code>
 <h2>Partial headers newly required for freestanding implementations</h2>
 Portions of <code>&lt;cstdlib&gt;</code>
@@ -940,74 +939,73 @@ Rework Table 22 referenced from [compliance]:
 </tr>
 </table></div></div>
 </del>
-TODO!!!
 <ins>
 <div class='numberedTable'>Table 21 - C++ headers for freestanding implementations<br><table >
 <tr class='rowsep'>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;algorithm&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;cmath&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;exception&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;span&gt;</span></div></td>
+    <td class='left'><div class='sentence'><span class='texttt'>&lt;ratio&gt;</span></div></td>
 </tr>
 <tr>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;array&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;compare&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;functional&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;string&gt;</span></div></td>
+    <td class='left'><div class='sentence'><span class='texttt'>&lt;span&gt;</span></div></td>
 </tr>
 <tr>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;atomic&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;concepts&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;initializer_list&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;string_view&gt;</span></div></td>
+    <td class='left'><div class='sentence'><span class='texttt'>&lt;string&gt;</span></div></td>
 </tr>
 <tr>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;bit&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;contract&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;iterator&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;system_error&gt;</span></div></td>
+    <td class='left'><div class='sentence'><span class='texttt'>&lt;string_view&gt;</span></div></td>
 </tr>
 <tr>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;bitset&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;csetjmp&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;limits&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;tuple&gt;</span></div></td>
+    <td class='left'><div class='sentence'><span class='texttt'>&lt;system_error&gt;</span></div></td>
 </tr>
 <tr>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;cerrno&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;cstdarg&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;memory&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;type_traits&gt;</span></div></td>
+    <td class='left'><div class='sentence'><span class='texttt'>&lt;tuple&gt;</span></div></td>
 </tr>
 <tr>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;cfloat&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;cstddef&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;new&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;typeinfo&gt;</span></div></td>
+    <td class='left'><div class='sentence'><span class='texttt'>&lt;type_traits&gt;</span></div></td>
 </tr>
 <tr>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;charconv&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;cstdint&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;numeric&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;utility&gt;</span></div></td>
+    <td class='left'><div class='sentence'><span class='texttt'>&lt;typeinfo&gt;</span></div></td>
 </tr>
 <tr>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;chrono&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;cstdlib&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;optional&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;variant&gt;</span></div></td>
+    <td class='left'><div class='sentence'><span class='texttt'>&lt;utility&gt;</span></div></td>
 </tr>
 <tr>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;cinttypes&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;cstring&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;random&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;version&gt;</span></div></td>
+    <td class='left'><div class='sentence'><span class='texttt'>&lt;variant&gt;</span></div></td>
 </tr>
 <tr>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;climits&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;cwchar&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;ratio&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;ranges&gt;</span></div></td>
+    <td class='left'><div class='sentence'><span class='texttt'>&lt;version&gt;</span></div></td>
 </tr>
 </table></div></ins>
 Change in [compliance] paragraph 3:
