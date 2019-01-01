@@ -1007,7 +1007,7 @@ TODO!!!
     <td class='left'><div class='sentence'><span class='texttt'>&lt;climits&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;cwchar&gt;</span></div></td>
     <td class='left'><div class='sentence'><span class='texttt'>&lt;ratio&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'></span></div></td>
+    <td class='left'><div class='sentence'><span class='texttt'>&lt;ranges&gt;</span></div></td>
 </tr>
 </table></div></ins>
 Change in [compliance] paragraph 3:
@@ -1058,6 +1058,7 @@ Please add a <ins><span class='comment'>// <span class='textit'>freestanding</sp
 <li><ins>[meta.type.synop]</ins></li>
 <li><ins>[ratio.syn]</ins></li>
 <li><ins>[span.syn]</ins></li>
+<li><ins>[ranges.syn]</ins></li>
 <li><ins>[bit.syn]</ins></li>
 <li><ins>[atomics.syn]</ins></li>
 </ul>
@@ -2704,184 +2705,41 @@ Change in [array.overview]:
 </pre>
 </blockquote>
 
-Change in [iterator.synopsis]:
-<blockquote class="std">
-<h2 ><a class='secnum' style='min-width:88pt'>?.?</a> Header <span class='texttt'>&lt;iterator&gt;</span>&nbsp;synopsis <a class='abbr_ref'>[iterator.synopsis]</a></h2>
-<pre class='codeblock'>
-namespace std {
-  <span class='comment'>// [iterator.primitives], primitives
-</span>  template&lt;class Iterator&gt; struct iterator_traits; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T&gt; struct iterator_traits&lt;T*&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  struct input_iterator_tag { }; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  struct output_iterator_tag { }; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  struct forward_iterator_tag: public input_iterator_tag { }; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  struct bidirectional_iterator_tag: public forward_iterator_tag { }; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  struct random_access_iterator_tag: public bidirectional_iterator_tag { }; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// [iterator.operations], iterator operations
-</span>  template&lt;class InputIterator, class Distance&gt;
-    constexpr void
-      advance(InputIterator&amp; i, Distance n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator&gt;
-    constexpr typename iterator_traits&lt;InputIterator&gt;::difference_type
-      distance(InputIterator first, InputIterator last); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class InputIterator&gt;
-    constexpr InputIterator
-      next(InputIterator x,
-           typename iterator_traits&lt;InputIterator&gt;::difference_type n = 1); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class BidirectionalIterator&gt;
-    constexpr BidirectionalIterator
-      prev(BidirectionalIterator x,
-           typename iterator_traits&lt;BidirectionalIterator&gt;::difference_type n = 1); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// [predef.iterators], predefined iterators
-</span>  template&lt;class Iterator&gt; class reverse_iterator; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  template&lt;class Iterator1, class Iterator2&gt;
-    constexpr bool operator==(
-      const reverse_iterator&lt;Iterator1&gt;&amp; x,
-      const reverse_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class Iterator1, class Iterator2&gt;
-    constexpr bool operator!=(
-      const reverse_iterator&lt;Iterator1&gt;&amp; x,
-      const reverse_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class Iterator1, class Iterator2&gt;
-    constexpr bool operator&lt;(
-      const reverse_iterator&lt;Iterator1&gt;&amp; x,
-      const reverse_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class Iterator1, class Iterator2&gt;
-    constexpr bool operator&gt;(
-      const reverse_iterator&lt;Iterator1&gt;&amp; x,
-      const reverse_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class Iterator1, class Iterator2&gt;
-    constexpr bool operator&lt;=(
-      const reverse_iterator&lt;Iterator1&gt;&amp; x,
-      const reverse_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class Iterator1, class Iterator2&gt;
-    constexpr bool operator&gt;=(
-      const reverse_iterator&lt;Iterator1&gt;&amp; x,
-      const reverse_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  template&lt;class Iterator1, class Iterator2&gt;
-    constexpr auto operator-(
-      const reverse_iterator&lt;Iterator1&gt;&amp; x,
-      const reverse_iterator&lt;Iterator2&gt;&amp; y) -&gt; decltype(y.base() - x.base()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class Iterator&gt;
-    constexpr reverse_iterator&lt;Iterator&gt;
-      operator+(
-    typename reverse_iterator&lt;Iterator&gt;::difference_type n,
-    const reverse_iterator&lt;Iterator&gt;&amp; x); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  template&lt;class Iterator&gt;
-    constexpr reverse_iterator&lt;Iterator&gt; make_reverse_iterator(Iterator i); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  template&lt;class Container&gt; class back_insert_iterator; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class Container&gt;
-    back_insert_iterator&lt;Container&gt; back_inserter(Container&amp; x); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  template&lt;class Container&gt; class front_insert_iterator; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class Container&gt;
-    front_insert_iterator&lt;Container&gt; front_inserter(Container&amp; x); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  template&lt;class Container&gt; class insert_iterator; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class Container&gt;
-    insert_iterator&lt;Container&gt; inserter(Container&amp; x, typename Container::iterator i); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  template&lt;class Iterator&gt; class move_iterator; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class Iterator1, class Iterator2&gt;
-    constexpr bool operator==(
-      const move_iterator&lt;Iterator1&gt;&amp; x, const move_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class Iterator1, class Iterator2&gt;
-    constexpr bool operator!=(
-      const move_iterator&lt;Iterator1&gt;&amp; x, const move_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class Iterator1, class Iterator2&gt;
-    constexpr bool operator&lt;(
-      const move_iterator&lt;Iterator1&gt;&amp; x, const move_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class Iterator1, class Iterator2&gt;
-    constexpr bool operator&gt;(
-      const move_iterator&lt;Iterator1&gt;&amp; x, const move_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class Iterator1, class Iterator2&gt;
-    constexpr bool operator&lt;=(
-      const move_iterator&lt;Iterator1&gt;&amp; x, const move_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class Iterator1, class Iterator2&gt;
-    constexpr bool operator&gt;=(
-      const move_iterator&lt;Iterator1&gt;&amp; x, const move_iterator&lt;Iterator2&gt;&amp; y); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  template&lt;class Iterator1, class Iterator2&gt;
-    constexpr auto operator-(
-    const move_iterator&lt;Iterator1&gt;&amp; x,
-    const move_iterator&lt;Iterator2&gt;&amp; y) -&gt; decltype(x.base() - y.base()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class Iterator&gt;
-    constexpr move_iterator&lt;Iterator&gt; operator+( <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-      typename move_iterator&lt;Iterator&gt;::difference_type n, const move_iterator&lt;Iterator&gt;&amp; x);
-  template&lt;class Iterator&gt;
-    constexpr move_iterator&lt;Iterator&gt; make_move_iterator(Iterator i); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// [stream.iterators], stream iterators
-</span>  template&lt;class T, class charT = char, class traits = char_traits&lt;charT&gt;,
-           class Distance = ptrdiff_t&gt;
-  class istream_iterator;
-  template&lt;class T, class charT, class traits, class Distance&gt;
-    bool operator==(const istream_iterator&lt;T,charT,traits,Distance&gt;&amp; x,
-            const istream_iterator&lt;T,charT,traits,Distance&gt;&amp; y);
-  template&lt;class T, class charT, class traits, class Distance&gt;
-    bool operator!=(const istream_iterator&lt;T,charT,traits,Distance&gt;&amp; x,
-            const istream_iterator&lt;T,charT,traits,Distance&gt;&amp; y);
-
-  template&lt;class T, class charT = char, class traits = char_traits&lt;charT&gt;&gt;
-      class ostream_iterator;
-
-  template&lt;class charT, class traits = char_traits&lt;charT&gt;&gt;
-    class istreambuf_iterator;
-  template&lt;class charT, class traits&gt;
-    bool operator==(const istreambuf_iterator&lt;charT,traits&gt;&amp; a,
-            const istreambuf_iterator&lt;charT,traits&gt;&amp; b);
-  template&lt;class charT, class traits&gt;
-    bool operator!=(const istreambuf_iterator&lt;charT,traits&gt;&amp; a,
-            const istreambuf_iterator&lt;charT,traits&gt;&amp; b);
-
-  template&lt;class charT, class traits = char_traits&lt;charT&gt;&gt;
-    class ostreambuf_iterator;
-
-  <span class='comment'>// [iterator.range], range access
-</span>  template&lt;class C&gt; constexpr auto begin(C&amp; c) -&gt; decltype(c.begin()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class C&gt; constexpr auto begin(const C&amp; c) -&gt; decltype(c.begin()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class C&gt; constexpr auto end(C&amp; c) -&gt; decltype(c.end()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class C&gt; constexpr auto end(const C&amp; c) -&gt; decltype(c.end()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T, size_t N&gt; constexpr T* begin(T (&amp;array)[N]) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T, size_t N&gt; constexpr T* end(T (&amp;array)[N]) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class C&gt; constexpr auto cbegin(const C&amp; c) noexcept(noexcept(std::begin(c)))
-    -&gt; decltype(std::begin(c)); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class C&gt; constexpr auto cend(const C&amp; c) noexcept(noexcept(std::end(c)))
-    -&gt; decltype(std::end(c)); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class C&gt; constexpr auto rbegin(C&amp; c) -&gt; decltype(c.rbegin()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class C&gt; constexpr auto rbegin(const C&amp; c) -&gt; decltype(c.rbegin()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class C&gt; constexpr auto rend(C&amp; c) -&gt; decltype(c.rend()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class C&gt; constexpr auto rend(const C&amp; c) -&gt; decltype(c.rend()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T, size_t N&gt; constexpr reverse_iterator&lt;T*&gt; rbegin(T (&amp;array)[N]); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T, size_t N&gt; constexpr reverse_iterator&lt;T*&gt; rend(T (&amp;array)[N]); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class E&gt; constexpr reverse_iterator&lt;const E*&gt; rbegin(initializer_list&lt;E&gt; il); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class E&gt; constexpr reverse_iterator&lt;const E*&gt; rend(initializer_list&lt;E&gt; il); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class C&gt; constexpr auto crbegin(const C&amp; c) -&gt; decltype(std::rbegin(c)); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class C&gt; constexpr auto crend(const C&amp; c) -&gt; decltype(std::rend(c)); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-
-  <span class='comment'>// [iterator.container], container access
-</span>  template&lt;class C&gt; constexpr auto size(const C&amp; c) -&gt; decltype(c.size()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T, size_t N&gt; constexpr size_t size(const T (&amp;array)[N]) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class C&gt; [[nodiscard]] constexpr auto empty(const C&amp; c) -&gt; decltype(c.empty()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T, size_t N&gt; [[nodiscard]] constexpr bool empty(const T (&amp;array)[N]) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class E&gt; [[nodiscard]] constexpr bool empty(initializer_list&lt;E&gt; il) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class C&gt; constexpr auto data(C&amp; c) -&gt; decltype(c.data()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class C&gt; constexpr auto data(const C&amp; c) -&gt; decltype(c.data()); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class T, size_t N&gt; constexpr T* data(T (&amp;array)[N]) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-  template&lt;class E&gt; constexpr const E* data(initializer_list&lt;E&gt; il) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
-}</pre>
-</blockquote>
-
+Change in [iterator.synopsis]: <br/>
+Instructions to the editor: <br/>
+Please add a <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins> comment to everything in [iterator.synopsis] except for the entities described under the [stream.iterators] section (i.e. <code>istream_iterator</code>, <code>ostream_iterator</code>, <code>istreambuf_iterator</code>, <code>ostreambuf_iterator</code>, and their associated comparison functions).<br/>
+<br/>
 Change in [algorithm.syn]: <br/>
 Instructions to the editor: <br/>
-Please add a <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins> comment to all of the non-ExecutionPolicy overloads of the following functions:
+Please add a <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins> comment to all of the following declarations:
+<ul>
+<li><ins><code>for_each_result</code></ins></li>
+<li><ins><code>mismatch_result</code></ins></li>
+<li><ins><code>copy_result</code></ins></li>
+<li><ins><code>copy_n_result</code></ins></li>
+<li><ins><code>copy_if_result</code></ins></li>
+<li><ins><code>copy_backward_result</code></ins></li>
+<li><ins><code>move_result</code></ins></li>
+<li><ins><code>move_backward_result</code></ins></li>
+<li><ins><code>swap_ranges_result</code></ins></li>
+<li><ins><code>unary_transform_result</code></ins></li>
+<li><ins><code>binary_transform_result</code></ins></li>
+<li><ins><code>replace_copy_result</code></ins></li>
+<li><ins><code>replace_copy_if_result</code></ins></li>
+<li><ins><code>remove_copy_result</code></ins></li>
+<li><ins><code>remove_copy_if_result</code></ins></li>
+<li><ins><code>unique_copy_result</code></ins></li>
+<li><ins><code>reverse_copy_result</code></ins></li>
+<li><ins><code>rotate_copy_result</code></ins></li>
+<li><ins><code>partition_copy_result</code></ins></li>
+<li><ins><code>merge_result</code></ins></li>
+<li><ins><code>set_union_result</code></ins></li>
+<li><ins><code>set_intersection_result</code></ins></li>
+<li><ins><code>set_difference_result</code></ins></li>
+<li><ins><code>set_symmetric_difference_result</code></ins></li>
+<li><ins><code>minmax_result</code></ins></li>
+</ul>
+Please add a <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins> comment to all of the non-ExecutionPolicy overloads of the following functions (including the ones in the <code>ranges</code> namespace):
 <ul>
 <li><ins><code>all_of</code></ins></li>
 <li><ins><code>any_of</code></ins></li>
@@ -2972,7 +2830,7 @@ Please add a <ins><span class='comment'>// <span class='textit'>freestanding</sp
 <li><ins><code>prev_permutation</code></ins></li>
 </ul>
 
-Note that stable_sort, stable_partition, and inplace_merge are purposefully omitted.<br/>
+Note that <code>stable_sort</code>, <code>stable_partition</code>, and <code>inplace_merge</code> are purposefully omitted.<br/>
 <br/>
 Change in [numeric.ops.overview]:<br/>
 Instructions to the editor: <br/>
