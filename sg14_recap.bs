@@ -1,9 +1,9 @@
 <pre class='metadata'>
 Title: Summary of Dec 2018 SG14 freestanding discussions
-Shortname: D1377
+Shortname: P1377
 Revision: 0
 Audience: WG21
-Status: D
+Status: P
 Group: WG21
 URL: http://wg21.link/P1377R0
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/sg14_recap.bs">github.com/ben-craig/freestanding_proposal/blob/master/sg14_recap.bs</a>
