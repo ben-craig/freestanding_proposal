@@ -1,0 +1,2137 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+  <title>P1377R0: Summary of Dec 2018 SG14 freestanding discussions</title>
+<style data-fill-with="stylesheet">/******************************************************************************
+ *                   Style sheet for the W3C specifications                   *
+ *
+ * Special classes handled by this style sheet include:
+ *
+ * Indices
+ *   - .toc for the Table of Contents (<ol class="toc">)
+ *     + <span class="secno"> for the section numbers
+ *   - #toc for the Table of Contents (<nav id="toc">)
+ *   - ul.index for Indices (<a href="#ref">term</a><span>, in §N.M</span>)
+ *   - table.index for Index Tables (e.g. for properties or elements)
+ *
+ * Structural Markup
+ *   - table.data for general data tables
+ *     -> use 'scope' attribute, <colgroup>, <thead>, and <tbody> for best results !
+ *     -> use <table class='complex data'> for extra-complex tables
+ *     -> use <td class='long'> for paragraph-length cell content
+ *     -> use <td class='pre'> when manual line breaks/indentation would help readability
+ *   - dl.switch for switch statements
+ *   - ol.algorithm for algorithms (helps to visualize nesting)
+ *   - .figure and .caption (HTML4) and figure and figcaption (HTML5)
+ *     -> .sidefigure for right-floated figures
+ *   - ins/del
+ *
+ * Code
+ *   - pre and code
+ *
+ * Special Sections
+ *   - .note       for informative notes             (div, p, span, aside, details)
+ *   - .example    for informative examples          (div, p, pre, span)
+ *   - .issue      for issues                        (div, p, span)
+ *   - .assertion  for assertions                    (div, p, span)
+ *   - .advisement for loud normative statements     (div, p, strong)
+ *   - .annoying-warning for spec obsoletion notices (div, aside, details)
+ *
+ * Definition Boxes
+ *   - pre.def   for WebIDL definitions
+ *   - table.def for tables that define other entities (e.g. CSS properties)
+ *   - dl.def    for definition lists that define other entitles (e.g. HTML elements)
+ *
+ * Numbering
+ *   - .secno for section numbers in .toc and headings (<span class='secno'>3.2</span>)
+ *   - .marker for source-inserted example/figure/issue numbers (<span class='marker'>Issue 4</span>)
+ *   - ::before styled for CSS-generated issue/example/figure numbers:
+ *     -> Documents wishing to use this only need to add
+ *        figcaption::before,
+ *        .caption::before { content: "Figure "  counter(figure) " ";  }
+ *        .example::before { content: "Example " counter(example) " "; }
+ *        .issue::before   { content: "Issue "   counter(issue) " ";   }
+ *
+ * Header Stuff (ignore, just don't conflict with these classes)
+ *   - .head for the header
+ *   - .copyright for the copyright
+ *
+ * Miscellaneous
+ *   - .overlarge for things that should be as wide as possible, even if
+ *     that overflows the body text area. This can be used on an item or
+ *     on its container, depending on the effect desired.
+ *     Note that this styling basically doesn't help at all when printing,
+ *     since A4 paper isn't much wider than the max-width here.
+ *     It's better to design things to fit into a narrower measure if possible.
+ *   - js-added ToC jump links (see fixup.js)
+ *
+ ******************************************************************************/
+
+/******************************************************************************/
+/*                                   Body                                     */
+/******************************************************************************/
+
+	body {
+		counter-reset: example figure issue;
+
+		/* Layout */
+		max-width: 50em;               /* limit line length to 50em for readability   */
+		margin: 0 auto;                /* center text within page                     */
+		padding: 1.6em 1.5em 2em 50px; /* assume 16px font size for downlevel clients */
+		padding: 1.6em 1.5em 2em calc(26px + 1.5em); /* leave space for status flag     */
+
+		/* Typography */
+		line-height: 1.5;
+		font-family: sans-serif;
+		widows: 2;
+		orphans: 2;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+		hyphens: auto;
+
+		/* Colors */
+		color: black;
+		background: white top left fixed no-repeat;
+		background-size: 25px auto;
+	}
+
+
+/******************************************************************************/
+/*                         Front Matter & Navigation                          */
+/******************************************************************************/
+
+/** Header ********************************************************************/
+
+	div.head { margin-bottom: 1em }
+	div.head hr { border-style: solid; }
+
+	div.head h1 {
+		font-weight: bold;
+		margin: 0 0 .1em;
+		font-size: 220%;
+	}
+
+	div.head h2 { margin-bottom: 1.5em;}
+
+/** W3C Logo ******************************************************************/
+
+	.head .logo {
+		float: right;
+		margin: 0.4rem 0 0.2rem .4rem;
+	}
+
+	.head img[src*="logos/W3C"] {
+		display: block;
+		border: solid #1a5e9a;
+		border-width: .65rem .7rem .6rem;
+		border-radius: .4rem;
+		background: #1a5e9a;
+		color: white;
+		font-weight: bold;
+	}
+
+	.head a:hover > img[src*="logos/W3C"],
+	.head a:focus > img[src*="logos/W3C"] {
+		opacity: .8;
+	}
+
+	.head a:active > img[src*="logos/W3C"] {
+		background: #c00;
+		border-color: #c00;
+	}
+
+	/* see also additional rules in Link Styling section */
+
+/** Copyright *****************************************************************/
+
+	p.copyright,
+	p.copyright small { font-size: small }
+
+/** Back to Top / ToC Toggle **************************************************/
+
+	@media print {
+		#toc-nav {
+			display: none;
+		}
+	}
+	@media not print {
+		#toc-nav {
+			position: fixed;
+			z-index: 2;
+			bottom: 0; left: 0;
+			margin: 0;
+			min-width: 1.33em;
+			border-top-right-radius: 2rem;
+			box-shadow: 0 0 2px;
+			font-size: 1.5em;
+			color: black;
+		}
+		#toc-nav > a {
+			display: block;
+			white-space: nowrap;
+
+			height: 1.33em;
+			padding: .1em 0.3em;
+			margin: 0;
+
+			background: white;
+			box-shadow: 0 0 2px;
+			border: none;
+			border-top-right-radius: 1.33em;
+			background: white;
+		}
+		#toc-nav > #toc-jump {
+			padding-bottom: 2em;
+			margin-bottom: -1.9em;
+		}
+
+		#toc-nav > a:hover,
+		#toc-nav > a:focus {
+			background: #f8f8f8;
+		}
+		#toc-nav > a:not(:hover):not(:focus) {
+			color: #707070;
+		}
+
+		/* statusbar gets in the way on keyboard focus; remove once browsers fix */
+		#toc-nav > a[href="#toc"]:not(:hover):focus:last-child {
+			padding-bottom: 1.5rem;
+		}
+
+		#toc-nav:not(:hover) > a:not(:focus) > span + span {
+			/* Ideally this uses :focus-within on #toc-nav */
+			display: none;
+		}
+		#toc-nav > a > span + span {
+			padding-right: 0.2em;
+		}
+
+		#toc-toggle-inline {
+			vertical-align: 0.05em;
+			font-size: 80%;
+			color: gray;
+			color: hsla(203,20%,40%,.7);
+			border-style: none;
+			background: transparent;
+			position: relative;
+		}
+		#toc-toggle-inline:hover:not(:active),
+		#toc-toggle-inline:focus:not(:active) {
+			text-shadow: 1px 1px silver;
+			top: -1px;
+			left: -1px;
+		}
+
+		#toc-nav :active {
+			color: #C00;
+		}
+	}
+
+/** ToC Sidebar ***************************************************************/
+
+	/* Floating sidebar */
+	@media screen {
+		body.toc-sidebar #toc {
+			position: fixed;
+			top: 0; bottom: 0;
+			left: 0;
+			width: 23.5em;
+			max-width: 80%;
+			max-width: calc(100% - 2em - 26px);
+			overflow: auto;
+			padding: 0 1em;
+			padding-left: 42px;
+			padding-left: calc(1em + 26px);
+			background: inherit;
+			background-color: #f7f8f9;
+			z-index: 1;
+			box-shadow: -.1em 0 .25em rgba(0,0,0,.1) inset;
+		}
+		body.toc-sidebar #toc h2 {
+			margin-top: .8rem;
+			font-variant: small-caps;
+			font-variant: all-small-caps;
+			text-transform: lowercase;
+			font-weight: bold;
+			color: gray;
+			color: hsla(203,20%,40%,.7);
+		}
+		body.toc-sidebar #toc-jump:not(:focus) {
+			width: 0;
+			height: 0;
+			padding: 0;
+			position: absolute;
+			overflow: hidden;
+		}
+	}
+	/* Hide main scroller when only the ToC is visible anyway */
+	@media screen and (max-width: 28em) {
+		body.toc-sidebar {
+			overflow: hidden;
+		}
+	}
+
+	/* Sidebar with its own space */
+	@media screen and (min-width: 78em) {
+		body:not(.toc-inline) #toc {
+			position: fixed;
+			top: 0; bottom: 0;
+			left: 0;
+			width: 23.5em;
+			overflow: auto;
+			padding: 0 1em;
+			padding-left: 42px;
+			padding-left: calc(1em + 26px);
+			background: inherit;
+			background-color: #f7f8f9;
+			z-index: 1;
+			box-shadow: -.1em 0 .25em rgba(0,0,0,.1) inset;
+		}
+		body:not(.toc-inline) #toc h2 {
+			margin-top: .8rem;
+			font-variant: small-caps;
+			font-variant: all-small-caps;
+			text-transform: lowercase;
+			font-weight: bold;
+			color: gray;
+			color: hsla(203,20%,40%,.7);
+		}
+
+		body:not(.toc-inline) {
+			padding-left: 29em;
+		}
+		/* See also Overflow section at the bottom */
+
+		body:not(.toc-inline) #toc-jump:not(:focus) {
+			width: 0;
+			height: 0;
+			padding: 0;
+			position: absolute;
+			overflow: hidden;
+		}
+	}
+	@media screen and (min-width: 90em) {
+		body:not(.toc-inline) {
+			margin: 0 4em;
+		}
+	}
+
+/******************************************************************************/
+/*                                Sectioning                                  */
+/******************************************************************************/
+
+/** Headings ******************************************************************/
+
+	h1, h2, h3, h4, h5, h6, dt {
+		page-break-after: avoid;
+		page-break-inside: avoid;
+		font: 100% sans-serif;   /* Reset all font styling to clear out UA styles */
+		font-family: inherit;    /* Inherit the font family. */
+		line-height: 1.2;        /* Keep wrapped headings compact */
+		hyphens: manual;         /* Hyphenated headings look weird */
+	}
+
+	h2, h3, h4, h5, h6 {
+		margin-top: 3rem;
+	}
+
+	h1, h2, h3 {
+		color: #005A9C;
+		background: transparent;
+	}
+
+	h1 { font-size: 170%; }
+	h2 { font-size: 140%; }
+	h3 { font-size: 120%; }
+	h4 { font-weight: bold; }
+	h5 { font-style: italic; }
+	h6 { font-variant: small-caps; }
+	dt { font-weight: bold; }
+
+/** Subheadings ***************************************************************/
+
+	h1 + h2,
+	#subtitle {
+		/* #subtitle is a subtitle in an H2 under the H1 */
+		margin-top: 0;
+	}
+	h2 + h3,
+	h3 + h4,
+	h4 + h5,
+	h5 + h6 {
+		margin-top: 1.2em; /* = 1 x line-height */
+	}
+
+/** Section divider ***********************************************************/
+
+	:not(.head) > hr {
+		font-size: 1.5em;
+		text-align: center;
+		margin: 1em auto;
+		height: auto;
+		border: transparent solid 0;
+		background: transparent;
+	}
+	:not(.head) > hr::before {
+		content: "\2727\2003\2003\2727\2003\2003\2727";
+	}
+
+/******************************************************************************/
+/*                            Paragraphs and Lists                            */
+/******************************************************************************/
+
+	p {
+		margin: 1em 0;
+	}
+
+	dd > p:first-child,
+	li > p:first-child {
+		margin-top: 0;
+	}
+
+	ul, ol {
+		margin-left: 0;
+		padding-left: 2em;
+	}
+
+	li {
+		margin: 0.25em 0 0.5em;
+		padding: 0;
+	}
+
+	dl dd {
+		margin: 0 0 .5em 2em;
+	}
+
+	.head dd + dd { /* compact for header */
+		margin-top: -.5em;
+	}
+
+	/* Style for algorithms */
+	ol.algorithm ol:not(.algorithm),
+	.algorithm > ol ol:not(.algorithm) {
+	 border-left: 0.5em solid #DEF;
+	}
+
+	/* Put nice boxes around each algorithm. */
+	[data-algorithm]:not(.heading) {
+	  padding: .5em;
+	  border: thin solid #ddd; border-radius: .5em;
+	  margin: .5em calc(-0.5em - 1px);
+	}
+	[data-algorithm]:not(.heading) > :first-child {
+	  margin-top: 0;
+	}
+	[data-algorithm]:not(.heading) > :last-child {
+	  margin-bottom: 0;
+	}
+
+	/* Style for switch/case <dl>s */
+	dl.switch > dd > ol.only,
+	dl.switch > dd > .only > ol {
+	 margin-left: 0;
+	}
+	dl.switch > dd > ol.algorithm,
+	dl.switch > dd > .algorithm > ol {
+	 margin-left: -2em;
+	}
+	dl.switch {
+	 padding-left: 2em;
+	}
+	dl.switch > dt {
+	 text-indent: -1.5em;
+	 margin-top: 1em;
+	}
+	dl.switch > dt + dt {
+	 margin-top: 0;
+	}
+	dl.switch > dt::before {
+	 content: '\21AA';
+	 padding: 0 0.5em 0 0;
+	 display: inline-block;
+	 width: 1em;
+	 text-align: right;
+	 line-height: 0.5em;
+	}
+
+/** Terminology Markup ********************************************************/
+
+
+/******************************************************************************/
+/*                                 Inline Markup                              */
+/******************************************************************************/
+
+/** Terminology Markup ********************************************************/
+	dfn   { /* Defining instance */
+		font-weight: bolder;
+	}
+	a > i { /* Instance of term */
+		font-style: normal;
+	}
+	dt dfn code, code.idl {
+		font-size: medium;
+	}
+	dfn var {
+		font-style: normal;
+	}
+
+/** Change Marking ************************************************************/
+
+	del { color: red;  text-decoration: line-through; }
+	ins { color: #080; text-decoration: underline;    }
+
+/** Miscellaneous improvements to inline formatting ***************************/
+
+	sup {
+		vertical-align: super;
+		font-size: 80%
+	}
+
+/******************************************************************************/
+/*                                    Code                                    */
+/******************************************************************************/
+
+/** General monospace/pre rules ***********************************************/
+
+	pre, code, samp {
+		font-family: Menlo, Consolas, "DejaVu Sans Mono", Monaco, monospace;
+		font-size: .9em;
+		page-break-inside: avoid;
+		hyphens: none;
+		text-transform: none;
+	}
+	pre code,
+	code code {
+		font-size: 100%;
+	}
+
+	pre {
+		margin-top: 1em;
+		margin-bottom: 1em;
+		overflow: auto;
+	}
+
+/** Inline Code fragments *****************************************************/
+
+  /* Do something nice. */
+
+/******************************************************************************/
+/*                                    Links                                   */
+/******************************************************************************/
+
+/** General Hyperlinks ********************************************************/
+
+	/* We hyperlink a lot, so make it less intrusive */
+	a[href] {
+		color: #034575;
+		text-decoration: none;
+		border-bottom: 1px solid #707070;
+		/* Need a bit of extending for it to look okay */
+		padding: 0 1px 0;
+		margin: 0 -1px 0;
+	}
+	a:visited {
+		border-bottom-color: #BBB;
+	}
+
+	/* Use distinguishing colors when user is interacting with the link */
+	a[href]:focus,
+	a[href]:hover {
+		background: #f8f8f8;
+		background: rgba(75%, 75%, 75%, .25);
+		border-bottom-width: 3px;
+		margin-bottom: -2px;
+	}
+	a[href]:active {
+		color: #C00;
+		border-color: #C00;
+	}
+
+	/* Backout above styling for W3C logo */
+	.head .logo,
+	.head .logo a {
+		border: none;
+		text-decoration: none;
+		background: transparent;
+	}
+
+/******************************************************************************/
+/*                                    Images                                  */
+/******************************************************************************/
+
+	img {
+		border-style: none;
+	}
+
+	/* For autogen numbers, add
+	   .caption::before, figcaption::before { content: "Figure " counter(figure) ". "; }
+	*/
+
+	figure, .figure, .sidefigure {
+		page-break-inside: avoid;
+		text-align: center;
+		margin: 2.5em 0;
+	}
+	.figure img,    .sidefigure img,    figure img,
+	.figure object, .sidefigure object, figure object {
+		max-width: 100%;
+		margin: auto;
+	}
+	.figure pre, .sidefigure pre, figure pre {
+		text-align: left;
+		display: table;
+		margin: 1em auto;
+	}
+	.figure table, figure table {
+		margin: auto;
+	}
+	@media screen and (min-width: 20em) {
+		.sidefigure {
+			float: right;
+			width: 50%;
+			margin: 0 0 0.5em 0.5em
+		}
+	}
+	.caption, figcaption, caption {
+		font-style: italic;
+		font-size: 90%;
+	}
+	.caption::before, figcaption::before, figcaption > .marker {
+		font-weight: bold;
+	}
+	.caption, figcaption {
+		counter-increment: figure;
+	}
+
+	/* DL list is indented 2em, but figure inside it is not */
+	dd > .figure, dd > figure { margin-left: -2em }
+
+/******************************************************************************/
+/*                             Colored Boxes                                  */
+/******************************************************************************/
+
+	.issue, .note, .example, .assertion, .advisement, blockquote {
+		padding: .5em;
+		border: .5em;
+		border-left-style: solid;
+		page-break-inside: avoid;
+	}
+	span.issue, span.note {
+		padding: .1em .5em .15em;
+		border-right-style: solid;
+	}
+
+	.issue,
+	.note,
+	.example,
+	.advisement,
+	.assertion,
+	blockquote {
+		margin: 1em auto;
+	}
+	.note  > p:first-child,
+	.issue > p:first-child,
+	blockquote > :first-child {
+		margin-top: 0;
+	}
+	blockquote > :last-child {
+		margin-bottom: 0;
+	}
+
+/** Blockquotes ***************************************************************/
+
+	blockquote {
+		border-color: silver;
+	}
+
+/** Open issue ****************************************************************/
+
+	.issue {
+		border-color: #E05252;
+		background: #FBE9E9;
+		counter-increment: issue;
+		overflow: auto;
+	}
+	.issue::before, .issue > .marker {
+		text-transform: uppercase;
+		color: #AE1E1E;
+		padding-right: 1em;
+		text-transform: uppercase;
+	}
+	/* Add .issue::before { content: "Issue " counter(issue) " "; } for autogen numbers,
+	   or use class="marker" to mark up the issue number in source. */
+
+/** Example *******************************************************************/
+
+	.example {
+		border-color: #E0CB52;
+		background: #FCFAEE;
+		counter-increment: example;
+		overflow: auto;
+		clear: both;
+	}
+	.example::before, .example > .marker {
+		text-transform: uppercase;
+		color: #827017;
+		min-width: 7.5em;
+		display: block;
+	}
+	/* Add .example::before { content: "Example " counter(example) " "; } for autogen numbers,
+	   or use class="marker" to mark up the example number in source. */
+
+/** Non-normative Note ********************************************************/
+
+	.note {
+		border-color: #52E052;
+		background: #E9FBE9;
+		overflow: auto;
+	}
+
+	.note::before, .note > .marker,
+	details.note > summary::before,
+	details.note > summary > .marker {
+		text-transform: uppercase;
+		display: block;
+		color: hsl(120, 70%, 30%);
+	}
+	/* Add .note::before { content: "Note"; } for autogen label,
+	   or use class="marker" to mark up the label in source. */
+
+	details.note > summary {
+		display: block;
+		color: hsl(120, 70%, 30%);
+	}
+	details.note[open] > summary {
+		border-bottom: 1px silver solid;
+	}
+
+/** Assertion Box *************************************************************/
+	/*  for assertions in algorithms */
+
+	.assertion {
+		border-color: #AAA;
+		background: #EEE;
+	}
+
+/** Advisement Box ************************************************************/
+	/*  for attention-grabbing normative statements */
+
+	.advisement {
+		border-color: orange;
+		border-style: none solid;
+		background: #FFEECC;
+	}
+	strong.advisement {
+		display: block;
+		text-align: center;
+	}
+	.advisement > .marker {
+		color: #B35F00;
+	}
+
+/** Spec Obsoletion Notice ****************************************************/
+	/* obnoxious obsoletion notice for older/abandoned specs. */
+
+	details {
+		display: block;
+	}
+	summary {
+		font-weight: bolder;
+	}
+
+	.annoying-warning:not(details),
+	details.annoying-warning:not([open]) > summary,
+	details.annoying-warning[open] {
+		background: #fdd;
+		color: red;
+		font-weight: bold;
+		padding: .75em 1em;
+		border: thick red;
+		border-style: solid;
+		border-radius: 1em;
+	}
+	.annoying-warning :last-child {
+		margin-bottom: 0;
+	}
+
+@media not print {
+	details.annoying-warning[open] {
+		position: fixed;
+		left: 1em;
+		right: 1em;
+		bottom: 1em;
+		z-index: 1000;
+	}
+}
+
+	details.annoying-warning:not([open]) > summary {
+		text-align: center;
+	}
+
+/** Entity Definition Boxes ***************************************************/
+
+	.def {
+		padding: .5em 1em;
+		background: #DEF;
+		margin: 1.2em 0;
+		border-left: 0.5em solid #8CCBF2;
+	}
+
+/******************************************************************************/
+/*                                    Tables                                  */
+/******************************************************************************/
+
+	th, td {
+		text-align: left;
+		text-align: start;
+	}
+
+/** Property/Descriptor Definition Tables *************************************/
+
+	table.def {
+		/* inherits .def box styling, see above */
+		width: 100%;
+		border-spacing: 0;
+	}
+
+	table.def td,
+	table.def th {
+		padding: 0.5em;
+		vertical-align: baseline;
+		border-bottom: 1px solid #bbd7e9;
+	}
+
+	table.def > tbody > tr:last-child th,
+	table.def > tbody > tr:last-child td {
+		border-bottom: 0;
+	}
+
+	table.def th {
+		font-style: italic;
+		font-weight: normal;
+		padding-left: 1em;
+		width: 3em;
+	}
+
+	/* For when values are extra-complex and need formatting for readability */
+	table td.pre {
+		white-space: pre-wrap;
+	}
+
+	/* A footnote at the bottom of a def table */
+	table.def           td.footnote {
+		padding-top: 0.6em;
+	}
+	table.def           td.footnote::before {
+		content: " ";
+		display: block;
+		height: 0.6em;
+		width: 4em;
+		border-top: thin solid;
+	}
+
+/** Data tables (and properly marked-up index tables) *************************/
+	/*
+		 <table class="data"> highlights structural relationships in a table
+		 when correct markup is used (e.g. thead/tbody, th vs. td, scope attribute)
+
+		 Use class="complex data" for particularly complicated tables --
+		 (This will draw more lines: busier, but clearer.)
+
+		 Use class="long" on table cells with paragraph-like contents
+		 (This will adjust text alignment accordingly.)
+		 Alternately use class="longlastcol" on tables, to have the last column assume "long".
+	*/
+
+	table {
+		word-wrap: normal;
+		overflow-wrap: normal;
+		hyphens: manual;
+	}
+
+	table.data,
+	table.index {
+		margin: 1em auto;
+		border-collapse: collapse;
+		border: hidden;
+		width: 100%;
+	}
+	table.data caption,
+	table.index caption {
+		max-width: 50em;
+		margin: 0 auto 1em;
+	}
+
+	table.data td,  table.data th,
+	table.index td, table.index th {
+		padding: 0.5em 1em;
+		border-width: 1px;
+		border-color: silver;
+		border-top-style: solid;
+	}
+
+	table.data thead td:empty {
+		padding: 0;
+		border: 0;
+	}
+
+	table.data  thead,
+	table.index thead,
+	table.data  tbody,
+	table.index tbody {
+		border-bottom: 2px solid;
+	}
+
+	table.data colgroup,
+	table.index colgroup {
+		border-left: 2px solid;
+	}
+
+	table.data  tbody th:first-child,
+	table.index tbody th:first-child  {
+		border-right: 2px solid;
+		border-top: 1px solid silver;
+		padding-right: 1em;
+	}
+
+	table.data th[colspan],
+	table.data td[colspan] {
+		text-align: center;
+	}
+
+	table.complex.data th,
+	table.complex.data td {
+		border: 1px solid silver;
+		text-align: center;
+	}
+
+	table.data.longlastcol td:last-child,
+	table.data td.long {
+	 vertical-align: baseline;
+	 text-align: left;
+	}
+
+	table.data img {
+		vertical-align: middle;
+	}
+
+
+/*
+Alternate table alignment rules
+
+	table.data,
+	table.index {
+		text-align: center;
+	}
+
+	table.data  thead th[scope="row"],
+	table.index thead th[scope="row"] {
+		text-align: right;
+	}
+
+	table.data  tbody th:first-child,
+	table.index tbody th:first-child  {
+		text-align: right;
+	}
+
+Possible extra rowspan handling
+
+	table.data  tbody th[rowspan]:not([rowspan='1']),
+	table.index tbody th[rowspan]:not([rowspan='1']),
+	table.data  tbody td[rowspan]:not([rowspan='1']),
+	table.index tbody td[rowspan]:not([rowspan='1']) {
+		border-left: 1px solid silver;
+	}
+
+	table.data  tbody th[rowspan]:first-child,
+	table.index tbody th[rowspan]:first-child,
+	table.data  tbody td[rowspan]:first-child,
+	table.index tbody td[rowspan]:first-child{
+		border-left: 0;
+		border-right: 1px solid silver;
+	}
+*/
+
+/******************************************************************************/
+/*                                  Indices                                   */
+/******************************************************************************/
+
+
+/** Table of Contents *********************************************************/
+
+	.toc a {
+		/* More spacing; use padding to make it part of the click target. */
+		padding-top: 0.1rem;
+		/* Larger, more consistently-sized click target */
+		display: block;
+		/* Reverse color scheme */
+		color: black;
+		border-color: #3980B5;
+		border-bottom-width: 3px !important;
+		margin-bottom: 0px !important;
+	}
+	.toc a:visited {
+		border-color: #054572;
+	}
+	.toc a:not(:focus):not(:hover) {
+		/* Allow colors to cascade through from link styling */
+		border-bottom-color: transparent;
+	}
+
+	.toc, .toc ol, .toc ul, .toc li {
+		list-style: none; /* Numbers must be inlined into source */
+		/* because generated content isn't search/selectable and markers can't do multilevel yet */
+		margin:  0;
+		padding: 0;
+		line-height: 1.1rem; /* consistent spacing */
+	}
+
+	/* ToC not indented until third level, but font style & margins show hierarchy */
+	.toc > li             { font-weight: bold;   }
+	.toc > li li          { font-weight: normal; }
+	.toc > li li li       { font-size:   95%;    }
+	.toc > li li li li    { font-size:   90%;    }
+	.toc > li li li li .secno { font-size: 85%; }
+	.toc > li li li li li { font-size:   85%;    }
+	.toc > li li li li li .secno { font-size: 100%; }
+
+	/* @supports not (display:grid) { */
+		.toc > li             { margin: 1.5rem 0;    }
+		.toc > li li          { margin: 0.3rem 0;    }
+		.toc > li li li       { margin-left: 2rem;   }
+
+		/* Section numbers in a column of their own */
+		.toc .secno {
+			float: left;
+			width: 4rem;
+			white-space: nowrap;
+		}
+
+		.toc li {
+			clear: both;
+		}
+
+		:not(li) > .toc              { margin-left:  5rem; }
+		.toc .secno                  { margin-left: -5rem; }
+		.toc > li li li .secno       { margin-left: -7rem; }
+		.toc > li li li li .secno    { margin-left: -9rem; }
+		.toc > li li li li li .secno { margin-left: -11rem; }
+
+		/* Tighten up indentation in narrow ToCs */
+		@media (max-width: 30em) {
+			:not(li) > .toc              { margin-left:  4rem; }
+			.toc .secno                  { margin-left: -4rem; }
+			.toc > li li li              { margin-left:  1rem; }
+			.toc > li li li .secno       { margin-left: -5rem; }
+			.toc > li li li li .secno    { margin-left: -6rem; }
+			.toc > li li li li li .secno { margin-left: -7rem; }
+		}
+	/* } */
+
+	@supports (display:grid) {
+		/* Use #toc over .toc to override non-@supports rules. */
+		#toc {
+			display: grid;
+			align-content: start;
+			grid-template-columns: auto 1fr;
+			grid-column-gap: 1rem;
+			column-gap: 1rem;
+			grid-row-gap: .6rem;
+			row-gap: .6rem;
+		}
+		#toc h2 {
+			grid-column: 1 / -1;
+			margin-bottom: 0;
+		}
+		#toc ol,
+		#toc li,
+		#toc a {
+			display: contents;
+			/* Switch <a> to subgrid when supported */
+		}
+		#toc span {
+			margin: 0;
+		}
+		#toc > .toc > li > a > span {
+			/* The spans of the top-level list,
+			   comprising the first items of each top-level section. */
+			margin-top: 1.1rem;
+		}
+		#toc#toc .secno { /* Ugh, need more specificity to override base.css */
+			grid-column: 1;
+			width: auto;
+			margin-left: 0;
+		}
+		#toc .content {
+			grid-column: 2;
+			width: auto;
+			margin-right: 1rem;
+		}
+		#toc .content:hover {
+			background: rgba(75%, 75%, 75%, .25);
+			border-bottom: 3px solid #054572;
+			margin-bottom: -3px;
+		}
+		#toc li li li .content {
+			margin-left: 1rem;
+		}
+		#toc li li li li .content {
+			margin-left: 2rem;
+		}
+	}
+
+
+/** Index *********************************************************************/
+
+	/* Index Lists: Layout */
+	ul.index       { margin-left: 0; columns: 15em; text-indent: 1em hanging; }
+	ul.index li    { margin-left: 0; list-style: none; break-inside: avoid; }
+	ul.index li li { margin-left: 1em }
+	ul.index dl    { margin-top: 0; }
+	ul.index dt    { margin: .2em 0 .2em 20px;}
+	ul.index dd    { margin: .2em 0 .2em 40px;}
+	/* Index Lists: Typography */
+	ul.index ul,
+	ul.index dl { font-size: smaller; }
+	@media not print {
+		ul.index li span {
+			white-space: nowrap;
+			color: transparent; }
+		ul.index li a:hover + span,
+		ul.index li a:focus + span {
+			color: #707070;
+		}
+	}
+
+/** Index Tables *****************************************************/
+	/* See also the data table styling section, which this effectively subclasses */
+
+	table.index {
+		font-size: small;
+		border-collapse: collapse;
+		border-spacing: 0;
+		text-align: left;
+		margin: 1em 0;
+	}
+
+	table.index td,
+	table.index th {
+		padding: 0.4em;
+	}
+
+	table.index tr:hover td:not([rowspan]),
+	table.index tr:hover th:not([rowspan]) {
+		background: #f7f8f9;
+	}
+
+	/* The link in the first column in the property table (formerly a TD) */
+	table.index th:first-child a {
+		font-weight: bold;
+	}
+
+/******************************************************************************/
+/*                                    Print                                   */
+/******************************************************************************/
+
+	@media print {
+		/* Pages have their own margins. */
+		html {
+			margin: 0;
+		}
+		/* Serif for print. */
+		body {
+			font-family: serif;
+		}
+	}
+	@page {
+		margin: 1.5cm 1.1cm;
+	}
+
+/******************************************************************************/
+/*                                    Legacy                                  */
+/******************************************************************************/
+
+	/* This rule is inherited from past style sheets. No idea what it's for. */
+	.hide { display: none }
+
+
+
+/******************************************************************************/
+/*                             Overflow Control                               */
+/******************************************************************************/
+
+	.figure .caption, .sidefigure .caption, figcaption {
+		/* in case figure is overlarge, limit caption to 50em */
+		max-width: 50rem;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.overlarge > table {
+		/* limit preferred width of table */
+		max-width: 50em;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	@media (min-width: 55em) {
+		.overlarge {
+			margin-left: calc(13px + 26.5rem - 50vw);
+			margin-right: calc(13px + 26.5rem - 50vw);
+			max-width: none;
+		}
+	}
+	@media screen and (min-width: 78em) {
+		body:not(.toc-inline) .overlarge {
+			/* 30.5em body padding 50em content area */
+			margin-left: calc(40em - 50vw) !important;
+			margin-right: calc(40em - 50vw) !important;
+		}
+	}
+	@media screen and (min-width: 90em) {
+		body:not(.toc-inline) .overlarge {
+			/* 4em html margin 30.5em body padding 50em content area */
+			margin-left: 0 !important;
+			margin-right: calc(84.5em - 100vw) !important;
+		}
+	}
+
+	@media not print {
+		.overlarge {
+			overflow-x: auto;
+			/* See Lea Verou's explanation background-attachment:
+			 * http://lea.verou.me/2012/04/background-attachment-local/
+			 *
+			background: top left  / 4em 100% linear-gradient(to right,  #ffffff, rgba(255, 255, 255, 0)) local,
+			            top right / 4em 100% linear-gradient(to left, #ffffff, rgba(255, 255, 255, 0)) local,
+			            top left  / 1em 100% linear-gradient(to right,  #c3c3c5, rgba(195, 195, 197, 0)) scroll,
+			            top right / 1em 100% linear-gradient(to left, #c3c3c5, rgba(195, 195, 197, 0)) scroll,
+			            white;
+			background-repeat: no-repeat;
+			*/
+		}
+	}
+</style>
+<style type="text/css">
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      vertical-align: top;
+    }
+    th, td {
+      border-left: none;
+      border-right: none;
+      padding: 0px 10px;
+    }
+    th {
+      text-align: center;
+    }
+  </style>
+  <meta content="Bikeshed version 86d51a2d9c3c0de4540c77189312f7e2393844af" name="generator">
+  <link href="http://wg21.link/P1377R0" rel="canonical">
+  <link href="https://isocpp.org/favicon.ico" rel="icon">
+<style>/* style-md-lists */
+
+/* This is a weird hack for me not yet following the commonmark spec
+   regarding paragraph and lists. */
+[data-md] > :first-child {
+    margin-top: 0;
+}
+[data-md] > :last-child {
+    margin-bottom: 0;
+}</style>
+<style>/* style-counters */
+
+body {
+    counter-reset: example figure issue;
+}
+.issue {
+    counter-increment: issue;
+}
+.issue:not(.no-marker)::before {
+    content: "Issue " counter(issue);
+}
+
+.example {
+    counter-increment: example;
+}
+.example:not(.no-marker)::before {
+    content: "Example " counter(example);
+}
+.invalid.example:not(.no-marker)::before,
+.illegal.example:not(.no-marker)::before {
+    content: "Invalid Example" counter(example);
+}
+
+figcaption {
+    counter-increment: figure;
+}
+figcaption:not(.no-marker)::before {
+    content: "Figure " counter(figure) " ";
+}</style>
+<style>/* style-syntax-highlighting */
+
+.highlight:not(.idl) { background: hsl(24, 20%, 95%); }
+code.highlight { padding: .1em; border-radius: .3em; }
+pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em 0; overflow: auto; border-radius: 0; }
+c-[a] { color: #990055 } /* Keyword.Declaration */
+c-[b] { color: #990055 } /* Keyword.Type */
+c-[c] { color: #708090 } /* Comment */
+c-[d] { color: #708090 } /* Comment.Multiline */
+c-[e] { color: #0077aa } /* Name.Attribute */
+c-[f] { color: #669900 } /* Name.Tag */
+c-[g] { color: #222222 } /* Name.Variable */
+c-[k] { color: #990055 } /* Keyword */
+c-[l] { color: #000000 } /* Literal */
+c-[m] { color: #000000 } /* Literal.Number */
+c-[n] { color: #0077aa } /* Name */
+c-[o] { color: #999999 } /* Operator */
+c-[p] { color: #999999 } /* Punctuation */
+c-[s] { color: #a67f59 } /* Literal.String */
+c-[t] { color: #a67f59 } /* Literal.String.Single */
+c-[u] { color: #a67f59 } /* Literal.String.Double */
+c-[cp] { color: #708090 } /* Comment.Preproc */
+c-[c1] { color: #708090 } /* Comment.Single */
+c-[cs] { color: #708090 } /* Comment.Special */
+c-[kc] { color: #990055 } /* Keyword.Constant */
+c-[kn] { color: #990055 } /* Keyword.Namespace */
+c-[kp] { color: #990055 } /* Keyword.Pseudo */
+c-[kr] { color: #990055 } /* Keyword.Reserved */
+c-[ld] { color: #000000 } /* Literal.Date */
+c-[nc] { color: #0077aa } /* Name.Class */
+c-[no] { color: #0077aa } /* Name.Constant */
+c-[nd] { color: #0077aa } /* Name.Decorator */
+c-[ni] { color: #0077aa } /* Name.Entity */
+c-[ne] { color: #0077aa } /* Name.Exception */
+c-[nf] { color: #0077aa } /* Name.Function */
+c-[nl] { color: #0077aa } /* Name.Label */
+c-[nn] { color: #0077aa } /* Name.Namespace */
+c-[py] { color: #0077aa } /* Name.Property */
+c-[ow] { color: #999999 } /* Operator.Word */
+c-[mb] { color: #000000 } /* Literal.Number.Bin */
+c-[mf] { color: #000000 } /* Literal.Number.Float */
+c-[mh] { color: #000000 } /* Literal.Number.Hex */
+c-[mi] { color: #000000 } /* Literal.Number.Integer */
+c-[mo] { color: #000000 } /* Literal.Number.Oct */
+c-[sb] { color: #a67f59 } /* Literal.String.Backtick */
+c-[sc] { color: #a67f59 } /* Literal.String.Char */
+c-[sd] { color: #a67f59 } /* Literal.String.Doc */
+c-[se] { color: #a67f59 } /* Literal.String.Escape */
+c-[sh] { color: #a67f59 } /* Literal.String.Heredoc */
+c-[si] { color: #a67f59 } /* Literal.String.Interpol */
+c-[sx] { color: #a67f59 } /* Literal.String.Other */
+c-[sr] { color: #a67f59 } /* Literal.String.Regex */
+c-[ss] { color: #a67f59 } /* Literal.String.Symbol */
+c-[vc] { color: #0077aa } /* Name.Variable.Class */
+c-[vg] { color: #0077aa } /* Name.Variable.Global */
+c-[vi] { color: #0077aa } /* Name.Variable.Instance */
+c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
+</style>
+<style>/* style-selflinks */
+
+.heading, .issue, .note, .example, li, dt {
+    position: relative;
+}
+a.self-link {
+    position: absolute;
+    top: 0;
+    left: calc(-1 * (3.5rem - 26px));
+    width: calc(3.5rem - 26px);
+    height: 2em;
+    text-align: center;
+    border: none;
+    transition: opacity .2s;
+    opacity: .5;
+}
+a.self-link:hover {
+    opacity: 1;
+}
+.heading > a.self-link {
+    font-size: 83%;
+}
+li > a.self-link {
+    left: calc(-1 * (3.5rem - 26px) - 2em);
+}
+dfn > a.self-link {
+    top: auto;
+    left: auto;
+    opacity: 0;
+    width: 1.5em;
+    height: 1.5em;
+    background: gray;
+    color: white;
+    font-style: normal;
+    transition: opacity .2s, background-color .2s, color .2s;
+}
+dfn:hover > a.self-link {
+    opacity: 1;
+}
+dfn > a.self-link:hover {
+    color: black;
+}
+
+a.self-link::before            { content: "¶"; }
+.heading > a.self-link::before { content: "§"; }
+dfn > a.self-link::before      { content: "#"; }</style>
+<style>/* style-autolinks */
+
+.css.css, .property.property, .descriptor.descriptor {
+    color: #005a9c;
+    font-size: inherit;
+    font-family: inherit;
+}
+.css::before, .property::before, .descriptor::before {
+    content: "‘";
+}
+.css::after, .property::after, .descriptor::after {
+    content: "’";
+}
+.property, .descriptor {
+    /* Don't wrap property and descriptor names */
+    white-space: nowrap;
+}
+.type { /* CSS value <type> */
+    font-style: italic;
+}
+pre .property::before, pre .property::after {
+    content: "";
+}
+[data-link-type="property"]::before,
+[data-link-type="propdesc"]::before,
+[data-link-type="descriptor"]::before,
+[data-link-type="value"]::before,
+[data-link-type="function"]::before,
+[data-link-type="at-rule"]::before,
+[data-link-type="selector"]::before,
+[data-link-type="maybe"]::before {
+    content: "‘";
+}
+[data-link-type="property"]::after,
+[data-link-type="propdesc"]::after,
+[data-link-type="descriptor"]::after,
+[data-link-type="value"]::after,
+[data-link-type="function"]::after,
+[data-link-type="at-rule"]::after,
+[data-link-type="selector"]::after,
+[data-link-type="maybe"]::after {
+    content: "’";
+}
+
+[data-link-type].production::before,
+[data-link-type].production::after,
+.prod [data-link-type]::before,
+.prod [data-link-type]::after {
+    content: "";
+}
+
+[data-link-type=element],
+[data-link-type=element-attr] {
+    font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    font-size: .9em;
+}
+[data-link-type=element]::before { content: "<" }
+[data-link-type=element]::after  { content: ">" }
+
+[data-link-type=biblio] {
+    white-space: pre;
+}</style>
+ </head><body class="h-entry toc-sidebar"><p id="toc-nav"><a id="toc-jump" href="#toc"><span aria-hidden="true">↑</span> <span>Jump to Table of Contents</span></a><a id="toc-toggle" href="#toc"><span aria-hidden="true">←</span> <span>Collapse Sidebar</span></a></p>
+  <div class="head">
+   <p data-fill-with="logo"></p>
+   <h1 class="p-name no-ref" id="title">P1377R0<br>Summary of Dec 2018 SG14 freestanding discussions</h1>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Published Proposal, <time class="dt-updated" datetime="2019-01-12">2019-01-12</time></span></h2>
+   <div data-fill-with="spec-metadata">
+    <dl>
+     <dt>This version:
+     </dt><dd><a class="u-url" href="http://wg21.link/P1377R0">http://wg21.link/P1377R0</a>
+     </dd><dt>Author:
+     </dt><dd>
+      </dd><dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:ben.craig@gmail.com">Ben Craig</a> (<span class="p-org org">National Instruments</span>)
+     </dd><dt>Audience:
+     </dt><dd>WG21
+     </dd><dt>Project:
+     </dt><dd>ISO/IEC JTC1/SC22/WG21 14882: Programming Language — C++
+     </dd><dt>Source:
+     </dt><dd><a href="https://github.com/ben-craig/freestanding_proposal/blob/master/sg14_recap.bs">github.com/ben-craig/freestanding_proposal/blob/master/sg14_recap.bs</a>
+    </dd></dl>
+   </div>
+   <div data-fill-with="warning"></div>
+   <hr title="Separator for header">
+  </div>
+  <div class="p-summary" data-fill-with="abstract">
+   <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
+   <p>Summary of discussion in Dec 2018 SG14 telecon</p>
+  </div>
+  <nav data-fill-with="table-of-contents" id="toc">
+   <h2 class="no-num no-toc no-ref" id="contents">Table of Contents</h2>
+   <ol class="toc" role="directory">
+    <li><a href="#summary"><span class="secno">1</span> <span class="content">Summary</span></a>
+    </li><li><a href="#subsetting"><span class="secno">2</span> <span class="content">Opening commentary on subsetting</span></a>
+    </li><li><a href="#lead_in"><span class="secno">3</span> <span class="content">Lead in to presentation</span></a>
+    </li><li>
+     <a href="#ben_craig_presentation"><span class="secno">4</span> <span class="content">Presentation material from Ben Craig</span></a>
+     <ol class="toc">
+      <li><a href="#what-is-embedded-is-the-wrong-question"><span class="secno">4.1</span> <span class="content">"What is embedded?" is the wrong question.</span></a>
+      </li><li><a href="#what-is-an-os-not-useful-either"><span class="secno">4.2</span> <span class="content">"What is an OS?" not useful either.</span></a>
+      </li><li><a href="#what-is-a-standard"><span class="secno">4.3</span> <span class="content">What is a standard?</span></a>
+      </li><li><a href="#conforming-c-hosted-toolchain-experience"><span class="secno">4.4</span> <span class="content">Conforming C++ hosted toolchain experience</span></a>
+      </li><li><a href="#hosted-c-the-dark-side"><span class="secno">4.5</span> <span class="content">Hosted C++: The dark side</span></a>
+      </li><li><a href="#freestanding-c17-experience-theory"><span class="secno">4.6</span> <span class="content">Freestanding C++17 experience: Theory</span></a>
+      </li><li><a href="#freestanding-c17-experience-practice"><span class="secno">4.7</span> <span class="content">Freestanding C++17 experience: Practice</span></a>
+      </li><li><a href="#freestanding-c-experience-dark-side"><span class="secno">4.8</span> <span class="content">Freestanding C++ experience: Dark Side</span></a>
+      </li><li><a href="#source-of-the-bits"><span class="secno">4.9</span> <span class="content">Source of the bits?</span></a>
+      </li><li><a href="#freestanding-goal"><span class="secno">4.10</span> <span class="content">Freestanding Goal</span></a>
+      </li><li><a href="#problem-features-in-priority-order"><span class="secno">4.11</span> <span class="content">Problem features in priority order</span></a>
+      </li><li><a href="#what-to-do-about-it"><span class="secno">4.12</span> <span class="content">What to do about it?</span></a>
+      </li><li><a href="#suggested-heuristics"><span class="secno">4.13</span> <span class="content">Suggested Heuristics</span></a>
+      </li><li><a href="#zero-overhead-rule"><span class="secno">4.14</span> <span class="content">Zero-overhead rule</span></a>
+     </li></ol>
+    </li><li>
+     <a href="#post_ben_craig_presentation"><span class="secno">5</span> <span class="content">Post-presentation discussion (Craig)</span></a>
+     <ol class="toc">
+      <li><a href="#heuristics-and-design-decisions"><span class="secno">5.1</span> <span class="content">Heuristics and Design Decisions</span></a>
+      </li><li><a href="#possible-courses-of-action"><span class="secno">5.2</span> <span class="content">Possible courses of action?</span></a>
+      </li><li><a href="#what-is-it-for"><span class="secno">5.3</span> <span class="content">What is it for?</span></a>
+      </li><li><a href="#can-the-features-be-adapted"><span class="secno">5.4</span> <span class="content">Can the features be adapted?</span></a>
+      </li><li><a href="#costs-and-zero-overhead"><span class="secno">5.5</span> <span class="content">Costs and zero overhead</span></a>
+      </li><li><a href="#characterization-of-features"><span class="secno">5.6</span> <span class="content">Characterization of features</span></a>
+      </li><li><a href="#customization-points"><span class="secno">5.7</span> <span class="content">Customization points</span></a>
+      </li><li><a href="#embedded-c"><span class="secno">5.8</span> <span class="content">Embedded C++</span></a>
+      </li><li><a href="#zero-overhead-exceptions-p0709"><span class="secno">5.9</span> <span class="content">Zero overhead exceptions (P0709)</span></a>
+      </li><li><a href="#order-of-attack"><span class="secno">5.10</span> <span class="content">Order of attack</span></a>
+      </li><li><a href="#existing-papers"><span class="secno">5.11</span> <span class="content">Existing papers</span></a>
+      </li><li><a href="#strict-aliasing"><span class="secno">5.12</span> <span class="content">Strict Aliasing</span></a>
+     </li></ol>
+    </li><li>
+     <a href="#kirk_shoop_presentation"><span class="secno">6</span> <span class="content">Presentation material from Kirk Shoop</span></a>
+     <ol class="toc">
+      <li><a href="#why-am-i-here"><span class="secno">6.1</span> <span class="content">Why am I here?</span></a>
+      </li><li><a href="#freestanding-by-scanning-p1376r0"><span class="secno">6.2</span> <span class="content">Freestanding (by scanning P1376R0)</span></a>
+      </li><li><a href="#iterators"><span class="secno">6.3</span> <span class="content">Iterators</span></a>
+      </li><li><a href="#machines-over-time"><span class="secno">6.4</span> <span class="content">Machines over time</span></a>
+      </li><li><a href="#a-single-uniform-abstract-machine"><span class="secno">6.5</span> <span class="content">a single uniform abstract machine...</span></a>
+      </li><li><a href="#proposal"><span class="secno">6.6</span> <span class="content">Proposal</span></a>
+      </li><li><a href="#bonus"><span class="secno">6.7</span> <span class="content">Bonus</span></a>
+     </li></ol>
+    </li><li>
+     <a href="#kirk_shoop_post_presentation"><span class="secno">7</span> <span class="content">Post-presentation discussion (Shoop)</span></a>
+     <ol class="toc">
+      <li><a href="#concrete-cases"><span class="secno">7.1</span> <span class="content">Concrete cases</span></a>
+      </li><li><a href="#feature-test-macros"><span class="secno">7.2</span> <span class="content">Feature Test Macros</span></a>
+     </li></ol>
+    </li><li>
+     <a href="#lower_level_library"><span class="secno">8</span> <span class="content">Lower level library</span></a>
+     <ol class="toc">
+      <li><a href="#graphics"><span class="secno">8.1</span> <span class="content">Graphics</span></a>
+      </li><li><a href="#guidelines"><span class="secno">8.2</span> <span class="content">Guidelines</span></a>
+     </li></ol>
+    </li><li>
+     <a href="#going-forward"><span class="secno">9</span> <span class="content">Going Forward</span></a>
+     <ol class="toc">
+      <li><a href="#constexpr"><span class="secno">9.1</span> <span class="content">Constexpr</span></a>
+      </li><li><a href="#general-alternatives"><span class="secno">9.2</span> <span class="content">General alternatives</span></a>
+      </li><li><a href="#other-papers"><span class="secno">9.3</span> <span class="content">Other papers?</span></a>
+     </li></ol>
+   </li></ol>
+  </nav>
+  <main>
+   <h2 class="heading settled" data-level="1" id="summary"><span class="secno">1. </span><span class="content">Summary</span><a class="self-link" href="#summary"></a></h2>
+    We discussed the target environments for freestanding (kernel environments, small microcontrollers, and GPUs).  We discussed the problematic features that would need to be addressed in order to get a useful lowest common denominator subset.  We talked about using concepts and subsumption to address the freestanding library. 
+   <h2 class="heading settled" data-level="2" id="subsetting"><span class="secno">2. </span><span class="content">Opening commentary on subsetting</span><a class="self-link" href="#subsetting"></a></h2>
+   <p>Ben Craig: ABQ poll was in favor of getting rid of <code class="highlight"><c- o="">&lt;</c-><c- n="">typeinfo</c-><c- o="">&gt;</c-></code> and <code class="highlight"><c- o="">&lt;</c-><c- n="">exception</c-><c- o="">&gt;</c-></code> header</p>
+   <p>Jan Wilmans: What was the opposition against getting rid of typeid?  Were those reasons recorded?</p>
+   <p>Paul McKenney: Some people are passionate about having programs that can run everywhere, but portability has to be limited if we are going to make progress.</p>
+   <p>Hubert Tong: Might want to draw prior art from video encoding profiles [Editor’s note: likely referring to H.264 profiles]</p>
+   <p>Ben Craig: POSIX, and I think Vulkan have feature sets?</p>
+   <p>Michael Wong: You mean OpenGL?</p>
+   <p>Ben Craig: Unsure, it was discussed some in SG1 though.</p>
+   <p>Michael Wong: Some discussion about flexible profiles in the OpenGL standards.</p>
+   <h2 class="heading settled" data-level="3" id="lead_in"><span class="secno">3. </span><span class="content">Lead in to presentation</span><a class="self-link" href="#lead_in"></a></h2>
+    Michael Wong: Unclear what definition of freestanding and embedded are.  Is it time to remove the mention of freestanding from C++? 
+   <p>Bjarne: Don’t think the main problem with subsetting is portability.  There isn’t one thing / subset that serves a large enough group to be more dominant than other subsets.  Some environments can’t use malloc, but can use exceptions.  Some machines with no floating point, but have malloc.  The problem is multidimensional.  Limited space is one concern, hard real time constraints as another, also other dimensions.</p>
+   <p>Ben Craig: I have some slides addressing those questions.</p>
+   <h2 class="heading settled" data-level="4" id="ben_craig_presentation"><span class="secno">4. </span><span class="content">Presentation material from Ben Craig</span><a class="self-link" href="#ben_craig_presentation"></a></h2>
+   <h3 class="heading settled" data-level="4.1" id="what-is-embedded-is-the-wrong-question"><span class="secno">4.1. </span><span class="content">"What is embedded?" is the wrong question.</span><a class="self-link" href="#what-is-embedded-is-the-wrong-question"></a></h3>
+    Embedded is a large space, some care about safety, real time, limited space, absence of a monitor. 
+   <p>Not useful for the context of this discussion.</p>
+   <p>Freestanding isn’t just trying to hit embedded use cases, like kernels / drivers and GPUs.  Drivers have lots of resources, but they don’t control the entire world.</p>
+   <h3 class="heading settled" data-level="4.2" id="what-is-an-os-not-useful-either"><span class="secno">4.2. </span><span class="content">"What is an OS?" not useful either.</span><a class="self-link" href="#what-is-an-os-not-useful-either"></a></h3>
+    Does a scheduler count? 
+   <p>Could be an OS that has never left my organization.</p>
+   <p>Low feature set OSes may still want freestanding.</p>
+   <p>Scheduler could be in silicon.</p>
+   <p>If I’m inside the OS, do I have the benefits of an OS?</p>
+   <h3 class="heading settled" data-level="4.3" id="what-is-a-standard"><span class="secno">4.3. </span><span class="content">What is a standard?</span><a class="self-link" href="#what-is-a-standard"></a></h3>
+    [A standard] describes not only what is "legal" source text, <em>but also what a programmer can rely on in general</em> and what is implementation defined 
+   <p>-Bjarne Stroustrup [D&amp;E]</p>
+   <p>When starting freestanding investigations, I found the list of features that were troublesome to use as a customer because they had partial or no implementations in the environments I was working on.  I started from the list of things that didn’t work.  Some items were well advertised (like exceptions and RTTI), but no advertising about others, like how virtual destructors use operator delete.</p>
+   <h3 class="heading settled" data-level="4.4" id="conforming-c-hosted-toolchain-experience"><span class="secno">4.4. </span><span class="content">Conforming C++ hosted toolchain experience</span><a class="self-link" href="#conforming-c-hosted-toolchain-experience"></a></h3>
+    Compare / contrast with freestanding 
+   <p>Lots of things you can do everywhere.</p>
+   <p>You can expect everything to be there, if not today, then soon.</p>
+   <p>Libraries can rely on everything being present.</p>
+   <p>You may not be able to use any given library, as that library may use more resources than your machine has, or the library may not meet other requirements.</p>
+   <p>Generally, the out of box experience is good, and all the features are present without significant user intervention required.</p>
+   <h3 class="heading settled" data-level="4.5" id="hosted-c-the-dark-side"><span class="secno">4.5. </span><span class="content">Hosted C++: The dark side</span><a class="self-link" href="#hosted-c-the-dark-side"></a></h3>
+    Lots of things you can’t do portably in C++. 
+   <p>As community comes up with good abstractions we standardize them.</p>
+   <p>Everyone uses their own dialect of the language, using hosted + extensions.</p>
+   <p>People work through dialect variance with the preprocessor, build system, or by knowing what kind of system they are targeting.</p>
+   <p>This is particularly challenging with SIMD.  Intrinsics aren’t portable from processor to processor or compiler to compiler.  Sometimes, you can even build and run things on one architecture, only to have your program fail to run on a different, slightly older machine.</p>
+   <p>Michael Wong: We’ve been through a long history of different implementations of these, often with intrinsics or dialects.  As these mature, we try to standardize these.  SIMD is one of the leading ones, people working hard on heterogeneous and shared memory.</p>
+   <p>Ben Craig: Yes.  As we figure out what works, be standardized, and have vendor buy in, we standardize them.  As we come up with technical solutions, we incorporate them.</p>
+   <h3 class="heading settled" data-level="4.6" id="freestanding-c17-experience-theory"><span class="secno">4.6. </span><span class="content">Freestanding C++17 experience: Theory</span><a class="self-link" href="#freestanding-c17-experience-theory"></a></h3>
+    Lots of things you can do entirely in conforming freestanding C++ 
+   <ul>
+    <li data-md="">
+     <p>Math!</p>
+    </li><li data-md="">
+     <p>Custom data structures!</p>
+   </li></ul>
+   <p>The C++ facilities can generally be assumed to be “everywhere”</p>
+   <p>Libraries can design around all the facilities being present</p>
+   <h3 class="heading settled" data-level="4.7" id="freestanding-c17-experience-practice"><span class="secno">4.7. </span><span class="content">Freestanding C++17 experience: Practice</span><a class="self-link" href="#freestanding-c17-experience-practice"></a></h3>
+    If you want a conforming implementation, then you need to finish the job of the toolchain. 
+   <p>Toolchain vendors don’t know how your environment spells “malloc”</p>
+   <p>Someone has to call global constructors, and the toolchain vendors don’t control the entry point</p>
+   <p>Someone has to do the loader + toolchain + threading hand shake to get thread local storage to work</p>
+   <p>Need to wire up exception tables...</p>
+   <p>Everyone uses their own dialect of the language (freestanding – conforming features + varying extensions)</p>
+   <p>People work through dialect variance with the preprocessor, build system, or by knowing what kind of system they are targeting</p>
+   <p>Michael Wong: With hosted, people add to existing base.  With freestanding, people subtract, then add some.</p>
+   <p>Ben Craig: Right</p>
+   <h3 class="heading settled" data-level="4.8" id="freestanding-c-experience-dark-side"><span class="secno">4.8. </span><span class="content">Freestanding C++ experience: Dark Side</span><a class="self-link" href="#freestanding-c-experience-dark-side"></a></h3>
+    Integer Math, can’t rely on floating point 
+   <p>Custom heap-free data structures</p>
+   <p>Can still use new and delete with custom allocators.</p>
+   <p>The C++ facilities can’t generally be assumed to be “everywhere”</p>
+   <p>20+ years on, and we still can’t assume that exceptions will be enabled</p>
+   <p>No reason to expect the next 20 will be any different</p>
+   <p>Libraries can’t design around all the facilities being present</p>
+   <p>Libraries that rely on the heap and exceptions are unusable in many environments</p>
+   <h3 class="heading settled" data-level="4.9" id="source-of-the-bits"><span class="secno">4.9. </span><span class="content">Source of the bits?</span><a class="self-link" href="#source-of-the-bits"></a></h3>
+    Lots of vendors involved 
+   <p>Given a technology stack of …</p>
+   <ul>
+    <li data-md="">
+     <p>Tensilica (chip vendor)</p>
+    </li><li data-md="">
+     <p>FreeRTOS</p>
+    </li><li data-md="">
+     <p>GCC</p>
+    </li><li data-md="">
+     <p>Customer application</p>
+   </li></ul>
+   <p>... who should be providing the core language C++ runtime support?</p>
+   <p>Are we going to expect GCC to know about FreeRTOS and every other RTOS so that it can provide support?</p>
+   <p>Are we going to expect FreeRTOS to provide special support for C++ and every other systems programming language?</p>
+   <p>Should Tensilica do that because they own the ABI and startup scripts?</p>
+   <p>In practice, it’s the customer application that does that, especially if they want to be conforming.</p>
+   <p>Michael Wong: I see this change even more as we move to crazy kinds of chips, like for tensor processing.  Maybe we are back to where we used to be, each group has to build their own compiler to support their technology that they can.</p>
+   <p>Ben Craig: and each company and each application does a different amount of that, making it very difficult to share code across organizations.</p>
+   <h3 class="heading settled" data-level="4.10" id="freestanding-goal"><span class="secno">4.10. </span><span class="content">Freestanding Goal</span><a class="self-link" href="#freestanding-goal"></a></h3>
+    The freestanding C++ facilities can generally be assumed to be “everywhere” 
+   <ul>
+    <li data-md="">
+     <p>If not today, then “soon”, as toolchains catch up to the spec</p>
+     <ul>
+      <li data-md="">
+       <p>So long as we have a reasonable expectation that they can / will catch up.</p>
+     </li></ul>
+   </li></ul>
+   <p>Libraries can design around all the facilities being present</p>
+   <ul>
+    <li data-md="">
+     <p>Including the standard library</p>
+   </li></ul>
+   <p>Using the conforming C++ facilities works easily “out of the box”</p>
+   <ul>
+    <li data-md="">
+     <p>Should not require the user to implement an OS to support freestanding</p>
+   </li></ul>
+   <p>Don’t want to require customers to write an OS that looks like posix to support GCC / Clang, or require users to write an OS that looks like Windows to support MSVC</p>
+   <h3 class="heading settled" data-level="4.11" id="problem-features-in-priority-order"><span class="secno">4.11. </span><span class="content">Problem features in priority order</span><a class="self-link" href="#problem-features-in-priority-order"></a></h3>
+   <ul>
+    <li data-md="">
+     <p>HIGHEST</p>
+    </li><li data-md="">
+     <p>Exceptions</p>
+    </li><li data-md="">
+     <p>Default operator new &amp; delete</p>
+    </li><li data-md="">
+     <p>virtual destructors</p>
+    </li><li data-md="">
+     <p>thread_local</p>
+    </li><li data-md="">
+     <p>RTTI</p>
+    </li><li data-md="">
+     <p>Global init and teardown</p>
+    </li><li data-md="">
+     <p>atexit &amp; friends</p>
+    </li><li data-md="">
+     <p>Locked atomics</p>
+    </li><li data-md="">
+     <p>Thread safe statics</p>
+    </li><li data-md="">
+     <p>Floating point</p>
+    </li><li data-md="">
+     <p>LOWEST</p>
+   </li></ul>
+   <p>Priority based off of how difficult they are to incorporate, as well as how much they influence library design.</p>
+   <p>Exceptions influence library design a lot, floating point doesn’t influence non-math library design much.</p>
+   <p>I would be thrilled if we addressed all the features except for floating point.</p>
+   <p>Exceptions called out again, because they use the heap (on Itanium ABI), usually involves a type with virtual destructor.  Need storage that is local to a thread for uncaught_exceptions and make_exception_ptr, even if that storage isn’t spelled thread_local.  Needs a lot of the parts of RTTI.  When things go bad, you need terminate, which falls under atexit &amp; friends.  If you want to address any of those pieces (like RTTI), then that implies doing something about exceptions as well.</p>
+   <p>Don’t need to get rid of problem features, just need to do something about them.</p>
+   <h3 class="heading settled" data-level="4.12" id="what-to-do-about-it"><span class="secno">4.12. </span><span class="content">What to do about it?</span><a class="self-link" href="#what-to-do-about-it"></a></h3>
+    Accept non-compliance 
+   <ul>
+    <li data-md="">
+     <p>This is the status quo</p>
+   </li></ul>
+   <p>Change the feature</p>
+   <ul>
+    <li data-md="">
+     <p>Have to be sure not to fork the language further</p>
+   </li></ul>
+   <p>Remove the feature</p>
+   <ul>
+    <li data-md="">
+     <p>Not ideal</p>
+   </li></ul>
+   <p>Change the world</p>
+   <ul>
+    <li data-md="">
+     <p>Probably impossible</p>
+   </li></ul>
+   <p>Pitch in one of my papers on changing when virtual destructors are ODR-used.  This would allow them to stay in.</p>
+   <p>Don’t like removing features, but don’t see a lot of alternatives for some features.</p>
+   <p>Don’t know how to change the world to make the problem features generally available.</p>
+   <h3 class="heading settled" data-level="4.13" id="suggested-heuristics"><span class="secno">4.13. </span><span class="content">Suggested Heuristics</span><a class="self-link" href="#suggested-heuristics"></a></h3>
+   <ul>
+    <li data-md="">
+     <p>Freestanding is signal / interrupt safe</p>
+    </li><li data-md="">
+     <p>Freestanding requires no special dispensation from the operating environment above what freestanding C99 requires</p>
+    </li><li data-md="">
+     <p>Freestanding strictly follows the zero overhead rule (you don’t pay for what you don’t use)</p>
+   </li></ul>
+   <p>How did I decide what’s in the library, what’s in the language?  So far that has been based off of experience.  These heuristics are an attempt to distill that into bullet points.  Possible you agree with some of these, or all of these.  We can make designs based off of which of these we choose.</p>
+   <p>For example, if we say that freestanding is signal / interrupt safe, then we need to get rid of locked atomics.</p>
+   <p>If we don’t take the signal / interrupt safe bullet, but we do keep the "no special dispensation from the operating environment" item, then we still need to get rid of exceptions.</p>
+   <h3 class="heading settled" data-level="4.14" id="zero-overhead-rule"><span class="secno">4.14. </span><span class="content">Zero-overhead rule</span><a class="self-link" href="#zero-overhead-rule"></a></h3>
+    The zero-overhead rule is probably the one that has the sharpest edge when it comes to rejecting a suggested feature 
+   <p>-Bjarne Stroustrup [D&amp;E]</p>
+   <p>Cutting features hurts, but non-zero overhead is larger than zero.</p>
+   <h2 class="heading settled" data-level="5" id="post_ben_craig_presentation"><span class="secno">5. </span><span class="content">Post-presentation discussion (Craig)</span><a class="self-link" href="#post_ben_craig_presentation"></a></h2>
+   <h3 class="heading settled" data-level="5.1" id="heuristics-and-design-decisions"><span class="secno">5.1. </span><span class="content">Heuristics and Design Decisions</span><a class="self-link" href="#heuristics-and-design-decisions"></a></h3>
+    Michael Wong: So your suggested heuristics will affect design decisions, depending on which choices we make? 
+   <p>Ben Craig: Yes.  In particular, SG1 wasn’t interested in getting rid of locked atomics or thread-safe statics, given our current lack of direction.  Part of the reasoning there is that it is possible to write a spin lock without an operating system.  Spin locks aren’t interrupt safe though, and some operating systems are basically all interrupts though.  In those situations, we would have the facility, but you couldn’t rely on it.  That’s why I want to cut it.  However, if we get agreement on a direction though, I can drop those aspects.  Thread-safe statics, locked atomics, and floating point aren’t "load bearing" for the proposal.</p>
+   <h3 class="heading settled" data-level="5.2" id="possible-courses-of-action"><span class="secno">5.2. </span><span class="content">Possible courses of action?</span><a class="self-link" href="#possible-courses-of-action"></a></h3>
+    Michael Wong: Assuming that "Removing Features" and "changing the world" are off the table? 
+   <p>Ben Craig: For removing a feature, current paper says not to provide a default operator new / delete, but users can still provide their own.  Exceptions in my proposal are gutted, but some of the syntax is still there, leaving just a little to help with portability.  Thread_local is gone.  You can pick a direction (remove, change, ignore) on a per feature basis.</p>
+   <h3 class="heading settled" data-level="5.3" id="what-is-it-for"><span class="secno">5.3. </span><span class="content">What is it for?</span><a class="self-link" href="#what-is-it-for"></a></h3>
+    Bjarne:  I don’t feel that I understand what this is for?  How do you characterize the domain in which these things are useful or not useful?  "I want" or "I don’t want" are not arguments. 
+   <p>Ben Craig: These features are difficult to implement or use effectively in kernel environments, small microcontrollers, and GPUs.  Today, these features do not work well in these environments, usually by failing to compile or link.</p>
+   <p>Bjarne: In kernel environments I’ve seen exceptions used well for speeding up things.</p>
+   <p>Ben Craig: This isn’t trying to say that I don’t want the features to exist there, this is more acknowledging that there are environments where people haven’t figured out how to get these features, even when they control the entire technology stack.  I’ll pick on Microsoft for a moment.  The kernel driver environment does not support C++ exceptions.  Microsoft controls the compiler and the operating system.  They don’t control the chipset, but we know x86 and x64 processors.  Microsoft has had 20 years to implement exceptions in the kernel.  I have heard that many kernel driver developers would like exceptions to be there.  Yet they are not there.  That suggests to me that it is difficult or too expensive to implement exceptions in the kernel.  In particular, exceptions want storage that is local to a thread, implementing that in a kernel environment would incur overhead on every thread in the system.</p>
+   <p>Niall Douglas (chat): Also Windows kernel DOES support win32 exceptions, so the lack of C++ exception support (which is just a special win32 exception) is particularly relevant.</p>
+   <h3 class="heading settled" data-level="5.4" id="can-the-features-be-adapted"><span class="secno">5.4. </span><span class="content">Can the features be adapted?</span><a class="self-link" href="#can-the-features-be-adapted"></a></h3>
+    Michael Wong: I don’t think this is saying we want to get rid of any of these features.  Is there any way we can adapt them so that they can work in different environment’s needs. 
+   <p>Ben Craig: With type based exceptions, I don’t know of a way to get them such that you can throw an arbitrary type and catch that type, or something related to it, in a zero overhead way.  I have heard of implementations that do something similar, but have various restrictions, such as single inheritance only allowed.  Those implementations have low overhead in terms of, the frames that don’t ever have an exception thrown through them, there is still space overhead on those.  Those implementations exist, but it isn’t zero overhead.</p>
+   <h3 class="heading settled" data-level="5.5" id="costs-and-zero-overhead"><span class="secno">5.5. </span><span class="content">Costs and zero overhead</span><a class="self-link" href="#costs-and-zero-overhead"></a></h3>
+    Bjarne: When looking at zero overhead, you have to look at the cost of using error codes instead. 
+   <p>Ben Craig: The world that kernel and embedded development is in right now, we have to pay something for error handling.  The amount we are paying for our error handling is proportional to the amount we use it.  If I have a big call stack across multiple translation units and none of those frames do anything with an error (no failure cases), those frames, those functions, none of them have any overhead.  They don’t pay anything for error code handling.  With exceptions, if you add a lot of frames that would be noexcept all the way down, if I don’t mark them noexcept, I get overhead.  Even if I do mark them all noexcept, I can still get some overhead.</p>
+   <p>Hubert Tong: Would a side stack that only grows during the unwinding be a cost that is considered unacceptable</p>
+   <p>Ben Craig: Not sure.  Don’t know enough about that approach to answer definitively.  Part of zero overhead is also size.  If you still need the exception tables, similar to what the current table based exception handling has, those tables are significant overhead.  I don’t know if the side stack approach solves that or not.  Also not sure if uncaught_exceptions or make_exception_ptr can be supported on a multi core system without storage that is local to a thread.</p>
+   <p>Carter Edwards (chat): Another example: Managing thread_local does not scale well with 10k+ concurrency; e.g., GPU threads.</p>
+   <p>Jan Wilmans: Ben describes that the whole point is to describe a subset of C++ that you can rely on being available in any of the described environments.</p>
+   <p>Ben Craig: Right now, that’s the description I’m liking.</p>
+   <p>Jan Wilmans: Bjarne said that it isn’t clear what that environment is.  What are we actually targetting?  Part after that, exceptions is one of the major things blocking the usability of the standard library, and there are technical difficulties in getting that to work.</p>
+   <h3 class="heading settled" data-level="5.6" id="characterization-of-features"><span class="secno">5.6. </span><span class="content">Characterization of features</span><a class="self-link" href="#characterization-of-features"></a></h3>
+    Hubert Tong: I believe that the claims that the environments we are targeting is not clear are valid, however, the identified features are all of the sort that requires side support which is extensive in implementation.  I’m not certain that we are really talking about environment vs. implementation cost and overhead. 
+   <p>Jan Wilmans: Are you saying that the accurate description doesn’t matter because of the overhead in size?</p>
+   <p>Hubert Tong: Not just in size, but also in the cost of the toolchain in terms of how much development has to go into it.  If you have a bare metal system and you want C++ to run on it... what parts are you going to target first and what parts are going to be so cost prohibitive that if you don’t need it you aren’t going to use it?</p>
+   <p>Jan Wilmans: Getting rid of the overhead of every vendor needing to implement the same things again.</p>
+   <p>Ben Craig: And for increasingly exotic platforms.</p>
+   <p>Ben Craig: I’m not too worried about having GCC, Clang, Microsoft, or Intel doing a bit more work on their side.  I am worried about having every customer implement these things.</p>
+   <p>Jan Wilmans: What may be helpful is to clarify to other groups that it isn’t so much about defining the subset, but defining what needs to be standard implemented.  May still mean it isn’t available on some platform, but at least there is a standard implementation that any vendor can adopt.</p>
+   <p>Ben Craig: Not sure about that.  If there were standard implementations for these things that were applicable everywhere, they wouldn’t be features on the list.  Most of these features require operating environment knowledge.  There are too many environments and they are too obscure for the big compiler vendors to target.</p>
+   <p>Michael Wong: The reason these features are on the list is because they always require some cooperation with the local environment to operate efficiently.  In some cases, they could be implemented if efficiency wasn’t one of your biggest concerns.</p>
+   <h3 class="heading settled" data-level="5.7" id="customization-points"><span class="secno">5.7. </span><span class="content">Customization points</span><a class="self-link" href="#customization-points"></a></h3>
+    Jan Wilmans: Does that mean that, aside from having to specify the set of available C++ features, we should also specify better customization points for those environments? 
+   <p>Ben Craig: There are two areas were I want to take advantage of customer supplied customization points.  One of them is with operator new / delete.  I don’t want to supply those myself, but I do want to allow customers to provide them.  The other is for terminate.  There is already a customization point at runtime, but I want one at build time.  In many exotic systems, the standard library doesn’t know how to terminate the system, that is up to the customer to figure that out.  For things like thread_local storage and thread safe statics, the protocol for the customization points would be very constraining.  You could standardize the Itanium ABI, but then the Microsoft implementation would suffer.  Even with some of these features, there is per-processer implementations.  There are places where we can take the customization point approach, and I like those.  Thread local and thread safe statics are hard though, and I haven’t thought through those much.</p>
+   <p>Jan Wilmans:  You’re saying having customization points or not having them, won’t always work.  Have to specify that the feature will be there, but how the feature is implemented is not specified.</p>
+   <p>Ben Craig: That’s what we do today.  If you get much lower level that than you end up constraining implementations.</p>
+   <p>Ben Craig: Are there features that are not on my list that should be?  If there are features that should be on this list, that may mean that I have not found a lowest common denominator.  There’s at least one area that is not on the list that will be difficult to get on the list (code size).</p>
+   <h3 class="heading settled" data-level="5.8" id="embedded-c"><span class="secno">5.8. </span><span class="content">Embedded C++</span><a class="self-link" href="#embedded-c"></a></h3>
+    Bjarne: Somebody tried doing this in the 90s and it was called Embedded C++.  One of the things we found that time was that it was not well characterized what it was supposed to do.  I was particularly amused that namespaces were banned. 
+   <p>Ben Craig: That seemed strange to me as well.</p>
+   <p>Bjarne: The feature set seemed somewhat random.  You’re less random than they were.  I was particularly amused that namespaces were banned.  The point is, unless you characterize rather precisely the domain you are trying to solve and what the solution and scope of solution, you risk falling into the Embedded C++ trap.</p>
+   <p>Ben Craig: Some of the things I am doing to try to avoid the Embedded C++ trap is to not focus on limiting implementer burden.</p>
+   <p>Bjarne: It was definitely trying to limit implementer burdens.  They also thought they were simplifying the language to make it easier for developers.</p>
+   <p>Ben Craig: Other thing I’m doing is trying to stick to a strict subset and not a fork.  Embedded C++ changed some semantics, and I’m really trying hard to avoid that.</p>
+   <h3 class="heading settled" data-level="5.9" id="zero-overhead-exceptions-p0709"><span class="secno">5.9. </span><span class="content">Zero overhead exceptions (P0709)</span><a class="self-link" href="#zero-overhead-exceptions-p0709"></a></h3>
+    Bjarne: Problem is when you take away features, you find that you need something else.  That’s a hard problem. 
+   <p>Ben Craig: I agree, the advantage we have here is that we have code in pseudo-C++ that are already operating under these constraints.  None of these features are enabled by default in the Windows kernel.  There are several companies that are writing C++ drivers in the kernel.  Yes, there is a gap in error handling and it makes constructors and overloaded operators difficult to use.  I look forward to solutions to that, particularly in Herb’s zero cost exceptions [Editor’s note: P0709].  I will say they aren’t strictly necessary, as we have gotten by without them for 20 years.</p>
+   <p>Bjarne: Microsoft currently has 3 kinds of exceptions.  If you add in Herb’s proposal, you would have 4.  The old ones won’t go away.</p>
+   <p>Ben Craig: I agree.</p>
+   <h3 class="heading settled" data-level="5.10" id="order-of-attack"><span class="secno">5.10. </span><span class="content">Order of attack</span><a class="self-link" href="#order-of-attack"></a></h3>
+    Jan Wilmans: Not sure if this is acceptable, but would it be possible to pick the low hanging fruit first?  The atexit and global teardown, new / delete, virtual destructors.  That all seems doable, maybe exceptions.  The thread_local and RTTI, locked atomics, thread safe statics, that all sounds more difficult.  Would it make sense to sequence this in steps. 
+   <p>Ben Craig: I am hoping to get direction at some point.  For the direction to be most useful, a big picture view needs to be given.  Once we have direction, I think it will make the most sense to split P1105 into smaller papers, and those papers can progress.  I want to get general wg21 agreement on where we are going first.  I’ve done things backwards too long on this.</p>
+   <p>Michael Wong: I’m hesitant on taking a vote at this point.  I need people to think about this and absorb it more.  Also, not to reverse the process, but have some directions at a high level as to where we are going.</p>
+   <p>Carter Edwards (chat): Suggest framing in terms of "scaling" considerations:  scaling down processor complexity, scaling down runtime support, scaling up concurrency, etc</p>
+   <h3 class="heading settled" data-level="5.11" id="existing-papers"><span class="secno">5.11. </span><span class="content">Existing papers</span><a class="self-link" href="#existing-papers"></a></h3>
+    Paul Bendixen: One of the possible directions you outlined earlier was that you made one paper that adds to freestanding and one that subtracts.  Could this be a possible direction to go in order to get more familiar with what it would mean to have an actual freestanding implementation before we settle on a final subset or definition. 
+   <p>Michael Wong: Is that what you have Ben?</p>
+   <p>Ben Craig: Yes.  I have one paper P0829, Freestanding Proposal, that is strictly additive and is for the library.  My "No Lower Level" paper, P1105, subtracts features and is mostly a core language paper, with a little bit of library support.</p>
+   <p>Michael Wong: We will keep that in mind during our potential direction discussions.</p>
+   <p>Charley Bay (chat): FYI, on Freestanding: IMHO Ben’s proposal is very well bounded and described, and reflects <em>real-world</em> practice.  A "freestanding" exists in practice -- this is called C.  It is unfortunate that an "all-of-noting C++" means we cannot use C++ in some environments.</p>
+   <h3 class="heading settled" data-level="5.12" id="strict-aliasing"><span class="secno">5.12. </span><span class="content">Strict Aliasing</span><a class="self-link" href="#strict-aliasing"></a></h3>
+    Niall Douglas (chat): Even in C, not all of C is provided by many embedded toolchains.  A recent, slightly angry, debate on WG14 was over strict aliasing for example (some feel very strongly that it needs to be banned in future C standards). 
+   <p>Paul E. McKenney (chat): As in prohibiting the -fno-strict-aliasing compiler flag? Or as in requiring C to always act as if -fno-strict-aliasing was set?</p>
+   <p>Niall (chat): As in requiring C to always act as if -fno-strict-aliasing was set.  So, strict aliasing would be specifically banned by a future C standard.  WG14 voted to reject the proposal, incidentally, but it wasn’t unanimous.</p>
+   <h2 class="heading settled" data-level="6" id="kirk_shoop_presentation"><span class="secno">6. </span><span class="content">Presentation material from Kirk Shoop</span><a class="self-link" href="#kirk_shoop_presentation"></a></h2>
+   <p>subsumption in the abstract machine(s)
+freestanding without subsetting</p>
+   <h3 class="heading settled" data-level="6.1" id="why-am-i-here"><span class="secno">6.1. </span><span class="content">Why am I here?</span><a class="self-link" href="#why-am-i-here"></a></h3>
+   <ul>
+    <li data-md="">
+     <p>discussion of affinity</p>
+    </li><li data-md="">
+     <p>consider changes to the abstract machine</p>
+     <ul>
+      <li data-md="">
+       <p>to deal with some of the heterogenous machines</p>
+     </li></ul>
+    </li><li data-md="">
+     <p>perhaps a subsumption hierarchy, similar to iterators and sender / receiver might provide a framework in which these machines could be defined.</p>
+   </li></ul>
+   <h3 class="heading settled" data-level="6.2" id="freestanding-by-scanning-p1376r0"><span class="secno">6.2. </span><span class="content">Freestanding (by scanning P1376R0)</span><a class="self-link" href="#freestanding-by-scanning-p1376r0"></a></h3>
+   <ul>
+    <li data-md="">
+     <p>std::library definition</p>
+    </li><li data-md="">
+     <p>not a subset</p>
+    </li><li data-md="">
+     <p>scope varies on multiple axis</p>
+     <ul>
+      <li data-md="">
+       <p>hardware features</p>
+      </li><li data-md="">
+       <p>language features</p>
+      </li><li data-md="">
+       <p>toolchain features</p>
+     </li></ul>
+   </li></ul>
+   <p>This felt similar to iterators</p>
+   <h3 class="heading settled" data-level="6.3" id="iterators"><span class="secno">6.3. </span><span class="content">Iterators</span><a class="self-link" href="#iterators"></a></h3>
+   <ul>
+    <li data-md="">
+     <p>defined in the std:: libarary</p>
+    </li><li data-md="">
+     <p>not a subset</p>
+    </li><li data-md="">
+     <p>scope varies on multiple axis</p>
+     <ul>
+      <li data-md="">
+       <p>input</p>
+      </li><li data-md="">
+       <p>output</p>
+      </li><li data-md="">
+       <p>traversal</p>
+      </li><li data-md="">
+       <p>position</p>
+     </li></ul>
+   </li></ul>
+   <p>We have algorithms that state that I require an input iterator, or at least a forward iterator, etc.  We have dispatching underneath the algorithm that can do a different implementation for a random access iterator.  None of that is subsetting, it is just capabilities dependent.  If you try to pass in an iterator that doesn’t support the minimum for an algorithm, it won’t compile.</p>
+   <h3 class="heading settled" data-level="6.4" id="machines-over-time"><span class="secno">6.4. </span><span class="content">Machines over time</span><a class="self-link" href="#machines-over-time"></a></h3>
+   <ul>
+    <li data-md="">
+     <p>then</p>
+     <ul>
+      <li data-md="">
+       <p>diversity of discrete machines</p>
+       <ul>
+        <li data-md="">
+         <p>abstract machine attempts to be portable over these discrete machine</p>
+       </li></ul>
+     </li></ul>
+    </li><li data-md="">
+     <p>now</p>
+     <ul>
+      <li data-md="">
+       <p>diversity of connected machines</p>
+       <ul>
+        <li data-md="">
+         <p>our computer contains (arguably) multiple machines.  They are connected to each other, share some resources, they have different instruction sets and capabilities.</p>
+       </li></ul>
+     </li></ul>
+   </li></ul>
+   <h3 class="heading settled" data-level="6.5" id="a-single-uniform-abstract-machine"><span class="secno">6.5. </span><span class="content">a single uniform abstract machine...</span><a class="self-link" href="#a-single-uniform-abstract-machine"></a></h3>
+    Machine definition 
+   <ul>
+    <li data-md="">
+     <p>one definition to rule them all</p>
+     <ul>
+      <li data-md="">
+       <p>create the illusion of homogeneity</p>
+     </li></ul>
+   </li></ul>
+   <p>GPU accelerators try to unify the memory models so that programmers don’t notice the paging in and out across the gpu to the host to keep the idea that there is a shared memory resource.</p>
+   <ul>
+    <li data-md="">
+     <p>a collection of connected machines</p>
+     <ul>
+      <li data-md="">
+       <p>define each machine</p>
+       <ul>
+        <li data-md="">
+         <p>maybe even to each core of a processor</p>
+       </li></ul>
+      </li><li data-md="">
+       <p>define the connections separately</p>
+     </li></ul>
+   </li></ul>
+   <h3 class="heading settled" data-level="6.6" id="proposal"><span class="secno">6.6. </span><span class="content">Proposal</span><a class="self-link" href="#proposal"></a></h3>
+    "Always start with the algorithms" - Alex Stepanov via Eric Niebler
+...or in this case, the library 
+   <ul>
+    <li data-md="">
+     <p>follow the pattern used to define Concepts</p>
+     <ul>
+      <li data-md="">
+       <p>for every library feature define the feature-set that it requires</p>
+      </li><li data-md="">
+       <p>organize those features into hierarchies of concepts</p>
+      </li><li data-md="">
+       <p>define the abstract machine as some permutation of supported Concepts</p>
+      </li><li data-md="">
+       <p>implement the library with requirements specified via Concepts</p>
+      </li><li data-md="">
+       <p>implement the library with tag-dispact, based on the concepts</p>
+      </li><li data-md="">
+       <p>implement the library with awareness of the connections between machines</p>
+       <ul>
+        <li data-md="">
+         <p>for things like mutexes and condition variables and things that are intended to coordinate or communicate between regions</p>
+       </li></ul>
+     </li></ul>
+   </li></ul>
+   <h3 class="heading settled" data-level="6.7" id="bonus"><span class="secno">6.7. </span><span class="content">Bonus</span><a class="self-link" href="#bonus"></a></h3>
+    constexpr 
+   <ul>
+    <li data-md="">
+     <p>constexpr defines an abstract machine</p>
+    </li><li data-md="">
+     <p>constexpr can be exposed as an eval method in std::</p>
+    </li><li data-md="">
+     <p>the compiler can call eval in std:: to process constexpr</p>
+   </li></ul>
+   <p>distributed</p>
+   <ul>
+    <li data-md="">
+     <p>a collection of machines with connections</p>
+     <ul>
+      <li data-md="">
+       <p>your standard library would still be one whole standard library, but it would know from the current context whether it was compatible or not.</p>
+     </li></ul>
+   </li></ul>
+   <h2 class="heading settled" data-level="7" id="kirk_shoop_post_presentation"><span class="secno">7. </span><span class="content">Post-presentation discussion (Shoop)</span><a class="self-link" href="#kirk_shoop_post_presentation"></a></h2>
+    Hubert Tong: Current implementation practice around turning off exceptions is to keep the same interfaces, they just work differently.  That makes it difficult to have the code compile were it can and error were it can’t. 
+   <p>Kirk Shoop: I think this would be something where you would try to define exceptions as a subsumption hierarchy.  Flying by the seat of my pants, at the bottom would be the least restrictive requirement, for example, that the function is exception transparent.  Another would be that a function depended on exceptions in order to run, and another would be that in the presence of exceptions, the function terminates.  If you know for a given library feature what it requires, then you can have the compiler declare what the current mode is through these concepts so that the library doesn’t compile unless it can support the current context.</p>
+   <p>Hubert Tong: Sure, that makes sense.  I’m just trying to say that if we go in this direction, then people with existing code will need to choose alternative interfaces and we will need to standardize library interfaces that provide alternatives in the case where you don’t need / want the exceptions.</p>
+   <p>Kirk Shoop: I think that may very well happen, that over time we say that we still need this functionality with fewer requirements, so we are going to need to come up with another shape for it that matches these requirements.</p>
+   <p>Bjarne: The filesystem library has already gone this way.</p>
+   <p>Bjarne: I like some of this.  I think people have implemented the STL based on memory pools instead of a general allocator.  There are a few things you cannot do, but most of the things you can do and you maintain the interface.</p>
+   <p>Ben Craig: For the stuff that is in templates, I think you can do a lot of this subsumption.  There are some things in the standard library that are not in templates, and that is harder to do this kind of dispatching with because your static_asserts fire all of the time.  That code may be built into a shared library somewhere as opposed to into your binary.</p>
+   <p>Kirk Shoop: I hope that static if would help with that particular one.</p>
+   <p>Ben Craig: I think static-if is pretty much dead.  constexpr if only discards statements when you are in templates.  There would need to be work done to make all of that go.</p>
+   <h3 class="heading settled" data-level="7.1" id="concrete-cases"><span class="secno">7.1. </span><span class="content">Concrete cases</span><a class="self-link" href="#concrete-cases"></a></h3>
+    Ben Craig: I can give you a few concrete cases to stew on.  There are three algorithms in the traditional, non-parallel algorithms header where, if you can get a temporary buffer, they have a different complexity guarantee than when they can successfully allocate a temporary buffer; stable_sort, stable_partition, and inplace_merge.  So those are algorithms where you could consider what the dispatching is, and whether that is a desirable thing or not, to change the constant overhead and the big-O overhead based off of tag dispatching. 
+   <p>Kirk Shoop: That’s what we do when we go between forward and random access for some algorithms as well</p>
+   <p>Ben Craig: Agreed</p>
+   <p>Ben Craig: Weird, in-between case that I’ve been forced to deal with in the freestanding proposal.  When you call std::visit on a variant that is in the valueless by exception state, std::visit will throw.  However, if exceptions aren’t on in your program, you can’t get in the valueless by exception state.  This would be a case where this dispatching would avoid having a throw instantiated in a template function.  Those are beneficial concrete places to think through.</p>
+   <p>Michael Wong: Do people like some of this, or not like some of this?</p>
+   <p>Jon McFarlane: This is an interesting direction.  I’d like to see some examples even though this is preliminary and high level.  Some more concrete examples would help paint a picture for me.</p>
+   <p>Ben Craig:  Containers in particular would be a useful place.  Show what vector and unordered_map would look like.  Note that unordered_map normally depends on floating point.</p>
+   <p>Bjarne: I think concrete examples aren’t just useful, they are essential.</p>
+   <p>Kirk Shoop: I agree with the approach that you start with the library and see what it depends on, then define these concepts by poring over and finding these dependencies and organizing them.</p>
+   <h3 class="heading settled" data-level="7.2" id="feature-test-macros"><span class="secno">7.2. </span><span class="content">Feature Test Macros</span><a class="self-link" href="#feature-test-macros"></a></h3>
+    Paul Bendixen: Would these concepts be based on feature test macros?  Would they need to be defined for each machine type that you are going to use. 
+   <p>Kirk Shoop: That is what makes sense to me.</p>
+   <p>Bjarne: I hope not.  We now have 2^100 dialects from those macros.</p>
+   <p>Kirk Shoop: Are those dialects or just traits?</p>
+   <p>Bjarne: oh yes.  I can write my program to see what my compiler supports.  I’m not saying that there are actually 2^100 different settings for the compilers, but that’s what I would have to assume.  It’s only manageable because you ignore most of them most of the time.</p>
+   <p>Kirk Shoop: I agree.  I expect most of the complexity to be in libraries.</p>
+   <p>Jon McFarlane: I’ve found they are generally useless in an application, because you generally know what your target platforms are.  When you are writing a library, you don’t know all the features when writing your library because it is used in multiple applications.  They provide a way to additively provide some features for the people that know they have those features available.  They are practical in that respect.</p>
+   <p>Kirk Shoop: Most libraries wouldn’t care about most of the features.</p>
+   <p>Jon McFarlane: I can add deduction guides if deduction guides are available.</p>
+   <p>Michael Wong:  Bjarne, you said you don’t think they should be feature test macros?</p>
+   <p>Bjarne: I would say feature test macros is always my last alternative.  We started talking about iterators, that is done without feature test macros.  One of the reason I don’t like macros is that they foul up IDEs.  What I see and what the compiler sees are two different things.  If you use them, use them deep in the library, but don’t make them the primary user interface.</p>
+   <h2 class="heading settled" data-level="8" id="lower_level_library"><span class="secno">8. </span><span class="content">Lower level library</span><a class="self-link" href="#lower_level_library"></a></h2>
+    Michael Wong: Our last discussion is whether there should be a lower layer for C++ that is closer to the metal for C++ for libraries.  This was a question that was posted to the forums coming out of San Diego.  Charley and Arthur had laid out a few good points that should be captured. Leaving no room for a lower level language below C++, that is status quo from the current C++ standard as stated in Design and Evolution.  Leaving no room for a lower level library below std library, this is not clearly said anywhere, and maybe it is something we should think about proposing.  Some of the things the direction group has though of as a test is that this design philosophy should only apply to foundational libraries, like std::variant, but not necessarily to all libraries. 
+   <p>Ben Craig: There are two closely related design goals.  You mentioned the "No lower level language" rule, but there is also the "zero overhead" rule, where you don’t pay for what you don’t use.  On the library side, we should stick with the zero overhead rule.  For the most part, we do.  There are a few place where we have standard library mandated globals, and those are places where I think we violate that a bit.  There are some things getting kicked around in SG1 where there would be globals in the standard library that I would have to pay for if I accidentally include the header.  So it’s a related thing, but not the same.</p>
+   <p>Bjarne: I’m no fan of globals, but I don’t think that’s what the direction group was thinking about.  Foundation libraries definitely follow the zero overhead principle.  It doesn’t mean there’s no overhead, it means theres no overhead given what you are doing.  That doesn’t mean we couldn’t have standard libraries that doesn’t follow it.  Why couldn’t we have a convenience library for some groups of users that are not really interested in zero overhead all the time.  I don’t think we have a decision that says the standard library should only provide foundational libraries for building more code and not convenience libraries.</p>
+   <p>Ben Craig:  If I’m using it, I am great paying the overhead, even if it uses globals and it has some overhead and it isn’t the fastest.  If it’s convenient then that is fine, as long as I’m actually using it and I’m only paying for it if I use it.</p>
+   <h3 class="heading settled" data-level="8.1" id="graphics"><span class="secno">8.1. </span><span class="content">Graphics</span><a class="self-link" href="#graphics"></a></h3>
+    Bjarne: Let’s take a concrete example.  I feel some pain because I can’t do a simple output of a histogram out of a piece of code that is gathering some data, because there is no standard graphics library.  Now, the standard graphics library that would allow me to do this as a naive user would definitely not be zero overhead for experts.  The point is that I don’t see why we should only have one kind of graphics.  One that’s convenient and universally acceptable, and one that’s specialized and takes advantage of the hardware. 
+   <p>Michael Wong: Nothing says that we can’t have multiple kinds of graphics libraries.</p>
+   <p>Bjarne: One is to make the next Matrix movie, and the other is to allow me to write the histogram.  I could do that in 1981 because it was part of the first library that ever existed for C++, but it most certainly isn’t up to modern standards.  I think that anything that is available universally would not be optimal to make the next Matrix movie.  I’m not sure what this has to do with embedded systems or freestanding systems, it’s just a comment on defining what we can have.  You have to be careful when you say zero overhead or lower language underneath.  It doesn’t mean that every single line of code that we produce is optimal.</p>
+   <p>Ben Craig:  I’ll post a quick strawman for graphics.  Let’s say the graphics proposal has some globals (no idea if it does or not).  I think I’m fine with that, so long as they are in graphics specific headers.  If you were to do something incredibly silly, and include those headers from the type_traits header, then suddenly, the program that I thought was just doing compile time stuff is now constructing those globals before program start.  As long as it is reasonable to make sure that I only pay for it if I’m actually using it by putting it in it’s own headers.</p>
+   <p>Bjarne:  Agreed, agreed, agreed.  We can’t outlaw stupidity, but we can try to avoid it.</p>
+   <h3 class="heading settled" data-level="8.2" id="guidelines"><span class="secno">8.2. </span><span class="content">Guidelines</span><a class="self-link" href="#guidelines"></a></h3>
+    Ben Craig: Niall had some guidelines at one point for things interacting with the OS.  Something along the lines of preserve the same guarantees.  That seems like the closest phrasing description to zero overhead when it comes to the library that I’ve heard.  That’s just from my recollection. 
+   <p>Niall: We came up with a set of guidelines.  Second time it came to SG14, it was felt that it should turn into some core C++ guidelines instead.  I haven’t had the time to work on that.</p>
+   <h2 class="heading settled" data-level="9" id="going-forward"><span class="secno">9. </span><span class="content">Going Forward</span><a class="self-link" href="#going-forward"></a></h2>
+    Micheal Wong: What can we do going forward with freestanding and hosted? 
+   <p>Charley Bay: I have a quick comment.  This is really an eminently practical approach that reflects real world practice.  I think Ben’s slide on the problem features, that’s the list.  It’s a pretty universal list, it shows up everywhere.  A lot of people deal with real engineering constraints, footprint, toolchain, performance, latency, it’s something, but those issues with real constraints go straight to Ben’s list.  So it’s a very practical proposal that I think would be well received.  Either those features cannot be implemented, or they are cost prohibitive either on implementation or runtime, or footprint or something.  I’m working at a company, a lot of ones before, where we have a freestanding approach, it’s called C.  It’s a hybrid code environment, that’s on the C side, that’s on the C++ side, and it’s entirely because of Ben’s list.  Ideally it would be C++ because there are so many optimizations and advantages there, but due to the size of the team, there is concern over the execution discipline over time by different teams of different skill sets, and because that execution discipline y the developer cannot be guaranteed, the codebase will remain C.  I just want to point out that Ben’s approach is not an academic approach, it’s a practical real world thing that would make a big splash in my opinion.</p>
+   <h3 class="heading settled" data-level="9.1" id="constexpr"><span class="secno">9.1. </span><span class="content">Constexpr</span><a class="self-link" href="#constexpr"></a></h3>
+    Niall: There was a recent discussion on WG14 reflector.  Historically there have been many safe C subdialect, and there is ongoing work on formally proving the C abstract machine.  If we could get constexpr so that it could run most C code, we would be able to define the safe subset of C as that which can run under constexpr.  How much of freestanding is implementable in constexpr, and is that a useful method of thinking about the problem. 
+   <p>Ben Craig: Floating point is the main thing that is contentious between the two.  You can do floating point in constexpr, but not in freestanding.  Note that floating point was also the lowest priority item on my list.  Also, you can do undefined behavior in freestanding, but not in constexpr.  [Editor’s note: usage of new and delete in constexpr is a newer point of contention.]</p>
+   <p>Niall: That’s kind of where I was getting to.  You get some floating point in constexpr, it may not be the floating point you were expecting.  I was more referring to the UB aspect of this.  Something where the compiler tells you that you are doing something bad before you even compile anything would be a good thing to have.  Both for freestanding and everything else.</p>
+   <h3 class="heading settled" data-level="9.2" id="general-alternatives"><span class="secno">9.2. </span><span class="content">General alternatives</span><a class="self-link" href="#general-alternatives"></a></h3>
+    Bjarne: I would like to point out in this practical real world vs. academic.  I remember when constexpr was considered not only useless, but unimplementable and horrible academic version.  We have to be a little idealistic to change the world, sometimes we can change it for the better. 
+   <p>Niall: I’ll suggest an alternative way of looking at freestanding.  Freestanding can be something that can be applied to embedded systems, and that has a lot of value and is worth discussing.  Another way to look at it is to draw a line between the things that are universally useful everywhere, and the things that are only useful sometimes.  I think that dividing line can be much more useful in terms of direction and defining the correct form of the language and library, rather than something that can be delivered into a standard.</p>
+   <p>Michael Wong: So more like a standing document or guidance?</p>
+   <p>Niall: I spend a lot of time reading the wg21 papers that come out and emailing people privately and telling people that if they split their library "here" that you get a much better proposal.  A lot of the time it is based on splitting out the abstract from the particular.  That is something that the C++ standard has not been as disciplined about historically, and I think it could get a better.  Then we wouldn’t have thread_local and GPUs for example.</p>
+   <p>Ben Craig: On the core language side, one of the reasons I am bothering pushing for this at all is because it feeds so much into the library design.  If we only got a standing document of things that should be avoided if they are not integral to the design, then that wouldn’t be ideal, but so long as we can still make library decisions based off of it, that would still be useful.  Not as useful as if I got everything I wanted, but it would still be something.</p>
+   <h3 class="heading settled" data-level="9.3" id="other-papers"><span class="secno">9.3. </span><span class="content">Other papers?</span><a class="self-link" href="#other-papers"></a></h3>
+    Michael Wong: Kirk has put forward a proposal, and Ben is looking for someone else to help push this forward.  Is Kirk interested in writing what he has?  As another way of pushing forward?  For using Concepts for freestanding?  Would that serve what the group would want to do?  Freestanding is not necessarily a one day job or a couple of meetings job.  People have to slowly get used to it, that we are trying to make this change and that there are multiple proposals going towards this change. 
+   <p>Ben Craig: I know that JF Bastien, Loius Dionne, and Bruno Cardosa Lopes are working on freestanding things in a slightly different direction, even though they haven’t had an overarching paper at this point.</p>
+   <p>Michael Wong: Have they put this paper out before or is this something they are planning for?</p>
+   <p>Ben Craig: They have all been coauthors on papers, one of them dealing with global destructors, one dealing with module level attributes.  One other in the freestanding space. [Editor’s note: P1246, "The no_float function attribute"]</p>
+   <p>Michael Wong: Maybe we can help them move forward.  I’m sure they would come on this call and give us some ideas.</p>
+   <p>???: All the papers on constexpr have a multi-release arch going to them.  I feel that something like the machine concepts idea could be a way of starting our own arch for things like the affinities and stack sizes and things that have been on our wish list since year -1 essentially.</p>
+   <p>Ben Craig: I think that’s possible, P0829 may be the lowest level of all those concepts, and then we start putting things on top of it.</p>
+   <p>Paul Bendixen: I would encourage Kirk to write a paper.  I still haven’t seen how to make this concept based approach work.  As far as I can tell, concepts need to be more-or-less, syntax sugar for templates.  If you want to have your algorithm decide upon your concept, you need to pass it in somehow.</p>
+   <p>Hubert Tong: Yes, concepts need something to pass in, but at the same time, you could have a standard library trait.  Say that there is a trait that gives you a type, and if the type models whatever concept, and the type is a representation of your system or environment.  You could ask for that and pass it in to the concept when your library needs to choose what implementation to use.</p>
+  </main>
+<script>
+(function() {
+  "use strict";
+  var collapseSidebarText = '<span aria-hidden="true">←</span> '
+                          + '<span>Collapse Sidebar</span>';
+  var expandSidebarText   = '<span aria-hidden="true">→</span> '
+                          + '<span>Pop Out Sidebar</span>';
+  var tocJumpText         = '<span aria-hidden="true">↑</span> '
+                          + '<span>Jump to Table of Contents</span>';
+
+  var sidebarMedia = window.matchMedia('screen and (min-width: 78em)');
+  var autoToggle   = function(e){ toggleSidebar(e.matches) };
+  if(sidebarMedia.addListener) {
+    sidebarMedia.addListener(autoToggle);
+  }
+
+  function toggleSidebar(on) {
+    if (on == undefined) {
+      on = !document.body.classList.contains('toc-sidebar');
+    }
+
+    /* Don’t scroll to compensate for the ToC if we’re above it already. */
+    var headY = 0;
+    var head = document.querySelector('.head');
+    if (head) {
+      // terrible approx of "top of ToC"
+      headY += head.offsetTop + head.offsetHeight;
+    }
+    var skipScroll = window.scrollY < headY;
+
+    var toggle = document.getElementById('toc-toggle');
+    var tocNav = document.getElementById('toc');
+    if (on) {
+      var tocHeight = tocNav.offsetHeight;
+      document.body.classList.add('toc-sidebar');
+      document.body.classList.remove('toc-inline');
+      toggle.innerHTML = collapseSidebarText;
+      if (!skipScroll) {
+        window.scrollBy(0, 0 - tocHeight);
+      }
+      tocNav.focus();
+      sidebarMedia.addListener(autoToggle); // auto-collapse when out of room
+    }
+    else {
+      document.body.classList.add('toc-inline');
+      document.body.classList.remove('toc-sidebar');
+      toggle.innerHTML = expandSidebarText;
+      if (!skipScroll) {
+        window.scrollBy(0, tocNav.offsetHeight);
+      }
+      if (toggle.matches(':hover')) {
+        /* Unfocus button when not using keyboard navigation,
+           because I don’t know where else to send the focus. */
+        toggle.blur();
+      }
+    }
+  }
+
+  function createSidebarToggle() {
+    /* Create the sidebar toggle in JS; it shouldn’t exist when JS is off. */
+    var toggle = document.createElement('a');
+      /* This should probably be a button, but appearance isn’t standards-track.*/
+    toggle.id = 'toc-toggle';
+    toggle.class = 'toc-toggle';
+    toggle.href = '#toc';
+    toggle.innerHTML = collapseSidebarText;
+
+    sidebarMedia.addListener(autoToggle);
+    var toggler = function(e) {
+      e.preventDefault();
+      sidebarMedia.removeListener(autoToggle); // persist explicit off states
+      toggleSidebar();
+      return false;
+    }
+    toggle.addEventListener('click', toggler, false);
+
+
+    /* Get <nav id=toc-nav>, or make it if we don’t have one. */
+    var tocNav = document.getElementById('toc-nav');
+    if (!tocNav) {
+      tocNav = document.createElement('p');
+      tocNav.id = 'toc-nav';
+      /* Prepend for better keyboard navigation */
+      document.body.insertBefore(tocNav, document.body.firstChild);
+    }
+    /* While we’re at it, make sure we have a Jump to Toc link. */
+    var tocJump = document.getElementById('toc-jump');
+    if (!tocJump) {
+      tocJump = document.createElement('a');
+      tocJump.id = 'toc-jump';
+      tocJump.href = '#toc';
+      tocJump.innerHTML = tocJumpText;
+      tocNav.appendChild(tocJump);
+    }
+
+    tocNav.appendChild(toggle);
+  }
+
+  var toc = document.getElementById('toc');
+  if (toc) {
+    createSidebarToggle();
+    toggleSidebar(sidebarMedia.matches);
+
+    /* If the sidebar has been manually opened and is currently overlaying the text
+       (window too small for the MQ to add the margin to body),
+       then auto-close the sidebar once you click on something in there. */
+    toc.addEventListener('click', function(e) {
+      if(e.target.tagName.toLowerCase() == "a" && document.body.classList.contains('toc-sidebar') && !sidebarMedia.matches) {
+        toggleSidebar(false);
+      }
+    }, false);
+  }
+  else {
+    console.warn("Can’t find Table of Contents. Please use <nav id='toc'> around the ToC.");
+  }
+
+  /* Wrap tables in case they overflow */
+  var tables = document.querySelectorAll(':not(.overlarge) > table.data, :not(.overlarge) > table.index');
+  var numTables = tables.length;
+  for (var i = 0; i < numTables; i++) {
+    var table = tables[i];
+    var wrapper = document.createElement('div');
+    wrapper.className = 'overlarge';
+    table.parentNode.insertBefore(wrapper, table);
+    wrapper.appendChild(table);
+  }
+
+})();
+</script></body></html>
