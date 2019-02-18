@@ -359,11 +359,14 @@ span.indented {
 
 <body>
 <h1>Freestanding Proposal</h1>
-Document number: P0829R4<br/>
+Document number: D0829R5.0<br/>
 Date: 2019-01-12<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: SG14, Library Evolution Working Group
 <h1>Change history</h1>
+<h2> R4 -&gt; R5 </h2>
+Removed <code>bitset</code>'s throwing <code>to_ulong()</code> and <code>to_ullong()</code> methods.<br/>
+Explicitly omitting the random engine streaming operators.<br/>
 <h2> R3 -&gt; R4 </h2>
 Updated to N4791.<br/>
 Added most of the ranges proposal.<br/>
@@ -622,7 +625,7 @@ All of <code>&lt;optional&gt;</code>, except for <code>bad_optional_access</code
 </p><p>
 All of <code>&lt;variant&gt;</code>, except for <code>get</code>.  The <code>variant</code> value can be accessed through <code>get_if</code>.
 </p><p>
-All of <code>&lt;bitset&gt;</code> except for operator&lt;&lt;; operator&gt;&gt;; bitset::to_string; the bitset string constructors; and the indexed versions of bitset::set, bitset::reset, and bitset::flip.
+All of <code>&lt;bitset&gt;</code> except for <code>operator&lt;&lt;</code>; <code>operator&gt;&gt;</code>; <code>bitset::to_string</code>; <code>bitset::to_ulong</code>; <code>bitset::to_ullong</code>; the <code>bitset</code> string constructors; and the indexed versions of <code>bitset::set</code>, <code>bitset::reset</code>, and <code>bitset::flip</code>.
 </p><p>
 Portions of <code>&lt;memory&gt;</code>.
 </p>
@@ -740,9 +743,12 @@ Portions of <code>&lt;random&gt;</code>.  The following portions will be include
 <li>discard_block_engine</li>
 <li>independent_bits_engine</li>
 </code>
-<li>[rand.predef], except for <code>knuth_b</code></li>
+<li><a href="https://wg21.link/rand.predef">[rand.predef]</a>, except for <code>knuth_b</code></li>
 <li><code>uniform_int_distribution</code></li>
 </ul>
+<p>
+The streaming operators for the engines will not be included, and the requirements for a random engine will be updated accordingly.
+</p>
 A small portion of <code>&lt;cmath&gt;</code> will be present.
 <ul>
 <code><li>abs(int)</li>
@@ -1686,8 +1692,8 @@ namespace std {
 </span>    constexpr bool operator[](size_t pos) const;        <span class='comment'>// for <span class='tcode_in_codeblock'>b[i];</span>
 </span>    reference operator[](size_t pos);                   <span class='comment'>// for <span class='tcode_in_codeblock'>b[i];</span>
 </span>
-    unsigned long to_ulong() const;
-    unsigned long long to_ullong() const;
+    unsigned long to_ulong() const; <ins><span class='comment'>// <span class='textit'>freestanding, omit</span></span></ins>
+    unsigned long long to_ullong() const; <ins><span class='comment'>// <span class='textit'>freestanding, omit</span></span></ins>
     template&lt;class charT = char,
               class traits = char_traits&lt;charT&gt;,
               class Allocator = allocator&lt;charT&gt;&gt;
@@ -3177,6 +3183,8 @@ namespace std {
 Thanks to Brandon Streiff, Joshua Cannon, Phil Hindman, and Irwan Djajadi for reviewing this proposal.
 </p><p>
 Thanks to Odin Holmes for helping publicize this paper, presenting it in Rapperswil, and providing feedback.
+</p><p>
+Thanks to Paul Bendixen for providing feedback while prototyping this proposal.
 </p><p>
 Similar work was done in the C++11 timeframe by Lawrence Crowl and Alberto Ganesh Barbati in <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3256.html">N3256</a>.
 </p><p>
