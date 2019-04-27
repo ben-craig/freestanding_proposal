@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html>
+<title>DxxxxR0.0: Freestanding Library: Rewording the Status Quo</title>
+<style type="text/css">
+  ins, ins * { text-decoration:none; font-weight:bold; background-color:#A0FFA0 }
+  del, del * { text-decoration:line-through; background-color:#FFA0A0 }
+  #hidedel:checked ~ * del, #hidedel:checked ~ * del * { display:none; visibility:hidden }
+
+blockquote {
+  padding: .5em;
+  border: .5em;
+  border-color: silver;
+  border-left-style: solid;
+}
+
+blockquote.std { color: #000000; background-color: #F1F1F1;
+  border: 1px solid #D1D1D1;
+  padding-left: 0.5em; padding-right: 0.5em; }
+blockquote.stdins { text-decoration: underline;
+  color: #000000; background-color: #C8FFC8;
+  border: 1px solid #B3EBB3; padding: 0.5em; }
+blockquote.stddel { text-decoration: line-through;
+  color: #000000; background-color: #FFEBFF;
+  border: 1px solid #ECD7EC;
+  padding-left: 0.5em; padding-right: 0.5em; }
+
+p.grammarlhs { margin-bottom: 0 }
+p.grammarrhs { margin-left:8em; margin-top:0; margin-bottom:0; text-indent:-4em }
+
+div.wrapper {
+    max-width: 60em;
+    margin: auto;
+}
+
+a { text-decoration: none; }
+
+a.hidden_link {
+    text-decoration: none;
+    color: inherit;
+}
+
+li {
+    margin-top: 0.0em;
+    margin-bottom: 0.0em;
+}
+
+h1 { line-height: 1; }
+h2 { line-height: 1; }
+h3 { line-height: 1; }
+h4 { line-height: 1; }
+
+:target { background-color: #C9FBC9; }
+:target .codeblock { background-color: #C9FBC9; }
+:target ul { background-color: #C9FBC9; }
+
+.abbr_ref { float: right; }
+
+.folded_abbr_ref { float: right; }
+:target .folded_abbr_ref { display: none; }
+
+:target .unfolded_abbr_ref { float: right; display: inherit; }
+.unfolded_abbr_ref { display: none; }
+
+.secnum { display: inline-block; min-width: 35pt; }
+.annexnum { display: block; }
+
+div.sourceLinkParent {
+    float: right;
+}
+
+a.sourceLink {
+    position: absolute;
+    opacity: 0;
+    margin-left: 10pt;
+}
+
+a.sourceLink:hover {
+    opacity: 1;
+}
+
+div.marginalizedparent {
+    position: relative;
+    left: -5em;
+}
+
+div.footnoteNumberParent {
+    position: relative;
+    left: -4.7em;
+}
+
+a.marginalized {
+    position: absolute;
+    font-size: 75%;
+    text-align: right;
+    width: 5em;
+}
+
+a.enumerated_item_num {
+    position: relative;
+    left: -3.5em;
+    display: inline-block;
+    margin-right: -3em;
+    text-align: right;
+    width: 3em;
+}
+
+div.para { margin-bottom: 0.6em; margin-top: 0.6em; text-align: justify; }
+div.section { text-align: justify; }
+div.sentence { display: inline; }
+
+span.indexparent {
+    display: inline;
+    position: relative;
+    float: right;
+    right: -1em;
+}
+
+a.index {
+    position: absolute;
+    display: none;
+}
+
+a.index:before { content: "âŸµ"; }
+    /* this way the content is not selectable */
+
+a.index:target {
+    display: inline;
+}
+
+.indexitems {
+    margin-left: 2em;
+    text-indent: -2em;
+}
+
+div.itemdescr {
+    margin-left: 3em;
+}
+
+.bnf {
+    font-family: serif;
+    margin-left: 40pt;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.ncbnf {
+    font-family: serif;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+.bnftab {
+    font-family: serif;
+    font-style: italic;
+    margin-left: 40pt;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.ncsimplebnf {
+    font-family: serif;
+    font-style: italic;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+.ncbnftab {
+    font-family: serif;
+    font-style: italic;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+.bnfkeywordtab {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+span.textnormal {
+    font-style: normal;
+    font-family: serif;
+    white-space: normal;
+    display: inline-block;
+}
+
+span.descr { font-style: normal; font-family: serif; }
+span.grammarterm { font-style: italic; }
+span.term { font-style: italic; }
+span.terminal { font-family: monospace; font-style: normal; }
+span.nonterminal { font-style: italic; }
+span.tcode { font-family: monospace; font-style: normal; }
+span.textbf { font-weight: bold; }
+span.textsc { font-variant: small-caps; }
+a.nontermdef { font-style: italic; font-family: serif; }
+span.emph { font-style: italic; }
+span.techterm { font-style: italic; }
+span.mathit { font-style: italic; }
+span.mathsf { font-family: sans-serif; }
+span.mathrm { font-family: serif; font-style: normal; }
+span.textrm { font-family: serif; }
+span.textsl { font-style: italic; }
+span.mathtt { font-family: monospace; font-style: normal; }
+span.mbox { font-family: serif; font-style: normal; }
+span.ungap { display: inline-block; width: 2pt; }
+span.textit { font-style: italic; }
+span.texttt { font-family: monospace; }
+span.tcode_in_codeblock { font-family: monospace; font-style: normal; }
+
+span.phantom { color: white; }
+span.math { }
+
+span.mathblock {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1.2em;
+    margin-bottom: 1.2em;
+    text-align: center;
+}
+
+span.mathalpha {
+    font-style: italic;
+}
+
+span.synopsis {
+    font-weight: bold;
+    margin-top: 0.5em;
+    display: block;
+}
+
+span.definition {
+    font-weight: bold;
+    display: block;
+}
+
+.codeblock {
+    margin-left: 1.2em;
+    line-height: 127%;
+}
+
+code {
+    font-family: monospace;
+    font-style: normal;
+}
+
+code.itemdecl {
+    margin-top: 2ex;
+    white-space: pre;
+    display: block;
+}
+
+.comment {
+    font-style: italic;
+    font-family: serif;
+}
+
+span.textsuperscript {
+    vertical-align: super;
+    font-size: smaller;
+    line-height: 0;
+}
+
+.footnotenum { vertical-align: super; font-size: smaller; line-height: 0; }
+
+.footnote {
+    font-size: small;
+    margin-left: 2em;
+    margin-right: 2em;
+    margin-top: 0.6em;
+    margin-bottom: 0.6em;
+}
+
+div.minipage {
+    display: inline-block;
+    margin-right: 3em;
+}
+
+div.numberedTable {
+    text-align: center;
+    margin: 2em;
+}
+
+div.figure {
+    text-align: center;
+    margin: 2em;
+}
+
+table {
+    border: 1px solid black;
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0.8em;
+    text-align: left;
+    hyphens: none; /* otherwise some columns get very narrow, e.g. [tab:hash] */
+}
+
+td, th {
+    padding-left: 1em;
+    padding-right: 1em;
+    vertical-align: top;
+}
+
+td.left {
+    text-align: left;
+}
+
+td.right {
+    text-align: right;
+}
+
+td.center {
+    text-align: center;
+}
+
+td.justify {
+    text-align: justify;
+}
+
+td.border {
+    border-left: 1px solid black;
+}
+
+tr.rowsep, td.cline {
+    border-top: 1px solid black;
+}
+
+tr.capsep {
+    border-top: 3px solid black;
+    border-top-style: double;
+}
+
+th {
+    border-bottom: 1px solid black;
+}
+
+span.centry {
+    font-weight: bold;
+}
+
+div.table {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    width: 90%;
+}
+
+span.indented {
+    display: block;
+    margin-left: 2em;
+    margin-bottom: 1em;
+    margin-top: 1em;
+}
+</style>
+
+<body>
+<h1>Freestanding Library: Rewording the Status Quo</h1>
+Document number: D0000R0.0<br/>
+Date: 2019-04-05<br/>
+Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
+Audience: SG14, Library Evolution Working Group
+<h1>Change history</h1>
+<h3> R0 </h3>
+<p>
+Branching from P0829R4.  This "omnibus" paper is still the direction I am aiming for.  However, it is too difficult to review.  It needs to change with almost every meeting.  Therefore, it is getting split up into smaller, more manageable chunks.
+</p><p>
+Limiting paper to <code>&lt;version&gt;</code>, blanket wording, and freestanding facilities already in the working draft.
+</p>
+<h1>Introduction</h1>
+<p>
+This paper is the first of many smaller papers adding facilities to the C++ freestanding library.  This paper in particular will only be updating the editorial technique for declaring facilities as freestanding.  This update will make it easier to mark headers as partially freestanding.  This wording change will make it easier to mark in-flight proposals as freestanding, without causing a major blocking point in the standardization process.
+</p>
+<h1>Motivation and Design</h1>
+<p>
+Many existing facilities in the C++ standard library could be used without trouble in freestanding environments.  This series of papers will specify the maximal subset of the C++ standard library that does not require an OS or space overhead.
+</p><p>
+For a more in depth rationale, see P0829.
+</p><p>
+This paper is going to add blanket wording to make it easier to mark things freestanding, and it will retrofit the existing freestanding facilities.
+</p><p>
+The one intentional design change in this paper is in the feature test macros.  A new feature test macro will be added, and the existing library feature test macros will be split into two tables: feature test macros available in freestanding environments and feature test macros available in hosted environments.
+</p>
+<h1>Feature Test Macro</h1>
+<p>
+A freestanding implementation that provides support for this paper shall define the following feature test macro.
+</p>
+<table border="1">
+    <thead><tr>
+        <th>Name</th>
+        <th>Value</th>
+        <th>Header</th>
+    </tr></thead>
+    <tbody><tr>
+        <td><code>__cpp_freestanding_library</code></td>
+        <td><var ignore="true">201906</var></td>
+        <td><code>&lt;version&gt;<code></td>
+    </tr></tbody>
+</table>
+<p>
+Example usage:
+</p>
+<pre class='codeblock'>
+#if __cpp_freestanding_library &gt;= 201906
+int my_atoi(const char *str);
+#else
+#include &lt;cstdlib&gt;
+inline int my_atoi(const char *str) {return std::atoi(str);}
+#endif
+</pre>
+<p>
+The <code>__cpp_freestanding_library</code> macro is useful for detecting the absence of throwing facilities.  A user could conditionally use a hand-rolled implementation in freestanding mode or the standard implementation in hosted mode.
+</p><p>
+The library feature macros have been partitioned into those that must be present in both freestanding and hosted mode, and those that only need to be present in hosted mode.  If the implementation provides more than the minimal freestanding subset, then the implementation shall also provide the corresponding feature test macros.
+</p><p>
+The pre-existing feature macros were not provided on freestanding / hosted boundaries.  As a result, a choice has to be made about feature test macros that contain both freestanding and non-freestanding code (e.g. <code>__cpp_lib_chrono</code>, <code>__cpp_lib_boyer_moore_searcher</code>, and others).  This revision includes feature test macros in freestanding if any of the feature is included in freestanding.  Users that need to detect the non-freestanding parts will also need to test against <code>__cpp_freestanding_library</code>.
+</p>
+<h1>Wording</h1>
+<p>
+The following changes are relative to N4810 from the Post-Kona 2019 mailing.
+</p>
+Add a new subclause [freestanding.membership], under [conventions] and after [objects.within.classes]:
+<blockquote class="stdins">
+<h4 ><a class='secnum' style='min-width:118pt'>?.?.?.?</a> Freestanding membership <a class='abbr_ref'>[freestanding.membership]</a></h4>
+<div class='para'>
+    <div class='marginalizedparent'><a class='marginalized'>1</a></div>
+    <div class='sentence'>The freestanding implementation has several declarations and macro definitions that shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
+    <div class='note'>[ <span class='textit'>Note</span><span class='textit'>:</span> Throwing a standard library provided exception is not observably different from <span class='texttt'>terminate()</span> if the implementation doesn't unwind the stack during exception handling and the user's program contains no catch blocks. -<i>end note</i>]</div>
+    <div class='sentence'>In the associated header synopsis for such declarations and macro definitions, the items shall be followed with a comment that ends with <span class='textit'>freestanding</span>, as in:</div>
+<pre class='codeblock'>
+#define E2BIG <span class='textit'><span class='texttt'>see below</span></span> <span class='comment'>// <span class='textit'>freestanding</span></span>
+</pre>
+</div>
+<div class='para'>
+    <div class='marginalizedparent'><a class='marginalized'>2</a></div>
+    <div class='sentence'>The freestanding implementation has several headers that shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
+    <div class='sentence'>The synopsis for these headers shall start with a comment that ends with <span class='textit'>freestanding</span>, as in:</div>
+<pre class='codeblock'>
+<span class='comment'>// <span class='textit'>freestanding</span></span>
+namespace std {
+</pre>
+    <div class='sentence'>Individual declarations and macro definitions in such a header shall not be followed with a comment that ends with <span class='textit'>freestanding</span>.</div>
+</div>
+<div class='para'>
+    <div class='marginalizedparent'><a class='marginalized'>3</a></div>
+    <div class='sentence'>Deduction guides for class templates that are implemented (partially or fully) in a freestanding implementation shall be implemented in a freestanding implementation.</div>
+    <div class='sentence'>The containing namespace for each non-namespace declaration that is implemented (partially or fully) in a freestanding implementation shall be implemented in a freestanding implementation.</div>
+</div>
+</blockquote>
+
+Change in [compliance] paragraph 3:
+<blockquote class="std">
+<div class='para'>
+<del>
+    <div class='sentence'>The supplied version of the header
+    <span class='texttt'>&lt;cstdlib&gt;</span>
+    shall declare at least the functions
+    <span class='texttt'>abort</span>,
+    <span class='texttt'>atexit</span>,
+    <span class='texttt'>at_&shy;quick_&shy;exit</span>,
+    <span class='texttt'>exit</span>,
+    and
+    <span class='texttt'>quick_&shy;exit</span> [support.start.term].</div>
+    <div class='sentence'>The other headers listed in this table shall meet the same requirements as for a hosted implementation.</div>
+</del>
+
+<ins>
+    <div class='sentence'>The supplied versions of the header
+    <span class='texttt'>&lt;version&gt;</span>
+    shall meet the requirements specified in [support.limits.general].</div>
+    <div class='sentence'>The other headers listed in this table shall meet the requirements for a freestanding implementation, as specified in the respective header synopsis.</div>
+</ins>
+</div>
+</blockquote>
+
+Instructions to the editor:<br/>
+Please add a <span class='comment'>// <span class='textit'>freestanding</span></span> comment to the beginning of the following synopses.  These headers are entirely freestanding.
+<ul>
+<li><ins>[cstddef.syn]</ins></li>
+<li><ins>[cfloat.syn]</ins></li>
+<li><ins>[limits.syn]</ins></li>
+<li><ins>[climits.syn]</ins></li>
+<li><ins>[cstdint.syn]</ins></li>
+<li><ins>[new.syn]</ins></li>
+<li><ins>[typeinfo.syn]</ins></li>
+<li><ins>[exception.syn]</ins></li>
+<li><ins>[initializer_list.syn]</ins></li>
+<li><ins>[cstdarg.syn]</ins></li>
+<li><ins>[concepts.syn]</ins></li>
+<li><ins>[meta.type.synop]</ins></li>
+<li><ins>[bit.syn]</ins></li>
+<li><ins>[atomics.syn]</ins></li>
+</ul>
+
+Change in [cstdlib.syn]:
+<blockquote class="std">
+<h3 ><a class='secnum' style='min-width:103pt'>???</a> Header <span class='texttt'>&lt;cstdlib&gt;</span> synopsis <a class='abbr_ref'>[cstdlib.syn]</a></h3>
+<pre class='codeblock'>
+namespace std {
+  using size_t = <span class='textit'><span class='texttt'>see below</span></span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  using div_t = <span class='textit'><span class='texttt'>see below</span></span>;
+  using ldiv_t = <span class='textit'><span class='texttt'>see below</span></span>;
+  using lldiv_t = <span class='textit'><span class='texttt'>see below</span></span>;
+}
+
+#define NULL <span class='textit'><span class='texttt'>see below</span></span> <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+#define EXIT_FAILURE <span class='textit'><span class='texttt'>see below</span></span>
+#define EXIT_SUCCESS <span class='textit'><span class='texttt'>see below</span></span>
+#define RAND_MAX <span class='textit'><span class='texttt'>see below</span></span>
+#define MB_CUR_MAX <span class='textit'><span class='texttt'>see below</span></span>
+
+namespace std {
+  <span class='comment'>// Exposition-only function type aliases
+</span>  extern "C" using <span class='textit'>c-atexit-handler</span> = void();                        <span class='comment'>// <span class='textit'>exposition only</span>
+</span>  extern "C++" using <span class='textit'>atexit-handler</span> = void();                        <span class='comment'>// <span class='textit'>exposition only</span>
+</span>  extern "C" using <span class='textit'>c-compare-pred</span> = int(const void*, const void*);   <span class='comment'>// <span class='textit'>exposition only</span>
+</span>  extern "C++" using <span class='textit'>compare-pred</span> = int(const void*, const void*);   <span class='comment'>// <span class='textit'>exposition only</span>
+</span>
+  <span class='comment'>// [support.start.term], start and termination
+</span>  [[noreturn]] void abort() noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  int atexit(<span class='textit'>c-atexit-handler</span>* func) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  int atexit(<span class='textit'>atexit-handler</span>* func) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  int at_quick_exit(<span class='textit'>c-atexit-handler</span>* func) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  int at_quick_exit(<span class='textit'>atexit-handler</span>* func) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  [[noreturn]] void exit(int status); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  [[noreturn]] void _Exit(int status) noexcept;
+  [[noreturn]] void quick_exit(int status) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  char* <span id='lib:getenv'><span class='tcode_in_codeblock'>getenv</span></span>(const char* name);
+  int system(const char* string);
+
+  <span class='comment'>// [c.malloc], C library memory allocation
+</span>  void* aligned_alloc(size_t alignment, size_t size);
+  void* calloc(size_t nmemb, size_t size);
+  void free(void* ptr);
+  void* malloc(size_t size);
+  void* realloc(void* ptr, size_t size);
+
+  double atof(const char* nptr);
+  int atoi(const char* nptr);
+  long int atol(const char* nptr);
+  long long int atoll(const char* nptr);
+  double strtod(const char* nptr, char** endptr);
+  float strtof(const char* nptr, char** endptr);
+  long double strtold(const char* nptr, char** endptr);
+  long int strtol(const char* nptr, char** endptr, int base);
+  long long int strtoll(const char* nptr, char** endptr, int base);
+  unsigned long int strtoul(const char* nptr, char** endptr, int base);
+  unsigned long long int strtoull(const char* nptr, char** endptr, int base);
+
+  <span class='comment'>// [c.mb.wcs], multibyte / wide string and character conversion functions
+</span>  int mblen(const char* s, size_t n);
+  int mbtowc(wchar_t* pwc, const char* s, size_t n);
+  int wctomb(char* s, wchar_t wchar);
+  size_t mbstowcs(wchar_t* pwcs, const char* s, size_t n);
+  size_t wcstombs(char* s, const wchar_t* pwcs, size_t n);
+
+  <span class='comment'>// [alg.c.library], C standard library algorithms
+</span>  void* bsearch(const void* key, const void* base, size_t nmemb, size_t size,
+                <span class='textit'>c-compare-pred</span>* compar);
+  void* bsearch(const void* key, const void* base, size_t nmemb, size_t size,
+                <span class='textit'>compare-pred</span>* compar);
+  void qsort(void* base, size_t nmemb, size_t size, <span class='textit'>c-compare-pred</span>* compar);
+  void qsort(void* base, size_t nmemb, size_t size, <span class='textit'>compare-pred</span>* compar);
+
+  <span class='comment'>// [c.math.rand], low-quality random number generation
+</span>  int rand();
+  void srand(unsigned int seed);
+
+  <span class='comment'>// [c.math.abs], absolute values
+</span>  int abs(int j);
+  long int abs(long int j);
+  long long int abs(long long int j);
+  float abs(float j);
+  double abs(double j);
+  long double abs(long double j);
+
+  long int labs(long int j);
+  long long int llabs(long long int j);
+
+  div_t div(int numer, int denom);
+  ldiv_t div(long int numer, long int denom);             <span class='comment'>// see [library.c]
+</span>  lldiv_t div(long long int numer, long long int denom);  <span class='comment'>// see [library.c]
+</span>  ldiv_t ldiv(long int numer, long int denom);
+  lldiv_t lldiv(long long int numer, long long int denom);
+}</pre>
+</blockquote>
+
+Replace paragraph 3 in [support.limits.general]:
+<blockquote class="std">
+<del>
+<div class='para'><div class='marginalizedparent'><a class='marginalized'>3</a></div><div class='sourceLinkParent'></div>
+  <div class='sentence'>The macros in Table 36 are defined after inclusion of the header <span class='texttt'>&lt;version&gt;</span> or
+one of the corresponding headers specified in the table.</div>
+  <div class='note'>[<a class='note_link'><span class='textit'>Note</span></a><span class='textit'>:</span> Future versions of this International Standard might replace the values of these macros with greater values. -<i>end note</i>]</div>
+</div>
+</del>
+<ins>
+<div class='para'><div class='marginalizedparent'><a class='marginalized'>3</a></div><div class='sourceLinkParent'></div>
+  <div class='sentence'>On freestanding and hosted implementations, the macros in Table ??36?? are defined after inclusion of the header <span class='texttt'>&lt;version&gt;</span> or one of the corresponding headers specified in the table.</div>
+  <div class='sentence'>On hosted implementations, the macros in Table ??37?? are defined after inclusion of the header <span class='texttt'>&lt;version&gt;</span> or one of the corresponding headers specified in the table.</div>
+  <div class='sentence'>The presence of the macros in Table ??36?? is implementation defined on freestanding implementations.</div>
+  <div class='note'>[<a class='note_link'><span class='textit'>Note</span></a><span class='textit'>:</span> Future versions of this International Standard might replace the values of these macros with greater values. -<i>end note</i>]</div>
+</div>
+</ins>
+</blockquote>
+
+Add a new paragraph to the end of [support.limits.general]:
+<blockquote class="stdins">
+<div class='para'><div class='marginalizedparent'><a class='marginalized'>???</a></div><div class='sourceLinkParent'></div>
+  <div class='sentence'>A freestanding implementation shall define the <span class='texttt'>__cpp_freestanding_library</span> macro with the value <span class='texttt'>201906L</span> in the <span class='texttt'>&lt;version&gt;</span> header.</div>
+</div>
+</blockquote>
+
+Split Table 36.<br/>
+The new Table ??36?? will be named <ins>Table ??36?? - Freestanding and hosted standard library feature-test macros</ins>.  Leave the following macros in Table ??36??.
+<ul>
+  <li><code>__cpp_lib_atomic_is_always_lock_free</code></li>
+  <li><code>__cpp_lib_atomic_ref</code></li>
+  <li><code>__cpp_lib_bit_cast</code></li>
+  <li><code>__cpp_lib_bool_constant</code></li>
+  <li><code>__cpp_lib_bounded_array_traits</code></li>
+  <li><code>__cpp_lib_byte</code></li>
+  <li><code>__cpp_lib_char8_t</code></li>
+  <li><code>__cpp_lib_concepts</code></li>
+  <li><code>__cpp_lib_hardware_interference_size</code></li>
+  <li><code>__cpp_lib_has_unique_object_representations</code></li>
+  <li><code>__cpp_lib_integral_constant_callable</code></li>
+  <li><code>__cpp_lib_is_aggregate</code></li>
+  <li><code>__cpp_lib_is_constant_evaluated</code></li>
+  <li><code>__cpp_lib_is_final</code></li>
+  <li><code>__cpp_lib_is_invocable</code></li>
+  <li><code>__cpp_lib_is_null_pointer</code></li>
+  <li><code>__cpp_lib_is_swappable</code></li>
+  <li><code>__cpp_lib_launder</code></li>
+  <li><code>__cpp_lib_logical_traits</code></li>
+  <li><code>__cpp_lib_result_of_sfinae</code></li>
+  <li><code>__cpp_lib_transformation_trait_aliases</code></li>
+  <li><code>__cpp_lib_type_trait_variable_templates</code></li>
+  <li><code>__cpp_lib_uncaught_exceptions</code></li>
+  <li><code>__cpp_lib_void_t</code></li>
+</ul>
+
+The new Table ??37?? will be named <ins>Table ??37?? - Hosted standard library feature-test macros</ins>.  Move the following macros into Table ??37??.
+<ul>
+  <li><code>__cpp_lib_addressof_constexpr</code></li>
+  <li><code>__cpp_lib_allocator_traits_is_always_equal</code></li>
+  <li><code>__cpp_lib_any</code></li>
+  <li><code>__cpp_lib_apply</code></li>
+  <li><code>__cpp_lib_array_constexpr</code></li>
+  <li><code>__cpp_lib_as_const</code></li>
+  <li><code>__cpp_lib_bind_front</code></li>
+  <li><code>__cpp_lib_boyer_moore_searcher</code></li>
+  <li><code>__cpp_lib_chrono</code></li>
+  <li><code>__cpp_lib_chrono_udls</code></li>
+  <li><code>__cpp_lib_clamp</code></li>
+  <li><code>__cpp_lib_complex_udls</code></li>
+  <li><code>__cpp_lib_constexpr_misc</code></li>
+  <li><code>__cpp_lib_constexpr_swap_algorithms</code></li>
+  <li><code>__cpp_lib_destroying_delete</code></li>
+  <li><code>__cpp_lib_enable_shared_from_this</code></li>
+  <li><code>__cpp_lib_erase_if</code></li>
+  <li><code>__cpp_lib_exchange_function</code></li>
+  <li><code>__cpp_lib_execution</code></li>
+  <li><code>__cpp_lib_filesystem</code></li>
+  <li><code>__cpp_lib_gcd_lcm</code></li>
+  <li><code>__cpp_lib_generic_associative_lookup</code></li>
+  <li><code>__cpp_lib_generic_unordered_lookup</code></li>
+  <li><code>__cpp_lib_generic_unordered_hash_lookup</code></li>
+  <li><code>__cpp_lib_hypot</code></li>
+  <li><code>__cpp_lib_incomplete_container_elements</code></li>
+  <li><code>__cpp_lib_integer_sequence</code></li>
+  <li><code>__cpp_lib_interpolate</code></li>
+  <li><code>__cpp_lib_invoke</code></li>
+  <li><code>__cpp_lib_list_remove_return_type</code></li>
+  <li><code>__cpp_lib_make_from_tuple</code></li>
+  <li><code>__cpp_lib_make_reverse_iterator</code></li>
+  <li><code>__cpp_lib_make_unique</code></li>
+  <li><code>__cpp_lib_map_try_emplace</code></li>
+  <li><code>__cpp_lib_math_special_functions</code></li>
+  <li><code>__cpp_lib_memory_resource</code></li>
+  <li><code>__cpp_lib_node_extract</code></li>
+  <li><code>__cpp_lib_nonmember_container_access</code></li>
+  <li><code>__cpp_lib_not_fn</code></li>
+  <li><code>__cpp_lib_null_iterators</code></li>
+  <li><code>__cpp_lib_optional</code></li>
+  <li><code>__cpp_lib_parallel_algorithm</code></li>
+  <li><code>__cpp_lib_quoted_string_io</code></li>
+  <li><code>__cpp_lib_ranges</code></li>
+  <li><code>__cpp_lib_raw_memory_algorithms</code></li>
+  <li><code>__cpp_lib_robust_nonmodifying_seq_ops</code></li>
+  <li><code>__cpp_lib_sample</code></li>
+  <li><code>__cpp_lib_scoped_lock</code></li>
+  <li><code>__cpp_lib_shared_mutex</code></li>
+  <li><code>__cpp_lib_shared_ptr_arrays</code></li>
+  <li><code>__cpp_lib_shared_ptr_weak_type</code></li>
+  <li><code>__cpp_lib_shared_timed_mutex</code></li>
+  <li><code>__cpp_lib_string_udls</code></li>
+  <li><code>__cpp_lib_string_view</code></li>
+  <li><code>__cpp_lib_three_way_comparison</code></li>
+  <li><code>__cpp_lib_to_chars</code></li>
+  <li><code>__cpp_lib_transparent_operators</code></li>
+  <li><code>__cpp_lib_tuple_element_t</code></li>
+  <li><code>__cpp_lib_tuples_by_type</code></li>
+  <li><code>__cpp_lib_unordered_map_try_emplace</code></li>
+  <li><code>__cpp_lib_variant</code></li>
+</ul>
+
+<h1>Acknowledgements</h1>
+<p>
+</p>
+</body>
+</html>
+
