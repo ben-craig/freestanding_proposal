@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html>
+<style type="text/css">
+  ins, ins * { text-decoration:none; font-weight:bold; background-color:#A0FFA0 }
+  del, del * { text-decoration:line-through; background-color:#FFA0A0 }
+  #hidedel:checked ~ * del, #hidedel:checked ~ * del * { display:none; visibility:hidden }
+
+blockquote {
+  padding: .5em;
+  border: .5em;
+  border-color: silver;
+  border-left-style: solid;
+}
+
+blockquote.std { color: #000000; background-color: #F1F1F1;
+  border: 1px solid #D1D1D1;
+  padding-left: 0.5em; padding-right: 0.5em; }
+blockquote.stdins { text-decoration: underline;
+  color: #000000; background-color: #C8FFC8;
+  border: 1px solid #B3EBB3; padding: 0.5em; }
+blockquote.stddel { text-decoration: line-through;
+  color: #000000; background-color: #FFEBFF;
+  border: 1px solid #ECD7EC;
+  padding-left: 0.5em; padding-right: 0.5em; }
+
+p.grammarlhs { margin-bottom: 0 }
+p.grammarrhs { margin-left:8em; margin-top:0; margin-bottom:0; text-indent:-4em }
+
+div.wrapper {
+    max-width: 60em;
+    margin: auto;
+}
+
+a { text-decoration: none; }
+
+a.hidden_link {
+    text-decoration: none;
+    color: inherit;
+}
+
+li {
+    margin-top: 0.0em;
+    margin-bottom: 0.0em;
+}
+
+h1 { line-height: 1; }
+h2 { line-height: 1; }
+h3 { line-height: 1; }
+h4 { line-height: 1; }
+
+:target { background-color: #C9FBC9; }
+:target .codeblock { background-color: #C9FBC9; }
+:target ul { background-color: #C9FBC9; }
+
+.abbr_ref { float: right; }
+
+.folded_abbr_ref { float: right; }
+:target .folded_abbr_ref { display: none; }
+
+:target .unfolded_abbr_ref { float: right; display: inherit; }
+.unfolded_abbr_ref { display: none; }
+
+.secnum { display: inline-block; min-width: 35pt; }
+.annexnum { display: block; }
+
+div.sourceLinkParent {
+    float: right;
+}
+
+a.sourceLink {
+    position: absolute;
+    opacity: 0;
+    margin-left: 10pt;
+}
+
+a.sourceLink:hover {
+    opacity: 1;
+}
+
+div.marginalizedparent {
+    position: relative;
+    left: -5em;
+}
+
+div.footnoteNumberParent {
+    position: relative;
+    left: -4.7em;
+}
+
+a.marginalized {
+    position: absolute;
+    font-size: 75%;
+    text-align: right;
+    width: 5em;
+}
+
+a.enumerated_item_num {
+    position: relative;
+    left: -3.5em;
+    display: inline-block;
+    margin-right: -3em;
+    text-align: right;
+    width: 3em;
+}
+
+div.para { margin-bottom: 0.6em; margin-top: 0.6em; text-align: justify; }
+div.section { text-align: justify; }
+div.sentence { display: inline; }
+
+span.indexparent {
+    display: inline;
+    position: relative;
+    float: right;
+    right: -1em;
+}
+
+a.index {
+    position: absolute;
+    display: none;
+}
+
+a.index:before { content: "âŸµ"; }
+    /* this way the content is not selectable */
+
+a.index:target {
+    display: inline;
+}
+
+.indexitems {
+    margin-left: 2em;
+    text-indent: -2em;
+}
+
+div.itemdescr {
+    margin-left: 3em;
+}
+
+.bnf {
+    font-family: serif;
+    margin-left: 40pt;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.ncbnf {
+    font-family: serif;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+.bnftab {
+    font-family: serif;
+    font-style: italic;
+    margin-left: 40pt;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.ncsimplebnf {
+    font-family: serif;
+    font-style: italic;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+.ncbnftab {
+    font-family: serif;
+    font-style: italic;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+.bnfkeywordtab {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+span.textnormal {
+    font-style: normal;
+    font-family: serif;
+    white-space: normal;
+    display: inline-block;
+}
+
+span.descr { font-style: normal; font-family: serif; }
+span.grammarterm { font-style: italic; }
+span.term { font-style: italic; }
+span.terminal { font-family: monospace; font-style: normal; }
+span.nonterminal { font-style: italic; }
+span.tcode { font-family: monospace; font-style: normal; }
+span.textbf { font-weight: bold; }
+span.textsc { font-variant: small-caps; }
+a.nontermdef { font-style: italic; font-family: serif; }
+span.emph { font-style: italic; }
+span.techterm { font-style: italic; }
+span.mathit { font-style: italic; }
+span.mathsf { font-family: sans-serif; }
+span.mathrm { font-family: serif; font-style: normal; }
+span.textrm { font-family: serif; }
+span.textsl { font-style: italic; }
+span.mathtt { font-family: monospace; font-style: normal; }
+span.mbox { font-family: serif; font-style: normal; }
+span.ungap { display: inline-block; width: 2pt; }
+span.textit { font-style: italic; }
+span.texttt { font-family: monospace; }
+span.tcode_in_codeblock { font-family: monospace; font-style: normal; }
+
+span.phantom { color: white; }
+span.math { }
+
+span.mathblock {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1.2em;
+    margin-bottom: 1.2em;
+    text-align: center;
+}
+
+span.mathalpha {
+    font-style: italic;
+}
+
+span.synopsis {
+    font-weight: bold;
+    margin-top: 0.5em;
+    display: block;
+}
+
+span.definition {
+    font-weight: bold;
+    display: block;
+}
+
+.codeblock {
+    margin-left: 1.2em;
+    line-height: 127%;
+}
+
+code {
+    font-family: monospace;
+    font-style: normal;
+}
+
+code.itemdecl {
+    margin-top: 2ex;
+    white-space: pre;
+    display: block;
+}
+
+.comment {
+    font-style: italic;
+    font-family: serif;
+}
+
+span.textsuperscript {
+    vertical-align: super;
+    font-size: smaller;
+    line-height: 0;
+}
+
+.footnotenum { vertical-align: super; font-size: smaller; line-height: 0; }
+
+.footnote {
+    font-size: small;
+    margin-left: 2em;
+    margin-right: 2em;
+    margin-top: 0.6em;
+    margin-bottom: 0.6em;
+}
+
+div.minipage {
+    display: inline-block;
+    margin-right: 3em;
+}
+
+div.numberedTable {
+    text-align: center;
+    margin: 2em;
+}
+
+div.figure {
+    text-align: center;
+    margin: 2em;
+}
+
+table {
+    border: 1px solid black;
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0.8em;
+    text-align: left;
+    hyphens: none; /* otherwise some columns get very narrow, e.g. [tab:hash] */
+}
+
+td, th {
+    padding-left: 1em;
+    padding-right: 1em;
+    vertical-align: top;
+}
+
+td.left {
+    text-align: left;
+}
+
+td.right {
+    text-align: right;
+}
+
+td.center {
+    text-align: center;
+}
+
+td.justify {
+    text-align: justify;
+}
+
+td.border {
+    border-left: 1px solid black;
+}
+
+tr.rowsep, td.cline {
+    border-top: 1px solid black;
+}
+
+tr.capsep {
+    border-top: 3px solid black;
+    border-top-style: double;
+}
+
+th {
+    border-bottom: 1px solid black;
+}
+
+span.centry {
+    font-weight: bold;
+}
+
+div.table {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    width: 90%;
+}
+
+span.indented {
+    display: block;
+    margin-left: 2em;
+    margin-bottom: 1em;
+    margin-top: 1em;
+}
+</style>
+
+<title>DxxxxR0.0: Freestanding Library: Easy [utilities]</title>
+<body>
+<h1>Freestanding Library: Easy [utilities]</h1>
+Document number: D0000R0.0<br/>
+Date: 2019-04-05<br/>
+Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
+Audience: SG14, Library Evolution Working Group
+<h1>Change history</h1>
+<h3> R0 </h3>
+<p>
+Branching from P0829R4.  This "omnibus" paper is still the direction I am aiming for.  However, it is too difficult to review.  It needs to change with almost every meeting.  Therefore, it is getting split up into smaller, more manageable chunks.
+</p><p>
+Limiting paper to the [utilities] clause.
+</p>
+<h1>Introduction</h1>
+<p>
+This paper proposes adding many of the facilities in the [utilities] clause to the freestanding subset of C++.  The paper will only be adding complete entities, and will not tackle partial classes.  In other words, classes like <code>pair</code> and <code>tuple</code> are being added, but trickier classes like <code>optional</code>, <code>variant</code>, and <code>bitset</code> will come in another paper.
+</p>
+<h1>Motivation and Design</h1>
+<p>
+Many existing facilities in the C++ standard library could be used without trouble in freestanding environments.  This series of papers will specify the maximal subset of the C++ standard library that does not require an OS or space overhead.
+</p><p>
+For a more in depth rationale, see P0829.
+</p><p>
+<code>&lt;optional&gt;</code>, <code>&lt;variant&gt;</code>, and <code>&lt;bitset&gt;</code> are not in this paper, as all have non-essential functions that can throw an exception.  <code>&lt;charconv&gt;</code> is not in this paper as it will require us to deal with the thorny issue of overload sets involving floating point and non-floating point types.  I plan on addressing all four of these headers in later papers, so that the topics in question can be debated in relative isolation.
+</p>
+<h1>Wording</h1>
+<p>
+The following changes are relative to N4810 from the Post-Kona 2019 mailing, and assume that P???? "Freestanding Library: Rewording the Status Quo" has been applied.
+</p>
+Instructions to the editor:<br/>
+Please add the following headers to "Table 22 - C++ headers for freestanding implementations":<br/>
+<ul>
+<li><ins>&lt;utility&gt;</ins></li>
+<li><ins>&lt;tuple&gt;</ins></li>
+<li><ins>&lt;memory&gt;</ins></li>
+<li><ins>&lt;functional&gt;</ins></li>
+<li><ins>&lt;ratio&gt;</ins></li>
+</ul>
+
+Instructions to the editor:<br/>
+Please add a <span class='comment'>// <span class='textit'>freestanding</span></span> comment to the beginning of the following synopses.  These headers are entirely freestanding.
+<ul>
+<li><ins>[utility.syn]</ins></li>
+<li><ins>[tuple.syn]</ins></li>
+<li><ins>[ratio.syn]</ins></li>
+</ul>
+
+Instructions to the editor:<br/>
+Move the following macros from "Table ??37?? - Hosted standard library feature-test macros" to "Table ??36?? - Freestanding and hosted standard library feature-test macros"
+<ul>
+  <li><code>__cpp_lib_addressof_constexpr</code></li>
+  <li><code>__cpp_lib_allocator_traits_is_always_equal</code></li>
+  <li><code>__cpp_lib_apply</code></li>
+  <li><code>__cpp_lib_as_const</code></li>
+  <li><code>__cpp_lib_bind_front</code></li>
+  <li><code>__cpp_lib_boyer_moore_searcher</code></li>
+  <li><code>__cpp_lib_constexpr_misc</code></li>
+  <li><code>__cpp_lib_exchange_function</code></li>
+  <li><code>__cpp_lib_integer_sequence</code></li>
+  <li><code>__cpp_lib_invoke</code></li>
+  <li><code>__cpp_lib_make_from_tuple</code></li>
+  <li><code>__cpp_lib_make_reverse_iterator</code></li>
+  <li><code>__cpp_lib_nonmember_container_access</code></li>
+  <li><code>__cpp_lib_not_fn</code></li>
+  <li><code>__cpp_lib_null_iterators</code></li>
+  <li><code>__cpp_lib_raw_memory_algorithms</code></li>
+  <li><code>__cpp_lib_transparent_operators</code></li>
+  <li><code>__cpp_lib_tuple_element_t</code></li>
+  <li><code>__cpp_lib_tuples_by_type</code></li>
+</ul>
+
+Change in [memory.syn]:
+<blockquote class="std">
+<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;memory&gt;</span> synopsis <a class='abbr_ref'>[memory.syn]</a></h3>
+<div class='para' >
+    <div class='marginalizedparent'><a class='marginalized'>1</a></div>
+    <div  class='sentence'>The header <span class='texttt'>&lt;memory&gt;</span> defines several types and function templates that
+describe properties of pointers and pointer-like types, manage memory
+for containers and other template types, destroy objects, and
+construct multiple objects in
+uninitialized memory
+buffers ([pointer.traits]-[specialized.algorithms]).</div>
+<div  class='sentence'>The header also defines the templates
+<span class='texttt'>unique_&shy;ptr</span>, <span class='texttt'>shared_&shy;ptr</span>, <span class='texttt'>weak_&shy;ptr</span>, and various function
+templates that operate on objects of these types ([smartptr]).</div>
+<pre class='codeblock'>
+namespace std {
+  <span class='comment'>// [pointer.traits], pointer traits
+</span>  template&lt;class Ptr&gt; struct pointer_traits; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; struct pointer_traits&lt;T*&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// [pointer.conversion], pointer conversion
+</span>  template&lt;class Ptr&gt;
+    auto to_address(const Ptr&amp; p) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt;
+    constexpr T* to_address(T* p) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// [util.dynamic.safety], pointer safety
+</span>  enum class pointer_safety { relaxed, preferred, strict };
+  void declare_reachable(void* p);
+  template&lt;class T&gt;
+    T* undeclare_reachable(T* p);
+  void declare_no_pointers(char* p, size_t n);
+  void undeclare_no_pointers(char* p, size_t n);
+  pointer_safety get_pointer_safety() noexcept;
+
+  <span class='comment'>// [ptr.align], pointer alignment
+</span>  void* align(size_t alignment, size_t size, void*&amp; ptr, size_t&amp; space); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+</span>  template&lt;size_t N, class T&gt;
+    [[nodiscard]] constexpr T* assume_aligned(T* ptr);<ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// [allocator.tag], allocator argument tag
+</span>  struct allocator_arg_t { explicit allocator_arg_t() = default; }; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  inline constexpr allocator_arg_t allocator_arg{}; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// [allocator.uses], <span class='tcode_in_codeblock'>uses_&shy;allocator</span>
+</span>  template&lt;class T, class Alloc&gt; struct uses_allocator; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment' style='font-style:italic;font-family:serif;'>// [allocator.uses.trait], <span class='tcode_in_codeblock'>uses_&shy;allocator</span></span>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> Alloc<span class='anglebracket'>&gt;</span>
+    <span class='keyword'>inline</span> <span class='keyword'>constexpr</span> <span class='keyword'>bool</span> uses_allocator_v <span class='operator'>=</span> uses_allocator<span class='anglebracket'>&lt;</span>T, Alloc<span class='anglebracket'>&gt;</span><span class='operator'>:</span><span class='operator'>:</span>value; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment' style='font-style:italic;font-family:serif;'>// [allocator.uses.construction], uses-allocator construction</span>
+  <span class='keyword'>template</span> <span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> Alloc, <span class='keyword'>class</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span> Args<span class='anglebracket'>&gt;</span>
+    <span class='keyword'>auto</span> uses_allocator_construction_args<span class='parenthesis'>(</span><span class='keyword'>const</span> Alloc<span class='operator'>&amp;</span> alloc, Args<span class='operator'>&amp;</span><span class='operator'>&amp;</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span> args<span class='parenthesis'>)</span> <span class='operator'>-</span><span class='anglebracket'>&gt;</span> <span class='textit'><span class='texttt'>see below</span></span>;
+  <span class='keyword'>template</span> <span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> Alloc, <span class='keyword'>class</span> Tuple1, <span class='keyword'>class</span> Tuple2<span class='anglebracket'>&gt;</span>
+    <span class='keyword'>auto</span> uses_allocator_construction_args<span class='parenthesis'>(</span><span class='keyword'>const</span> Alloc<span class='operator'>&amp;</span> alloc, piecewise_construct_t,
+                                          Tuple1<span class='operator'>&amp;</span><span class='operator'>&amp;</span> x, Tuple2<span class='operator'>&amp;</span><span class='operator'>&amp;</span> y<span class='parenthesis'>)</span> <span class='operator'>-</span><span class='anglebracket'>&gt;</span>  <span class='textit'><span class='texttt'>see below</span></span>;
+  <span class='keyword'>template</span> <span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> Alloc<span class='anglebracket'>&gt;</span>
+    <span class='keyword'>auto</span> uses_allocator_construction_args<span class='parenthesis'>(</span><span class='keyword'>const</span> Alloc<span class='operator'>&amp;</span> alloc<span class='parenthesis'>)</span> <span class='operator'>-</span><span class='anglebracket'>&gt;</span> <span class='textit'><span class='texttt'>see below</span></span>;
+  <span class='keyword'>template</span> <span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> Alloc, <span class='keyword'>class</span> U, <span class='keyword'>class</span> V<span class='anglebracket'>&gt;</span>
+    <span class='keyword'>auto</span> uses_allocator_construction_args<span class='parenthesis'>(</span><span class='keyword'>const</span> Alloc<span class='operator'>&amp;</span> alloc, U<span class='operator'>&amp;</span><span class='operator'>&amp;</span> u, V<span class='operator'>&amp;</span><span class='operator'>&amp;</span> v<span class='parenthesis'>)</span> <span class='operator'>-</span><span class='anglebracket'>&gt;</span> <span class='textit'><span class='texttt'>see below</span></span>;
+  <span class='keyword'>template</span> <span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> Alloc, <span class='keyword'>class</span> U, <span class='keyword'>class</span> V<span class='anglebracket'>&gt;</span>
+    <span class='keyword'>auto</span> uses_allocator_construction_args<span class='parenthesis'>(</span><span class='keyword'>const</span> Alloc<span class='operator'>&amp;</span> alloc, <span class='keyword'>const</span> pair<span class='anglebracket'>&lt;</span>U,V<span class='anglebracket'>&gt;</span><span class='operator'>&amp;</span> pr<span class='parenthesis'>)</span> <span class='operator'>-</span><span class='anglebracket'>&gt;</span> <span class='textit'><span class='texttt'>see below</span></span>;
+  <span class='keyword'>template</span> <span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> Alloc, <span class='keyword'>class</span> U, <span class='keyword'>class</span> V<span class='anglebracket'>&gt;</span>
+    <span class='keyword'>auto</span> uses_allocator_construction_args<span class='parenthesis'>(</span><span class='keyword'>const</span> Alloc<span class='operator'>&amp;</span> alloc, pair<span class='anglebracket'>&lt;</span>U,V<span class='anglebracket'>&gt;</span><span class='operator'>&amp;</span><span class='operator'>&amp;</span> pr<span class='parenthesis'>)</span> <span class='operator'>-</span><span class='anglebracket'>&gt;</span> <span class='textit'><span class='texttt'>see below</span></span>;
+  <span class='keyword'>template</span> <span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> Alloc, <span class='keyword'>class</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span> Args<span class='anglebracket'>&gt;</span>
+    T make_obj_using_allocator<span class='parenthesis'>(</span><span class='keyword'>const</span> Alloc<span class='operator'>&amp;</span> alloc, Args<span class='operator'>&amp;</span><span class='operator'>&amp;</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span> args<span class='parenthesis'>)</span>;
+  <span class='keyword'>template</span> <span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> Alloc, <span class='keyword'>class</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span> Args<span class='anglebracket'>&gt;</span>
+    T<span class='operator'>*</span> uninitialized_construct_using_allocator<span class='parenthesis'>(</span>T<span class='operator'>*</span> p, <span class='keyword'>const</span> Alloc<span class='operator'>&amp;</span> alloc, Args<span class='operator'>&amp;</span><span class='operator'>&amp;</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span> args<span class='parenthesis'>)</span>;
+
+  <span class='comment'>// [allocator.traits], allocator traits
+</span>  template&lt;class Alloc&gt; struct allocator_traits; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// [default.allocator], the default allocator
+</span>  template&lt;class T&gt; class allocator;
+  template&lt;class T, class U&gt;
+    bool operator==(const allocator&lt;T&gt;&amp;, const allocator&lt;U&gt;&amp;) noexcept;
+  template&lt;class T, class U&gt;
+    bool operator!=(const allocator&lt;T&gt;&amp;, const allocator&lt;U&gt;&amp;) noexcept;
+
+  <span class='comment'>// [specialized.algorithms], specialized algorithms</span>
+  <span class='comment' style='font-style:italic;font-family:serif;'>// [special.mem.concepts], special memory concepts</span>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> I<span class='anglebracket'>&gt;</span>
+    <span class='keyword'>concept</span> <span class='textit'>no-throw-input-iterator</span> <span class='operator'>=</span> <span class='textit'><span class='texttt'>see below</span></span>;    <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='textit'>exposition only</span></span>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> I<span class='anglebracket'>&gt;</span>
+    <span class='keyword'>concept</span> <span class='textit'>no-throw-forward-iterator</span> <span class='operator'>=</span> <span class='textit'><span class='texttt'>see below</span></span>;  <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='textit'>exposition only</span></span>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> S, <span class='keyword'>class</span> I<span class='anglebracket'>&gt;</span>
+    <span class='keyword'>concept</span> <span class='textit'>no-throw-sentinel</span> <span class='operator'>=</span> <span class='textit'><span class='texttt'>see below</span></span>;          <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='textit'>exposition only</span></span>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> R<span class='anglebracket'>&gt;</span>
+    <span class='keyword'>concept</span> <span class='textit'>no-throw-input-range</span> <span class='operator'>=</span> <span class='textit'><span class='texttt'>see below</span></span>;       <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='textit'>exposition only</span></span>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> R<span class='anglebracket'>&gt;</span>
+    <span class='keyword'>concept</span> <span class='textit'>no-throw-forward-range</span> <span class='operator'>=</span> <span class='textit'><span class='texttt'>see below</span></span>;     <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='textit'>exposition only</span></span>
+
+  template&lt;class T&gt;
+    constexpr T* addressof(T&amp; r) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt;
+    const T* addressof(const T&amp;&amp;) = delete; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ForwardIterator&gt;
+    void uninitialized_default_construct(ForwardIterator first, ForwardIterator last); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class ForwardIterator&gt;
+    void uninitialized_default_construct(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see [algorithms.parallel.overloads]
+</span>                                         ForwardIterator first, ForwardIterator last);
+  template&lt;class ForwardIterator, class Size&gt;
+    ForwardIterator uninitialized_default_construct_n(ForwardIterator first, Size n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class ForwardIterator, class Size&gt;
+    ForwardIterator uninitialized_default_construct_n(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see [algorithms.parallel.overloads]
+</span>                                                      ForwardIterator first, Size n);
+
+  <span class='keyword'>namespace</span> ranges <span class='curlybracket'>{</span>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='textit'>no-throw-forward-iterator</span> I, <span class='textit'>no-throw-sentinel</span><span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span> S<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> DefaultConstructible<span class='anglebracket'>&lt;</span>iter_value_t<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>
+        I uninitialized_default_construct<span class='parenthesis'>(</span>I first, S last<span class='parenthesis'>)</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='textit'>no-throw-forward-range</span> R<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> DefaultConstructible<span class='anglebracket'>&lt;</span>iter_value_t<span class='anglebracket'>&lt;</span>iterator_t<span class='anglebracket'>&lt;</span>R<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>
+        safe_iterator_t<span class='anglebracket'>&lt;</span>R<span class='anglebracket'>&gt;</span> uninitialized_default_construct<span class='parenthesis'>(</span>R<span class='operator'>&amp;</span><span class='operator'>&amp;</span> r<span class='parenthesis'>)</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='textit'>no-throw-forward-iterator</span> I<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> DefaultConstructible<span class='anglebracket'>&lt;</span>iter_value_t<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>
+        I uninitialized_default_construct_n<span class='parenthesis'>(</span>I first, iter_difference_t<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span> n<span class='parenthesis'>)</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  <span class='curlybracket'>}</span>
+
+  template&lt;class ForwardIterator&gt;
+    void uninitialized_value_construct(ForwardIterator first, ForwardIterator last);  <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class ForwardIterator&gt;
+    void uninitialized_value_construct(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see [algorithms.parallel.overloads]
+</span>                                       ForwardIterator first, ForwardIterator last);
+  template&lt;class ForwardIterator, class Size&gt;
+    ForwardIterator uninitialized_value_construct_n(ForwardIterator first, Size n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class ForwardIterator, class Size&gt;
+    ForwardIterator uninitialized_value_construct_n(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see [algorithms.parallel.overloads]
+</span>                                                    ForwardIterator first, Size n);
+
+  <span class='keyword'>namespace</span> ranges <span class='curlybracket'>{</span>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='textit'>no-throw-forward-iterator</span> I, <span class='textit'>no-throw-sentinel</span><span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span> S<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> DefaultConstructible<span class='anglebracket'>&lt;</span>iter_value_t<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>
+        I uninitialized_value_construct<span class='parenthesis'>(</span>I first, S last<span class='parenthesis'>)</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='textit'>no-throw-forward-range</span> R<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> DefaultConstructible<span class='anglebracket'>&lt;</span>iter_value_t<span class='anglebracket'>&lt;</span>iterator_t<span class='anglebracket'>&lt;</span>R<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>
+        safe_iterator_t<span class='anglebracket'>&lt;</span>R<span class='anglebracket'>&gt;</span> uninitialized_value_construct<span class='parenthesis'>(</span>R<span class='operator'>&amp;</span><span class='operator'>&amp;</span> r<span class='parenthesis'>)</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='textit'>no-throw-forward-iterator</span> I<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> DefaultConstructible<span class='anglebracket'>&lt;</span>iter_value_t<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>
+        I uninitialized_value_construct_n<span class='parenthesis'>(</span>I first, iter_difference_t<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span> n<span class='parenthesis'>)</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  <span class='curlybracket'>}</span>
+
+  template&lt;class InputIterator, class ForwardIterator&gt;
+    ForwardIterator uninitialized_copy(InputIterator first, InputIterator last,
+                                       ForwardIterator result); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class InputIterator, class ForwardIterator&gt;
+    ForwardIterator uninitialized_copy(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see [algorithms.parallel.overloads]
+</span>                                       InputIterator first, InputIterator last,
+                                       ForwardIterator result);
+  template&lt;class InputIterator, class Size, class ForwardIterator&gt;
+    ForwardIterator uninitialized_copy_n(InputIterator first, Size n,
+                                         ForwardIterator result); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class InputIterator, class Size, class ForwardIterator&gt;
+    ForwardIterator uninitialized_copy_n(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see [algorithms.parallel.overloads]
+</span>                                         InputIterator first, Size n,
+                                         ForwardIterator result);
+
+  <span class='keyword'>namespace</span> ranges <span class='curlybracket'>{</span>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> I, <span class='keyword'>class</span> O<span class='anglebracket'>&gt;</span>
+    <span class='keyword'>using</span> uninitialized_copy_result <span class='operator'>=</span> copy_result<span class='anglebracket'>&lt;</span>I, O<span class='anglebracket'>&gt;</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span>InputIterator I, Sentinel<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span> S1,
+             <span class='textit'>no-throw-forward-iterator</span> O, <span class='textit'>no-throw-sentinel</span><span class='anglebracket'>&lt;</span>O<span class='anglebracket'>&gt;</span> S2<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> Constructible<span class='anglebracket'>&lt;</span>iter_value_t<span class='anglebracket'>&lt;</span>O<span class='anglebracket'>&gt;</span>, iter_reference_t<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>
+        uninitialized_copy_result<span class='anglebracket'>&lt;</span>I, O<span class='anglebracket'>&gt;</span>
+          uninitialized_copy<span class='parenthesis'>(</span>I ifirst, S1 ilast, O ofirst, S2 olast<span class='parenthesis'>)</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span>InputRange IR, <span class='textit'>no-throw-forward-range</span> OR<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> Constructible<span class='anglebracket'>&lt;</span>iter_value_t<span class='anglebracket'>&lt;</span>iterator_t<span class='anglebracket'>&lt;</span>OR<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>, iter_reference_t<span class='anglebracket'>&lt;</span>iterator_t<span class='anglebracket'>&lt;</span>IR<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>
+        uninitialized_copy_result<span class='anglebracket'>&lt;</span>safe_iterator_t<span class='anglebracket'>&lt;</span>IR<span class='anglebracket'>&gt;</span>, safe_iterator_t<span class='anglebracket'>&lt;</span>OR<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>
+          uninitialized_copy<span class='parenthesis'>(</span>IR<span class='operator'>&amp;</span><span class='operator'>&amp;</span> input_range, OR<span class='operator'>&amp;</span><span class='operator'>&amp;</span> output_range<span class='parenthesis'>)</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> I, <span class='keyword'>class</span> O<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>using</span> uninitialized_copy_n_result <span class='operator'>=</span> uninitialized_copy_result<span class='anglebracket'>&lt;</span>I, O<span class='anglebracket'>&gt;</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span>InputIterator I, <span class='textit'>no-throw-forward-iterator</span> O, <span class='textit'>no-throw-sentinel</span><span class='anglebracket'>&lt;</span>O<span class='anglebracket'>&gt;</span> S<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> Constructible<span class='anglebracket'>&lt;</span>iter_value_t<span class='anglebracket'>&lt;</span>O<span class='anglebracket'>&gt;</span>, iter_reference_t<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>
+        uninitialized_copy_n_result<span class='anglebracket'>&lt;</span>I, O<span class='anglebracket'>&gt;</span>
+          uninitialized_copy_n<span class='parenthesis'>(</span>I ifirst, iter_difference_t<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span> n, O ofirst, S olast<span class='parenthesis'>)</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  <span class='curlybracket'>}</span>
+
+  template&lt;class InputIterator, class ForwardIterator&gt;
+    ForwardIterator uninitialized_move(InputIterator first, InputIterator last,
+                                       ForwardIterator result); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class InputIterator, class ForwardIterator&gt;
+    ForwardIterator uninitialized_move(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see [algorithms.parallel.overloads]
+</span>                                       InputIterator first, InputIterator last,
+                                       ForwardIterator result);
+  template&lt;class InputIterator, class Size, class ForwardIterator&gt;
+    pair&lt;InputIterator, ForwardIterator&gt; uninitialized_move_n(InputIterator first, Size n,
+                                                              ForwardIterator result); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class InputIterator, class Size, class ForwardIterator&gt;
+    pair&lt;InputIterator, ForwardIterator&gt; uninitialized_move_n(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see [algorithms.parallel.overloads]
+</span>                                                              InputIterator first, Size n,
+                                                              ForwardIterator result);
+
+  <span class='keyword'>namespace</span> ranges <span class='curlybracket'>{</span>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> I, <span class='keyword'>class</span> O<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>using</span> uninitialized_move_result <span class='operator'>=</span> uninitialized_copy_result<span class='anglebracket'>&lt;</span>I, O<span class='anglebracket'>&gt;</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span>InputIterator I, Sentinel<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span> S1,
+             <span class='textit'>no-throw-forward-iterator</span> O, <span class='textit'>no-throw-sentinel</span><span class='anglebracket'>&lt;</span>O<span class='anglebracket'>&gt;</span> S2<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> Constructible<span class='anglebracket'>&lt;</span>iter_value_t<span class='anglebracket'>&lt;</span>O<span class='anglebracket'>&gt;</span>, iter_rvalue_reference_t<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>
+        uninitialized_move_result<span class='anglebracket'>&lt;</span>I, O<span class='anglebracket'>&gt;</span>
+          uninitialized_move<span class='parenthesis'>(</span>I ifirst, S1 ilast, O ofirst, S2 olast<span class='parenthesis'>)</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span>InputRange IR, <span class='textit'>no-throw-forward-range</span> OR<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> Constructible<span class='anglebracket'>&lt;</span>iter_value_t<span class='anglebracket'>&lt;</span>iterator_t<span class='anglebracket'>&lt;</span>OR<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>,
+                             iter_rvalue_reference_t<span class='anglebracket'>&lt;</span>iterator_t<span class='anglebracket'>&lt;</span>IR<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>
+        uninitialized_move_result<span class='anglebracket'>&lt;</span>safe_iterator_t<span class='anglebracket'>&lt;</span>IR<span class='anglebracket'>&gt;</span>, safe_iterator_t<span class='anglebracket'>&lt;</span>OR<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>
+          uninitialized_move<span class='parenthesis'>(</span>IR<span class='operator'>&amp;</span><span class='operator'>&amp;</span> input_range, OR<span class='operator'>&amp;</span><span class='operator'>&amp;</span> output_range<span class='parenthesis'>)</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> I, <span class='keyword'>class</span> O<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>using</span> uninitialized_move_n_result <span class='operator'>=</span> uninitialized_copy_result<span class='anglebracket'>&lt;</span>I, O<span class='anglebracket'>&gt;</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span>InputIterator I,
+             <span class='textit'>no-throw-forward-iterator</span> O, <span class='textit'>no-throw-sentinel</span><span class='anglebracket'>&lt;</span>O<span class='anglebracket'>&gt;</span> S<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> Constructible<span class='anglebracket'>&lt;</span>iter_value_t<span class='anglebracket'>&lt;</span>O<span class='anglebracket'>&gt;</span>, iter_rvalue_reference_t<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>
+        uninitialized_move_n_result<span class='anglebracket'>&lt;</span>I, O<span class='anglebracket'>&gt;</span>
+          uninitialized_move_n<span class='parenthesis'>(</span>I ifirst, iter_difference_t<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span> n, O ofirst, S olast<span class='parenthesis'>)</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  <span class='curlybracket'>}</span>
+
+  template&lt;class ForwardIterator, class T&gt;
+    void uninitialized_fill(ForwardIterator first, ForwardIterator last, const T&amp; x); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class ForwardIterator, class T&gt;
+    void uninitialized_fill(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see [algorithms.parallel.overloads]
+</span>                            ForwardIterator first, ForwardIterator last, const T&amp; x);
+  template&lt;class ForwardIterator, class Size, class T&gt;
+    ForwardIterator uninitialized_fill_n(ForwardIterator first, Size n, const T&amp; x); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class ForwardIterator, class Size, class T&gt;
+    ForwardIterator uninitialized_fill_n(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see [algorithms.parallel.overloads]
+</span>                                         ForwardIterator first, Size n, const T&amp; x);
+
+  <span class='keyword'>namespace</span> ranges <span class='curlybracket'>{</span>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='textit'>no-throw-forward-iterator</span> I, <span class='textit'>no-throw-sentinel</span><span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span> S, <span class='keyword'>class</span> T<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> Constructible<span class='anglebracket'>&lt;</span>iter_value_t<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span>, <span class='keyword'>const</span> T<span class='operator'>&amp;</span><span class='anglebracket'>&gt;</span>
+        I uninitialized_fill<span class='parenthesis'>(</span>I first, S last, <span class='keyword'>const</span> T<span class='operator'>&amp;</span> x<span class='parenthesis'>)</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='textit'>no-throw-forward-range</span> R, <span class='keyword'>class</span> T<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> Constructible<span class='anglebracket'>&lt;</span>iter_value_t<span class='anglebracket'>&lt;</span>iterator_t<span class='anglebracket'>&lt;</span>R<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>, <span class='keyword'>const</span> T<span class='operator'>&amp;</span><span class='anglebracket'>&gt;</span>
+        safe_iterator_t<span class='anglebracket'>&lt;</span>R<span class='anglebracket'>&gt;</span> uninitialized_fill<span class='parenthesis'>(</span>R<span class='operator'>&amp;</span><span class='operator'>&amp;</span> r, <span class='keyword'>const</span> T<span class='operator'>&amp;</span> x<span class='parenthesis'>)</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='textit'>no-throw-forward-iterator</span> I, <span class='keyword'>class</span> T<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> Constructible<span class='anglebracket'>&lt;</span>iter_value_t<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span>, <span class='keyword'>const</span> T<span class='operator'>&amp;</span><span class='anglebracket'>&gt;</span>
+        I uninitialized_fill_n<span class='parenthesis'>(</span>I first, iter_difference_t<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span> n, <span class='keyword'>const</span> T<span class='operator'>&amp;</span> x<span class='parenthesis'>)</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  <span class='curlybracket'>}</span>
+
+  template&lt;class T&gt;
+    void destroy_at(T* location); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ForwardIterator&gt;
+    void destroy(ForwardIterator first, ForwardIterator last); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class ForwardIterator&gt;
+    void destroy(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see [algorithms.parallel.overloads]
+</span>                 ForwardIterator first, ForwardIterator last);
+  template&lt;class ForwardIterator, class Size&gt;
+    ForwardIterator destroy_n(ForwardIterator first, Size n); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class ExecutionPolicy, class ForwardIterator, class Size&gt;
+    ForwardIterator destroy_n(ExecutionPolicy&amp;&amp; exec, <span class='comment'>// see [algorithms.parallel.overloads]
+</span>                              ForwardIterator first, Size n);
+
+  <span class='keyword'>namespace</span> ranges <span class='curlybracket'>{</span>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span>Destructible T<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>void</span> destroy_at<span class='parenthesis'>(</span>T<span class='operator'>*</span> location<span class='parenthesis'>)</span> <span class='keyword'>noexcept</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='textit'>no-throw-input-iterator</span> I, <span class='textit'>no-throw-sentinel</span><span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span> S<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> Destructible<span class='anglebracket'>&lt;</span>iter_value_t<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>
+        I destroy<span class='parenthesis'>(</span>I first, S last<span class='parenthesis'>)</span> <span class='keyword'>noexcept</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='textit'>no-throw-input-range</span> R<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> Destructible<span class='anglebracket'>&lt;</span>iter_value_t<span class='anglebracket'>&lt;</span>iterator_t<span class='anglebracket'>&lt;</span>R<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>
+        safe_iterator_t<span class='anglebracket'>&lt;</span>R<span class='anglebracket'>&gt;</span> destroy<span class='parenthesis'>(</span>R<span class='operator'>&amp;</span><span class='operator'>&amp;</span> r<span class='parenthesis'>)</span> <span class='keyword'>noexcept</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+    <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='textit'>no-throw-input-iterator</span> I<span class='anglebracket'>&gt;</span>
+      <span class='keyword'>requires</span> Destructible<span class='anglebracket'>&lt;</span>iter_value_t<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span>
+        I destroy_n<span class='parenthesis'>(</span>I first, iter_difference_t<span class='anglebracket'>&lt;</span>I<span class='anglebracket'>&gt;</span> n<span class='parenthesis'>)</span> <span class='keyword'>noexcept</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  <span class='curlybracket'>}</span>
+
+  <span class='comment'>// [unique.ptr], class template <span class='tcode_in_codeblock'>unique_&shy;ptr</span>
+</span>  template&lt;class T&gt; struct default_delete; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; struct default_delete&lt;T[]&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class D = default_delete&lt;T&gt;&gt; class unique_ptr; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class D&gt; class unique_ptr&lt;T[], D&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span> Args<span class='anglebracket'>&gt;</span>
+    unique_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> make_unique<span class='parenthesis'>(</span>Args<span class='operator'>&amp;</span><span class='operator'>&amp;</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span> args<span class='parenthesis'>)</span>;                                  <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is not array</span>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T<span class='anglebracket'>&gt;</span>
+    unique_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> make_unique<span class='parenthesis'>(</span>size_t n<span class='parenthesis'>)</span>;                                        <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[]</span></span>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span> Args<span class='anglebracket'>&gt;</span>
+    <span class='textit'><span class='texttt'>unspecified</span></span> make_unique<span class='parenthesis'>(</span>Args<span class='operator'>&amp;</span><span class='operator'>&amp;</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span><span class='parenthesis'>)</span> <span class='operator'>=</span> <span class='keyword'>delete</span>;                                <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[N]</span></span>
+
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T<span class='anglebracket'>&gt;</span>
+    unique_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> make_unique_default_init<span class='parenthesis'>(</span><span class='parenthesis'>)</span>;                                   <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is not array</span>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T<span class='anglebracket'>&gt;</span>
+    unique_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> make_unique_default_init<span class='parenthesis'>(</span>size_t n<span class='parenthesis'>)</span>;                           <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[]</span></span>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span> Args<span class='anglebracket'>&gt;</span>
+    <span class='textit'><span class='texttt'>unspecified</span></span> make_unique_default_init<span class='parenthesis'>(</span>Args<span class='operator'>&amp;</span><span class='operator'>&amp;</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span><span class='parenthesis'>)</span> <span class='operator'>=</span> <span class='keyword'>delete</span>;                   <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[N]</span></span>
+
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    void swap(unique_ptr&lt;T, D&gt;&amp; x, unique_ptr&lt;T, D&gt;&amp; y) noexcept;
+
+  template&lt;class T1, class D1, class T2, class D2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    bool operator==(const unique_ptr&lt;T1, D1&gt;&amp; x, const unique_ptr&lt;T2, D2&gt;&amp; y);
+  template&lt;class T1, class D1, class T2, class D2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    bool operator!=(const unique_ptr&lt;T1, D1&gt;&amp; x, const unique_ptr&lt;T2, D2&gt;&amp; y);
+  template&lt;class T1, class D1, class T2, class D2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    bool operator&lt;(const unique_ptr&lt;T1, D1&gt;&amp; x, const unique_ptr&lt;T2, D2&gt;&amp; y);
+  template&lt;class T1, class D1, class T2, class D2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    bool operator&gt;(const unique_ptr&lt;T1, D1&gt;&amp; x, const unique_ptr&lt;T2, D2&gt;&amp; y);
+  template&lt;class T1, class D1, class T2, class D2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    bool operator&lt;=(const unique_ptr&lt;T1, D1&gt;&amp; x, const unique_ptr&lt;T2, D2&gt;&amp; y);
+  template&lt;class T1, class D1, class T2, class D2&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    bool operator&gt;=(const unique_ptr&lt;T1, D1&gt;&amp; x, const unique_ptr&lt;T2, D2&gt;&amp; y);
+
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    bool operator==(const unique_ptr&lt;T, D&gt;&amp; x, nullptr_t) noexcept;
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    bool operator==(nullptr_t, const unique_ptr&lt;T, D&gt;&amp; y) noexcept;
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    bool operator!=(const unique_ptr&lt;T, D&gt;&amp; x, nullptr_t) noexcept;
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    bool operator!=(nullptr_t, const unique_ptr&lt;T, D&gt;&amp; y) noexcept;
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    bool operator&lt;(const unique_ptr&lt;T, D&gt;&amp; x, nullptr_t);
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    bool operator&lt;(nullptr_t, const unique_ptr&lt;T, D&gt;&amp; y);
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    bool operator&gt;(const unique_ptr&lt;T, D&gt;&amp; x, nullptr_t);
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    bool operator&gt;(nullptr_t, const unique_ptr&lt;T, D&gt;&amp; y);
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    bool operator&lt;=(const unique_ptr&lt;T, D&gt;&amp; x, nullptr_t);
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    bool operator&lt;=(nullptr_t, const unique_ptr&lt;T, D&gt;&amp; y);
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    bool operator&gt;=(const unique_ptr&lt;T, D&gt;&amp; x, nullptr_t);
+  template&lt;class T, class D&gt; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    bool operator&gt;=(nullptr_t, const unique_ptr&lt;T, D&gt;&amp; y);
+
+  template&lt;class E, class T, class Y, class D&gt;
+    basic_ostream&lt;E, T&gt;&amp; operator&lt;&lt;(basic_ostream&lt;E, T&gt;&amp; os, const unique_ptr&lt;Y, D&gt;&amp; p);
+
+  <span class='comment'>// [util.smartptr.weak.bad], class <span class='tcode_in_codeblock'>bad_&shy;weak_&shy;ptr</span>
+</span>  class bad_weak_ptr;
+
+  <span class='comment'>// [util.smartptr.shared], class template <span class='tcode_in_codeblock'>shared_&shy;ptr</span>
+</span>  template&lt;class T&gt; class shared_ptr;
+
+  <span class='comment'>// [util.smartptr.shared.create], <span class='tcode_in_codeblock'>shared_&shy;ptr</span> creation</span>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span> Args<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> make_shared<span class='parenthesis'>(</span>Args<span class='operator'>&amp;</span><span class='operator'>&amp;</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span> args<span class='parenthesis'>)</span>;                                  <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is not array</span>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> A, <span class='keyword'>class</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span> Args<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> allocate_shared<span class='parenthesis'>(</span><span class='keyword'>const</span> A<span class='operator'>&amp;</span> a, Args<span class='operator'>&amp;</span><span class='operator'>&amp;</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span> args<span class='parenthesis'>)</span>;                  <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is not array</span>
+
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> make_shared<span class='parenthesis'>(</span>size_t N<span class='parenthesis'>)</span>;                                        <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[]</span></span>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> A<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> allocate_shared<span class='parenthesis'>(</span><span class='keyword'>const</span> A<span class='operator'>&amp;</span> a, size_t N<span class='parenthesis'>)</span>;                        <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[]</span></span>
+
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> make_shared<span class='parenthesis'>(</span><span class='parenthesis'>)</span>;                                                <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[N]</span></span>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> A<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> allocate_shared<span class='parenthesis'>(</span><span class='keyword'>const</span> A<span class='operator'>&amp;</span> a<span class='parenthesis'>)</span>;                                  <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[N]</span></span>
+
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> make_shared<span class='parenthesis'>(</span>size_t N, <span class='keyword'>const</span> remove_extent_t<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span><span class='operator'>&amp;</span> u<span class='parenthesis'>)</span>;           <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[]</span></span>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> A<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> allocate_shared<span class='parenthesis'>(</span><span class='keyword'>const</span> A<span class='operator'>&amp;</span> a, size_t N,
+                                  <span class='keyword'>const</span> remove_extent_t<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span><span class='operator'>&amp;</span> u<span class='parenthesis'>)</span>;                 <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[]</span></span>
+
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> make_shared<span class='parenthesis'>(</span><span class='keyword'>const</span> remove_extent_t<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span><span class='operator'>&amp;</span> u<span class='parenthesis'>)</span>;                     <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[N]</span></span>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> A<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> allocate_shared<span class='parenthesis'>(</span><span class='keyword'>const</span> A<span class='operator'>&amp;</span> a, <span class='keyword'>const</span> remove_extent_t<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span><span class='operator'>&amp;</span> u<span class='parenthesis'>)</span>;     <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[N]</span></span>
+
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> make_shared_default_init<span class='parenthesis'>(</span><span class='parenthesis'>)</span>;                                   <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is not <span class='tcode_in_codeblock'>U[]</span></span>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> A<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> allocate_shared_default_init<span class='parenthesis'>(</span><span class='keyword'>const</span> A<span class='operator'>&amp;</span> a<span class='parenthesis'>)</span>;                     <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is not <span class='tcode_in_codeblock'>U[]</span></span>
+
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> make_shared_default_init<span class='parenthesis'>(</span>size_t N<span class='parenthesis'>)</span>;                           <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[]</span></span>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> A<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> allocate_shared_default_init<span class='parenthesis'>(</span><span class='keyword'>const</span> A<span class='operator'>&amp;</span> a, size_t N<span class='parenthesis'>)</span>;           <span class='comment' style='font-style:italic;font-family:serif;'>// <span class='tcode_in_codeblock'>T</span> is <span class='tcode_in_codeblock'>U[]</span></span>
+
+  <span class='comment'>// [util.smartptr.shared.cmp], <span class='tcode_in_codeblock'>shared_&shy;ptr</span> comparisons
+</span>  template&lt;class T, class U&gt;
+    bool operator==(const shared_ptr&lt;T&gt;&amp; a, const shared_ptr&lt;U&gt;&amp; b) noexcept;
+  template&lt;class T, class U&gt;
+    bool operator!=(const shared_ptr&lt;T&gt;&amp; a, const shared_ptr&lt;U&gt;&amp; b) noexcept;
+  template&lt;class T, class U&gt;
+    bool operator&lt;(const shared_ptr&lt;T&gt;&amp; a, const shared_ptr&lt;U&gt;&amp; b) noexcept;
+  template&lt;class T, class U&gt;
+    bool operator&gt;(const shared_ptr&lt;T&gt;&amp; a, const shared_ptr&lt;U&gt;&amp; b) noexcept;
+  template&lt;class T, class U&gt;
+    bool operator&lt;=(const shared_ptr&lt;T&gt;&amp; a, const shared_ptr&lt;U&gt;&amp; b) noexcept;
+  template&lt;class T, class U&gt;
+    bool operator&gt;=(const shared_ptr&lt;T&gt;&amp; a, const shared_ptr&lt;U&gt;&amp; b) noexcept;
+
+  template&lt;class T&gt;
+    bool operator==(const shared_ptr&lt;T&gt;&amp; x, nullptr_t) noexcept;
+  template&lt;class T&gt;
+    bool operator==(nullptr_t, const shared_ptr&lt;T&gt;&amp; y) noexcept;
+  template&lt;class T&gt;
+    bool operator!=(const shared_ptr&lt;T&gt;&amp; x, nullptr_t) noexcept;
+  template&lt;class T&gt;
+    bool operator!=(nullptr_t, const shared_ptr&lt;T&gt;&amp; y) noexcept;
+  template&lt;class T&gt;
+    bool operator&lt;(const shared_ptr&lt;T&gt;&amp; x, nullptr_t) noexcept;
+  template&lt;class T&gt;
+    bool operator&lt;(nullptr_t, const shared_ptr&lt;T&gt;&amp; y) noexcept;
+  template&lt;class T&gt;
+    bool operator&lt;=(const shared_ptr&lt;T&gt;&amp; x, nullptr_t) noexcept;
+  template&lt;class T&gt;
+    bool operator&lt;=(nullptr_t, const shared_ptr&lt;T&gt;&amp; y) noexcept;
+  template&lt;class T&gt;
+    bool operator&gt;(const shared_ptr&lt;T&gt;&amp; x, nullptr_t) noexcept;
+  template&lt;class T&gt;
+    bool operator&gt;(nullptr_t, const shared_ptr&lt;T&gt;&amp; y) noexcept;
+  template&lt;class T&gt;
+    bool operator&gt;=(const shared_ptr&lt;T&gt;&amp; x, nullptr_t) noexcept;
+  template&lt;class T&gt;
+    bool operator&gt;=(nullptr_t, const shared_ptr&lt;T&gt;&amp; y) noexcept;
+
+  <span class='comment'>// [util.smartptr.shared.spec], <span class='tcode_in_codeblock'>shared_&shy;ptr</span> specialized algorithms
+</span>  template&lt;class T&gt;
+    void swap(shared_ptr&lt;T&gt;&amp; a, shared_ptr&lt;T&gt;&amp; b) noexcept;
+
+  <span class='comment'>// [util.smartptr.shared.cast], <span class='tcode_in_codeblock'>shared_&shy;ptr</span> casts</span>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> U<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> static_pointer_cast<span class='parenthesis'>(</span><span class='keyword'>const</span> shared_ptr<span class='anglebracket'>&lt;</span>U<span class='anglebracket'>&gt;</span><span class='operator'>&amp;</span> r<span class='parenthesis'>)</span> <span class='keyword'>noexcept</span>;
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> U<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> static_pointer_cast<span class='parenthesis'>(</span>shared_ptr<span class='anglebracket'>&lt;</span>U<span class='anglebracket'>&gt;</span><span class='operator'>&amp;</span><span class='operator'>&amp;</span> r<span class='parenthesis'>)</span> <span class='keyword'>noexcept</span>;
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> U<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> dynamic_pointer_cast<span class='parenthesis'>(</span><span class='keyword'>const</span> shared_ptr<span class='anglebracket'>&lt;</span>U<span class='anglebracket'>&gt;</span><span class='operator'>&amp;</span> r<span class='parenthesis'>)</span> <span class='keyword'>noexcept</span>;
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> U<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> dynamic_pointer_cast<span class='parenthesis'>(</span>shared_ptr<span class='anglebracket'>&lt;</span>U<span class='anglebracket'>&gt;</span><span class='operator'>&amp;</span><span class='operator'>&amp;</span> r<span class='parenthesis'>)</span> <span class='keyword'>noexcept</span>;
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> U<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> const_pointer_cast<span class='parenthesis'>(</span><span class='keyword'>const</span> shared_ptr<span class='anglebracket'>&lt;</span>U<span class='anglebracket'>&gt;</span><span class='operator'>&amp;</span> r<span class='parenthesis'>)</span> <span class='keyword'>noexcept</span>;
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> U<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> const_pointer_cast<span class='parenthesis'>(</span>shared_ptr<span class='anglebracket'>&lt;</span>U<span class='anglebracket'>&gt;</span><span class='operator'>&amp;</span><span class='operator'>&amp;</span> r<span class='parenthesis'>)</span> <span class='keyword'>noexcept</span>;
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> U<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> reinterpret_pointer_cast<span class='parenthesis'>(</span><span class='keyword'>const</span> shared_ptr<span class='anglebracket'>&lt;</span>U<span class='anglebracket'>&gt;</span><span class='operator'>&amp;</span> r<span class='parenthesis'>)</span> <span class='keyword'>noexcept</span>;
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T, <span class='keyword'>class</span> U<span class='anglebracket'>&gt;</span>
+    shared_ptr<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span> reinterpret_pointer_cast<span class='parenthesis'>(</span>shared_ptr<span class='anglebracket'>&lt;</span>U<span class='anglebracket'>&gt;</span><span class='operator'>&amp;</span><span class='operator'>&amp;</span> r<span class='parenthesis'>)</span> <span class='keyword'>noexcept</span>;
+
+  <span class='comment'>// [util.smartptr.getdeleter], <span class='tcode_in_codeblock'>shared_&shy;ptr</span> <span class='tcode_in_codeblock'>get_&shy;deleter</span>
+</span>  template&lt;class D, class T&gt;
+    D* get_deleter(const shared_ptr&lt;T&gt;&amp; p) noexcept;
+
+  <span class='comment'>// [util.smartptr.shared.io], <span class='tcode_in_codeblock'>shared_&shy;ptr</span> I/O
+</span>  template&lt;class E, class T, class Y&gt;
+    basic_ostream&lt;E, T&gt;&amp; operator&lt;&lt;(basic_ostream&lt;E, T&gt;&amp; os, const shared_ptr&lt;Y&gt;&amp; p);
+
+  <span class='comment'>// [util.smartptr.weak], class template <span class='tcode_in_codeblock'>weak_&shy;ptr</span>
+</span>  template&lt;class T&gt; class weak_ptr;
+
+  <span class='comment'>// [util.smartptr.weak.spec], <span class='tcode_in_codeblock'>weak_&shy;ptr</span> specialized algorithms
+</span>  template&lt;class T&gt; void swap(weak_ptr&lt;T&gt;&amp; a, weak_ptr&lt;T&gt;&amp; b) noexcept;
+
+  <span class='comment'>// [util.smartptr.ownerless], class template <span class='tcode_in_codeblock'>owner_&shy;less</span>
+</span>  template&lt;class T = void&gt; struct owner_less;
+
+  <span class='comment'>// [util.smartptr.enab], class template <span class='tcode_in_codeblock'>enable_&shy;shared_&shy;from_&shy;this</span>
+</span>  template&lt;class T&gt; class enable_shared_from_this;
+
+  <span class='comment'>// [util.smartptr.hash], hash support
+</span>  template&lt;class T&gt; struct hash; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T, class D&gt; struct hash&lt;unique_ptr&lt;T, D&gt;&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; struct hash&lt;shared_ptr&lt;T&gt;&gt;;
+
+  <span class='comment'>// [util.smartptr.atomic], atomic smart pointers
+</span>  template&lt;class T&gt; struct atomic; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; struct atomic&lt;shared_ptr&lt;T&gt;&gt;;
+  template&lt;class T&gt; struct atomic&lt;weak_ptr&lt;T&gt;&gt;;
+}</pre></div>
+</blockquote>
+
+Change in [functional.syn]:
+<blockquote class="std">
+<h3 ><a class='secnum' style='min-width:103pt'>?.?.?</a> Header <span class='texttt'>&lt;functional&gt;</span> synopsis <a class='abbr_ref'>[functional.syn]</a></h3>
+<pre class='codeblock'>
+namespace std {
+  <span class='comment'>// [func.invoke], invoke
+</span>  template&lt;class F, class... Args&gt;
+    invoke_result_t&lt;F, Args...&gt; invoke(F&amp;&amp; f, Args&amp;&amp;... args)
+      noexcept(is_nothrow_invocable_v&lt;F, Args...&gt;); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// [refwrap], <span class='tcode_in_codeblock'>reference_&shy;wrapper</span>
+</span>  template&lt;class T&gt; class reference_wrapper; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  template&lt;class T&gt; reference_wrapper&lt;T&gt; ref(T&amp;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; reference_wrapper&lt;const T&gt; cref(const T&amp;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; void ref(const T&amp;&amp;) = delete; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; void cref(const T&amp;&amp;) = delete; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  template&lt;class T&gt; reference_wrapper&lt;T&gt; ref(reference_wrapper&lt;T&gt;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; reference_wrapper&lt;const T&gt; cref(reference_wrapper&lt;T&gt;) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T<span class='anglebracket'>&gt;</span> <span class='keyword'>struct</span> unwrap_reference; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T<span class='anglebracket'>&gt;</span> <span class='keyword'>struct</span> unwrap_ref_decay <span class='operator'>:</span> unwrap_reference<span class='anglebracket'>&lt;</span>decay_t<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span><span class='anglebracket'>&gt;</span> <span class='curlybracket'>{</span><span class='curlybracket'>}</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  <span class='keyword'>template</span><span class='anglebracket'>&lt;</span><span class='keyword'>class</span> T<span class='anglebracket'>&gt;</span> <span class='keyword'>using</span> unwrap_ref_decay_t <span class='operator'>=</span> <span class='keyword'>typename</span> unwrap_ref_decay<span class='anglebracket'>&lt;</span>T<span class='anglebracket'>&gt;</span><span class='operator'>:</span><span class='operator'>:</span>type; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// [arithmetic.operations], arithmetic operations
+</span>  template&lt;class T = void&gt; struct plus; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct minus; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct multiplies; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct divides; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct modulus; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct negate; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct plus&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct minus&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct multiplies&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct divides&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct modulus&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct negate&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// [comparisons], comparisons
+</span>  template&lt;class T = void&gt; struct equal_to; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct not_equal_to; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct greater; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct less; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct greater_equal; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct less_equal; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct equal_to&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct not_equal_to&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct greater&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct less&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct greater_equal&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct less_equal&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// [logical.operations], logical operations
+</span>  template&lt;class T = void&gt; struct logical_and; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct logical_or; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct logical_not; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct logical_and&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct logical_or&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct logical_not&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// [bitwise.operations], bitwise operations
+</span>  template&lt;class T = void&gt; struct bit_and; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct bit_or; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct bit_xor; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T = void&gt; struct bit_not; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct bit_and&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct bit_or&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct bit_xor&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;&gt; struct bit_not&lt;void&gt;; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// [func.identity], identity
+</span>  struct identity; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// [func.not_fn], function template <span class='tcode_in_codeblock'>not_&shy;fn</span>
+</span>  template&lt;class F&gt; <span class='textit'><span class='texttt'>unspecified</span></span> not_fn(F&amp;&amp; f); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment' style='font-style:italic;font-family:serif;'>// [func.bind_front], function template <span class='tcode_in_codeblock'>bind_&shy;front</span></span>
+  <span class='keyword'>template</span> <span class='anglebracket'>&lt;</span><span class='keyword'>class</span> F, <span class='keyword'>class</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span> Args<span class='anglebracket'>&gt;</span> <span class='textit'><span class='texttt'>unspecified</span></span> bind_front<span class='parenthesis'>(</span>F<span class='operator'>&amp;</span><span class='operator'>&amp;</span>, Args<span class='operator'>&amp;</span><span class='operator'>&amp;</span><span class='operator'>.</span><span class='operator'>.</span><span class='operator'>.</span><span class='parenthesis'>)</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// [func.bind], bind
+</span>  template&lt;class T&gt; struct is_bind_expression; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt; struct is_placeholder; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  template&lt;class F, class... BoundArgs&gt;
+    <span class='textit'><span class='texttt'>unspecified</span></span> bind(F&amp;&amp;, BoundArgs&amp;&amp;...); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class R, class F, class... BoundArgs&gt;
+    <span class='textit'><span class='texttt'>unspecified</span></span> bind(F&amp;&amp;, BoundArgs&amp;&amp;...); <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  namespace placeholders {
+    <span class='comment'>// <span class='tcode_in_codeblock'><span class='textit'>M</span></span> is the <span class='indexparent'><a class='index'></a></span>implementation-defined number of placeholders
+</span>    <span class='textit'><span class='texttt'>see below</span></span> _1; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='textit'><span class='texttt'>see below</span></span> _2; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+               .
+               .
+               .
+    <span class='textit'><span class='texttt'>see below</span></span> _<span class='textit'>M</span>; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  }
+
+  <span class='comment'>// [func.memfn], member function adaptors
+</span>  template&lt;class R, class T&gt;
+    <span class='textit'><span class='texttt'>unspecified</span></span> mem_fn(R T::*) noexcept; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// [func.wrap], polymorphic function wrappers
+</span>  class bad_function_call;
+
+  template&lt;class&gt; class function; <span class='comment'>// not defined
+</span>  template&lt;class R, class... ArgTypes&gt; class function&lt;R(ArgTypes...)&gt;;
+
+  template&lt;class R, class... ArgTypes&gt;
+    void swap(function&lt;R(ArgTypes...)&gt;&amp;, function&lt;R(ArgTypes...)&gt;&amp;) noexcept;
+
+  template&lt;class R, class... ArgTypes&gt;
+    bool operator==(const function&lt;R(ArgTypes...)&gt;&amp;, nullptr_t) noexcept;
+  template&lt;class R, class... ArgTypes&gt;
+    bool operator==(nullptr_t, const function&lt;R(ArgTypes...)&gt;&amp;) noexcept;
+  template&lt;class R, class... ArgTypes&gt;
+    bool operator!=(const function&lt;R(ArgTypes...)&gt;&amp;, nullptr_t) noexcept;
+  template&lt;class R, class... ArgTypes&gt;
+    bool operator!=(nullptr_t, const function&lt;R(ArgTypes...)&gt;&amp;) noexcept;
+
+  <span class='comment'>// [func.search], searchers
+</span>  template&lt;class ForwardIterator, class BinaryPredicate = equal_to&lt;&gt;&gt;
+    class default_searcher; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  template&lt;class RandomAccessIterator,
+           class Hash = hash&lt;typename iterator_traits&lt;RandomAccessIterator&gt;::value_type&gt;,
+           class BinaryPredicate = equal_to&lt;&gt;&gt;
+    class boyer_moore_searcher;
+
+  template&lt;class RandomAccessIterator,
+           class Hash = hash&lt;typename iterator_traits&lt;RandomAccessIterator&gt;::value_type&gt;,
+           class BinaryPredicate = equal_to&lt;&gt;&gt;
+    class boyer_moore_horspool_searcher;
+
+  <span class='comment'>// [unord.hash], hash function primary template
+</span>  template&lt;class T&gt;
+    struct hash; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='comment'>// [func.bind], function object binders
+</span>  template&lt;class T&gt;
+    inline constexpr bool is_bind_expression_v = is_bind_expression&lt;T&gt;::value; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  template&lt;class T&gt;
+    inline constexpr int is_placeholder_v = is_placeholder&lt;T&gt;::value; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+
+  <span class='keyword'>namespace</span> ranges <span class='curlybracket'>{</span>
+    <span class='comment'>// [range.cmp], concept-constrained comparisons</span>
+    <span class='keyword'>struct</span> equal_to; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>struct</span> not_equal_to; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>struct</span> greater; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>struct</span> less; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>struct</span> greater_equal; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+    <span class='keyword'>struct</span> less_equal; <ins><span class='comment'>// <span class='textit'>freestanding</span></span></ins>
+  <span class='curlybracket'>}</span>
+}</pre>
+</blockquote>
+
+<h1>Acknowledgements</h1>
+<p>
+</p>
+</body>
+</html>
+
