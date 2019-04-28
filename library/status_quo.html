@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-<title>DxxxxR0.0: Freestanding Library: Rewording the Status Quo</title>
 <style type="text/css">
   ins, ins * { text-decoration:none; font-weight:bold; background-color:#A0FFA0 }
   del, del * { text-decoration:line-through; background-color:#FFA0A0 }
@@ -358,9 +357,10 @@ span.indented {
 }
 </style>
 
+<title>D1641R0.0: Freestanding Library: Rewording the Status Quo</title>
 <body>
 <h1>Freestanding Library: Rewording the Status Quo</h1>
-Document number: D0000R0.0<br/>
+Document number: D1641R0.0<br/>
 Date: 2019-04-05<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: SG14, Library Evolution Working Group
@@ -381,7 +381,9 @@ Many existing facilities in the C++ standard library could be used without troub
 </p><p>
 For a more in depth rationale, see P0829.
 </p><p>
-This paper is going to add blanket wording to make it easier to mark things freestanding, and it will retrofit the existing freestanding facilities.
+This paper is going to add blanket wording to make it easier to mark things freestanding, and it will retrofit the existing freestanding facilities.  It also includes a non-normative note that should allow implementers to use existing no-exception builds of their libraries as an implementation defined extensions, with a fair number of qualifications.  Here's that note, reproduced so that it can be debated more effectively:
+</p><p>
+<div class='note'>[ <span class='textit'>Note</span><span class='textit'>:</span> Throwing a standard library provided exception is not observably different from <span class='texttt'>terminate()</span> if the implementation doesn't unwind the stack during exception handling and the user's program contains no catch blocks. -<i>end note</i>]</div>
 </p><p>
 The one intentional design change in this paper is in the feature test macros.  A new feature test macro will be added, and the existing library feature test macros will be split into two tables: feature test macros available in freestanding environments and feature test macros available in hosted environments.
 </p>
@@ -481,14 +483,15 @@ Instructions to the editor:<br/>
 Please add a <span class='comment'>// <span class='textit'>freestanding</span></span> comment to the beginning of the following synopses.  These headers are entirely freestanding.
 <ul>
 <li><ins>[cstddef.syn]</ins></li>
-<li><ins>[cfloat.syn]</ins></li>
 <li><ins>[limits.syn]</ins></li>
 <li><ins>[climits.syn]</ins></li>
+<li><ins>[cfloat.syn]</ins></li>
 <li><ins>[cstdint.syn]</ins></li>
 <li><ins>[new.syn]</ins></li>
 <li><ins>[typeinfo.syn]</ins></li>
 <li><ins>[exception.syn]</ins></li>
-<li><ins>[initializer_list.syn]</ins></li>
+<li><ins>[initializer.list.syn]</ins></li>
+<li><ins>[coroutine.syn]</ins></li>
 <li><ins>[cstdarg.syn]</ins></li>
 <li><ins>[concepts.syn]</ins></li>
 <li><ins>[meta.type.synop]</ins></li>
