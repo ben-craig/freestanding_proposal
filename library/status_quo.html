@@ -357,14 +357,17 @@ span.indented {
 }
 </style>
 
-<title>P1641R0: Freestanding Library: Rewording the Status Quo</title>
+<title>D1641R1.0: Freestanding Library: Rewording the Status Quo</title>
 <body>
 <h1>Freestanding Library: Rewording the Status Quo</h1>
-Document number: P1641R0<br/>
-Date: 2019-06-02<br/>
+Document number: TODO<br/>
+Date: TODO<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: SG14, Library Evolution Working Group
 <h1>Change history</h1>
+<h3> R1 </h3>
+<p>
+</p>
 <h3> R0 </h3>
 <p>
 Branching from P0829R4.  This "omnibus" paper is still the direction I am aiming for.  However, it is too difficult to review.  It needs to change with almost every meeting.  Therefore, it is getting split up into smaller, more manageable chunks.
@@ -423,7 +426,7 @@ The pre-existing feature macros were not provided on freestanding / hosted bound
 </p>
 <h1>Wording</h1>
 <p>
-The following changes are relative to N4810 from the Post-Kona 2019 mailing.
+The following changes are relative to N4830 from the Post-Cologne 2019 mailing.
 </p>
 Add a new subclause [freestanding.membership], under [conventions] and after [objects.within.classes]:
 <blockquote class="stdins">
@@ -459,15 +462,25 @@ Change in [compliance] paragraph 3:
 <div class='para'>
 <del>
     <div class='sentence'>The supplied version of the header
-    <span class='texttt'>&lt;cstdlib&gt;</span>
+    <span class='texttt'><span class='anglebracket'>&lt;</span>cstdlib<span class='anglebracket'>&gt;</span></span>
     shall declare at least the functions
     <span class='texttt'>abort</span>,
     <span class='texttt'>atexit</span>,
     <span class='texttt'>at_&shy;quick_&shy;exit</span>,
     <span class='texttt'>exit</span>,
     and
-    <span class='texttt'>quick_&shy;exit</span> [support.start.term].</div>
-    <div class='sentence'>The other headers listed in this table shall meet the same requirements as for a hosted implementation.</div>
+    <span class='texttt'>quick_&shy;exit</span> ([support.start.term]).</div>
+  
+    <div class='sentence'>The supplied version of the header <span class='texttt'><span class='anglebracket'>&lt;</span>atomic<span class='anglebracket'>&gt;</span></span>
+    shall meet the same requirements as for a hosted implementation
+    except that support for
+    always lock-free integral atomic types ([atomics.lockfree])
+    is implementation-defined, and
+    whether or not the type aliases <span class='texttt'>atomic_&shy;signed_&shy;lock_&shy;free</span> and
+    <span class='texttt'>atomic_&shy;unsigned_&shy;lock_&shy;free</span> are defined ([atomics.alias])
+    is implementation-defined.</div>
+    <div class='sentence'>The other headers listed in this table
+    shall meet the same requirements as for a hosted implementation.</div>
 </del>
 
 <ins>
@@ -489,6 +502,7 @@ Please add a <span class='comment'>// <span class='textit'>freestanding</span></
 <li><ins>[cstdint.syn]</ins></li>
 <li><ins>[new.syn]</ins></li>
 <li><ins>[typeinfo.syn]</ins></li>
+<li><ins>[source_location.syn]</ins></li>
 <li><ins>[exception.syn]</ins></li>
 <li><ins>[initializer.list.syn]</ins></li>
 <li><ins>[coroutine.syn]</ins></li>
@@ -496,7 +510,6 @@ Please add a <span class='comment'>// <span class='textit'>freestanding</span></
 <li><ins>[concepts.syn]</ins></li>
 <li><ins>[meta.type.synop]</ins></li>
 <li><ins>[bit.syn]</ins></li>
-<li><ins>[atomics.syn]</ins></li>
 </ul>
 
 Change in [cstdlib.syn]:
@@ -622,14 +635,18 @@ Add a new paragraph to the end of [support.limits.general]:
 Split Table 36.<br/>
 The new Table ??36?? will be named <ins>Table ??36?? - Freestanding and hosted standard library feature-test macros</ins>.  Leave the following macros in Table ??36??.
 <ul>
+  <li><code>__cpp_lib_atomic_flag_test</code></li>
   <li><code>__cpp_lib_atomic_is_always_lock_free</code></li>
   <li><code>__cpp_lib_atomic_ref</code></li>
+  <li><code>__cpp_lib_atomic_wait</code></li>
   <li><code>__cpp_lib_bit_cast</code></li>
+  <li><code>__cpp_lib_bitops</code></li>
   <li><code>__cpp_lib_bool_constant</code></li>
   <li><code>__cpp_lib_bounded_array_traits</code></li>
   <li><code>__cpp_lib_byte</code></li>
   <li><code>__cpp_lib_char8_t</code></li>
   <li><code>__cpp_lib_concepts</code></li>
+  <li><code>__cpp_lib_endian</code></li>
   <li><code>__cpp_lib_hardware_interference_size</code></li>
   <li><code>__cpp_lib_has_unique_object_representations</code></li>
   <li><code>__cpp_lib_integral_constant_callable</code></li>
@@ -637,11 +654,14 @@ The new Table ??36?? will be named <ins>Table ??36?? - Freestanding and hosted s
   <li><code>__cpp_lib_is_constant_evaluated</code></li>
   <li><code>__cpp_lib_is_final</code></li>
   <li><code>__cpp_lib_is_invocable</code></li>
+  <li><code>__cpp_lib_is_layout_compatible</code></li>
   <li><code>__cpp_lib_is_null_pointer</code></li>
+  <li><code>__cpp_lib_is_pointer_interconvertible</code></li>
   <li><code>__cpp_lib_is_swappable</code></li>
   <li><code>__cpp_lib_launder</code></li>
   <li><code>__cpp_lib_logical_traits</code></li>
   <li><code>__cpp_lib_result_of_sfinae</code></li>
+  <li><code>__cpp_lib_source_location</code></li>
   <li><code>__cpp_lib_transformation_trait_aliases</code></li>
   <li><code>__cpp_lib_type_trait_variable_templates</code></li>
   <li><code>__cpp_lib_uncaught_exceptions</code></li>
@@ -656,34 +676,43 @@ The new Table ??37?? will be named <ins>Table ??37?? - Hosted standard library f
   <li><code>__cpp_lib_apply</code></li>
   <li><code>__cpp_lib_array_constexpr</code></li>
   <li><code>__cpp_lib_as_const</code></li>
+  <li><code>__cpp_lib_atomic_lock_free_type_aliases</code></li>
+  <li><code>__cpp_lib_barrier</code></li>
   <li><code>__cpp_lib_bind_front</code></li>
   <li><code>__cpp_lib_boyer_moore_searcher</code></li>
   <li><code>__cpp_lib_chrono</code></li>
   <li><code>__cpp_lib_chrono_udls</code></li>
   <li><code>__cpp_lib_clamp</code></li>
   <li><code>__cpp_lib_complex_udls</code></li>
-  <li><code>__cpp_lib_constexpr_misc</code></li>
+  <li><code>__cpp_lib_constexpr</code></li>
+  <li><code>__cpp_lib_constexpr_dynamic_alloc</code></li>
+  <li><code>__cpp_lib_constexpr_invoke</code></li>
+  <li><code>__cpp_lib_constexpr_string</code></li>
   <li><code>__cpp_lib_constexpr_swap_algorithms</code></li>
+  <li><code>__cpp_lib_constexpr_vector</code></li>
   <li><code>__cpp_lib_destroying_delete</code></li>
   <li><code>__cpp_lib_enable_shared_from_this</code></li>
   <li><code>__cpp_lib_erase_if</code></li>
   <li><code>__cpp_lib_exchange_function</code></li>
   <li><code>__cpp_lib_execution</code></li>
   <li><code>__cpp_lib_filesystem</code></li>
+  <li><code>__cpp_lib_format</code></li>
   <li><code>__cpp_lib_gcd_lcm</code></li>
   <li><code>__cpp_lib_generic_associative_lookup</code></li>
   <li><code>__cpp_lib_generic_unordered_lookup</code></li>
-  <li><code>__cpp_lib_generic_unordered_hash_lookup</code></li>
   <li><code>__cpp_lib_hypot</code></li>
   <li><code>__cpp_lib_incomplete_container_elements</code></li>
   <li><code>__cpp_lib_integer_sequence</code></li>
   <li><code>__cpp_lib_interpolate</code></li>
   <li><code>__cpp_lib_invoke</code></li>
+  <li><code>__cpp_lib_jthread</code></li>
+  <li><code>__cpp_lib_latch</code></li>
   <li><code>__cpp_lib_list_remove_return_type</code></li>
   <li><code>__cpp_lib_make_from_tuple</code></li>
   <li><code>__cpp_lib_make_reverse_iterator</code></li>
   <li><code>__cpp_lib_make_unique</code></li>
   <li><code>__cpp_lib_map_try_emplace</code></li>
+  <li><code>__cpp_lib_math_constants</code></li>
   <li><code>__cpp_lib_math_special_functions</code></li>
   <li><code>__cpp_lib_memory_resource</code></li>
   <li><code>__cpp_lib_node_extract</code></li>
@@ -698,13 +727,16 @@ The new Table ??37?? will be named <ins>Table ??37?? - Hosted standard library f
   <li><code>__cpp_lib_robust_nonmodifying_seq_ops</code></li>
   <li><code>__cpp_lib_sample</code></li>
   <li><code>__cpp_lib_scoped_lock</code></li>
+  <li><code>__cpp_lib_semaphore</code></li>
   <li><code>__cpp_lib_shared_mutex</code></li>
   <li><code>__cpp_lib_shared_ptr_arrays</code></li>
   <li><code>__cpp_lib_shared_ptr_weak_type</code></li>
   <li><code>__cpp_lib_shared_timed_mutex</code></li>
+  <li><code>__cpp_lib_spaceship</code></li>
   <li><code>__cpp_lib_string_udls</code></li>
   <li><code>__cpp_lib_string_view</code></li>
   <li><code>__cpp_lib_three_way_comparison</code></li>
+  <li><code>__cpp_lib_to_array</code></li>
   <li><code>__cpp_lib_to_chars</code></li>
   <li><code>__cpp_lib_transparent_operators</code></li>
   <li><code>__cpp_lib_tuple_element_t</code></li>
@@ -712,6 +744,21 @@ The new Table ??37?? will be named <ins>Table ??37?? - Hosted standard library f
   <li><code>__cpp_lib_unordered_map_try_emplace</code></li>
   <li><code>__cpp_lib_variant</code></li>
 </ul>
+
+Instructions to the editor:
+<p>
+Please add a <span class='comment'>// <span class='textit'>freestanding</span></span> comment to all entities in [atomics.syn] other than <code>atomic_signed_lock_free</code> and <code>atomic_unsigned_lock_free</code>
+</p>
+
+Change in [atomics.lockfree] paragraph 2:
+<blockquote class="std">
+<div class='para'>
+<div class='sentence'><ins>On hosted implementations ([compliance]), a</ins><del>A</del>t least one signed integral specialization of the <span class='texttt'>atomic</span> template,
+along with the specialization
+for the corresponding unsigned type ([basic.fundamental]),
+is always lock-free.</div>
+<del><div class='note'>[&nbsp;<span class='textit'>Note</span><div class='noteBody'><span class='textit'>:</span> <div class='sentence'>This requirement is optional in freestanding implementations ([compliance]).</div> —&nbsp;<i>end note</i></div>&nbsp;]</div></del> </div>
+</blockquote>
 
 <h1>Acknowledgements</h1>
 <p>
