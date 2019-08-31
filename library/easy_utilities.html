@@ -357,9 +357,9 @@ span.indented {
 }
 </style>
 
-<title>D1642R1.0: Freestanding Library: Easy [utilities]</title>
+<title>D1642R1.0: Freestanding Library: Easy [utilities], [ranges], and [iterators]</title>
 <body>
-<h1>Freestanding Library: Easy [utilities]</h1>
+<h1>Freestanding Library: Easy [utilities], [ranges], and [iterators]</h1>
 Document number: TODO<br/>
 Date: TODO<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
@@ -368,6 +368,7 @@ Audience: SG14, Library Evolution Working Group
 <h3> R1 </h3>
 <ul>
   <li>Adding section summarizing what is getting added.</li>
+  <li>Adding all of [ranges] and most of [iterators]</li>
   <li>Now discussing split overload sets.</li>
   <li>Dropping wording for now</li>
 </ul>
@@ -375,11 +376,13 @@ Audience: SG14, Library Evolution Working Group
 <p>
 Branching from P0829R4.  This "omnibus" paper is still the direction I am aiming for.  However, it is too difficult to review.  It needs to change with almost every meeting.  Therefore, it is getting split up into smaller, more manageable chunks.
 </p><p>
-Limiting paper to the [utilities] clause.
+Limiting paper to the [utilities], [ranges], and [iterators] clauses.
 </p>
 <h1>Introduction</h1>
 <p>
 This paper proposes adding many of the facilities in the [utilities] clause to the freestanding subset of C++.  The paper will only be adding complete entities, and will not tackle partial classes.  In other words, classes like <code>pair</code> and <code>tuple</code> are being added, but trickier classes like <code>optional</code>, <code>variant</code>, and <code>bitset</code> will come in another paper.
+</p><p>
+The <code>&lt;memory&gt;</code> header has a dependency on facilities in <code>&lt;ranges&gt;</code> and <code>&lt;iterator&gt;</code>, so those headers (and clauses) are addressed as well.
 </p>
 <h1>Motivation and Design</h1>
 <p>
@@ -406,6 +409,7 @@ The entirety of the following headers are included:
   <li><code>&lt;utility&gt;</code></li>
   <li><code>&lt;tuple&gt;</code></li>
   <li><code>&lt;ratio&gt;</code></li>
+  <li><code>&lt;ranges&gt;</code></li>
 </ul>
 The following portions of <code>&lt;memory&gt;</code> are included:
 <ul>
@@ -460,50 +464,7 @@ The following portions of <code>&lt;memory&gt;</code> are <b>omitted</b>:
   <li><code>weak_ptr</code> specialization of <code>atomic</code></li>
 </ul>
 
-The following portions of <code>&lt;functional&gt;</code> are included:
-<ul>
-  <li><code>invoke</code></li>
-  <li><code>reference_wrapper</code> and its specializations</li>
-  <li><code>ref</code></li>
-  <li><code>cref</code></li>
-  <li><code>unwrap_reference</code></li>
-  <li><code>unwrap_reference_t</code></li>
-  <li><code>unwrap_ref_decay</code></li>
-  <li><code>unwrap_ref_decay_t</code></li>
-  <li><code>plus</code> and the <code>void</code> specialization</li>
-  <li><code>minus</code> and the <code>void</code> specialization</li>
-  <li><code>multiplies</code> and the <code>void</code> specialization</li>
-  <li><code>divides</code> and the <code>void</code> specialization</li>
-  <li><code>modules</code> and the <code>void</code> specialization</li>
-  <li><code>negate</code> and the <code>void</code> specialization</li>
-  <li><code>equal_to</code>, the <code>void</code> specialization, and the <code>struct</code> in the <code>ranges</code> namespace</li>
-  <li><code>not_equal_to</code>, the <code>void</code> specialization, and the <code>struct</code> in the <code>ranges</code> namespace</li>
-  <li><code>greater</code>, the <code>void</code> specialization, and the <code>struct</code> in the <code>ranges</code> namespace</li>
-  <li><code>less</code>, the <code>void</code> specialization, and the <code>struct</code> in the <code>ranges</code> namespace</li>
-  <li><code>greater_equal</code>, the <code>void</code> specialization, and the <code>struct</code> in the <code>ranges</code> namespace</li>
-  <li><code>less_equal</code>, the <code>void</code> specialization, and the <code>struct</code> in the <code>ranges</code> namespace</li>
-  <li><code>logical_and</code> and the <code>void</code> specialization</li>
-  <li><code>logical_or</code> and the <code>void</code> specialization</li>
-  <li><code>logical_not</code> and the <code>void</code> specialization</li>
-  <li><code>bit_and</code> and the <code>void</code> specialization</li>
-  <li><code>bit_or</code> and the <code>void</code> specialization</li>
-  <li><code>bit_xor</code> and the <code>void</code> specialization</li>
-  <li><code>bit_not</code> and the <code>void</code> specialization</li>
-  <li><code>identity</code></li>
-  <li><code>not_fn</code></li>
-  <li><code>bind_front</code></li>
-  <li><code>is_bind_expression</code></li>
-  <li><code>is_placeholder</code></li>
-  <li><code>bind</code></li>
-  <li>The entities in the <code>placeholders</code> namespace</li>
-  <li><code>mem_fn</code></li>
-  <li><code>default_searcher</code></li>
-  <li><code>hash</code></li>
-  <li><code>is_bind_expression_v</code></li>
-  <li><code>is_placeholder_v</code></li>
-</ul>
-
-The following portions of <code>&lt;functional&gt;</code> are <b>omitted</b>:
+Mark everything in <code>&lt;functional&gt;</code> as freestanding <b>except</b> for the following entities:
 <ul>
   <li><code>bad_function_call</code></li>
   <li><code>function</code></li>
@@ -513,17 +474,13 @@ The following portions of <code>&lt;functional&gt;</code> are <b>omitted</b>:
   <li><code>boyer_moore_horspool_searcher</code></li>
 </ul>
 
-The following portions of <code>&lt;ranges&gt;</code> are included in order to satisfy requirements in <code>&lt;memory&gt;</code>:
+Mark everything in <code>&lt;iterator&gt;</code> as freestanding <b>except</b> for the following entities:
 <ul>
-  <li><code>range_value_t</code></li>
-  <li><code>safe_iterator_t</code></li>
+  <li><code>istream_iterator</code> and associated comparison operators</li>
+  <li><code>ostream_iterator</code></li>
+  <li><code>istreambuf_iterator</code> and associated comparison operators</li>
+  <li><code>ostreambuf_iterator</code></li>
 </ul>
-The following portions of <code>&lt;iterator&gt;</code> are included in order to satisfy requirements in <code>&lt;memory&gt;</code>:
-<ul>
-  <li><code>iter_value_t</code></li>
-  <li><code>iter_difference_t</code></li>
-</ul>
-TODO: safe_iterator_t <ranges>, iter_value_t <iterator>, iter_difference_t, range_value_t
 
 Move the following macros from "Table ??37?? - Hosted standard library feature-test macros" to "Table ??36?? - Freestanding and hosted standard library feature-test macros"
 <ul>
@@ -533,7 +490,9 @@ Move the following macros from "Table ??37?? - Hosted standard library feature-t
   <li><code>__cpp_lib_as_const</code></li>
   <li><code>__cpp_lib_bind_front</code></li>
   <li><code>__cpp_lib_boyer_moore_searcher</code></li>
-  <li><code>__cpp_lib_constexpr_misc</code></li>
+  <li><code>__cpp_lib_constexpr</code></li>
+  <li><code>__cpp_lib_constexpr_dynamic_alloc</code></li>
+  <li><code>__cpp_lib_constexpr_invoke</code></li>
   <li><code>__cpp_lib_exchange_function</code></li>
   <li><code>__cpp_lib_integer_sequence</code></li>
   <li><code>__cpp_lib_invoke</code></li>
@@ -542,6 +501,7 @@ Move the following macros from "Table ??37?? - Hosted standard library feature-t
   <li><code>__cpp_lib_nonmember_container_access</code></li>
   <li><code>__cpp_lib_not_fn</code></li>
   <li><code>__cpp_lib_null_iterators</code></li>
+  <li><code>__cpp_lib_ranges</code></li>
   <li><code>__cpp_lib_raw_memory_algorithms</code></li>
   <li><code>__cpp_lib_transparent_operators</code></li>
   <li><code>__cpp_lib_tuple_element_t</code></li>
