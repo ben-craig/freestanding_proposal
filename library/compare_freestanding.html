@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 
-<title>D1855R0: Make &lt;compare&gt; freestanding</title>
+<title>D1855R0.1: Make &lt;compare&gt; freestanding</title>
 <style type="text/css">
   p {text-align:justify}
   li {text-align:justify}
@@ -19,9 +19,11 @@
 </style>
 <body>
 <h1>Make &lt;compare&gt; freestanding</h1>
-Document number: D1855R0<br/>
+Document number: D1855R0.1<br/>
 Date: TODO<br/>
-Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
+Reply-to:<br/>
+&nbsp;&nbsp;Ben Craig (National Instruments) &lt;ben dot craig at gmail dot com&gt;<br/>
+&nbsp;&nbsp;Bryce Adelstein Lelbach (NVIDIA) &lt;brycelelbach at gmail dot com&gt;<br/>
 Audience: Library Evolution Working Group
 
 <h1>The problem</h1>
@@ -32,7 +34,23 @@ Pedantically, <code>&lt;coroutine&gt;</code> is part of the implementation, so i
 </p><p>
 So we should add <code>&lt;compare&gt;</code> to freestanding to resolve the issue.  This follows the C++98 - C++20 design precedent of having core language support in the freestanding library.
 </p>
+
 <h1>Proposed resolution:</h1>
+<p>
+Make <code>&lt;compare&gt;</code> freestanding.  <code>&lt;compare&gt;</code> was identified as a potential addition to freestanding in the February 2018, Pre-Jacksonville mailing in the omnibus <a href="https://wg21.link/P0829R1">Freestanding Proposal R1</a> paper.  At the time, adding it to freestanding wasn't as urgent, as no other freestanding facilities depended on it.
+</p><p>
+The header <code>&lt;compare&gt;</code> specifies types, objects, and functions for use primarily in connection with the three-way comparison operator.  This largely involves types with <code>constexpr</code>, <code>noexcept</code> comparison operator members.  There are also some concepts, a type_trait-like struct, and a "Niebloid" for the <code>compare_three_way</code> algorithm.
+</p><p>
+None of the facilities in <code>&lt;compare&gt;</code> require exceptions, RTTI, heap storage, virtual functions, function pointers, recursion, thread local storage, floating point, dynamic global initialization, dynamic global destructors, process exit functionality, atomics, or thread-safe statics.
+</p><p>
+None of the facilities in <code>&lt;compare&gt;</code> require facilities in non-freestanding headers.
+</p><p>
+<code>&lt;compare&gt;</code> can be implemented entirely in a header, without requiring a built library that needs to be linked against.
+</p><p>
+Making <code>&lt;compare&gt;</code> freestanding this late in the standards process isn't ideal, but it is still very low risk.
+</p>
+
+<h1>Wording:</h1>
 <p>This wording is relative to <a href="https://wg21.link/n4830">N4830</a>.</p>
 
 <ol>
