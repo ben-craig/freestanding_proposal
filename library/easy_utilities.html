@@ -369,6 +369,8 @@ Audience: SG14, Library Evolution Working Group
 <ul>
   <li>Adding section summarizing what is getting added.</li>
   <li>Adding all of [ranges] and most of [iterators]</li>
+  <li>Adding <code>uses_allocator_construction_args</code></li>
+  <li>Adding feature test macro</li>
   <li>Now discussing split overload sets.</li>
   <li>Dropping wording for now</li>
 </ul>
@@ -402,6 +404,31 @@ My approach will be to avoid splitting overload sets that could cause accidental
 </p><p>
 Also note that the <code>swap</code> overload set visible to a given translation unit is already indeterminate.  A user may include <code>&lt;memory&gt;</code> which guarantees the smart pointer overloads, but an implementation could expose any (or none!) of the other <code>swap</code> overloads from other STL headers.
 </p>
+<h1>Feature test macros</h1>
+Add the following feature test macro:
+<table border="1">
+    <thead><tr>
+        <th>Name</th>
+        <th>Value</th>
+        <th>Freestanding</th>
+        <th>Header</th>
+    </tr></thead>
+    <tbody><tr>
+        <td><code>__cpp_lib_freestanding_iterator</code></td>
+        <td><var ignore="true">201911</var></td>
+        <td>+</td>
+        <td><code>&lt;version&gt;<code></td>
+    </tr></tbody>
+</table>
+
+<p>The following, existing feature test macros cover some features that I am making freestanding, and some features that I am not requiring to be freestanding.  These feature test macros won't be required in freestanding, as they could cause substantial confusion when the hosted parts of those features aren't available.</p>
+<ul>
+  <li><code>__cpp_lib_boyer_moore_searcher</code></li>
+  <li><code>__cpp_lib_constexpr_dynamic_alloc</code></li>
+  <li><code>__cpp_lib_ranges</code></li>
+  <li><code>__cpp_lib_raw_memory_algorithms</code></li>
+</ul>
+
 <h1>Summary of inclusions</h1>
 <p>
 The entirety of the following headers are included:
@@ -421,6 +448,7 @@ The following portions of <code>&lt;memory&gt;</code> are included:
   <li><code>allocator_arg</code></li>
   <li><code>uses_allocator</code></li>
   <li><code>uses_allocator_v</code></li>
+  <li><code>uses_allocator_construction_args</code></li>
   <li><code>allocator_traits</code></li>
   <li>[specialized.algorithms], except for the <code>ExecutionPolicy</code> overloads.  This includes the algorithms in the <code>ranges</code> namespace</li>
   <li><code>default_delete</code></li>
@@ -434,7 +462,6 @@ The following portions of <code>&lt;memory&gt;</code> are included:
 The following portions of <code>&lt;memory&gt;</code> are <b>omitted</b>:
 <ul>
   <li>[util.dynamic.safety], pointer safety</li>
-  <li><code>uses_allocator_construction_args</code></li>
   <li><code>make_obj_using_allocator</code></li>
   <li><code>uninitialized_construct_using_allocator</code></li>
   <li><code>allocator</code> and associated comparisons</li>
@@ -482,16 +509,14 @@ Mark everything in <code>&lt;iterator&gt;</code> as freestanding <b>except</b> f
   <li><code>ostreambuf_iterator</code></li>
 </ul>
 
-Move the following macros from "Table ??37?? - Hosted standard library feature-test macros" to "Table ??36?? - Freestanding and hosted standard library feature-test macros"
+Mark the following macros from "Table ??36?? - Standard library feature-test macros" as freestanding
 <ul>
   <li><code>__cpp_lib_addressof_constexpr</code></li>
   <li><code>__cpp_lib_allocator_traits_is_always_equal</code></li>
   <li><code>__cpp_lib_apply</code></li>
   <li><code>__cpp_lib_as_const</code></li>
   <li><code>__cpp_lib_bind_front</code></li>
-  <li><code>__cpp_lib_boyer_moore_searcher</code></li>
   <li><code>__cpp_lib_constexpr</code></li>
-  <li><code>__cpp_lib_constexpr_dynamic_alloc</code></li>
   <li><code>__cpp_lib_constexpr_invoke</code></li>
   <li><code>__cpp_lib_exchange_function</code></li>
   <li><code>__cpp_lib_integer_sequence</code></li>
@@ -501,8 +526,6 @@ Move the following macros from "Table ??37?? - Hosted standard library feature-t
   <li><code>__cpp_lib_nonmember_container_access</code></li>
   <li><code>__cpp_lib_not_fn</code></li>
   <li><code>__cpp_lib_null_iterators</code></li>
-  <li><code>__cpp_lib_ranges</code></li>
-  <li><code>__cpp_lib_raw_memory_algorithms</code></li>
   <li><code>__cpp_lib_transparent_operators</code></li>
   <li><code>__cpp_lib_tuple_element_t</code></li>
   <li><code>__cpp_lib_tuples_by_type</code></li>
