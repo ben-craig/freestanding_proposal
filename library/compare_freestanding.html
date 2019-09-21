@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 
-<title>D1855R0.1: Make &lt;compare&gt; freestanding</title>
+<title>D1855R0.2: Make &lt;compare&gt; freestanding</title>
 <style type="text/css">
   p {text-align:justify}
   li {text-align:justify}
@@ -19,7 +19,7 @@
 </style>
 <body>
 <h1>Make &lt;compare&gt; freestanding</h1>
-Document number: D1855R0.1<br/>
+Document number: D1855R0.2<br/>
 Date: TODO<br/>
 Reply-to:<br/>
 &nbsp;&nbsp;Ben Craig (National Instruments) &lt;ben dot craig at gmail dot com&gt;<br/>
@@ -50,6 +50,16 @@ None of the facilities in <code>&lt;compare&gt;</code> require facilities in non
 Making <code>&lt;compare&gt;</code> freestanding this late in the standards process isn't ideal, but it is still very low risk.
 </p>
 
+<h1>Consequences of delaying or rejecting:</h1>
+<p>
+Suppose we decide not to put this in C++20, or decide not to do this at all.  What are the ramifications for the standard?  What are the ramifications to users?
+</p><p>
+In the abstract, the standard will be falsely advertising that <code>coroutine_handle</code> can be compared or used with the three-way comparison operator in freestanding.  There will also be a core language feature that isn't readily usable in freestanding.
+</p><p>
+In practice, there aren't many users of strictly minimal freestanding implementations.  Implementers are allowed to provide additional facilities beyond the bare minimum, and would likely provide a <code>&lt;compare&gt;</code> header.  Even if the implementer didn't provide <code>&lt;compare&gt;</code>, it would only affect the ability of the user to do three-way comparisons and ordered comparisons on <code>coroutine_handle</code>.
+</p><p>
+Adding the header to the freestanding subset later wouldn't break binary or source compatibility.
+</p>
 <h1>Wording:</h1>
 <p>This wording is relative to <a href="https://wg21.link/n4830">N4830</a>.</p>
 
