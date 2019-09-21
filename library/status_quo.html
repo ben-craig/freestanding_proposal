@@ -371,6 +371,7 @@ Audience: SG14, Library Evolution Working Group
   <li>Dealt with synchronization library additions</li>
   <li>Dealt with <code>source_location</code> addition</li>
   <li>Updated feature test macros</li>
+  <li>Made new feature test macro name more consistent with other library names</li>
 </ul>
 <p>
 </p>
@@ -404,11 +405,13 @@ A freestanding implementation that provides support for this paper shall define 
     <thead><tr>
         <th>Name</th>
         <th>Value</th>
+        <th>Freestanding</th>
         <th>Header</th>
     </tr></thead>
     <tbody><tr>
-        <td><code>__cpp_freestanding_library</code></td>
+        <td><code>__cpp_lib_freestanding</code></td>
         <td><var ignore="true">201906</var></td>
+        <td>+</td>
         <td><code>&lt;version&gt;<code></td>
     </tr></tbody>
 </table>
@@ -416,7 +419,7 @@ A freestanding implementation that provides support for this paper shall define 
 Example usage:
 </p>
 <pre class='codeblock'>
-#if __cpp_freestanding_library &gt;= 201906
+#if __cpp_lib_freestanding &gt;= 201906
 int my_atoi(const char *str);
 #else
 #include &lt;cstdlib&gt;
@@ -424,7 +427,7 @@ inline int my_atoi(const char *str) {return std::atoi(str);}
 #endif
 </pre>
 <p>
-The <code>__cpp_freestanding_library</code> macro is useful for detecting the absence of throwing facilities.  A user could conditionally use a hand-rolled implementation in freestanding mode or the standard implementation in hosted mode.
+The <code>__cpp_lib_freestanding</code> macro is useful for detecting the absence of throwing facilities.  A user could conditionally use a hand-rolled implementation in freestanding mode or the standard implementation in hosted mode.
 </p><p>
 The library feature macros have been partitioned into those that must be present in both freestanding and hosted mode, and those that only need to be present in hosted mode.  If the implementation provides more than the minimal freestanding subset, then the implementation shall also provide the corresponding feature test macros.
 </p><p>
@@ -646,13 +649,6 @@ one of the corresponding headers specified in the table.</div>
 </ins>
 </blockquote>
 
-Add a new paragraph to the end of [support.limits.general]:
-<blockquote class="stdins">
-<div class='para'><div class='marginalizedparent'><a class='marginalized'>???</a></div><div class='sourceLinkParent'></div>
-  <div class='sentence'>A freestanding implementation shall define the <span class='texttt'>__cpp_freestanding_library</span> macro with the value <span class='texttt'>201906L</span> in the <span class='texttt'>&lt;version&gt;</span> header.</div>
-</div>
-</blockquote>
-
 Modify Table ??36?? as indicated:
 <table>
 <caption>Table ??36??: Standard library feature-test macros</caption>
@@ -704,6 +700,7 @@ Modify Table ??36?? as indicated:
 <tr class='rowsep'><td><span class='texttt'>__cpp_lib_execution</span></td><td><span class='texttt'>201902L</span></td><td></td><td><span class='texttt'>&lt;execution&gt;</span></td></tr>
 <tr class='rowsep'><td><span class='texttt'>__cpp_lib_filesystem</span></td><td><span class='texttt'>201703L</span></td><td></td><td><span class='texttt'>&lt;filesystem&gt;</span></td></tr>
 <tr class='rowsep'><td><span class='texttt'>__cpp_lib_format</span></td><td><span class='texttt'>201907L</span></td><td></td><td><span class='texttt'>&lt;format&gt;</span></td></tr>
+<tr class='rowsep'><td><ins><span class='texttt'>__cpp_lib_freestanding</span></ins></td><td><ins><span class='texttt'>201906L</span></ins></td><td><ins>+</ins></td><td></td></tr>
 <tr class='rowsep'><td><span class='texttt'>__cpp_lib_gcd_lcm</span></td><td><span class='texttt'>201606L</span></td><td></td><td><span class='texttt'>&lt;numeric&gt;</span></td></tr>
 <tr class='rowsep'><td><span class='texttt'>__cpp_lib_generic_associative_lookup</span></td><td><span class='texttt'>201304L</span></td><td></td><td><span class='texttt'>&lt;map&gt;</span> <span class='texttt'>&lt;set&gt;</span></td></tr>
 <tr class='rowsep'><td><span class='texttt'>__cpp_lib_generic_unordered_lookup</span></td><td><span class='texttt'>201811L</span></td><td></td><td><span class='texttt'>&lt;unordered_map&gt;</span> <span class='texttt'>&lt;unordered_set&gt;</span></td></tr>
