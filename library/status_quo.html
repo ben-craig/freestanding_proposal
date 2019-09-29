@@ -360,8 +360,8 @@ span.indented {
 <title>D1641R1.0: Freestanding Library: Rewording the Status Quo</title>
 <body>
 <h1>Freestanding Library: Rewording the Status Quo</h1>
-Document number: TODO<br/>
-Date: TODO<br/>
+Document number: P1641R1<br/>
+Date: 2019-09-29<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: SG14, Library Evolution Working Group
 <h1>Change history</h1>
@@ -383,7 +383,7 @@ Limiting paper to <code>&lt;version&gt;</code>, blanket wording, and freestandin
 </p>
 <h1>Introduction</h1>
 <p>
-This paper is the first of many smaller papers adding facilities to the C++ freestanding library.  This paper in particular will only be updating the editorial technique for declaring facilities as freestanding.  This update will make it easier to mark headers as partially freestanding.  This wording change will make it easier to mark in-flight proposals as freestanding, without causing a major blocking point in the standardization process.
+This paper is the first of many smaller papers adding facilities to the C++ freestanding library.  This paper in particular will be updating the editorial technique for declaring facilities as freestanding and adjusting feature test macros.  This update will make it easier to mark headers as partially freestanding.  This wording change will make it easier to mark in-flight proposals as freestanding, without causing a major blocking point in the standardization process.
 </p>
 <h1>Motivation and Design</h1>
 <p>
@@ -641,7 +641,7 @@ one of the corresponding headers specified in the table.</div>
 </del>
 <ins>
 <div class='para'><div class='marginalizedparent'><a class='marginalized'>3</a></div><div class='sourceLinkParent'></div>
-  <div class='sentence'>On hosted implementations, the macros in Table ??36?? are defined after inclusion of the header <span class='texttt'>&lt;version&gt;</span> or one of the corresponding headers specified in the table.</div>
+  <div class='sentence'>On hosted implementations, the macros in Table ??36?? shall be defined to the corresponding integer literal after inclusion of the header <span class='texttt'>&lt;version&gt;</span> or one of the corresponding headers specified in the table.</div>
   <div class='sentence'>On freestanding implementations, the indicated macros in Table ??36?? are defined after inclusion of the header <span class='texttt'>&lt;version&gt;</span> or one of the corresponding headers specified in the table.</div>
   <div class='sentence'>The presence of the non-indicated macros in Table ??36?? is implementation defined on freestanding implementations.</div>
   <div class='note'>[<a class='note_link'><span class='textit'>Note</span></a><span class='textit'>:</span> Future versions of this International Standard might replace the values of these macros with greater values. -<i>end note</i>]</div>
