@@ -30,7 +30,7 @@ Audience: Library Evolution Working Group
 <p>
 In Cologne, <a href="https://wg21.link/p1614r2">the mothership landed</a> and <code>&lt;coroutine&gt;</code> got updated to use op&lt=&gt;.  <code>&lt;coroutine&gt;</code> is a <a href="https://wg21.link/compliance">freestanding header</a>.  <code>&lt;compare&gt;</code> isn’t listed as freestanding.
 </p><p>
-Pedantically, <code>&lt;coroutine&gt;</code> is part of the implementation, so it can do whatever it wants.  If the user wants to compare <code>coroutine_handle</code>s, then I think they need to include <code>&lt;compare&gt;</code> <a href="https://wg21.link/expr.spaceship#10">[expr.spaceship]</a>.
+Pedantically, <code>&lt;coroutine&gt;</code> is part of the implementation, so it can do whatever it wants.  However, if the user wants to compare <code>coroutine_handle</code>s, then I think they need to include <code>&lt;compare&gt;</code> <a href="https://wg21.link/expr.spaceship#10">[expr.spaceship]</a>.
 </p><p>
 So we should add <code>&lt;compare&gt;</code> to freestanding to resolve the issue.  This follows the C++98 - C++20 design precedent of having core language support in the freestanding library.
 </p>
