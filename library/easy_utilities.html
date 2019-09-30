@@ -382,7 +382,7 @@ Limiting paper to the [utilities], [ranges], and [iterators] clauses.
 </p>
 <h1>Introduction</h1>
 <p>
-This paper proposes adding many of the facilities in the [utilities] clause to the freestanding subset of C++.  The paper will only be adding complete entities, and will not tackle partial classes.  In other words, classes like <code>pair</code> and <code>tuple</code> are being added, but trickier classes like <code>optional</code>, <code>variant</code>, and <code>bitset</code> will come in another paper.
+This paper proposes adding many of the facilities in the [utilities], [ranges], and [iterators] clause to the freestanding subset of C++.  The paper will only be adding complete entities, and will not tackle partial classes.  In other words, classes like <code>pair</code> and <code>tuple</code> are being added, but trickier classes like <code>optional</code>, <code>variant</code>, and <code>bitset</code> will come in another paper.
 </p><p>
 The <code>&lt;memory&gt;</code> header has a dependency on facilities in <code>&lt;ranges&gt;</code> and <code>&lt;iterator&gt;</code>, so those headers (and clauses) are addressed as well.
 </p>
@@ -403,6 +403,32 @@ My approach will be to avoid splitting overload sets that could cause accidental
 <code>swap</code> has <code>shared_ptr</code>, <code>weak_ptr</code>, and <code>unique_ptr</code> overloads, but this paper only marks the <code>unique_ptr</code> overload as freestanding.  <code>&lt;memory&gt;</code> has many algorithms with <code>ExecutionPolicy</code> overloads.  This paper does not mark the <code>ExectuionPolicy</code> overloads as freestanding.  I was unable to come up with any compelling "accidental" way to select one <code>swap</code> or algorithm overload in freestanding, but a different one in hosted.
 </p><p>
 Also note that the <code>swap</code> overload set visible to a given translation unit is already indeterminate.  A user may include <code>&lt;memory&gt;</code> which guarantees the smart pointer overloads, but an implementation could expose any (or none!) of the other <code>swap</code> overloads from other STL headers.
+</p>
+<h1>Justification for omissions</h1>
+<p>
+The following functions and classes rely on dynamic memory allocation and exceptions:
+</p>
+<ul>
+  <li><code>make_obj_using_allocator</code></li>
+  <li><code>make_unique</code></li>
+  <li><code>make_unique_default_init</code></li>
+  <li><code>shared_ptr</code></li>
+  <li><code>weak_ptr</code></li>
+  <li><code>function</code></li>
+  <li><code>boyer_moore_searcher</code></li>
+  <li><code>boyer_moore_horspool_searcher</code></li>
+</ul>
+<p>
+The following classes rely on iostreams facilities.  iostreams facilities use dynamic memory allocations and rely on the operating system.
+</p>
+<ul>
+  <li><code>istream_iterator</code></li>
+  <li><code>ostream_iterator</code></li>
+  <li><code>istreambuf_iterator</code></li>
+  <li><code>ostreambuf_iterator</code></li>
+</ul>
+<p>
+The ExecutionPolicy overloads of algorithms are of minimal utility on systems that do not support C++ threads.
 </p>
 <h1>Feature test macros</h1>
 Add the following feature test macro:
