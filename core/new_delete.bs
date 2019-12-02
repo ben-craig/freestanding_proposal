@@ -1,0 +1,103 @@
+<pre class='metadata'>
+Title: Freestanding Language: Optional <code>::operator new</code>
+Shortname: DXXXX
+Revision: 0.0
+Audience: SG14, EWG
+Status: D
+Group: WG21
+URL: TODO
+!Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
+Editor: Ben Craig, National Instruments, ben.craig@gmail.com
+Abstract: In freestanding implementations, make the default allocating <code>::operator new</code>s optional.
+Markup Shorthands: markdown yes
+</pre>
+
+Revision History {#revision_history}
+====================================
+R0 of this paper was extracted from [[P1105R1]].
+
+The proposed solution is different than the one proposed for P1105R1, but the motivation is the same.  The solution from P1105R1 is still listed as a design alternative.
+
+What is changing {#the_changes}
+=====================
+On freestanding systems without default heap storage, the presence of the replaceable allocation functions (i.e. allocating `::operator new`) will be implementation defined.
+
+As a consequence of the above, coroutines that are relying on the global allocation functions will be ill-formed so long as those global allocation functions are not present.
+
+Implementations that rely on `::operator new` for exception storage will need to use a different, unspecified source of memory.
+
+What is staying the same {#non_changes}
+=======================================
+The replaceable deallocating `::operator delete` functions are still required to be present.  `virtual` destructors ODR-use their associated `operator delete`([basic.def.odr](http://eel.is/c++draft/basic.def.odr#7)), so keeping the global `::operator delete` allows those `virtual` destructors to continue building.  Alternatives to this choice are discussed in [[#design_alternatives]].
+
+Hosted implementations are unchanged.  Users of freestanding implementations can still provide implementations of the replaceable allocation and deallocation functions.  The behavior of `virtual` destructors is unchanged.  The behavior of class specific `operator new` and `operator delete` overloads is unchanged.  The requirements on user-provided `::operator new` and `::operator delete` overloads remains the same, particularly those requirements involving error behaviors.  Coroutines will behave the same so long as promise-specific allocators are used.  The storage for exception objects will remain unspecified.
+
+Why? {#why}
+===========
+In some target environments, there is no "right" way to allocate memory.  In kernel and embedded domains, the implementer of the C++ toolchain doesn't always know the "right" way to allocate memory on the target environment.  This makes it difficult to provide an implementation for `::operator new`.  The implementer cannot even rely on the presence of `malloc`, as it runs into the same fundamental problems.
+
+As an example, in the Microsoft Windows kernel environment, there are two leading choices about where to get dynamic memory.  Users can get memory from the non-paged pool, which is a safe, but scarce resource; or users can get memory from the paged pool, which is plentiful, but not accessible in many common kernel operations.  The author has had experience with both of these options as defaults, with the predictable outcome of crashes with paged pool defaults and OOM with non-paged pool defaults.  The implementer of the C++ toolchain is not in a good position to make this choice for the user.
+
+The C++ implementation may not know the name of the function to request memory.  In the Linux kernel, `kmalloc` is the main function to use.  In FreeBSD, a functioned named `malloc` is present, but it takes different arguments than the C standard library function of the same name.  FreeRTOS uses `pvPortMalloc`, and ThreadX uses `tx_byte_allocate`.  Home-grown OSes will likely have other spellings for memory allocation routines.
+
+Today's C++ implementations don't provide `::operator new` implementations for all possible targets.  Doing so isn't a plausible goal, especially when the home-grown OSes are taken into account.  This means that users are already forced into choosing between not having `::operator new` support and providing their own implementation.  We should acknowledge and standardize this existing practice, especially since we already have the extension point mechanism in place.
+
+In other environments, notably space constrained and/or real-time environments, there is no free store.  These environments often cannot tolerate the space overhead for the free store, or the non-determinism from using the free store.  In these environments, it is a desirable property for accidental global `new` usage to cause a build failure.  With this proposal, users could expect a linker error when global `new` is used inappropriately.
+
+Experience {#experience}
+=================
+The proposed design has field experience in a micro-controller environment.  GCC was used, and the language support library was intentionally omitted.  A no-op `::operator delete` was provided by the users.  The no-op `::operator delete` enabled a small amount of code sharing between a hosted environment and this micro-controller environment.  Some of the shared code involved classes with `virtual` destructors.
+
+Design Alternatives {#design_alternatives}
+===========
+In addition to omitting `::operator new`, we could also do one of the following:
+
+Alternative 1: No deallocation functions {#alternative_no_dealloc}
+--------------------------
+The presence of the replaceable deallocation functions is implementation defined.  `virtual` destructors will be ill-formed unless the implementation provides the deallocation function, the user provides a global `::operator delete` function, or the user provides a class specific `operator delete` overload.
+
+This alternative has the benefit of being zero overhead and very explicit, but it has troublesome consequences for implementations.  There are several language support classes that have `virtual` destructors, and something would need to be decided for them.  Notably, `type_info` and the `exception` hierarchy all have `virtual` destructors.  The standard library implementers may be prohibited from providing `operator new` and `operator delete` overloads ([conforming#member.functions](http://eel.is/c++draft/conforming#member.functions-2)).  Alternatively, the facilities that require classes with `virtual` destructors could all be off-limits until `operator delete` was made available.  This would eliminate many cases with exceptions, `dynamic_cast` on references, and `typeid`.
+
+If we were to adopt this alternative, many users would provide a no-op `::operator delete` in their code, giving their code the same semantics and trade-offs as the proposed solution.
+
+### Experience ### {#alt1_experience}
+This alternative has field experience.  MSVC's /kernel [[kernel_switch]] flag omits definitions for `::operator new` and `::operator delete`.  Users of Clang and GCC can choose to not link against the language support library, and therefore not have `::operator new` and `::operator delete` support, as well as many other language support features.
+
+Alternative 2: No deallocation functions and new ODR-used rules for virtual destructors {#alternative_new_odr}
+--------------------------
+The presence of the replaceable deallocation functions is implementation defined.  Change `virtual` destructors so that they generate a partial vtable and don't ODR-use `::operator delete`.  Make `new` expressions ODR-use `::operator delete` and complete the vtable.
+
+### How could this virtual destructor ODR-use change be implemented? ### {#alt2_how}
+First, this is only a problem that needs to be solved on systems without a default heap.  This means that typical user-mode desktop and server implementations would be unaffected.
+
+Existing linkers already have the ability to take multiple identical virtual table implementations and pick one for use in the final binary.  A potential implementation strategy is for compilers and linkers to support a new "weaker" linkage.  When the default heap is disabled, the compiler would emit a vtable with a `nullptr` or pure virtual function in the virtual destructor slot.  When `new` is called, a "stronger" linkage vtable would be emitted that has the deleting destructor in the virtual destructor slot.  The linker would then select a vtable with the strongest linkage available.  Today's linkage would be considered "stronger".  Only partially filled vtables would have "weaker" linkage.
+
+### ABI impact ### {#alt2_abi}
+Mixing multiple object files into the same program should be fine, even if some of them have a default heap and some don't.  All the regular / "strong" linkage vtables should be identical, and all the "weaker" linkage vtables should be identical.  If anyone in the program calls any form of `new`, the deleting destructor will be present and in the right slot.  If no-one calls `new` in the program, then no-one should be calling `delete`, and the empty vtable slot won't be a problem.
+
+Shared libraries are trickier.  Vtables aren't always emitted into every translation unit.  Take shared library "leaf" that has a default heap.  It depends upon shared library "root" that does not have a default heap.  If a class with a virtual destructor is defined in "root", along with its "key function", then a call to `new` on the class in "leaf" will generate an object with a partial vtable.  Calling `delete` on that object will cause UB (usually crashes).
+
+Lack of a default heap should generally be considered a trait of the platform.  Mixing this configuration shouldn't be a common occurrence.
+
+### Experience ### {#alt2_experience}
+This alternative is novel, and does not have implementation or usage experience.
+
+Acknowledgments {#ack}
+======================
+Thank you to the many reviewers of this paper:
+Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred Bratterud, and Phil Hindman
+
+<pre class=biblio>
+{
+    "P1105R1": {
+        "authors": ["Ben Craig", "Ben Saks"],
+        "title": "Leaving no room for a lower-level language: A C++ Subset",
+        "href": "https://wg21.link/P1105R1"
+    },
+    "kernel_switch": {
+        "authors": ["Microsoft Documentation"],
+        "title": "/kernel (Create Kernel Mode Binary)",
+        "href": "https://docs.microsoft.com/en-us/cpp/build/reference/kernel-create-kernel-mode-binary"
+    }
+}
+</pre>
