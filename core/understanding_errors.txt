@@ -1,0 +1,35 @@
+Programming models
+  Automatic propagation (e.g. C++98 exceptions, P0709 exceptions without try statements)
+  Manual propagation (e.g. error codes, expected, outcome)
+  Hybrid propagation (errno, P0709 exceptions with try statements)
+  Error accumulation (e.g. floating point NaN, monadic expected)
+  Terminate
+
+Implementation approaches
+  Table unwinding
+  Frame tracking
+  Check before / after call
+  Alternate return address
+
+Implementation details
+  Where to put the error object
+  Re-throwing
+  Reason for destructor call
+  Stack usage
+  Debugability (e.g. walking stack twice)
+  Generalizability
+  Choice of noexcept / throws defaults.  opt-in vs. opt-out
+  Error classification
+
+Environments
+  Space constrained (e.g. microcontrollers)
+  Real-time
+  Kernel
+  Bare-metal
+  GPU
+  FPGA
+  High throughput
+  Low latency
+  Consistent resource usage systems
+  Unreliable networks
+  Mobile, Desktop, Server, HPC
