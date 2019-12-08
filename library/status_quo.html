@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 <html>
 <style type="text/css">
   ins, ins * { text-decoration:none; font-weight:bold; background-color:#A0FFA0 }
@@ -357,14 +358,19 @@ span.indented {
 }
 </style>
 
-<title>D1641R1.0: Freestanding Library: Rewording the Status Quo</title>
+<title>TODO D1641R2.0: Freestanding Library: Rewording the Status Quo</title>
 <body>
 <h1>Freestanding Library: Rewording the Status Quo</h1>
-Document number: P1641R1<br/>
+Document number: TODO D1641R2<br/>
 Date: 2019-09-29<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: SG14, Library Evolution Working Group
 <h1>Change history</h1>
+<h3> R2 </h3>
+<ul>
+  <li>Accounting for addition / changes to version.syn</li>
+  <li>Accounting for addition of <code>&lt;compare&gt;</code></li>
+</ul>
 <h3> R1 </h3>
 <ul>
   <li>Rebased to N4830</li>
@@ -457,7 +463,7 @@ Add a new subclause [freestanding.membership], under [conventions] and after [ob
 <h4 ><a class='secnum' style='min-width:118pt'>?.?.?.?</a> Freestanding membership <a class='abbr_ref'>[freestanding.membership]</a></h4>
 <div class='para'>
     <div class='marginalizedparent'><a class='marginalized'>1</a></div>
-    <div class='sentence'>The freestanding implementation has several declarations and macro definitions that shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
+    <div class='sentence'>Freestanding implementations have several declarations and macro definitions that shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
     <div class='note'>[ <span class='textit'>Note</span><span class='textit'>:</span> Throwing a standard library provided exception is not observably different from <span class='texttt'>terminate()</span> if the implementation doesn't unwind the stack during exception handling and the user's program contains no catch blocks. -<i>end note</i>]</div>
     <div class='sentence'>In the associated header synopsis for such declarations and macro definitions, the items shall be followed with a comment that ends with <span class='textit'>freestanding</span>, as in:</div>
 <pre class='codeblock'>
@@ -466,7 +472,7 @@ Add a new subclause [freestanding.membership], under [conventions] and after [ob
 </div>
 <div class='para'>
     <div class='marginalizedparent'><a class='marginalized'>2</a></div>
-    <div class='sentence'>The freestanding implementation has several headers that shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
+    <div class='sentence'>Freestanding implementations have several headers that shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
     <div class='sentence'>The synopsis for these headers shall start with a comment that ends with <span class='textit'>freestanding</span>, as in:</div>
 <pre class='codeblock'>
 <span class='comment'>// <span class='textit'>freestanding</span></span>
@@ -476,8 +482,11 @@ namespace std {
 </div>
 <div class='para'>
     <div class='marginalizedparent'><a class='marginalized'>3</a></div>
-    <div class='sentence'>Deduction guides for class templates that are implemented (partially or fully) in a freestanding implementation shall be implemented in a freestanding implementation.</div>
-    <div class='sentence'>The containing namespace for each non-namespace declaration that is implemented (partially or fully) in a freestanding implementation shall be implemented in a freestanding implementation.</div>
+    <div class='sentence'>Deduction guides for <i>freestanding class templates</i> shall be implemented in freestanding implementations.</div>
+    <div class='sentence'>Freestanding class templates are class templates that are implemented (partially or fully) in freestanding implementations.</div>
+    <div class='marginalizedparent'><a class='marginalized'>4</a></div>
+    <div class='sentence'>The containing namespace of each <i>freestanding declaration</i> shall be provided in a freestanding implementation.</div>
+    <div class='sentence'>Freestanding declarations are non-namespace declarations that are implemented (partially or fully) in a freestanding implementation</div>
 </div>
 </blockquote>
 
@@ -508,10 +517,7 @@ Change in [compliance] paragraph 3:
 </del>
 
 <ins>
-    <div class='sentence'>The supplied versions of the header
-    <span class='texttt'>&lt;version&gt;</span>
-    shall meet the requirements specified in [support.limits.general].</div>
-    <div class='sentence'>The other headers listed in this table shall meet the requirements for a freestanding implementation, as specified in the respective header synopsis.</div>
+    <div class='sentence'>The headers listed in this table shall meet the requirements for a freestanding implementation, as specified in the respective header synopsis.</div>
 </ins>
 </div>
 </blockquote>
@@ -529,6 +535,7 @@ Please add a <span class='comment'>// <span class='textit'>freestanding</span></
 <li><ins>[source_location.syn]</ins></li>
 <li><ins>[exception.syn]</ins></li>
 <li><ins>[initializer.list.syn]</ins></li>
+<li><ins>[compare.syn]</ins></li>
 <li><ins>[coroutine.syn]</ins></li>
 <li><ins>[cstdarg.syn]</ins></li>
 <li><ins>[concepts.syn]</ins></li>
@@ -630,144 +637,56 @@ namespace std {
 }</pre>
 </blockquote>
 
-Replace paragraph 3 in [support.limits.general]:
-<blockquote class="std">
-<del>
-<div class='para'><div class='marginalizedparent'><a class='marginalized'>3</a></div><div class='sourceLinkParent'></div>
-  <div class='sentence'>The macros in Table 36 are defined after inclusion of the header <span class='texttt'>&lt;version&gt;</span> or
-one of the corresponding headers specified in the table.</div>
-  <div class='note'>[<a class='note_link'><span class='textit'>Note</span></a><span class='textit'>:</span> Future versions of this International Standard might replace the values of these macros with greater values. -<i>end note</i>]</div>
-</div>
-</del>
-<ins>
-<div class='para'><div class='marginalizedparent'><a class='marginalized'>3</a></div><div class='sourceLinkParent'></div>
-  <div class='sentence'>On hosted implementations, the macros in Table ??36?? shall be defined to the corresponding integer literal after inclusion of the header <span class='texttt'>&lt;version&gt;</span> or one of the corresponding headers specified in the table.</div>
-  <div class='sentence'>On freestanding implementations, the indicated macros in Table ??36?? are defined after inclusion of the header <span class='texttt'>&lt;version&gt;</span> or one of the corresponding headers specified in the table.</div>
-  <div class='sentence'>The presence of the non-indicated macros in Table ??36?? is implementation defined on freestanding implementations.</div>
-  <div class='note'>[<a class='note_link'><span class='textit'>Note</span></a><span class='textit'>:</span> Future versions of this International Standard might replace the values of these macros with greater values. -<i>end note</i>]</div>
-</div>
-</ins>
-</blockquote>
+Change in [version.syn]:<br/>
+Instructions to the editor:<br/>
+Please add the following macro definition to [version.syn]
+<blockquote class="stdins"><pre class='codeblock'>
+#define __cpp_lib_freestanding 201906L <span class='comment'>// <span class='textit'>freestanding</span></span>
+</pre></blockquote>
 
-Modify Table ??36?? as indicated:
-<table>
-<caption>Table ??36??: Standard library feature-test macros</caption>
-<thead>
-<tr class='rowsep'>
-<th style="text-align: center">Macro name</th>
-<th style="text-align: center">Value</th>
-<th style="text-align: center"><ins>Freestanding</ins></th>
-<th style="text-align: center">Header(s)</th>
-</tr>
-</thead>
-<tbody>
-<tr class='capsep'><td><span class='texttt'>__cpp_lib_addressof_constexpr</span></td><td><span class='texttt'>201603L</span></td><td></td><td><span class='texttt'>&lt;memory&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_allocator_traits_is_always_equal</span></td><td><span class='texttt'>201411L</span></td><td></td><td><span class='texttt'>&lt;memory&gt;</span> <span class='texttt'>&lt;scoped_allocator&gt;</span> <span class='texttt'>&lt;string&gt;</span> <span class='texttt'>&lt;deque&gt;</span> <span class='texttt'>&lt;forward_list&gt;</span> <span class='texttt'>&lt;list&gt;</span> <span class='texttt'>&lt;vector&gt;</span> <span class='texttt'>&lt;map&gt;</span> <span class='texttt'>&lt;set&gt;</span> <span class='texttt'>&lt;unordered_map&gt;</span> <span class='texttt'>&lt;unordered_set&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_any</span></td><td><span class='texttt'>201606L</span></td><td></td><td><span class='texttt'>&lt;any&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_apply</span></td><td><span class='texttt'>201603L</span></td><td></td><td><span class='texttt'>&lt;tuple&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_array_constexpr</span></td><td><span class='texttt'>201603L</span></td><td></td><td><span class='texttt'>&lt;iterator&gt;</span> <span class='texttt'>&lt;array&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_as_const</span></td><td><span class='texttt'>201510L</span></td><td></td><td><span class='texttt'>&lt;utility&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_atomic_flag_test</span></td><td><span class='texttt'>201907L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;atomic&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_atomic_is_always_lock_free</span></td><td><span class='texttt'>201603L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;atomic&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_atomic_lock_free_type_aliases</span></td><td><span class='texttt'>201907L</span></td><td></td><td><span class='texttt'>&lt;atomic&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_atomic_ref</span></td><td><span class='texttt'>201806L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;atomic&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_atomic_wait</span></td><td><span class='texttt'>201907L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;atomic&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_barrier</span></td><td><span class='texttt'>201907L</span></td><td></td><td><span class='texttt'>&lt;barrier&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_bit_cast</span></td><td><span class='texttt'>201806L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;bit&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_bind_front</span></td><td><span class='texttt'>201907L</span></td><td></td><td><span class='texttt'>&lt;functional&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_bitops</span></td><td><span class='texttt'>201907L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;bit&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_bool_constant</span></td><td><span class='texttt'>201505L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;type_traits&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_bounded_array_traits</span></td><td><span class='texttt'>201902L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;type_traits&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_boyer_moore_searcher</span></td><td><span class='texttt'>201603L</span></td><td></td><td><span class='texttt'>&lt;functional&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_byte</span></td><td><span class='texttt'>201603L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;cstddef&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_char8_t</span></td><td><span class='texttt'>201907L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;atomic&gt;</span> <span class='texttt'>&lt;filesystem&gt;</span> <span class='texttt'>&lt;istream&gt;</span> <span class='texttt'>&lt;limits&gt;</span> <span class='texttt'>&lt;locale&gt;</span> <span class='texttt'>&lt;ostream&gt;</span> <span class='texttt'>&lt;string&gt;</span> <span class='texttt'>&lt;string_view&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_chrono</span></td><td><span class='texttt'>201907L</span></td><td></td><td><span class='texttt'>&lt;chrono&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_chrono_udls</span></td><td><span class='texttt'>201304L</span></td><td></td><td><span class='texttt'>&lt;chrono&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_clamp</span></td><td><span class='texttt'>201603L</span></td><td></td><td><span class='texttt'>&lt;algorithm&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_complex_udls</span></td><td><span class='texttt'>201309L</span></td><td></td><td><span class='texttt'>&lt;complex&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_concepts</span></td><td><span class='texttt'>201806L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;concepts&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_constexpr</span></td><td><span class='texttt'>201811L</span></td><td></td><td>any C++ library header from Table 19 or any C++ header for C library facilities from Table 20</td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_constexpr_dynamic_alloc</span></td><td><span class='texttt'>201907L</span></td><td></td><td><span class='texttt'>&lt;memory&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_constexpr_invoke</span></td><td><span class='texttt'>201907L</span></td><td></td><td><span class='texttt'>&lt;functional&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_constexpr_string</span></td><td><span class='texttt'>201907L</span></td><td></td><td><span class='texttt'>&lt;string&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_constexpr_swap_algorithms</span></td><td><span class='texttt'>201806L</span></td><td></td><td><span class='texttt'>&lt;algorithm&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_constexpr_vector</span></td><td><span class='texttt'>201907L</span></td><td></td><td><span class='texttt'>&lt;vector&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_destroying_delete</span></td><td><span class='texttt'>201806L</span></td><td></td><td><span class='texttt'>&lt;new&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_enable_shared_from_this</span></td><td><span class='texttt'>201603L</span></td><td></td><td><span class='texttt'>&lt;memory&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_endian</span></td><td><span class='texttt'>201907L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;bit&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_erase_if</span></td><td><span class='texttt'>201811L</span></td><td></td><td><span class='texttt'>&lt;string&gt;</span> <span class='texttt'>&lt;deque&gt;</span> <span class='texttt'>&lt;forward_list&gt;</span> <span class='texttt'>&lt;list&gt;</span> <span class='texttt'>&lt;vector&gt;</span> <span class='texttt'>&lt;map&gt;</span> <span class='texttt'>&lt;set&gt;</span> <span class='texttt'>&lt;unordered_map&gt;</span> <span class='texttt'>&lt;unordered_set&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_exchange_function</span></td><td><span class='texttt'>201304L</span></td><td></td><td><span class='texttt'>&lt;utility&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_execution</span></td><td><span class='texttt'>201902L</span></td><td></td><td><span class='texttt'>&lt;execution&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_filesystem</span></td><td><span class='texttt'>201703L</span></td><td></td><td><span class='texttt'>&lt;filesystem&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_format</span></td><td><span class='texttt'>201907L</span></td><td></td><td><span class='texttt'>&lt;format&gt;</span></td></tr>
-<tr class='rowsep'><td><ins><span class='texttt'>__cpp_lib_freestanding</span></ins></td><td><ins><span class='texttt'>201906L</span></ins></td><td><ins>+</ins></td><td></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_gcd_lcm</span></td><td><span class='texttt'>201606L</span></td><td></td><td><span class='texttt'>&lt;numeric&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_generic_associative_lookup</span></td><td><span class='texttt'>201304L</span></td><td></td><td><span class='texttt'>&lt;map&gt;</span> <span class='texttt'>&lt;set&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_generic_unordered_lookup</span></td><td><span class='texttt'>201811L</span></td><td></td><td><span class='texttt'>&lt;unordered_map&gt;</span> <span class='texttt'>&lt;unordered_set&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_hardware_interference_size</span></td><td><span class='texttt'>201703L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;new&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_has_unique_object_representations</span></td><td><span class='texttt'>201606L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;type_traits&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_hypot</span></td><td><span class='texttt'>201603L</span></td><td></td><td><span class='texttt'>&lt;cmath&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_incomplete_container_elements</span></td><td><span class='texttt'>201505L</span></td><td></td><td><span class='texttt'>&lt;forward_list&gt;</span> <span class='texttt'>&lt;list&gt;</span> <span class='texttt'>&lt;vector&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_integer_sequence</span></td><td><span class='texttt'>201304L</span></td><td></td><td><span class='texttt'>&lt;utility&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_integral_constant_callable</span></td><td><span class='texttt'>201304L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;type_traits&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_interpolate</span></td><td><span class='texttt'>201902L</span></td><td></td><td><span class='texttt'>&lt;cmath&gt;</span> <span class='texttt'>&lt;numeric&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_invoke</span></td><td><span class='texttt'>201411L</span></td><td></td><td><span class='texttt'>&lt;functional&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_is_aggregate</span></td><td><span class='texttt'>201703L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;type_traits&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_is_constant_evaluated</span></td><td><span class='texttt'>201811L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;type_traits&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_is_final</span></td><td><span class='texttt'>201402L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;type_traits&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_is_invocable</span></td><td><span class='texttt'>201703L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;type_traits&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_is_layout_compatible</span></td><td><span class='texttt'>201907L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;type_traits&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_is_null_pointer</span></td><td><span class='texttt'>201309L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;type_traits&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_is_pointer_interconvertible</span></td><td><span class='texttt'>201907L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;type_traits&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_is_swappable</span></td><td><span class='texttt'>201603L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;type_traits&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_jthread</span></td><td><span class='texttt'>201907L</span></td><td></td><td><span class='texttt'>&lt;stop_token&gt;</span> <span class='texttt'>&lt;thread&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_latch</span></td><td><span class='texttt'>201907L</span></td><td></td><td><span class='texttt'>&lt;latch&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_launder</span></td><td><span class='texttt'>201606L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;new&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_list_remove_return_type</span></td><td><span class='texttt'>201806L</span></td><td></td><td><span class='texttt'>&lt;forward_list&gt;</span> <span class='texttt'>&lt;list&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_logical_traits</span></td><td><span class='texttt'>201510L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;type_traits&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_make_from_tuple</span></td><td><span class='texttt'>201606L</span></td><td></td><td><span class='texttt'>&lt;tuple&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_make_reverse_iterator</span></td><td><span class='texttt'>201402L</span></td><td></td><td><span class='texttt'>&lt;iterator&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_make_unique</span></td><td><span class='texttt'>201304L</span></td><td></td><td><span class='texttt'>&lt;memory&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_map_try_emplace</span></td><td><span class='texttt'>201411L</span></td><td></td><td><span class='texttt'>&lt;map&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_math_constants</span></td><td><span class='texttt'>201907L</span></td><td></td><td><span class='texttt'>&lt;numbers&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_math_special_functions</span></td><td><span class='texttt'>201603L</span></td><td></td><td><span class='texttt'>&lt;cmath&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_memory_resource</span></td><td><span class='texttt'>201603L</span></td><td></td><td><span class='texttt'>&lt;memory_resource&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_node_extract</span></td><td><span class='texttt'>201606L</span></td><td></td><td><span class='texttt'>&lt;map&gt;</span> <span class='texttt'>&lt;set&gt;</span> <span class='texttt'>&lt;unordered_map&gt;</span> <span class='texttt'>&lt;unordered_set&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_nonmember_container_access</span></td><td><span class='texttt'>201411L</span></td><td></td><td><span class='texttt'>&lt;iterator&gt;</span> <span class='texttt'>&lt;array&gt;</span> <span class='texttt'>&lt;deque&gt;</span> <span class='texttt'>&lt;forward_list&gt;</span> <span class='texttt'>&lt;list&gt;</span> <span class='texttt'>&lt;map&gt;</span> <span class='texttt'>&lt;regex&gt;</span> <span class='texttt'>&lt;set&gt;</span> <span class='texttt'>&lt;string&gt;</span> <span class='texttt'>&lt;unordered_map&gt;</span> <span class='texttt'>&lt;unordered_set&gt;</span> <span class='texttt'>&lt;vector&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_not_fn</span></td><td><span class='texttt'>201603L</span></td><td></td><td><span class='texttt'>&lt;functional&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_null_iterators</span></td><td><span class='texttt'>201304L</span></td><td></td><td><span class='texttt'>&lt;iterator&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_optional</span></td><td><span class='texttt'>201606L</span></td><td></td><td><span class='texttt'>&lt;optional&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_parallel_algorithm</span></td><td><span class='texttt'>201603L</span></td><td></td><td><span class='texttt'>&lt;algorithm&gt;</span> <span class='texttt'>&lt;numeric&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_quoted_string_io</span></td><td><span class='texttt'>201304L</span></td><td></td><td><span class='texttt'>&lt;iomanip&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_ranges</span></td><td><span class='texttt'>201811L</span></td><td></td><td><span class='texttt'>&lt;algorithm&gt;</span> <span class='texttt'>&lt;functional&gt;</span> <span class='texttt'>&lt;iterator&gt;</span> <span class='texttt'>&lt;memory&gt;</span> <span class='texttt'>&lt;ranges&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_raw_memory_algorithms</span></td><td><span class='texttt'>201606L</span></td><td></td><td><span class='texttt'>&lt;memory&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_result_of_sfinae</span></td><td><span class='texttt'>201210L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;functional&gt;</span> <span class='texttt'>&lt;type_traits&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_robust_nonmodifying_seq_ops</span></td><td><span class='texttt'>201304L</span></td><td></td><td><span class='texttt'>&lt;algorithm&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_sample</span></td><td><span class='texttt'>201603L</span></td><td></td><td><span class='texttt'>&lt;algorithm&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_scoped_lock</span></td><td><span class='texttt'>201703L</span></td><td></td><td><span class='texttt'>&lt;mutex&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_semaphore</span></td><td><span class='texttt'>201907L</span></td><td></td><td><span class='texttt'>&lt;semaphore&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_shared_mutex</span></td><td><span class='texttt'>201505L</span></td><td></td><td><span class='texttt'>&lt;shared_mutex&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_shared_ptr_arrays</span></td><td><span class='texttt'>201611L</span></td><td></td><td><span class='texttt'>&lt;memory&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_shared_ptr_weak_type</span></td><td><span class='texttt'>201606L</span></td><td></td><td><span class='texttt'>&lt;memory&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_shared_timed_mutex</span></td><td><span class='texttt'>201402L</span></td><td></td><td><span class='texttt'>&lt;shared_mutex&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_source_location</span></td><td><span class='texttt'>201907L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;source_location&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_spaceship</span></td><td><span class='texttt'>201907L</span></td><td></td><td><span class='texttt'>&lt;compare&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_string_udls</span></td><td><span class='texttt'>201304L</span></td><td></td><td><span class='texttt'>&lt;string&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_string_view</span></td><td><span class='texttt'>201606L</span></td><td></td><td><span class='texttt'>&lt;string&gt;</span> <span class='texttt'>&lt;string_view&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_three_way_comparison</span></td><td><span class='texttt'>201711L</span></td><td></td><td><span class='texttt'>&lt;compare&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_to_array</span></td><td><span class='texttt'>201907L</span></td><td></td><td><span class='texttt'>&lt;array&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_to_chars</span></td><td><span class='texttt'>201611L</span></td><td></td><td><span class='texttt'>&lt;charconv&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_transformation_trait_aliases</span></td><td><span class='texttt'>201304L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;type_traits&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_transparent_operators</span></td><td><span class='texttt'>201510L</span></td><td></td><td><span class='texttt'>&lt;memory&gt;</span> <span class='texttt'>&lt;functional&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_tuple_element_t</span></td><td><span class='texttt'>201402L</span></td><td></td><td><span class='texttt'>&lt;tuple&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_tuples_by_type</span></td><td><span class='texttt'>201304L</span></td><td></td><td><span class='texttt'>&lt;utility&gt;</span> <span class='texttt'>&lt;tuple&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_type_trait_variable_templates</span></td><td><span class='texttt'>201510L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;type_traits&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_uncaught_exceptions</span></td><td><span class='texttt'>201411L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;exception&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_unordered_map_try_emplace</span></td><td><span class='texttt'>201411L</span></td><td></td><td><span class='texttt'>&lt;unordered_map&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_variant</span></td><td><span class='texttt'>201606L</span></td><td></td><td><span class='texttt'>&lt;variant&gt;</span></td></tr>
-<tr class='rowsep'><td><span class='texttt'>__cpp_lib_void_t</span></td><td><span class='texttt'>201411L</span></td><td><ins>+</ins></td><td><span class='texttt'>&lt;type_traits&gt;</span></td></tr>
-</tbody>
-</table>
+Please add a <span class='comment'>// <span class='textit'>freestanding</span></span> comment to the following macro definitions:
+<ul>
+<li><ins><code>__cpp_lib_atomic_flag_test</code></ins></li>
+<li><ins><code>__cpp_lib_atomic_float</code></ins></li>
+<li><ins><code>__cpp_lib_atomic_is_always_lock_free</code></ins></li>
+<li><ins><code>__cpp_lib_atomic_ref</code></ins></li>
+<li><ins><code>__cpp_lib_atomic_value_initialization</code></ins></li>
+<li><ins><code>__cpp_lib_atomic_wait</code></ins></li>
+<li><ins><code>__cpp_lib_bit_cast</code></ins></li>
+<li><ins><code>__cpp_lib_bitops</code></ins></li>
+<li><ins><code>__cpp_lib_bool_constant</code></ins></li>
+<li><ins><code>__cpp_lib_bounded_array_traits</code></ins></li>
+<li><ins><code>__cpp_lib_byte</code></ins></li>
+<li><ins><code>__cpp_lib_char8_t</code></ins></li>
+<li><ins><code>__cpp_lib_concepts</code></ins></li>
+<li><ins><code>__cpp_lib_destroying_delete</code></ins></li>
+<li><ins><code>__cpp_lib_endian</code></ins></li>
+<li><ins><code>__cpp_lib_hardware_interference_size</code></ins></li>
+<li><ins><code>__cpp_lib_has_unique_object_representations</code></ins></li>
+<li><ins><code>__cpp_lib_int_pow2</code></ins></li>
+<li><ins><code>__cpp_lib_integral_constant_callable</code></ins></li>
+<li><ins><code>__cpp_lib_is_aggregate</code></ins></li>
+<li><ins><code>__cpp_lib_is_constant_evaluated</code></ins></li>
+<li><ins><code>__cpp_lib_is_final</code></ins></li>
+<li><ins><code>__cpp_lib_is_invocable</code></ins></li>
+<li><ins><code>__cpp_lib_is_layout_compatible</code></ins></li>
+<li><ins><code>__cpp_lib_is_null_pointer</code></ins></li>
+<li><ins><code>__cpp_lib_is_pointer_interconvertible</code></ins></li>
+<li><ins><code>__cpp_lib_is_swappable</code></ins></li>
+<li><ins><code>__cpp_lib_launder</code></ins></li>
+<li><ins><code>__cpp_lib_logical_traits</code></ins></li>
+<li><ins><code>__cpp_lib_nothrow_convertible</code></ins></li>
+<li><ins><code>__cpp_lib_remove_cvref</code></ins></li>
+<li><ins><code>__cpp_lib_result_of_sfinae</code></ins></li>
+<li><ins><code>__cpp_lib_source_location</code></ins></li>
+<li><ins><code>__cpp_lib_three_way_comparison</code></ins></li>
+<li><ins><code>__cpp_lib_transformation_trait_aliases</code></ins></li>
+<li><ins><code>__cpp_lib_type_identity</code></ins></li>
+<li><ins><code>__cpp_lib_type_trait_variable_templates</code></ins></li>
+<li><ins><code>__cpp_lib_uncaught_exceptions</code></ins></li>
+<li><ins><code>__cpp_lib_unwrap_ref</code></ins></li>
+<li><ins><code>__cpp_lib_void_t</code></ins></li>
+</ul>
 
 Instructions to the editor:
 <p>
