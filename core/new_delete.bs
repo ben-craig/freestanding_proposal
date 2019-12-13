@@ -20,13 +20,13 @@ The proposed solution is different than the one proposed for P1105R1, but the mo
 
 What is changing {#the_changes}
 =====================
-On freestanding systems without default heap storage, the presence of the replaceable allocation functions (i.e. allocating `::operator new`, including the `nothrow_t` and `align_val_t' overloads, single and array forms) will be implementation defined.
+On freestanding systems without default heap storage, the presence of the replaceable allocation functions (i.e. allocating `::operator new`, including the `nothrow_t` and `align_val_t` overloads, single and array forms) will be implementation defined.
 
 As a consequence of the above, coroutines that are relying on the global allocation functions will be ill-formed so long as those global allocation functions are not present.
 
 Implementations that rely on `::operator new` for exception storage will need to use a different, unspecified source of memory.
 
-For implementations that do not provide a default `::operator new`, `::operator delete` will be implementable as a no-op function.
+`::operator delete` will be implementable as a no-op function on implementations that do not provide a default `::operator new`.
 
 What is staying the same {#non_changes}
 =======================================
@@ -45,7 +45,7 @@ As an example, in the Microsoft Windows kernel environment, there are two leadin
 
 In the Linux kernel environment, `kmalloc` with the `GFP_KERNEL` should be used when allocating memory within the context of a process, but `GFP_ATOMIC` should be used when allocating memory outside the context of a process, such as inside of an interrupt.  The implementers of the C++ runtime are in no position to know which is the correct flag to use by default.
 
-Freestanding implementations are intended to run without the benefit of an operating system ([basic.def.odr](http://eel.is/c++draft/intro.compliance#7)).  However, the name of the function that supplies dynamic memory is usually an OS-specific detail.  The C++ implementation should not (and may not) know the name of the function to request memory.  The Windows Kernel uses `ExAllocatePoolWithTag`.  In the Linux kernel, `kmalloc` is the main function to use.  In FreeBSD, a function named `malloc` is present, but it takes different arguments than the C standard library function of the same name.  FreeRTOS uses `pvPortMalloc`, and ThreadX uses `tx_byte_allocate`.  Home-grown OSes will likely have other spellings for memory allocation routines.
+Freestanding implementations are intended to run without the benefit of an operating system ([basic.def.odr](http://eel.is/c++draft/intro.compliance#7)).  However, the name of the function that supplies dynamic memory is usually an OS-specific detail.  The C++ implementation should not (and may not) know the name of the function to request memory.  The Windows kernel uses `ExAllocatePoolWithTag`.  In the Linux kernel, `kmalloc` is the main function to use.  In FreeBSD, a function named `malloc` is present, but it takes different arguments than the C standard library function of the same name.  FreeRTOS uses `pvPortMalloc`, and ThreadX uses `tx_byte_allocate`.  Home-grown OSes will likely have other spellings for memory allocation routines.
 
 Today's C++ implementations don't provide `::operator new` implementations for all possible targets.  Doing so isn't a plausible goal, especially when the home-grown OSes are taken into account.  This means that users are already forced into choosing between not having `::operator new` support and providing their own implementation.  We should acknowledge and standardize this existing practice, especially since we already have the extension point mechanism in place.
 
