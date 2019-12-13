@@ -43,7 +43,9 @@ In some target environments, there is no "right" way to allocate memory.  In ker
 
 As an example, in the Microsoft Windows kernel environment, there are two leading choices about where to get dynamic memory.  Users can get memory from the non-paged pool, which is a safe, but scarce resource; or users can get memory from the paged pool, which is plentiful, but not accessible in many common kernel operations.  The author has had experience with both of these options as defaults, with the predictable outcome of crashes with paged pool defaults and OOM with non-paged pool defaults.  The implementer of the C++ toolchain is not in a good position to make this choice for the user.
 
-The C++ implementation may not know the name of the function to request memory.  In the Linux kernel, `kmalloc` is the main function to use.  In FreeBSD, a function named `malloc` is present, but it takes different arguments than the C standard library function of the same name.  FreeRTOS uses `pvPortMalloc`, and ThreadX uses `tx_byte_allocate`.  Home-grown OSes will likely have other spellings for memory allocation routines.
+In the Linux kernel environment, `kmalloc` with the `GFP_KERNEL` should be used when allocating memory within the context of a process, but `GFP_ATOMIC` should be used when allocating memory outside the context of a process, such as inside of an interrupt.  The implementers of the C++ runtime are in no position to know which is the correct flag to use by default.
+
+Freestanding implementations are intended to run without the benefit of an operating system ([basic.def.odr](http://eel.is/c++draft/intro.compliance#7)).  However, the name of the function that supplies dynamic memory is usually an OS-specific detail.  The C++ implementation should not (and may not) know the name of the function to request memory.  The Windows Kernel uses `ExAllocatePoolWithTag`.  In the Linux kernel, `kmalloc` is the main function to use.  In FreeBSD, a function named `malloc` is present, but it takes different arguments than the C standard library function of the same name.  FreeRTOS uses `pvPortMalloc`, and ThreadX uses `tx_byte_allocate`.  Home-grown OSes will likely have other spellings for memory allocation routines.
 
 Today's C++ implementations don't provide `::operator new` implementations for all possible targets.  Doing so isn't a plausible goal, especially when the home-grown OSes are taken into account.  This means that users are already forced into choosing between not having `::operator new` support and providing their own implementation.  We should acknowledge and standardize this existing practice, especially since we already have the extension point mechanism in place.
 
@@ -53,9 +55,9 @@ In other environments, notably space constrained and/or real-time environments, 
 
 `virtual` destructors {#virtual_dtors}
 -------------------------------
-TODO: more why.  Don't want to pay for op delete if you don't ever call new or delete.
-
 A no-op `::operator delete` is still provided in order to satisfy `virtual` destructors.  `virtual` destructors ODR-use their associated `operator delete`([basic.def.odr](http://eel.is/c++draft/basic.def.odr#7)).  This approach has the disadvantage that there is a small, one-time overhead for the first `virtual` destructor in a program, even if there are no usages of `new` or `delete`.  The overhead is small though, and you only pay for the overhead if you use `virtual` destructors.
+
+Ideally, if neither `new` nor `delete` is ever called, we wouldn't need an `operator delete`.  This proposal still requires some `operator delete` to exist, though that `operator delete` can be a no-op.
 
 Experience {#experience}
 =================
@@ -102,7 +104,7 @@ This alternative is novel, and does not have implementation or usage experience.
 Acknowledgments {#ack}
 ======================
 Thank you to the many reviewers of this paper:
-Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred Bratterud, and Phil Hindman
+Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred Bratterud, Phil Hindman, Arthur O'Dwyer, and Laurin-Luis Lehning
 
 <pre class=biblio>
 {

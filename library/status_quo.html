@@ -368,6 +368,7 @@ Audience: SG14, Library Evolution Working Group
 <h1>Change history</h1>
 <h3> R2 </h3>
 <ul>
+  <li>Rebased to N4842</li>
   <li>Accounting for addition / changes to version.syn</li>
   <li>Accounting for addition of <code>&lt;compare&gt;</code></li>
 </ul>
@@ -411,13 +412,11 @@ A freestanding implementation that provides support for this paper shall define 
     <thead><tr>
         <th>Name</th>
         <th>Value</th>
-        <th>Freestanding</th>
         <th>Header</th>
     </tr></thead>
     <tbody><tr>
         <td><code>__cpp_lib_freestanding</code></td>
         <td><var ignore="true">201906</var></td>
-        <td>+</td>
         <td><code>&lt;version&gt;<code></td>
     </tr></tbody>
 </table>
@@ -456,7 +455,7 @@ constexpr std::decay_t&lt;T&gt;* my_addressof(T && arg) {
 </p>
 <h1>Wording</h1>
 <p>
-The following changes are relative to N4830 from the Post-Cologne 2019 mailing.
+The following changes are relative to N4842 from the Post-Belfast 2019 mailing.
 </p>
 Add a new subclause [freestanding.membership], under [conventions] and after [objects.within.classes]:
 <blockquote class="stdins">
@@ -503,7 +502,7 @@ Change in [compliance] paragraph 3:
     <span class='texttt'>exit</span>,
     and
     <span class='texttt'>quick_&shy;exit</span> ([support.start.term]).</div>
-  
+
     <div class='sentence'>The supplied version of the header <span class='texttt'><span class='anglebracket'>&lt;</span>atomic<span class='anglebracket'>&gt;</span></span>
     shall meet the same requirements as for a hosted implementation
     except that support for
@@ -639,6 +638,7 @@ namespace std {
 
 Change in [version.syn]:<br/>
 Instructions to the editor:<br/>
+TODO: needs wording to say that this is only defined in freestanding environments
 Please add the following macro definition to [version.syn]
 <blockquote class="stdins"><pre class='codeblock'>
 #define __cpp_lib_freestanding 201906L <span class='comment'>// <span class='textit'>freestanding</span></span>
