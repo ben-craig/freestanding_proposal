@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: Freestanding Language: Optional <code>::operator new</code>
 Shortname: DXXXX
-Revision: 0.0
+Revision: 0.1
 Audience: SG14, EWG
 Status: D
 Group: WG21
@@ -20,29 +20,42 @@ The proposed solution is different than the one proposed for P1105R1, but the mo
 
 What is changing {#the_changes}
 =====================
-On freestanding systems without default heap storage, the presence of the replaceable allocation functions (i.e. allocating `::operator new`) will be implementation defined.
+On freestanding systems without default heap storage, the presence of the replaceable allocation functions (i.e. allocating `::operator new`, including the `nothrow_t` and `align_val_t' overloads, single and array forms) will be implementation defined.
 
 As a consequence of the above, coroutines that are relying on the global allocation functions will be ill-formed so long as those global allocation functions are not present.
 
 Implementations that rely on `::operator new` for exception storage will need to use a different, unspecified source of memory.
 
+For implementations that do not provide a default `::operator new`, `::operator delete` will be implementable as a no-op function.
+
 What is staying the same {#non_changes}
 =======================================
 The replaceable deallocating `::operator delete` functions are still required to be present.  `virtual` destructors ODR-use their associated `operator delete`([basic.def.odr](http://eel.is/c++draft/basic.def.odr#7)), so keeping the global `::operator delete` allows those `virtual` destructors to continue building.  Alternatives to this choice are discussed in [[#design_alternatives]].
 
-Hosted implementations are unchanged.  Users of freestanding implementations can still provide implementations of the replaceable allocation and deallocation functions.  The behavior of `virtual` destructors is unchanged.  The behavior of class specific `operator new` and `operator delete` overloads is unchanged.  The requirements on user-provided `::operator new` and `::operator delete` overloads remains the same, particularly those requirements involving error behaviors.  Coroutines will behave the same so long as promise-specific allocators are used.  The storage for exception objects will remain unspecified.
+Hosted implementations are unchanged.  Users of freestanding implementations can still provide implementations of the replaceable allocation and deallocation functions.  The behavior of `virtual` destructors is unchanged.  The behavior of class specific `operator new` and `operator delete` overloads is unchanged.  Non-allocating placement `::operator new` and `::operator delete` are still required to be present.  The requirements on user-provided `::operator new` and `::operator delete` overloads remains the same, particularly those requirements involving error behaviors.  Coroutines will behave the same so long as promise-specific allocators are used.  The storage for exception objects will remain unspecified.
 
 Why? {#why}
 ===========
+
+No right way to allocate memory {#no_right_way}
+-------------------------------
 In some target environments, there is no "right" way to allocate memory.  In kernel and embedded domains, the implementer of the C++ toolchain doesn't always know the "right" way to allocate memory on the target environment.  This makes it difficult to provide an implementation for `::operator new`.  The implementer cannot even rely on the presence of `malloc`, as it runs into the same fundamental problems.
 
 As an example, in the Microsoft Windows kernel environment, there are two leading choices about where to get dynamic memory.  Users can get memory from the non-paged pool, which is a safe, but scarce resource; or users can get memory from the paged pool, which is plentiful, but not accessible in many common kernel operations.  The author has had experience with both of these options as defaults, with the predictable outcome of crashes with paged pool defaults and OOM with non-paged pool defaults.  The implementer of the C++ toolchain is not in a good position to make this choice for the user.
 
-The C++ implementation may not know the name of the function to request memory.  In the Linux kernel, `kmalloc` is the main function to use.  In FreeBSD, a functioned named `malloc` is present, but it takes different arguments than the C standard library function of the same name.  FreeRTOS uses `pvPortMalloc`, and ThreadX uses `tx_byte_allocate`.  Home-grown OSes will likely have other spellings for memory allocation routines.
+The C++ implementation may not know the name of the function to request memory.  In the Linux kernel, `kmalloc` is the main function to use.  In FreeBSD, a function named `malloc` is present, but it takes different arguments than the C standard library function of the same name.  FreeRTOS uses `pvPortMalloc`, and ThreadX uses `tx_byte_allocate`.  Home-grown OSes will likely have other spellings for memory allocation routines.
 
 Today's C++ implementations don't provide `::operator new` implementations for all possible targets.  Doing so isn't a plausible goal, especially when the home-grown OSes are taken into account.  This means that users are already forced into choosing between not having `::operator new` support and providing their own implementation.  We should acknowledge and standardize this existing practice, especially since we already have the extension point mechanism in place.
 
+No allocations allowed {#ill_formed_as_a_service}
+-------------------------------
 In other environments, notably space constrained and/or real-time environments, there is no free store.  These environments often cannot tolerate the space overhead for the free store, or the non-determinism from using the free store.  In these environments, it is a desirable property for accidental global `new` usage to cause a build failure.  With this proposal, users could expect a linker error when global `new` is used inappropriately.
+
+`virtual` destructors {#virtual_dtors}
+-------------------------------
+TODO: more why.  Don't want to pay for op delete if you don't ever call new or delete.
+
+A no-op `::operator delete` is still provided in order to satisfy `virtual` destructors.  `virtual` destructors ODR-use their associated `operator delete`([basic.def.odr](http://eel.is/c++draft/basic.def.odr#7)).  This approach has the disadvantage that there is a small, one-time overhead for the first `virtual` destructor in a program, even if there are no usages of `new` or `delete`.  The overhead is small though, and you only pay for the overhead if you use `virtual` destructors.
 
 Experience {#experience}
 =================
@@ -50,7 +63,11 @@ The proposed design has field experience in a micro-controller environment.  GCC
 
 Design Alternatives {#design_alternatives}
 ===========
-In addition to omitting `::operator new`, we could also do one of the following:
+In addition to omitting `::operator new`, we should choose among the following options.
+
+Alternative 0: No-op default deallocation functions (Proposed above) {#alternative_nop_dealloc}
+----------------------------------------------------
+This option preserves much functionality, without using any novel techniques.  See above for further explanation.
 
 Alternative 1: No deallocation functions {#alternative_no_dealloc}
 --------------------------
