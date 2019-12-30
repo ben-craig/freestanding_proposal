@@ -1,3 +1,88 @@
+Agreed
+------
+We should continue to discuss error handling and exceptions in order to drive improvements.
+Large portions of the C++ community build their code with exceptions turned off.
+
+Table-based exceptions have the fastest known happy path performance among recoverable error handling strategies.
+Sad path performance of exceptions is more than 100x worse than happy path performance on table-based exception implementations.
+Error codes perform worse than table-based exceptions on the happy path.
+Error codes perform better than table-based exceptions on the sad path.
+Table-based exceptions have higher space overhead than error codes.
+Mainstream implementations of table-based exceptions have room for optimization.
+Platform ABIs place substantial constraints on how much exceptions can change.
+The performance gap between happy and sad path exception performance has widened over time because of lack of development on the sad path.
+Exception syntax works well with constructors and operators.
+Error code syntax does not work well with constructors and operators.
+
+
+Error terminates are not suitable for recoverable error handling.
+Error terminates are useful as the primary error handling mechanism in many applications.
+Error terminates are as fast or faster than table-based exceptions.
+Error terminates are smaller than table-based exceptions.
+In general, exception support adds non-zero overhead to programs that only need error terminates.
+
+Manual error propagation requires a lot of mistake-prone boilerplate.
+Automatic error propagation adds invisible control flow that can be easy to overlook.
+RAII is an enormous boon to error handling in general.
+Code that does not use RAII is exceedingly difficult to port to exceptions.
+The visibility of error handling is polarizing.
+
+Forgetting to test for an error code is a common source of bugs.
+Forgetting to account for a propagating exception is a common source of bugs.
+
+Table-based exceptions are challenging to use during operations with hard deadlines (i.e. real-time operations).
+Table-based exceptions are well suited to the no-deadline portions of real-time applications.
+In some code paths, a 20% reduction in happy path performance is acceptable if it results in a 100x improvement in sad path performance.
+
+Table-based exceptions are challenging on micro-controllers due to tight space constraints.
+New code in mainstream operating system kernels cannot use full C++ exception support without modifying the operating system kernel itself.
+Partial C++ exception support is possible in mainstream operating system kernels without modifying the operating system kernel itself.
+Table-based exceptions are challenging on bare-metal, in part because of the high implementation cost and dependency on operating system facilities.
+Table-based exceptions are challenging on GPUs because they cause divergent code flow, and can inhibit the most valuable optimization in that domain.
+Table-based exceptions are challenging on FPGAs because of space constraints, and because of indirect calls.
+Table-based exceptions are well suited to applications where extra milliseconds of latency on the failure path will go unnoticed.
+#DUP?# Table-based exceptions are well suited to interactive and low-latency applications where extra milliseconds of latency on the failure path will go unnoticed.
+Table-based exceptions are well suited to throughput-oriented applications where failure is rare and can be modeled with a random (i.e. non-correlated) process.
+
+There are other exception implementation approaches that may address the challenges with table-based exceptions, or at least provide a different set of trade offs.
+
+Throwing an exception requires a dynamic allocation.
+It is challenging to support heap allocations for exception objects in kernel, micro-controller, bare-metal, and FPGA environments.
+It is challenging to support stack allocations for exception objects in kernel, micro-controller, bare-metal, and FPGA environments, due to limited stack space.
+Exceptions require out-of-band mutable storage that is local to a thread (though not necessarily <i>thread-local-storage</i>).
+
+Migrating a large code base from one error handling strategy to another is a significant undertaking.
+
+P0709 exceptions are an additional form of error handling.
+P0709 exceptions are likely to have performance characteristics similar to error codes.
+If P0709 exceptions are standardized, all prior error handling mechanisms will still be seen in the wild for decades to come.
+Users routinely write code that translates between different error handling schemes.
+Translating between different error handling schemes usually requires error prone boilerplate.
+
+Exceptions allow the transportation of arbitrary error information from a callback, through the invoker.
+Error codes can be constructed that allow the transportation of arbitrary error information from a callback, through the invoker (e.g. a std::pair<int, std::any>).
+
+Error codes, in the general case, cannot be used to propagate error information across code that is unaware of error codes.
+*Exceptions, in the general case, cannot be used to propagate error information across code that is unaware of C++ exceptions.
+
+Callers of `expected<void, std::errc> f1() noexcept;` are using `expected`, and pay the associated costs of `expected`.
+Callers of `std::errc f2() noexcept;` are using error codes, and pay the associated costs of error codes.
+Callers of `void f3();` are using exceptions, and pay the associated costs of exceptions.
+
+Dual interface libraries are not ideal.
+Library authors do not always know whether an API failure is expected, common, or recoverable.
+
+
+Disagreed
+---------
+
+The sad path of error code based programs is roughly as analyzable as the happy path.
+The sad path of exception based programs is much harder to analyze than the happy path.
+
+
+
+
+
 Programming models
   Automatic propagation (e.g. C++98 exceptions, P0709 exceptions without try statements)
   Manual propagation (e.g. error codes, expected, outcome)
