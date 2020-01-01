@@ -1,0 +1,296 @@
+<pre class='metadata'>
+Title: Shared understanding of errors and exceptions
+Shortname: DXXXX
+Revision: 0.0
+Audience: SG14, EWG
+Status: D
+Group: WG21
+URL: TODO
+!Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
+Editor: Ben Craig, National Instruments, ben.craig@gmail.com
+Abstract: 
+Markup Shorthands: markdown yes
+</pre>
+
+Introduction {#intro}
+=====================
+This paper aims to reflect the shared understanding of the authors regarding error handling and exceptions.  The goal is to avoid talking past each other, and productively help us gain consensus.  This paper does not recommend any specific actions or changes.
+
+Areas of agreement {#agree}
+===========
+TODO: maybe retitle and combine with #disagree?  Then just mark up the ones where we disagree?
+
+1. We should continue to discuss error handling and exceptions in order to drive improvements. [[#discuss]]
+1. Large portions of the C++ community build their code with exceptions turned off. [[#eh_off]]
+    <br/><br/>
+
+1. Table-based exceptions have the fastest known [=happy path=] performance among [=program-recoverable=] error handling strategies. [[P1886R0]]
+1. [=Sad path=] performance of exceptions is more than 100x worse than happy path performance on table-based exception implementations. [[P1886R0]]
+1. Error codes perform worse than table-based exceptions on the happy path. [[P1886R0]]
+1. Error codes perform better than table-based exceptions on the sad path. [[P1886R0]]
+1. Table-based exceptions have higher space overhead than error codes. [[P1640R1]]
+1. Mainstream implementations of table-based exceptions have room for optimization. [[#room_for_optimizations]]
+1. Platform ABIs place substantial constraints on how much exceptions can change. [[ItaniumEHABI]]
+1. The performance gap between happy and sad path exception performance has widened over time because of lack of development on the sad path. [[P1947R0]]
+1. Exception syntax works well with constructors and operators.
+1. Error code syntax does not work well with constructors and operators.
+    <br/><br/>
+
+1. Error terminates are not suitable for program-recoverable error handling.
+1. Error terminates are useful as the primary error handling mechanism in many applications.
+1. Error terminates are as fast or faster than table-based exceptions. [[P1886R0]]
+1. Error terminates are smaller than table-based exceptions. [[P1640R1]]
+1. In general, exception support adds non-zero overhead to programs that only need error terminates. [[P1640R1]]
+    <br/><br/>
+
+1. Manual error propagation requires a lot of mistake-prone boilerplate. [[#error_prop]]
+1. Forgetting to test for an error code is a common source of bugs. [[#error_prop]]
+1. Automatic error propagation adds invisible control flow that can be easy to overlook. [[#error_prop]]
+1. Forgetting to account for a propagating exception is a common source of bugs. [[#error_prop]]
+1. #SUBJECTIVE# Automatic error propagation is preferable. [[#error_prop]] 
+1. RAII is an enormous boon to error handling in general. [[#error_prop]] 
+1. Code that does not use RAII is exceedingly difficult to port to exceptions.
+1. The visibility of error handling is a polarizing topic in the C++ community.
+    <br/><br/>
+
+1. Table-based exceptions are challenging to use during operations with hard deadlines (i.e. real-time operations). [[#real_time]]
+1. Table-based exceptions are well suited to the no-deadline portions of real-time applications. [[#real_time]]
+1. In some code paths, a 20% reduction in happy path performance is acceptable if it results in a 100x improvement in sad path performance.  [[#real_time]]
+    <br/><br/>
+
+1. `try`, `catch` and `throw` are not supported in the context of a signal. [support.signal](http://eel.is/c++draft/support.signal)
+1. Table-based exceptions are challenging on micro-controllers due to tight space constraints. [[#microcontrollers]]
+1. New code in mainstream operating system kernels cannot use full C++ exception support without modifying the operating system kernel itself. [[#kernel]]
+1. Partial C++ exception support is possible in mainstream operating system kernels without modifying the operating system kernel itself. [[#kernel]]
+1. Table-based exceptions are challenging on bare-metal, in part because of the high implementation cost and dependency on operating system facilities. [[#baremetal]]
+1. Table-based exceptions are challenging on GPUs because they cause divergent code flow, and can inhibit the most valuable optimization in that domain. [[#gpus]]
+1. Table-based exceptions are challenging on FPGAs because of space constraints, and because of indirect calls. [[#fpgas]]
+1. Table-based exceptions are well suited to applications where extra milliseconds of latency on the failure path will go unnoticed. [[#unnoticed_fail]]
+1. #DUP?# Table-based exceptions are well suited to interactive and low-latency applications where extra milliseconds of latency on the failure path will go unnoticed. [[#unnoticed_fail]]
+1. Table-based exceptions are well suited to throughput-oriented applications where failure is rare and can be modeled with a random (i.e. non-correlated) process. [[#throughput_apps]]
+1. Table-based exceptions are well suited to applications where all speed improvements on the happy path provide value. [[#cant_go_fast_enough]]
+    <br/><br/>
+
+1. There are other exception implementation approaches that may address the challenges with table-based exceptions, or at least provide a different set of trade offs.  [[#other_approaches]]
+    <br/><br/>
+
+1. Throwing an exception requires a dynamic allocation. [[#eh_alloc]]
+1. It is challenging to support heap allocations for exception objects in kernel, micro-controller, bare-metal, and FPGA environments. [[#eh_alloc]]
+1. It is challenging to support stack allocations for exception objects in kernel, micro-controller, bare-metal, and FPGA environments, due to limited stack space. [[#eh_alloc]]
+1. Exceptions require out-of-band mutable storage that is local to a thread (though not necessarily <i>thread-local-storage</i>). [[#tls]]
+    <br/><br/>
+
+1. Migrating a large code base from one error handling strategy to another is a significant undertaking.
+1. The business value of improving sad-path exception performance is dubious. [[#dubious_business_value]]
+    <br/><br/>
+
+1. [[P0709]] exceptions are an additional form of error handling. [[#n_plus_one]]
+1. P0709 exceptions are likely to have performance characteristics similar to error codes.
+1. If P0709 exceptions are standardized, all prior error handling mechanisms will still be seen in the wild for decades to come. [[#n_plus_one]]
+1. Users routinely write code that translates between different error handling schemes. [[#n_plus_one]]
+1. Translating between different error handling schemes usually requires error prone boilerplate. [[#n_plus_one]]
+    <br/><br/>
+
+1. Exceptions allow the transportation of arbitrary error information from a callback, through the invoker.
+1. Error codes can be constructed that allow the transportation of arbitrary error information from a callback, through the invoker (e.g. a std::pair<int, std::any>).
+    <br/><br/>
+
+1. Error codes, in the general case, cannot be used to propagate error information across code that is unaware of error codes.
+1. Exceptions, in the general case, cannot be used to propagate error information across code that is unaware of C++ exceptions.
+    <br/><br/>
+
+1. You shouldn't pay for what you don't use. [[DE1994]]
+1. Callers of `expected<void, std::errc> f1() noexcept;` are using `expected`, and pay the associated costs of `expected`.
+1. Callers of `std::errc f2() noexcept;` are using error codes, and pay the associated costs of error codes.
+1. Callers of `void f3();` are using exceptions, and pay the associated costs of exceptions. [[#using_is_easy]]
+1. A program can use exceptions (and therefore pay for them) even when it doesn't have try, catch, or throw in the program. [[#using_is_easy]]
+    <br/><br/>
+
+1. Dual error interface libraries are not ideal (e.g. `std::filesystem`).
+1. Authors of an API do not always know whether a failure is expected, common, or program-recoverable.
+
+1. The sad path of error code based programs is roughly as analyzable as the happy path. [[#sad_path_analysis]]
+1. The sad path of exception based programs is much harder to analyze than the happy path. [[#sad_path_analysis]]
+
+
+Rationale {#rationale}
+==========
+
+Discussion provides value {#discuss}
+-------------------------------
+The continuing error handling discussions serve to remind the committee and the community of forgotten rationale, uncommon use cases, and unfamiliar domains.
+
+These discussions could result in new facilities in C++, improved quality of toolchain implementations, or even changes to hardware and software outside the purview of WG21 (e.g. operating systems, GPU silicon, C error handling).
+
+Exceptions turned off {#eh_off}
+-------------------------------
+The [[SC++F_2018]] and [[SC++F_2019]] results indicate that around half of all developers are not allowed to use exceptions in all projects, and around 20% aren't allowed to use exceptions at all.
+
+The Standard C++ Foundation surveys are more likely to be answered by enfranchised C++ developers, and as a result have a bias.  Unfortunately, we don't have data to know how it is biased, as it is exceedingly difficult to get data about the "dark matter" programmers.
+
+Regardless, the survey data indicates that a significant portion of the C++ community does not use exceptions, even if we don't know the exact size of that portion.
+
+Room for optimizations {#room_for_optimizations}
+------------------------------------------------
+There are cases where the compiler could detect certain exception patterns and avoid many of the costs of exception handling.  [[P1676R0]] and [[Glisse2013]] discuss many of these patterns.
+
+[[MoFH4]] discusses optimizations made to the Microsoft Visual Studio 2019 x64 compiler that substantially reduced size overhead, without breaking ABI.
+
+Error propagation {#error_prop}
+-------------------------------
+TODO: [[Cargill1994]]
+
+Real-time environments {#real_time}
+----------------------------------
+TODO
+
+Microcontroller environments {#microcontrollers}
+-----------------------------------
+TODO
+
+Kernel environments {#kernel}
+-----------------------------
+TODO: [[Gylfason2004]] 
+
+Bare metal environments {#baremetal}
+------------------------------------
+TODO
+
+GPU and accelerator environments {#gpus}
+-----------------------------
+TODO
+
+Direct FPGA environments {#fpgas}
+-----------------------------
+TODO
+
+Unimportant failure performance {#unnoticed_fail}
+-------------------------------------
+TODO: also, work on the title of this section
+
+Throughput applications {#throughput_apps}
+-----------------------------------------
+TODO: include discussion of correlated errors
+
+Performance as a competitive advantage {#cant_go_fast_enough}
+-------------------------------------------------------------
+TODO
+
+Other implementation approaches to exceptions {#other_approaches}
+---------------------------------------------------
+TODO: [[Renwick2019]]
+
+Exception handling allocation {#eh_alloc}
+----------------------------------------
+TODO
+
+Exception handling and storage that is local to a thread {#tls}
+--------------------------------------------------------------
+TODO
+
+Dubious business value {#dubious_business_value}
+----------------------------------------------
+TODO: improve the title
+
+The N+1 problem {#n_plus_one}
+----------------------------
+TODO
+
+Exception handling overhead is difficult to avoid {#using_is_easy}
+----------------------------------------------------------------
+TODO
+
+Tooling analysis of sad paths {#sad_path_analysis}
+-----------------------------------------------
+TODO
+
+Definitions {#definitions}
+============
+<dfn>Happy path</dfn> The code path where no errors occur.
+
+<dfn>Sad path</dfn> The code path where an error occurs.
+
+<dfn>Program-recoverable</dfn> The ability to recover from a failure or error without terminating the program.  Note that there exist systems of programs where recovery of the system involves terminating and restarting constituent programs.  Errors and failures leading to this kind of termination and restarting are not program-recoverable.
+
+<dfn>Table-based exceptions</dfn> An implementation strategy for exceptions where the program counter is used as an index into a table of exception unwinding actions.
+
+Acknowledgments {#ack}
+======================
+
+<pre class=biblio>
+{
+    "P0709": {
+        "authors": ["Herb Sutter"],
+        "href": "http://wg21.link/P0709R4",
+        "title": "Zero-overhead deterministic exceptions: Throwing values"
+    },
+    "P1886R0": {
+        "authors": ["Ben Craig"],
+        "title": "Error speed benchmarking",
+        "href": "https://wg21.link/P1886R0"
+    },
+    "P1640R1": {
+        "authors": ["Ben Craig"],
+        "title": "Error size benchmarking: Redux",
+        "href": "https://wg21.link/P1640R1"
+    },
+    "Glisse2013": {
+        "authors": ["Marc Glisse"],
+        "title": "Remove throw when we can see the catch",
+        "href": "https://bugs.llvm.org/show_bug.cgi?id=17467"
+    },
+    "P1676R0": {
+        "authors": ["Gor Nishanov"],
+        "title": "C++ Exception Optimizations. An experiment.",
+        "href": "https://wg21.link/P1676R0"
+    },
+    "P1947R0": {
+        "authors": ["Bjarne Stroustrup"],
+        "title": "C++ exceptions and alternatives",
+        "href": "https://wg21.link/P1947R0"
+    },
+    "Gylfason2004": {
+        "authors": ["Halldór Ísak Gylfason", "Gísli Hjálmtýsson"],
+        "title": "Exceptional Kernel -- Using C++ exceptions in the Linux kernel",
+        "href": "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.100.7504"
+    },
+    "Renwick2019": {
+        "authors": ["James Renwick", "Tom Spink", "Björn Franke"],
+        "title": "Low-cost deterministic C++ exceptions for embedded systems",
+        "href": "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.100.7504"
+    },
+    "Cargill1994": {
+        "authors": ["Tom Cargill"],
+        "title": "Exception Handling: A False Sense of Security",
+        "href": "http://ptgmedia.pearsoncmg.com/imprint_downloads/informit/aw/meyerscddemo/DEMO/MAGAZINE/CA_FRAME.HTM"
+    },
+    "MoFH4": {
+        "authors": ["Modi Mo"],
+        "href": "https://devblogs.microsoft.com/cppblog/making-cpp-exception-handling-smaller-x64/",
+        "title": "Making C++ Exception Handling Smaller On x64"
+    },
+    "kernel_switch": {
+        "authors": ["Microsoft Documentation"],
+        "title": "/kernel (Create Kernel Mode Binary)",
+        "href": "https://docs.microsoft.com/en-us/cpp/build/reference/kernel-create-kernel-mode-binary"
+    },
+    "ItaniumEHABI": {
+        "title": "Itanium C++ ABI: Exception Handling",
+        "href": "https://itanium-cxx-abi.github.io/cxx-abi/abi-eh.html"
+    },
+    "SC++F_2018": {
+        "authors": ["Standard C++ Foundation"],
+        "title": "Results summary: C++ Foundation Developer Survey 'Lite', 2018-02",
+        "href": "https://isocpp.org/blog/2018/03/results-summary-cpp-foundation-developer-survey-lite-2018-02"
+    },
+    "SC++F_2019": {
+        "authors": ["Standard C++ Foundation"],
+        "title": "Results summary: 2019 Global Developer Survey 'Lite'",
+        "href": "https://isocpp.org/blog/2019/05/results-summary-2019-global-developer-survey-lite"
+    },
+    "DE1994": {
+        "authors": ["Bjarne Stroustrup"],
+        "title": "The Design and Evolution of C++"
+    }
+}
+</pre>
