@@ -1,6 +1,6 @@
 <pre class='metadata'>
 Title: Freestanding Language: Optional <code>::operator new</code>
-Shortname: DXXXX
+Shortname: D2013
 Revision: 0.1
 Audience: SG14, EWG
 Status: D
