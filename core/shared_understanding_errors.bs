@@ -24,7 +24,7 @@ TODO: maybe retitle and combine with #disagree?  Then just mark up the ones wher
 1. Large portions of the C++ community build their code with exceptions turned off. [[#eh_off]]
     <br/><br/>
 
-1. Table-based exceptions have the fastest known [=happy path=] performance among [=program-recoverable=] error handling strategies. [[P1886R0]]
+1. [=Table-based exceptions=] have the fastest known [=happy path=] performance among [=program-recoverable=] error handling strategies. [[P1886R0]]
 1. [=Sad path=] performance of exceptions is more than 100x worse than happy path performance on table-based exception implementations. [[P1886R0]]
 1. Error codes perform worse than table-based exceptions on the happy path. [[P1886R0]]
 1. Error codes perform better than table-based exceptions on the sad path. [[P1886R0]]
