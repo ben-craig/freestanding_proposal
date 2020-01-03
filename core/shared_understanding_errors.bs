@@ -1,14 +1,14 @@
 <pre class='metadata'>
 Title: Shared understanding of errors and exceptions
-Shortname: DXXXX
-Revision: 0.0
+Shortname: D2018
+Revision: 0.1
 Audience: SG14, EWG
 Status: D
 Group: WG21
 URL: TODO
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
 Editor: Ben Craig, National Instruments, ben.craig@gmail.com
-Abstract: 
+Abstract:
 Markup Shorthands: markdown yes
 </pre>
 
@@ -47,8 +47,8 @@ TODO: maybe retitle and combine with #disagree?  Then just mark up the ones wher
 1. Forgetting to test for an error code is a common source of bugs. [[#error_prop]]
 1. Automatic error propagation adds invisible control flow that can be easy to overlook. [[#error_prop]]
 1. Forgetting to account for a propagating exception is a common source of bugs. [[#error_prop]]
-1. #SUBJECTIVE# Automatic error propagation is preferable. [[#error_prop]] 
-1. RAII is an enormous boon to error handling in general. [[#error_prop]] 
+1. #SUBJECTIVE# Automatic error propagation is preferable. [[#error_prop]]
+1. RAII is an enormous boon to error handling in general. [[#error_prop]]
 1. Code that does not use RAII is exceedingly difficult to port to exceptions.
 1. The visibility of error handling is a polarizing topic in the C++ community.
     <br/><br/>
@@ -150,7 +150,7 @@ TODO
 
 Kernel environments {#kernel}
 -----------------------------
-TODO: [[Gylfason2004]] 
+TODO: [[Gylfason2004]]
 
 Bare metal environments {#baremetal}
 ------------------------------------
