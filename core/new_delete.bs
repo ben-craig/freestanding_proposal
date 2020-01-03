@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: Freestanding Language: Optional <code>::operator new</code>
 Shortname: D2013
-Revision: 0.1
+Revision: 0.2
 Audience: SG14, EWG
 Status: D
 Group: WG21
@@ -20,11 +20,13 @@ The proposed solution is different than the one proposed for P1105R1, but the mo
 
 What is changing {#the_changes}
 =====================
-On freestanding systems without default heap storage, the presence of the replaceable allocation functions (i.e. allocating `::operator new`, including the `nothrow_t` and `align_val_t` overloads, single and array forms) will be implementation defined.
+On freestanding systems without default heap storage, the presence of the replaceable allocation functions (i.e. allocating `::operator new`, including the `nothrow_t` and `align_val_t` overloads, single and array forms) will be implementation defined.  Implementations shall provide all of the replaceable allocation functions, or none of them.
 
 As a consequence of the above, coroutines that are relying on the global allocation functions will be ill-formed so long as those global allocation functions are not present.
 
 Implementations that rely on `::operator new` for exception storage will need to use a different, unspecified source of memory.
+
+To the best of the author's knowledge, there are no core language features that require dynamic allocation other than exceptions and coroutines.
 
 `::operator delete` will be implementable as a no-op function on implementations that do not provide a default `::operator new`.
 
@@ -32,26 +34,36 @@ What is staying the same {#non_changes}
 =======================================
 The replaceable deallocating `::operator delete` functions are still required to be present.  `virtual` destructors ODR-use their associated `operator delete`([basic.def.odr](http://eel.is/c++draft/basic.def.odr#7)), so keeping the global `::operator delete` allows those `virtual` destructors to continue building.  Alternatives to this choice are discussed in [[#design_alternatives]].
 
+Calling `::operator delete` on a non-null pointer that did not come from `::operator new` is still undefined behavior [new.delete.single](http://eel.is/c++draft/new.delete.single#12) [new.delete.array](http://eel.is/c++draft/new.delete.array#11).  Calling `delete` on an object or base that didn't come from `new` is still undefined behavior [expr.delete](http://eel.is/c++draft/expr.delete#2).  This is what makes a no-op `::operator delete` a valid strategy on implementations without a global `::operator new`.
+
 Hosted implementations are unchanged.  Users of freestanding implementations can still provide implementations of the replaceable allocation and deallocation functions.  The behavior of `virtual` destructors is unchanged.  The behavior of class specific `operator new` and `operator delete` overloads is unchanged.  Non-allocating placement `::operator new` and `::operator delete` are still required to be present.  The requirements on user-provided `::operator new` and `::operator delete` overloads remains the same, particularly those requirements involving error behaviors.  Coroutines will behave the same so long as promise-specific allocators are used.  The storage for exception objects will remain unspecified.
 
 Why? {#why}
 ===========
 
+No allocations allowed {#ill_formed_as_a_service}
+-------------------------------
+In space constrained and/or real-time environments, there is no free store.  These environments often cannot tolerate the space overhead for the free store, or the non-determinism from using the free store.  In these environments, it is a desirable property for accidental global `new` usage to cause a build failure.  With this proposal, users could expect a linker error when global `new` is used inappropriately.
+
 No right way to allocate memory {#no_right_way}
 -------------------------------
 In some target environments, there is no "right" way to allocate memory.  In kernel and embedded domains, the implementer of the C++ toolchain doesn't always know the "right" way to allocate memory on the target environment.  This makes it difficult to provide an implementation for `::operator new`.  The implementer cannot even rely on the presence of `malloc`, as it runs into the same fundamental problems.
 
-As an example, in the Microsoft Windows kernel environment, there are two leading choices about where to get dynamic memory.  Users can get memory from the non-paged pool, which is a safe, but scarce resource; or users can get memory from the paged pool, which is plentiful, but not accessible in many common kernel operations.  The author has had experience with both of these options as defaults, with the predictable outcome of crashes with paged pool defaults and OOM with non-paged pool defaults.  The implementer of the C++ toolchain is not in a good position to make this choice for the user.
+As an example, in the Microsoft Windows kernel environment, there are two leading choices about where to get dynamic memory [[MSPools]].  Users can get memory from the non-paged pool, which is a safe, but scarce resource; or users can get memory from the paged pool, which is plentiful, but not accessible in many common kernel operations.  The author has had experience with both of these options as defaults, with the predictable outcome of crashes with paged pool defaults and OOM with non-paged pool defaults.  The implementer of the C++ toolchain is not in a good position to make this choice for the user.
 
-In the Linux kernel environment, `kmalloc` with the `GFP_KERNEL` should be used when allocating memory within the context of a process, but `GFP_ATOMIC` should be used when allocating memory outside the context of a process, such as inside of an interrupt.  The implementers of the C++ runtime are in no position to know which is the correct flag to use by default.
+In the Linux kernel environment, `kmalloc` [[kmalloc]] with the `GFP_KERNEL` should be used when allocating memory within the context of a process, but `GFP_ATOMIC` should be used when allocating memory outside the context of a process, such as inside of an interrupt.  The implementers of the C++ runtime are in no position to know which is the correct flag to use by default.
 
 Freestanding implementations are intended to run without the benefit of an operating system ([basic.def.odr](http://eel.is/c++draft/intro.compliance#7)).  However, the name of the function that supplies dynamic memory is usually an OS-specific detail.  The C++ implementation should not (and may not) know the name of the function to request memory.  The Windows kernel uses `ExAllocatePoolWithTag`.  In the Linux kernel, `kmalloc` is the main function to use.  In FreeBSD, a function named `malloc` is present, but it takes different arguments than the C standard library function of the same name.  FreeRTOS uses `pvPortMalloc`, and ThreadX uses `tx_byte_allocate`.  Home-grown OSes will likely have other spellings for memory allocation routines.
 
 Today's C++ implementations don't provide `::operator new` implementations for all possible targets.  Doing so isn't a plausible goal, especially when the home-grown OSes are taken into account.  This means that users are already forced into choosing between not having `::operator new` support and providing their own implementation.  We should acknowledge and standardize this existing practice, especially since we already have the extension point mechanism in place.
 
-No allocations allowed {#ill_formed_as_a_service}
--------------------------------
-In other environments, notably space constrained and/or real-time environments, there is no free store.  These environments often cannot tolerate the space overhead for the free store, or the non-determinism from using the free store.  In these environments, it is a desirable property for accidental global `new` usage to cause a build failure.  With this proposal, users could expect a linker error when global `new` is used inappropriately.
+What about allocators? {#allocators}
+-----------------------------
+The C++20 freestanding freestanding library does not include allocators.  [[P1642]] proposes adding allocator machinery to freestanding, but doesn't add std::allocator itself.  In addition, none of the allocating standard containers are in C++20's freestanding library or any current freestanding library proposal that the author is aware of.  From a minimalist freestanding perspective, allocators aren't a solution.
+
+That said, allocators are still useful in a less-than-minimal freestanding implementation, and `std::allocator` is implemented in terms of global `::operator new`.  In practice, it would be easy for an implementation to have an implementation of `std::allocator` in a header / module, and have that header still compile just fine.  If the global `::operator new` is not present, then uses of `std::allocator` would fail to link, which would still be conforming behavior since `std::allocator` isn't required to be present.  If the user has provided a global `::operator new`, then `std::allocator` would have the same semantics as mandated by the standard.
+
+In environments that have source(s) of dynamic memory, custom allocators can be written and used with standard containers, assuming they are present in the implementation.  This could be done even if a global `::operator new` is not present.
 
 `virtual` destructors {#virtual_dtors}
 -------------------------------
@@ -104,7 +116,7 @@ This alternative is novel, and does not have implementation or usage experience.
 Acknowledgments {#ack}
 ======================
 Thank you to the many reviewers of this paper:
-Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred Bratterud, Phil Hindman, Arthur O'Dwyer, and Laurin-Luis Lehning
+Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred Bratterud, Phil Hindman, Arthur O'Dwyer, Laurin-Luis Lehning, JF Bastien, and Matthew Bentley
 
 <pre class=biblio>
 {
@@ -117,6 +129,16 @@ Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred Bratterud, Ph
         "authors": ["Microsoft Documentation"],
         "title": "/kernel (Create Kernel Mode Binary)",
         "href": "https://docs.microsoft.com/en-us/cpp/build/reference/kernel-create-kernel-mode-binary"
+    },
+    "MSPools": {
+        "authors": ["Microsoft Documentation"],
+        "title": "POOL_TYPE enumeration",
+        "href": "https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ne-wdm-_pool_type"
+    },
+    "kmalloc": {
+        "authors": ["kernel.org"],
+        "title": "kmalloc",
+        "href": "https://www.kernel.org/doc/htmldocs/kernel-api/API-kmalloc.html"
     }
 }
 </pre>
