@@ -5,7 +5,7 @@ Revision: 0.2
 Audience: SG14, EWG
 Status: D
 Group: WG21
-URL: TODO
+URL: <a href="https://wg21.link/P2013R0">wg21.link/P2013R0</a>
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
 Editor: Ben Craig, National Instruments, ben.craig@gmail.com
 Abstract: In freestanding implementations, make the default allocating <code>::operator new</code>s optional.
@@ -34,7 +34,7 @@ The replaceable deallocating `::operator delete` functions are still required to
 
 Calling `::operator delete` on a non-null pointer that did not come from `::operator new` is still undefined behavior [new.delete.single](http://eel.is/c++draft/new.delete.single#12) [new.delete.array](http://eel.is/c++draft/new.delete.array#11).  Calling `delete` on an object or base that didn't come from `new` is still undefined behavior [expr.delete](http://eel.is/c++draft/expr.delete#2).  This is what makes a no-op `::operator delete` a valid strategy on implementations without a global `::operator new`.
 
-The replaceable allocation functions will still be implicitly declared at global scope in each translation unit [basic.stc.dynamic](http://eel.is/c++draft/basic.stc.dynamic#2).  Non-ODR-uses of the replaceable allocation functions is still permitted (e.g. inside of uninstantiated templates).  Implementations of the replaceable allocation functions can be performed by linking in an extra translation-unit with the definitions of the functions.  Since this replacement typically happens at link time, ODR-uses of missing replaceable allocation functions usually won't be diagnosable at compile time.
+The replaceable allocation functions will still be implicitly declared at global scope in each translation unit [basic.stc.dynamic](http://eel.is/c++draft/basic.stc.dynamic#2).  Non-ODR-uses of the replaceable allocation functions are still permitted (e.g. inside of uninstantiated templates).  Implementations of the replaceable allocation functions can be performed by linking in an extra translation-unit with the definitions of the functions.  Since this replacement typically happens at link time, ODR-uses of missing replaceable allocation functions usually won't be diagnosable at compile time.
 
 Hosted implementations are unchanged.  Users of freestanding implementations can still provide implementations of the replaceable allocation and deallocation functions.  The behavior of `virtual` destructors is unchanged.  The behavior of class specific `operator new` and `operator delete` overloads is unchanged.  Non-allocating placement `::operator new` and `::operator delete` are still required to be present.  The requirements on user-provided `::operator new` and `::operator delete` overloads remains the same, particularly those requirements involving error behaviors.  Coroutines will behave the same so long as promise-specific allocators are used.  The storage for exception objects will remain unspecified.
 
@@ -45,7 +45,7 @@ No allocations allowed {#ill_formed_as_a_service}
 -------------------------------
 In space constrained and/or real-time environments, there is often no free store.  These environments often cannot tolerate the space overhead for the free store, or the non-determinism from using the free store.  In these environments, it is a desirable property for accidental global `new` usage to cause a build failure.  With this proposal, users could expect a linker error when global `new` is used inappropriately.
 
-FreeRTOS allows for both static and dynamic allocation of OS constructs [[FreeRTOS_StaticVDynamic]].  Static allocation in conjunction with a missing `::operator new` can help avoid overhead and 
+FreeRTOS allows for both static and dynamic allocation of OS constructs [[FreeRTOS_StaticVDynamic]].  Static allocation in conjunction with a missing `::operator new` can help avoid overhead and eliminate accidental usage.
 
 THREADX [[THREADX]] does not consider dynamic allocation a core service, and can be built without support for dynamic allocation in order to reduce application size.  THREADX also distinguishes between byte allocation (general purpose) vs. block allocation (no-fragmentation elements of fixed size in a pool).
 
@@ -55,9 +55,9 @@ No right way to allocate memory {#no_right_way}
 -------------------------------
 In some target environments, there is no "right" way to allocate memory.  In kernel and embedded domains, the implementer of the C++ toolchain doesn't always know the "right" way to allocate memory on the target environment.  This makes it difficult to provide an implementation for `::operator new`.  The implementer cannot even rely on the presence of `malloc`, as it runs into the same fundamental problems.
 
-As an example, in the Microsoft Windows kernel environment, there are two leading choices about where to get dynamic memory [[MSPools]].  Users can get memory from the non-paged pool, which is a safe, but scarce resource; or users can get memory from the paged pool, which is plentiful, but not accessible in many common kernel operations.  Non-paged pool must be used any time the allocated memory needs to be accessible from an interrupt or from a "high IRQL" thread.  The author has had experience with both paged pool and non-paged pool as defaults, with the predictable outcome of crashes with paged pool defaults and OOM with non-paged pool defaults.  The implementer of the C++ toolchain is not in a good position to make this choice for the user.
+As an example, in the Microsoft Windows kernel environment, there are two leading choices about where to get dynamic memory [[MSPools]].  Users can get memory from the non-paged pool, which is a safe, but scarce resource; or users can get memory from the paged pool, which is plentiful, but not accessible in many common kernel operations.  Non-paged pool must be used any time the allocated memory needs to be accessible from an interrupt or from a "high IRQL" context.  The author has had experience with both paged pool and non-paged pool as defaults, with the predictable outcome of crashes with paged pool defaults and OOM with non-paged pool defaults.  The implementer of the C++ toolchain is not in a good position to make this choice for the user.
 
-In the Linux kernel environment, `kmalloc` [[kmalloc]] with the `GFP_KERNEL` should be used when allocating memory within the context of a process and outside of a lock, but `GFP_ATOMIC` should be used when allocating memory outside the context of a process, such as inside of an interrupt.  The implementers of the C++ runtime are in no position to know which is the correct flag to use by default.  Using `GFP_KERNEL` when `GFP_ATOMIC` is needed will result in crashes from interrupt code and deadlocks.  Using `GFP_ATOMIC` when `GFP_KERNEL` is needed will result in reduced system performance and spurious OOM errors.
+In the Linux kernel environment, `kmalloc` [[kmalloc]] with the `GFP_KERNEL` should be used when allocating memory within the context of a process and outside of a lock, but `GFP_ATOMIC` should be used when allocating memory outside the context of a process, such as inside of an interrupt.  The implementers of the C++ runtime are in no position to know which is the correct flag to use by default.  Using `GFP_KERNEL` when `GFP_ATOMIC` is needed will result in crashes from interrupt code and deadlocks.  Using `GFP_ATOMIC` when `GFP_KERNEL` is appropriate will result in reduced system performance, spurious OOM errors, and premature exhaustion of emergency memory pools.
 
 Freestanding implementations are intended to run without the benefit of an operating system ([basic.def.odr](http://eel.is/c++draft/intro.compliance#7)).  However, the name of the function that supplies dynamic memory is usually an OS-specific detail.  The C++ implementation should not (and may not) know the name of the function to request memory.  The Windows kernel uses `ExAllocatePoolWithTag`.  In the Linux kernel, `kmalloc` is the main function to use.  In FreeBSD, a function named `malloc` is present, but it takes different arguments than the C standard library function of the same name.  FreeRTOS uses `pvPortMalloc`, and THREADX uses `tx_byte_allocate`.  Home-grown OSes will likely have other spellings for memory allocation routines.
 
@@ -65,11 +65,12 @@ Today's C++ implementations don't provide `::operator new` implementations for a
 
 What about allocators? {#allocators}
 -----------------------------
-The C++20 freestanding freestanding library does not include allocators.  [[P1642R1]] proposes adding allocator machinery to freestanding, but doesn't add std::allocator itself.  In addition, none of the allocating standard containers are in C++20's freestanding library or any current freestanding library proposal that the author is aware of.  From a minimalist freestanding perspective, allocators aren't a solution.
+The C++20 freestanding freestanding library does not include allocators.  [[P1642R1]] proposes adding allocator machinery to freestanding, but doesn't add `std::allocator` itself.  In addition, none of the allocating standard containers are in C++20's freestanding library or any current freestanding library proposal that the author is aware of.  From a minimalist freestanding perspective, allocators aren't a solution.
 
+TODO: this paragraph is probably incomprehensible
 That said, allocators are still useful in a less-than-minimal freestanding implementation, and `std::allocator` is implemented in terms of global `::operator new`.  In practice, it would be easy for an implementation to have an implementation of `std::allocator` in a header / module, and have that header still compile just fine.  If the global `::operator new` is not present, then uses of `std::allocator` would fail to link, which would still be conforming behavior since `std::allocator` isn't required to be present.  If the user has provided a global `::operator new`, then `std::allocator` would have the same semantics as mandated by the standard.
 
-In environments with dynamic memory, custom allocators can be written and used with standard containers, assuming they are present in the implementation.  This could be done even if a global `::operator new` is not present.  The author has used `stlport::vector<int, PagedLockedAllocator>` successfully in these environments.
+In environments with dynamic memory, custom allocators can be written and used with standard containers, assuming that the containers are present in the implementation.  This could be done even if a global `::operator new` is not present.  The author has used `stlport::vector<int, PagedLockedAllocator>` successfully in these environments.
 
 Some facilities in the standard library (e.g. `make_unique`) are implemented in terms of `new`, and not an allocator interface.  It is useful to make these facilities error when dynamic memory isn't available, and it is also useful to be able to control which memory pool is used by default.
 
@@ -81,7 +82,7 @@ Ideally, if neither `new` nor `delete` is ever called, we wouldn't need an `oper
 
 Likely misuses and abuses {#abuses}
 -----------------------
-Users are likely to provide overloads of `::operator new` that do not follow the requirements set forth in [new.delete](http://eel.is/c++draft/new.delete), particularly the requirements around throwing `bad_alloc`.  Ignoring this requirement will still result in undefined behavior, just as it does in C++20.  Some compilers optimize assuming that the throwing forms of `new` will never return a null pointer [[throwing_new]].  A likely outcome of the undefined behavior is unexpectedly eliding null checks in the program source.
+Users are likely to provide overloads of `::operator new` that do not follow the requirements set forth in [new.delete](http://eel.is/c++draft/new.delete), particularly the requirements around throwing `bad_alloc`.  Ignoring this requirement will still result in undefined behavior, just as it does in C++20.  Some compilers optimize assuming that the throwing forms of `new` will never return a null pointer [[throwing_new]].  A likely outcome of the undefined behavior is unexpectedly eliding null checks in the program source.  This problem already exists today, and this proposal makes it no worse.
 
 Experience {#experience}
 =================
