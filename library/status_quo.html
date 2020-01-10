@@ -358,11 +358,11 @@ span.indented {
 }
 </style>
 
-<title>TODO D1641R2.0: Freestanding Library: Rewording the Status Quo</title>
+<title>P1641R2: Freestanding Library: Rewording the Status Quo</title>
 <body>
 <h1>Freestanding Library: Rewording the Status Quo</h1>
-Document number: TODO D1641R2<br/>
-Date: 2019-09-29<br/>
+Document number: P1641R2<br/>
+Date: 2020-01-10<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: SG14, Library Evolution Working Group
 <h1>Change history</h1>
@@ -371,6 +371,7 @@ Audience: SG14, Library Evolution Working Group
   <li>Rebased to N4842</li>
   <li>Accounting for addition / changes to version.syn</li>
   <li>Accounting for addition of <code>&lt;compare&gt;</code></li>
+  <li>Added wording for freestanding-only macros</li>
 </ul>
 <h3> R1 </h3>
 <ul>
@@ -402,7 +403,7 @@ This paper is going to add blanket wording to make it easier to mark things free
 </p><p>
 <div class='note'>[ <span class='textit'>Note</span><span class='textit'>:</span> Throwing a standard library provided exception is not observably different from <span class='texttt'>terminate()</span> if the implementation doesn't unwind the stack during exception handling and the user's program contains no catch blocks. -<i>end note</i>]</div>
 </p><p>
-The one intentional design change in this paper is in the feature test macros.  A new feature test macro will be added, and the existing library feature test macros will be split into two tables: feature test macros available in freestanding environments and feature test macros available in hosted environments.
+The one intentional design change in this paper is in the feature test macros.  A new feature test macro will be added, and the existing library feature test macros will be annotated as required in freestanding or not.
 </p>
 <h1>Feature Test Macro</h1>
 <p>
@@ -416,7 +417,7 @@ A freestanding implementation that provides support for this paper shall define 
     </tr></thead>
     <tbody><tr>
         <td><code>__cpp_lib_freestanding</code></td>
-        <td><var ignore="true">201906</var></td>
+        <td><var ignore="true">202001</var></td>
         <td><code>&lt;version&gt;<code></td>
     </tr></tbody>
 </table>
@@ -424,7 +425,7 @@ A freestanding implementation that provides support for this paper shall define 
 Example usage:
 </p>
 <pre class='codeblock'>
-#if __cpp_lib_freestanding &gt;= 201906
+#if __cpp_lib_freestanding &gt;= 202001
 int my_atoi(const char *str);
 #else
 #include &lt;cstdlib&gt;
@@ -477,13 +478,20 @@ Add a new subclause [freestanding.membership], under [conventions] and after [ob
 <span class='comment'>// <span class='textit'>freestanding</span></span>
 namespace std {
 </pre>
-    <div class='sentence'>Individual declarations and macro definitions in such a header shall not be followed with a comment that ends with <span class='textit'>freestanding</span>.</div>
 </div>
 <div class='para'>
     <div class='marginalizedparent'><a class='marginalized'>3</a></div>
+    <div class='sentence'>Freestanding implementations have some macro definitions that shall not be present on hosted implementations.</div>
+    <div class='sentence'>In the associated header synopsis for such macro definitions, the items shall be followed with a comment that ends with <span class='textit'>freestanding only</span>, as in:</div>
+<pre class='codeblock'>
+#define __cpp_lib_freestanding 202001L <span class='comment'>// <span class='textit'>freestanding only</span></span>
+</pre>
+</div>
+<div class='para'>
+    <div class='marginalizedparent'><a class='marginalized'>4</a></div>
     <div class='sentence'>Deduction guides for <i>freestanding class templates</i> shall be implemented in freestanding implementations.</div>
     <div class='sentence'>Freestanding class templates are class templates that are implemented (partially or fully) in freestanding implementations.</div>
-    <div class='marginalizedparent'><a class='marginalized'>4</a></div>
+    <div class='marginalizedparent'><a class='marginalized'>5</a></div>
     <div class='sentence'>The containing namespace of each <i>freestanding declaration</i> shall be provided in a freestanding implementation.</div>
     <div class='sentence'>Freestanding declarations are non-namespace declarations that are implemented (partially or fully) in a freestanding implementation</div>
 </div>
@@ -638,10 +646,10 @@ namespace std {
 
 Change in [version.syn]:<br/>
 Instructions to the editor:<br/>
-TODO: needs wording to say that this is only defined in freestanding environments
+
 Please add the following macro definition to [version.syn]
 <blockquote class="stdins"><pre class='codeblock'>
-#define __cpp_lib_freestanding 201906L <span class='comment'>// <span class='textit'>freestanding</span></span>
+#define __cpp_lib_freestanding 202001L <span class='comment'>// <span class='textit'>freestanding only</span></span>
 </pre></blockquote>
 
 Please add a <span class='comment'>// <span class='textit'>freestanding</span></span> comment to the following macro definitions:
@@ -714,4 +722,3 @@ Similar work was done in the C++11 timeframe by Lawrence Crowl and Alberto Ganes
 </p>
 </body>
 </html>
-
