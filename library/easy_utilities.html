@@ -358,17 +358,18 @@ span.indented {
 }
 </style>
 
-<title>D1642R2: TODO Freestanding Library: Easy [utilities], [ranges], and [iterators]</title>
+<title>P1642R2: Freestanding Library: Easy [utilities], [ranges], and [iterators]</title>
 <body>
 <h1>Freestanding Library: Easy [utilities], [ranges], and [iterators]</h1>
-Document number: D1642R2 TODO<br/>
-Date: 2019-09-29<br/>
+Document number: P1642R2<br/>
+Date: 2020-01-10<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: SG14, Library Evolution Working Group
 <h1>Change history</h1>
 <h3> R2 </h3>
 <ul>
   <li>Rebased to N4842</li>
+  <li>No longer including <code>istream_view</code></li>
 </ul>
 <h3> R1 </h3>
 <ul>
@@ -431,12 +432,13 @@ The following classes rely on iostreams facilities.  iostreams facilities use dy
   <li><code>ostream_iterator</code></li>
   <li><code>istreambuf_iterator</code></li>
   <li><code>ostreambuf_iterator</code></li>
+  <li><code>basic_istream_view</code></li>
+  <li><code>istream_view</code></li>
 </ul>
 <p>
 The ExecutionPolicy overloads of algorithms are of minimal utility on systems that do not support C++ threads.
 </p>
 <h1>Feature test macros</h1>
-TODO: needs wording to say that this is only defined in freestanding environments
 Add the following feature test macro to freestanding only:
 <table border="1">
     <thead><tr>
@@ -446,7 +448,7 @@ Add the following feature test macro to freestanding only:
     </tr></thead>
     <tbody><tr>
         <td><code>__cpp_lib_freestanding_iterator</code></td>
-        <td><var ignore="true">201911</var></td>
+        <td><var ignore="true">202001</var></td>
         <td><code>&lt;version&gt;<code></td>
     </tr></tbody>
 </table>
@@ -466,7 +468,6 @@ The entirety of the following headers are included:
   <li><code>&lt;utility&gt;</code></li>
   <li><code>&lt;tuple&gt;</code></li>
   <li><code>&lt;ratio&gt;</code></li>
-  <li><code>&lt;ranges&gt;</code></li>
 </ul>
 The following portions of <code>&lt;memory&gt;</code> are included:
 <ul>
@@ -539,7 +540,13 @@ Mark everything in <code>&lt;iterator&gt;</code> as freestanding <b>except</b> f
   <li><code>ostreambuf_iterator</code></li>
 </ul>
 
-Mark the following macros from "Table ??36?? - Standard library feature-test macros" as freestanding
+Mark everything in <code>&lt;ranges&gt;</code> as freestanding <b>except</b> for the following entities:
+<ul>
+  <li><code>basic_istream_view</code></li>
+  <li><code>istream_view</code></li>
+</ul>
+
+Mark the following macros in <code>&lt;version&gt;</code> as freestanding
 <ul>
   <li><code>__cpp_lib_addressof_constexpr</code></li>
   <li><code>__cpp_lib_allocator_traits_is_always_equal</code></li>
@@ -566,6 +573,7 @@ Mark the following macros from "Table ??36?? - Standard library feature-test mac
   <li><code>__cpp_lib_transparent_operators</code></li>
   <li><code>__cpp_lib_tuple_element_t</code></li>
   <li><code>__cpp_lib_tuples_by_type</code></li>
+  <li><code>__cpp_lib_unwrap_ref</code></li>
 </ul>
 
 <h1>Acknowledgements</h1>
@@ -580,4 +588,3 @@ Similar work was done in the C++11 timeframe by Lawrence Crowl and Alberto Ganes
 </p>
 </body>
 </html>
-
