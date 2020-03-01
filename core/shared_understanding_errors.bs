@@ -138,15 +138,31 @@ There are cases where the compiler could detect certain exception patterns and a
 
 Error propagation {#error_prop}
 -------------------------------
-TODO: [[Cargill1994]]
+TODO: ensure that all these points are well supported
+1. Manual error propagation requires a lot of mistake-prone boilerplate. [[#error_prop]]
+1. Forgetting to test for an error code is a common source of bugs. [[#error_prop]]
+1. Automatic error propagation adds invisible control flow that can be easy to overlook. [[#error_prop]]
+1. Forgetting to account for a propagating exception is a common source of bugs. [[#error_prop]]
+1. #SUBJECTIVE# Automatic error propagation is preferable. [[#error_prop]]
+1. RAII is an enormous boon to error handling in general. [[#error_prop]]
+
+Programs based on error codes are usually littered with statements of the form `if(FAILED(err)) {return err;}`.  Programs based on error codes where the error code is the return value also have boilerplate where they need to declare out-parameters in advance of a function call, and even more boilerplate when results of functions need to be composed.
+
+Error codes can be accidentally ignored.  Doing "the right thing" requires the programmer to write additional code in order to avoid "the wrong thing".  `[[nodiscard]]` substantially improves this situation.
+
+[[Cargill1994]] covers many pitfalls of forgotten exceptions, especially those involved when calling functions associated with template argument types (e.g. potentially throwing copy constructors).  The techniques and idioms available in 2020 are significantly more advanced than those that were well known in 1994, but the problems mentioned in the article still exist today.
 
 Real-time environments {#real_time}
 ----------------------------------
-TODO
+In real-time environments, the worst case execution time (WCET) in certain code paths must be below a certain threshold for a system to be correct.  The thresholds are often on the order of hundreds of microseconds.  Modern table-based exception implementations take multiple microseconds to throw an exception on the "sad path" in the best of cases, while taking nanoseconds to run in the "happy path" [[P1886R0]].  This wide disparity in execution times makes WCET budgeting difficult.  For WCET purposes, developers need to minimize the maximum runtime, and that usually means choosing something besides table-based exceptions.  Modern table-based exception implementations will often allocate memory, and this can reduce the level of determinism in the timings.
+
+Not every code path in a real-time environment needs to track WCET.  In many environments, there will be low priority tasks that do not have hard deadlines.  In these code paths, table-based exceptions are fine.
 
 Microcontroller environments {#microcontrollers}
 -----------------------------------
-TODO
+Microcontrollers are notoriously space constrained.  These systems can range from having megabytes of RAM and ROM to having bytes of ROM and only registers for mutable state.  Increasing the amount of storage available on microcontrollers is often a complicated affair.  The next larger offering will often take more physical space, consume more power, and have a different pin-out.  A larger part almost certainly costs more, cutting into profit margins.
+
+Table based exceptions have a large one-time cost for the exception handling machinery [[P1640R1]].  In some systems, this one-time cost exceeds the entire space budget of the program.  The incremental cost for table-based exceptions is larger than that of integer error codes, so at no point do you "break even".  Even if the incremental costs were smaller, it is unlikely that a microcontroller based program would be capable of growing large enough to gain the benefit, without going over the size budget.
 
 Kernel environments {#kernel}
 -----------------------------
@@ -182,7 +198,9 @@ TODO: [[Renwick2019]]
 
 Exception handling allocation {#eh_alloc}
 ----------------------------------------
-TODO
+The Itanium ABI requires thrown exception objects to be placed in a non-local location, frequently the heap.  Stateless, well-known exception types can potentially be stored and thrown as global singletons.  Heap allocation is challenging in environments that do not support the heap, or do not have a single appropriate approach for allocating from the heap.  In order to mitigate the risk of running out of memory during an exception throw, some implementations have a fall-back buffer.  This fall-back buffer is often too expensive in memory constrained environments.
+
+Other ABIs can store thrown exceptions in other ways, but this storage is either forced to be a fixed size, or dynamic in some way or another.  In the Microsoft implementations (x86 and x86-64), a dynamic stack allocation is made, and the throw exception is stored there.  The Microsoft x86-64 implementation of exceptions consumes roughly 9KB of stack in order to rethrow an exception.  9KB is larger that the entire stack on some microcontroller environments.  A space constrained implementation would need to be more stack-space efficient than 9KB per rethrow.
 
 Exception handling and storage that is local to a thread {#tls}
 --------------------------------------------------------------
