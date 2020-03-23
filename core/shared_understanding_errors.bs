@@ -29,6 +29,7 @@ TODO: maybe retitle and combine with #disagree?  Then just mark up the ones wher
 1. Error codes perform worse than table-based exceptions on the happy path. [[P1886R0]]
 1. Error codes perform better than table-based exceptions on the sad path. [[P1886R0]]
 1. Table-based exceptions have higher space overhead than error codes. [[P1640R1]]
+1. P0709 exceptions and `expected` are likely to have performance characteristics similar to error codes.
 1. Mainstream implementations of table-based exceptions have room for optimization. [[#room_for_optimizations]]
 1. Platform ABIs place substantial constraints on how much exceptions can change. [[ItaniumEHABI]]
 1. The performance gap between happy and sad path exception performance has widened over time because of lack of development on the sad path. [[P1947R0]]
@@ -85,10 +86,12 @@ TODO: maybe retitle and combine with #disagree?  Then just mark up the ones wher
     <br/><br/>
 
 1. [[P0709]] exceptions are an additional form of error handling. [[#n_plus_one]]
-1. P0709 exceptions are likely to have performance characteristics similar to error codes.
-1. If P0709 exceptions are standardized, all prior error handling mechanisms will still be seen in the wild for decades to come. [[#n_plus_one]]
+1. [[P0323]] `expected` is an additional form of error handling. [[#n_plus_one]]
+1. If P0709 exceptions and / or `expected` are standardized, all prior error handling mechanisms will still be seen in the wild for decades to come. [[#n_plus_one]]
 1. Users routinely write code that translates between different error handling schemes. [[#n_plus_one]]
 1. Translating between different error handling schemes usually requires error prone boilerplate. [[#n_plus_one]]
+1. A new error mechanism may replace one or more old mechanisms in teaching materials.  [[#n_plus_one]]
+1. A new error mechanism may replace one or more old mechanisms in new code bases.  [[#n_plus_one]]
     <br/><br/>
 
 1. Exceptions allow the transportation of arbitrary error information from a callback, through the invoker.
@@ -166,7 +169,15 @@ Table based exceptions have a large one-time cost for the exception handling mac
 
 Kernel environments {#kernel}
 -----------------------------
+1. New code in mainstream operating system kernels cannot use full C++ exception support without modifying the operating system kernel itself. [[#kernel]]
+1. Partial C++ exception support is possible in mainstream operating system kernels without modifying the operating system kernel itself. [[#kernel]]
+
+
 TODO: [[Gylfason2004]]
+    [[Baker2017]]
+    [[Quinn2016]]
+    [[ntke_cpprtl]]
+
 
 Bare metal environments {#baremetal}
 ------------------------------------
@@ -212,11 +223,17 @@ TODO: improve the title
 
 The N+1 problem {#n_plus_one}
 ----------------------------
-TODO
+There is no shortage of error handling mechanisms in the standard library and in the wild today.  The "N" is already a large number.  The C portions of the standard library use integer error codes and `errno`.  `qsort` and `bsearch` take callbacks, and those callbacks are allowed to throw exceptions through `qsort` and `bsearch`.  In the filesystem library, both `std::exception` based exceptions and `std::error_code` based error codes are used.  It is common place for users to need to translate the results of these error handling mechanisms into the error handling mechanism that their program uses.  This happens routinely when a C++ program using exceptions calls into a C library that uses callbacks and error codes.  The translation is not difficult, though it is verbose and error prone (lots of `try` / `catch` blocks and error testing `if` statements).
+
+Creating a new error handling mechanism does not make the old mechanisms go away.  If you had N mechanisms before, a new mechanism, no matter how superior a choice, will leave you with N+1 mechanisms.  The existence of `std::error_code` in C++11 did not make exceptions, `errno`, or integer error codes leave the ecosystem.  Each of these error mechanisms is likely to remain in use for decades to come.  Similarly, P0709 exceptions and `expected` are unlikely to make old error handling strategies disappear, even if P0709 exceptions and `expected` become the most common error handling strategies.
+
+A new error handling mechanism could change how we teach error handling, and how we write error handling in new code.  This has happened in the past, and could happen again.  There is very little educational effort spent on `errno` best practices, and very little new C++ code is written with `errno` as the primary error handling mechanism.  The main interaction with `errno` is in handling the errors and translating them to newer mechanisms.  A new error handling mechanism can aspire to replace other mechanisms as well as `errno` has been replaced.
 
 Exception handling overhead is difficult to avoid {#using_is_easy}
 ----------------------------------------------------------------
-TODO
+When a compiler sees a function call, and the function call is not marked `noexcept`, the safe thing for the compiler to do is to generate exception bookkeeping code and data structures.  If the compiler has suitable visibility into the function and can prove that it won't throw, then the compiler can generate less bookkeeping.  In many applications, it is difficult or impossible to get global visibility in order to avoid bookkeeping.  It is difficult to analyze code in pre-built static libraries.  It is difficult to determine, at compile time, the target of indirect calls through virtual functions and function pointers to see if all possible targets avoid exceptional paths.  It is generally impossible for the compiler to infer anything about the exception status of code in a dynamic library if it isn't explicitly marked as noexcept.  This means that the compiler usually needs to do the safe thing, and include exception handling machinery and bookkeeping for large portions of the program.  This has a size cost.  It also introduces places where the compiler believes there are extra code flow paths where they may not exist, and those extra code flow paths can inhibit optimizations.
+
+This is particularly concerning when calling into non-C++ code.  Non-C++ code is unlikely to throw exceptions, and it is unlikely to mark such functions as noexcept.  The C++ compiler does not know that though, and generates conservative code as a result.
 
 Tooling analysis of sad paths {#sad_path_analysis}
 -----------------------------------------------
@@ -237,9 +254,14 @@ Acknowledgments {#ack}
 
 <pre class=biblio>
 {
+    "P0323": {
+        "authors": ["JF Bastien", "Vicente Botet"],
+        "href": "https://wg21.link/P0323R9",
+        "title": "std::expected"
+    },
     "P0709": {
         "authors": ["Herb Sutter"],
-        "href": "http://wg21.link/P0709R4",
+        "href": "https://wg21.link/P0709R4",
         "title": "Zero-overhead deterministic exceptions: Throwing values"
     },
     "P1886R0": {
@@ -271,6 +293,20 @@ Acknowledgments {#ack}
         "authors": ["Halldór Ísak Gylfason", "Gísli Hjálmtýsson"],
         "title": "Exceptional Kernel -- Using C++ exceptions in the Linux kernel",
         "href": "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.100.7504"
+    },
+    "Baker2017": {
+        "authors": ["Billy Baker"],
+        "title": "Almost Unlimited Modern C++ in Kernel-Mode Applications",
+        "href": "https://www.youtube.com/watch?v=4AMhgkLjVHM"
+    },
+    "Quinn2016": {
+        "authors": ["Rian Quinn"],
+        "title": "Making C++ and the STL Work in the Linux / Windows Kernels",
+        "href": "https://www.youtube.com/watch?v=uQSQy-7lveQ"
+    },
+    "ntke_cpprtl": {
+        "title": "C++ RTL for NT ke-mode drivers",
+        "href": "https://svn.riouxsvn.com/prj_ntke_cpprtl/trunk/"
     },
     "Renwick2019": {
         "authors": ["James Renwick", "Tom Spink", "Björn Franke"],
