@@ -358,14 +358,21 @@ span.indented {
 }
 </style>
 
-<title>P1641R2: Freestanding Library: Rewording the Status Quo</title>
+<title>D1641R3.0: Freestanding Library: Rewording the Status Quo</title>
 <body>
 <h1>Freestanding Library: Rewording the Status Quo</h1>
-Document number: P1641R2<br/>
-Date: 2020-01-10<br/>
+Document number: D1641R3.0<br/>
+Date: 2020-01-10 TODO<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: SG14, Library Evolution Working Group
 <h1>Change history</h1>
+<h3> R3 </h3>
+<ul>
+  <li>Rebased to N4849</li>
+  <li>Dropped <code>__cpp_lib_freestanding</code> in favor of <code>__STDC_HOSTED__</code></li>
+  <li>Added link to <a href="http://eel.is/c++draft/except.handle#9">[except.handle#9]</a> in the exception handling note to show the normative backing</li>
+  <li>Accounting for changes to [version.syn]</li>
+</ul>
 <h3> R2 </h3>
 <ul>
   <li>Rebased to N4842</li>
@@ -401,39 +408,13 @@ For a more in depth rationale, see P0829.
 </p><p>
 This paper is going to add blanket wording to make it easier to mark things freestanding, and it will retrofit the existing freestanding facilities.  It also includes a non-normative note that should allow implementers to use existing no-exception builds of their libraries as an implementation defined extensions, with a fair number of qualifications.  Here's that note, reproduced so that it can be debated more effectively:
 </p><p>
-<div class='note'>[ <span class='textit'>Note</span><span class='textit'>:</span> Throwing a standard library provided exception is not observably different from <span class='texttt'>terminate()</span> if the implementation doesn't unwind the stack during exception handling and the user's program contains no catch blocks. -<i>end note</i>]</div>
+<div class='note'>[ <span class='textit'>Note</span><span class='textit'>:</span> Throwing a standard library provided exception is not observably different from <span class='texttt'>terminate()</span> if the implementation doesn't unwind the stack during exception handling (<a href="http://eel.is/c++draft/except.handle#9">[except.handle#9]</a>) and the user's program contains no catch blocks. -<i>end note</i>]</div>
 </p><p>
 The one intentional design change in this paper is in the feature test macros.  A new feature test macro will be added, and the existing library feature test macros will be annotated as required in freestanding or not.
 </p>
 <h1>Feature Test Macro</h1>
 <p>
-A freestanding implementation that provides support for this paper shall define the following feature test macro.
-</p>
-<table border="1">
-    <thead><tr>
-        <th>Name</th>
-        <th>Value</th>
-        <th>Header</th>
-    </tr></thead>
-    <tbody><tr>
-        <td><code>__cpp_lib_freestanding</code></td>
-        <td><var ignore="true">202001</var></td>
-        <td><code>&lt;version&gt;<code></td>
-    </tr></tbody>
-</table>
-<p>
-Example usage:
-</p>
-<pre class='codeblock'>
-#if __cpp_lib_freestanding &gt;= 202001
-int my_atoi(const char *str);
-#else
-#include &lt;cstdlib&gt;
-inline int my_atoi(const char *str) {return std::atoi(str);}
-#endif
-</pre>
-<p>
-The <code>__cpp_lib_freestanding</code> macro is useful for detecting the absence of throwing facilities.  A user could conditionally use a hand-rolled implementation in freestanding mode or the standard implementation in hosted mode.
+This paper does not need a direct feature test macro.  Users can already detect whether an implementation is hosted or freestanding by testing the <code>__STDC_HOSTED__</code> macro <a href="http://eel.is/c++draft/cpp.predefined#1.5">[cpp.predefined]</a>.
 </p><p>
 The library feature macros have been partitioned into those that must be present in both freestanding and hosted mode, and those that only need to be present in hosted mode.  If the implementation provides more than the minimal freestanding subset, then the implementation shall also provide the corresponding feature test macros.
 </p><p>
@@ -453,10 +434,12 @@ constexpr std::decay_t&lt;T&gt;* my_addressof(T && arg) {
 }
 #endif
 </pre>
+</p><p>
+The wording adds an editorial technique for freestanding-only macros.  This paper does not use the technique, but future papers dealing with freestanding will need this facility for their feature test macros.
 </p>
 <h1>Wording</h1>
 <p>
-The following changes are relative to N4842 from the Post-Belfast 2019 mailing.
+The following changes are relative to N4849 from the Pre-Prague 2020 mailing.
 </p>
 Add a new subclause [freestanding.membership], under [conventions] and after [objects.within.classes]:
 <blockquote class="stdins">
@@ -464,7 +447,7 @@ Add a new subclause [freestanding.membership], under [conventions] and after [ob
 <div class='para'>
     <div class='marginalizedparent'><a class='marginalized'>1</a></div>
     <div class='sentence'>Freestanding implementations have several declarations and macro definitions that shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
-    <div class='note'>[ <span class='textit'>Note</span><span class='textit'>:</span> Throwing a standard library provided exception is not observably different from <span class='texttt'>terminate()</span> if the implementation doesn't unwind the stack during exception handling and the user's program contains no catch blocks. -<i>end note</i>]</div>
+    <div class='note'>[ <span class='textit'>Note</span><span class='textit'>:</span> Throwing a standard library provided exception is not observably different from <span class='texttt'>terminate()</span> if the implementation doesn't unwind the stack during exception handling ([except.handle#9]) and the user's program contains no catch blocks. -<i>end note</i>]</div>
     <div class='sentence'>In the associated header synopsis for such declarations and macro definitions, the items shall be followed with a comment that ends with <span class='textit'>freestanding</span>, as in:</div>
 <pre class='codeblock'>
 #define E2BIG <span class='textit'><span class='texttt'>see below</span></span> <span class='comment'>// <span class='textit'>freestanding</span></span>
@@ -647,11 +630,6 @@ namespace std {
 Change in [version.syn]:<br/>
 Instructions to the editor:<br/>
 
-Please add the following macro definition to [version.syn]
-<blockquote class="stdins"><pre class='codeblock'>
-#define __cpp_lib_freestanding 202001L <span class='comment'>// <span class='textit'>freestanding only</span></span>
-</pre></blockquote>
-
 Please add a <span class='comment'>// <span class='textit'>freestanding</span></span> comment to the following macro definitions:
 <ul>
 <li><ins><code>__cpp_lib_atomic_flag_test</code></ins></li>
@@ -678,12 +656,12 @@ Please add a <span class='comment'>// <span class='textit'>freestanding</span></
 <li><ins><code>__cpp_lib_is_final</code></ins></li>
 <li><ins><code>__cpp_lib_is_invocable</code></ins></li>
 <li><ins><code>__cpp_lib_is_layout_compatible</code></ins></li>
+<li><ins><code>__cpp_lib_is_nothrow_convertible</code></ins></li>
 <li><ins><code>__cpp_lib_is_null_pointer</code></ins></li>
 <li><ins><code>__cpp_lib_is_pointer_interconvertible</code></ins></li>
 <li><ins><code>__cpp_lib_is_swappable</code></ins></li>
 <li><ins><code>__cpp_lib_launder</code></ins></li>
 <li><ins><code>__cpp_lib_logical_traits</code></ins></li>
-<li><ins><code>__cpp_lib_nothrow_convertible</code></ins></li>
 <li><ins><code>__cpp_lib_remove_cvref</code></ins></li>
 <li><ins><code>__cpp_lib_result_of_sfinae</code></ins></li>
 <li><ins><code>__cpp_lib_source_location</code></ins></li>
