@@ -1,9 +1,9 @@
 <pre class='metadata'>
 Title: Freestanding Language: Optional <code>::operator new</code>
-Shortname: P2013
-Revision: 0
+Shortname: D2013
+Revision: 1.0
 Audience: SG14, EWG
-Status: P
+Status: D
 Group: WG21
 URL: https://wg21.link/P2013R0
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
@@ -14,6 +14,18 @@ Markup Shorthands: markdown yes
 
 Revision History {#revision_history}
 ====================================
+R1 {#r1}
+-----
+Added polling results from Prague EWGI and EWG.
+
+Added feature test macro discussion.
+
+Declaring that `constexpr new` must continue to work.
+
+TODO: examine `<new>` and ensure that it is correct for this proposal.
+
+R0 {#r0}
+-------
 R0 of this paper was extracted from [[P1105R1]].
 
 The proposed solution is different than the one proposed for P1105R1, but the motivation is the same.  The solution from P1105R1 is still listed as a design alternative.
@@ -35,6 +47,8 @@ The replaceable deallocating `::operator delete` functions are still required to
 Calling `::operator delete` on a non-null pointer that did not come from `::operator new` is still undefined behavior [new.delete.single](http://eel.is/c++draft/new.delete.single#12) [new.delete.array](http://eel.is/c++draft/new.delete.array#11).  Calling `delete` on an object or base that didn't come from `new` is still undefined behavior [expr.delete](http://eel.is/c++draft/expr.delete#2).  This is what makes a no-op `::operator delete` a valid strategy on implementations without a global `::operator new`.
 
 The replaceable allocation functions will still be implicitly declared at global scope in each translation unit [basic.stc.dynamic](http://eel.is/c++draft/basic.stc.dynamic#2).  Non-ODR-uses of the replaceable allocation functions are still permitted (e.g. inside of uninstantiated templates).  Implementations of the replaceable allocation functions can be performed by linking in an extra translation-unit with the definitions of the functions.  Since this replacement typically happens at link time, ODR-uses of missing replaceable allocation functions usually won't be diagnosable at compile time.
+
+"`constexpr new`" is still required to work, even when the replaceable allocation functions are not present.  This requires some tweaking of standardese.
 
 Hosted implementations are unchanged.  Users of freestanding implementations can still provide implementations of the replaceable allocation and deallocation functions.  The behavior of `virtual` destructors is unchanged.  The behavior of class specific `operator new` and `operator delete` overloads is unchanged.  Non-allocating placement `::operator new` and `::operator delete` are still required to be present.  The requirements on user-provided `::operator new` and `::operator delete` overloads remains the same, particularly those requirements involving error behaviors.  Coroutines will behave the same so long as promise-specific allocators are used.  The storage for exception objects will remain unspecified.
 
@@ -79,6 +93,15 @@ A no-op `::operator delete` is still provided in order to satisfy `virtual` dest
 
 Ideally, if neither `new` nor `delete` is ever called, we wouldn't need an `operator delete`.  This proposal still requires some `operator delete` to exist, though that `operator delete` can be a no-op.
 
+Why not fix `virtual` destructors, instead of keeping a no-op `operator delete`? {#why_not_fix}
+-------------------------------
+This paper attempts to standardize existing practice.  There is not any existing practice for "fixed" `virtual destructors`.  Note that this paper isn't changing any requirements on `operator delete` or `virtual` destructors.  It will be no more difficult to fix it in the future than it would be today.  A motivated author could attempt to fix the problem in a future paper.
+
+No feature test macro {#no_macro}
+-------------------------------
+TODO
+
+
 Likely misuses and abuses {#abuses}
 -----------------------
 Users are likely to provide overloads of `::operator new` that do not follow the requirements set forth in [new.delete](http://eel.is/c++draft/new.delete), particularly the requirements around throwing `bad_alloc`.  Ignoring this requirement will still result in undefined behavior, just as it does in C++20.  Some compilers optimize assuming that the throwing forms of `new` will never return a null pointer [[throwing_new]].  A likely outcome of the undefined behavior is unexpectedly eliding null checks in the program source.  This problem already exists today, and this proposal makes it no worse.
@@ -89,8 +112,37 @@ The proposed design has field experience in a micro-controller environment.  GCC
 
 Polling history {#polling}
 =======================
-Jan 8, 2020 SG14 Telecon:
 
+Feb 14, 2020, EWG, Prague {#ewg_prague}
+------------------------
+We are interested in freestanding having an optional operator new, please come back with wording
+
+SF/F/N/A/SA
+
+8/10/7/0/0
+
+Feb 12, 2020, EWGi, Prague {#ewgi_prague}
+------------------------
+Given the time constraints of the committee, should we spend additional committee effort on P2013?
+
+SF/F/N/A/SA
+
+7/6/1/0/0
+
+Is a Feature test macro a valuable addition to this paper?
+
+SF/F/N/A/SA
+
+0/5/5/2/0
+
+Do we believe that P2013 is sufficently developed to be seen by EWG?
+
+SF/F/N/A/SA
+
+5/8/0/0/0
+
+Jan 8, 2020 SG14 Telecon {#sg14_jan_2020}
+-------------------------
 Forward P2013 as is with the minor editing quotes
 
 SF/F/N/A/SA
