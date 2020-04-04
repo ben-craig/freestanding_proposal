@@ -1,9 +1,9 @@
 <pre class='metadata'>
 Title: Freestanding Language: Optional <code>::operator new</code>
-Shortname: D2013
+Shortname: D2013 TODO
 Revision: 1.0
 Audience: SG14, EWG
-Status: D
+Status: D TODO
 Group: WG21
 URL: https://wg21.link/P2013R0
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
@@ -18,11 +18,13 @@ R1 {#r1}
 -----
 Added polling results from Prague EWGI and EWG.
 
-Added feature test macro discussion.
+Added discussion on feature test macro.
 
 Declaring that `constexpr new` must continue to work.
 
-TODO: examine `<new>` and ensure that it is correct for this proposal.
+Added wording.
+
+TODO: ensure things render reasonably in bikeshed
 
 R0 {#r0}
 -------
@@ -99,8 +101,11 @@ This paper attempts to standardize existing practice.  There is not any existing
 
 No feature test macro {#no_macro}
 -------------------------------
-TODO
+A feature test macro would be awkward to implement, and would encourage code that is more prone to ODR issues than other feature test macros.
 
+In most toolchains, feature test macros can be exposed directly by the compiler (usually for core language features) and by the library (for library features).  The presence or absence of `::operator new` is dictated by the runtime though.  In some implementations, neither the compiler nor the library headers necessarily know detailed information about the runtime.  This hurdle is not intractable, but it is a hurdle nonetheless.
+
+The most likely usage of such a feature test macro is to conditionally define a custom `::operator new` iff the implementation did not provide one by default.  This is dangerous territory, as it encourages libraries to provide the one-and-only `::operator new` definition.  If two such libraries do this, then there is an ODR issue.
 
 Likely misuses and abuses {#abuses}
 -----------------------
@@ -193,6 +198,34 @@ Lack of a default heap should generally be considered a trait of the platform.  
 
 ### Experience ### {#alt2_experience}
 This alternative is novel, and does not have implementation or usage experience.
+
+Wording {#wording}
+====================
+This is based on [N4849](https://wg21.link/n4849), from the Pre-Prague 2020-01 mailing.
+
+basic.def.odr {#basic_def_odr}
+-------------------------
+Modify basic.def.odr/3.1
+
+- A function is named by an expression or conversion if it is the selected member of an overload set (6.5, 12.4, 12.5) in an overload resolution performed as part of forming that expression or conversion, unless it is <ins>either:</ins>
+<ins>3.1.1 --</ins> a pure virtual function and either the expression is not an <i>id-expression</i> naming the function with an explicitly qualified name or the expression forms a pointer to member (7.6.2.1)<del>.</del><ins>, or</ins>
+<ins>3.1.2 -- a call to a replaceable global allocation function during the evaluation of a constant expression.</ins>
+<ins>3.1.3<ins> [<i>Note</i>: This covers taking the address of functions (7.3.3, 7.6.2.1), calls to named functions (7.6.1.2), operator overloading (Clause 12), user-defined conversions (11.4.7.2), allocation functions for <i>new-expressions</i> (7.6.2.7), as well as non-default initialization (9.4). A constructor selected to copy or move an object of class type is considered to be named by an expression or conversion even if the call is actually elided by the implementation (11.10.5).— <i>end note</i>]
+
+basic.stc.dynamic {#basic_stc_dynamic}
+-------------------------
+Modify basic.stc.dynamic/2
+
+<ins>On hosted implementations, t<ins><del>T</del>he library provides default definitions for the global allocation and deallocation functions. <ins>On freestanding implementations, the library provides default definitions for the non-replaceable allocation functions and all the global deallocation functions. It is implementation-defined whether a freestanding implementation's library provides default definitions for the replaceable global allocation functions. A freestanding implementation's library will either provide the definitions for all the replaceable global allocation functions, or none of the replaceable global allocation functions.</ins> Some global allocation and deallocation functions are replaceable (17.6.2). A C++ program shall provide at most one definition of a replaceable allocation or deallocation function. Any such function definition replaces the default version provided in the library (16.5.4.6). The following allocation and deallocation functions (17.6)are implicitly declared in global scope in each translation unit of a program.
+
+new.delete {#new_delete}
+-------------------------
+Insert the following Mandate clause before [new.delete.single]/1, [new.delete.single]/5, [new.delete.array]/1, and [new.delete.array]/5:
+
+<ins><i>Mandates:</i> These functions are not odr-used ([basic.def.odr]) unless a definition of these functions have been provided. [<i>Note</i>: On hosted implementations, the library provides default definitions of these functions
+ (basic.stc.dynamic).- <i>end note</i>]</ins>
+
+The above mimics wording in [declval].
 
 Acknowledgments {#ack}
 ======================
