@@ -1817,7 +1817,7 @@ occurrence.</p>
    <h2 class="heading settled" data-level="8" id="wording"><span class="secno">8. </span><span class="content">Wording</span><a class="self-link" href="#wording"></a></h2>
     This is based on <a href="https://wg21.link/n4849">the Pre-Prague 2020-01 mailing, N4849</a>. 
    <h3 class="heading settled" data-level="8.1" id="basic_def_odr"><span class="secno">8.1. </span><span class="content">basic.def.odr</span><a class="self-link" href="#basic_def_odr"></a></h3>
-    Modify basic.def.odr/3.1 
+    Modify <a href="https://wg21.link/basic.def.odr#3.1">basic.def.odr/3.1</a> 
    <blockquote>
     <p>
      3.1 - A function is named by an expression or conversion if it is 
@@ -1847,7 +1847,7 @@ even if the call is actually elided by the implementation (11.10.5).— <i>end n
     </p>
    </blockquote>
    <h3 class="heading settled" data-level="8.2" id="basic_stc_dynamic"><span class="secno">8.2. </span><span class="content">basic.stc.dynamic</span><a class="self-link" href="#basic_stc_dynamic"></a></h3>
-    Modify basic.stc.dynamic/2 
+    Modify <a href="https://wg21.link/basic.stc.dynamic#2">basic.stc.dynamic/2</a> 
    <blockquote>
     <del>The</del>
     <ins>On hosted implementations, the</ins>
@@ -1857,8 +1857,8 @@ definitions for the non-replaceable allocation functions and all the
 global deallocation functions. It is implementation-defined whether a 
 freestanding implementation’s library provides default definitions for 
 the replaceable global allocation functions. A freestanding 
-implementation’s library will either provide the definitions for all the
- replaceable global allocation functions, or none of the replaceable 
+implementation’s library shall either provide the definitions for all 
+the replaceable global allocation functions, or none of the replaceable 
 global allocation functions.</ins>
      Some global allocation and deallocation functions are replaceable 
 (17.6.2). A C++ program shall provide at most one definition of a 
@@ -1869,8 +1869,7 @@ are implicitly declared in global scope in each translation unit of a
 program. 
    </blockquote>
    <h3 class="heading settled" data-level="8.3" id="new_delete"><span class="secno">8.3. </span><span class="content">new.delete</span><a class="self-link" href="#new_delete"></a></h3>
-    Insert the following Mandate clause before [new.delete.single]/1, 
-[new.delete.single]/5, [new.delete.array]/1, and [new.delete.array]/5: 
+    Insert the following Mandate clause before <a href="https://wg21.link/new.delete.single#1">new.delete.single/1</a>, <a href="https://wg21.link/new.delete.single#5">new.delete.single/5</a>, <a href="https://wg21.link/new.delete.array#1">new.delete.array/1</a>, and <a href="https://wg21.link/new.delete.array#5">new.delete.array/5</a>: 
    <blockquote>
     <ins><i>Mandates:</i> These functions are not odr-used ([basic.def.odr]) unless a definition of these functions has been provided. [<i>Note</i>: On hosted implementations, the library provides default definitions of these functions ([basic.stc.dynamic]).- <i>end note</i>]</ins>
    </blockquote>
