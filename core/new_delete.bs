@@ -205,7 +205,7 @@ This is based on [the Pre-Prague 2020-01 mailing, N4849](https://wg21.link/n4849
 
 basic.def.odr {#basic_def_odr}
 -------------------------
-Modify [basic.def.odr]/3.1
+Modify [basic.def.odr/3.1](https://wg21.link/basic.def.odr#3.1)
 
 <blockquote>
 <p>3.1 - A function is named by an expression or conversion if it is the selected member of an overload set (6.5, 12.4, 12.5) in an overload resolution performed as part of forming that expression or conversion, unless it is <ins>either:</ins></p>
@@ -216,21 +216,21 @@ Modify [basic.def.odr]/3.1
 
 basic.stc.dynamic {#basic_stc_dynamic}
 -------------------------
-Modify [basic.stc.dynamic]/2
+Modify [basic.stc.dynamic/2](https://wg21.link/basic.stc.dynamic#2)
 
 <blockquote>
-<del>The</del><ins>On hosted implementations, the</ins> library provides default definitions for the global allocation and deallocation functions. <ins>On freestanding implementations, the library provides default definitions for the non-replaceable allocation functions and all the global deallocation functions. It is implementation-defined whether a freestanding implementation's library provides default definitions for the replaceable global allocation functions. A freestanding implementation's library will either provide the definitions for all the replaceable global allocation functions, or none of the replaceable global allocation functions.</ins> Some global allocation and deallocation functions are replaceable (17.6.2). A C++ program shall provide at most one definition of a replaceable allocation or deallocation function. Any such function definition replaces the default version provided in the library (16.5.4.6). The following allocation and deallocation functions (17.6) are implicitly declared in global scope in each translation unit of a program.
+<del>The</del><ins>On hosted implementations, the</ins> library provides default definitions for the global allocation and deallocation functions. <ins>On freestanding implementations, the library provides default definitions for the non-replaceable allocation functions and all the global deallocation functions. It is implementation-defined whether a freestanding implementation's library provides default definitions for the replaceable global allocation functions. A freestanding implementation's library shall either provide the definitions for all the replaceable global allocation functions, or none of the replaceable global allocation functions.</ins> Some global allocation and deallocation functions are replaceable (17.6.2). A C++ program shall provide at most one definition of a replaceable allocation or deallocation function. Any such function definition replaces the default version provided in the library (16.5.4.6). The following allocation and deallocation functions (17.6) are implicitly declared in global scope in each translation unit of a program.
 </blockquote>
 
 new.delete {#new_delete}
 -------------------------
-Insert the following Mandate clause before [new.delete.single]/1, [new.delete.single]/5, [new.delete.array]/1, and [new.delete.array]/5:
+Insert the following Mandate clause before [new.delete.single/1](https://wg21.link/new.delete.single#1), [new.delete.single/5](https://wg21.link/new.delete.single#5), [new.delete.array/1](https://wg21.link/new.delete.array#1), and [new.delete.array/5](https://wg21.link/new.delete.array#5):
 
 <blockquote>
 <ins><i>Mandates:</i> These functions are not odr-used ([basic.def.odr]) unless a definition of these functions has been provided. [<i>Note</i>: On hosted implementations, the library provides default definitions of these functions ([basic.stc.dynamic]).- <i>end note</i>]</ins>
 </blockquote>
 
-The above mimics wording in [declval].
+The above mimics wording in [declval](https://wg21.link/declval).  I believe it is compatible with [intro.compliance/4](https://wg21.link/intro.compliance#4.sentence-2).
 
 Acknowledgments {#ack}
 ======================
