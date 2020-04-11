@@ -5,7 +5,7 @@ Revision: 1.0
 Audience: SG14, EWG
 Status: D
 Group: WG21
-URL: https://wg21.link/P2013R0
+URL: https://wg21.link/P2013R1
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
 Editor: Ben Craig, National Instruments, ben.craig@gmail.com
 Abstract: In freestanding implementations, standardize existing practices and make the default allocating <code>::operator new</code>s optional.
@@ -34,7 +34,7 @@ The proposed solution is different than the one proposed for P1105R1, but the mo
 
 What is changing {#the_changes}
 =====================
-On freestanding systems without default heap storage, the presence of the replaceable allocation functions (i.e. allocating `::operator new`, including the `nothrow_t` and `align_val_t` overloads, single and array forms) will be implementation defined.  Implementations shall provide all of the replaceable allocation functions, or none of them.  If none of the replaceable allocation functions are provided, then an ODR-use of the functions will cause the program to be ill-formed.  This will typically manifest as a linker error.
+On freestanding systems without default heap storage, the presence of the replaceable allocation functions (i.e. allocating `::operator new`, including the `nothrow_t` and `align_val_t` overloads, single and array forms) will be implementation defined.  Implementations shall provide all the replaceable allocation functions, or none of them.  If none of the replaceable allocation functions are provided, then an ODR-use of the functions will cause the program to be ill-formed.  This will typically manifest as a linker error.
 
 As a consequence of the above, coroutines that are relying on the global allocation functions will be ill-formed so long as those global allocation functions are not present.
 
@@ -81,7 +81,7 @@ Today's C++ implementations don't provide `::operator new` implementations for a
 
 What about allocators? {#allocators}
 -----------------------------
-The C++20 freestanding freestanding library does not include allocators.  [[P1642R1]] proposes adding allocator machinery to freestanding, but doesn't add `std::allocator` itself.  In addition, none of the allocating standard containers are in C++20's freestanding library or any current freestanding library proposal that the author is aware of.  From a minimalist freestanding perspective, allocators aren't a solution.
+The C++20 freestanding library does not include allocators.  [[P1642R1]] proposes adding allocator machinery to freestanding, but doesn't add `std::allocator` itself.  In addition, none of the allocating standard containers are in C++20's freestanding library or any current freestanding library proposal that the author is aware of.  From a minimalist freestanding perspective, allocators aren't a solution.
 
 Allocators are still useful in a less-than-minimal freestanding implementation.  In environments with dynamic memory, custom allocators can be written and used with standard containers, assuming that the containers are present in the implementation.  This could be done even if a global `::operator new` is not present.  The author has used `stlport::vector<int, PagedLockedAllocator>` successfully in these environments.
 
@@ -113,7 +113,7 @@ Users are likely to provide overloads of `::operator new` that do not follow the
 
 Experience {#experience}
 =================
-The proposed design has field experience in a micro-controller environment.  GCC was used, and the language support library was intentionally omitted.  A no-op `::operator delete` was provided by the users.  The no-op `::operator delete` enabled a small amount of code sharing between a hosted environment and this micro-controller environment.  Some of the shared code involved classes with `virtual` destructors.
+The proposed design has field experience in a micro-controller environment.  GCC was used, and the language support library was intentionally omitted.  A no-op `::operator delete` was provided by the users.  The no-op `::operator delete` enabled a small amount of code sharing between a hosted environment and this micro-controller environment.  Some shared code involved classes with `virtual` destructors.
 
 Polling history {#polling}
 =======================
@@ -140,7 +140,7 @@ SF/F/N/A/SA
 
 0/5/5/2/0
 
-Do we believe that P2013 is sufficently developed to be seen by EWG?
+Do we believe that P2013 is sufficiently developed to be seen by EWG?
 
 SF/F/N/A/SA
 
@@ -165,7 +165,7 @@ This option preserves much functionality, without using any novel techniques.  S
 
 Alternative 1: Optional throwing `::operator new`s, no-op default deallocation functions {#alternative_throwing_new}
 ----------------------------------------------------
-Rather than making all of the replaceable allocation functions optional, we could make just the throwing `::operator new`s optional (array and single form, with and without `align_val_t` parameters).  The library would still be required to provide the `nothrow_t` overloads.
+Rather than making all the replaceable allocation functions optional, we could make just the throwing `::operator new`s optional (array and single form, with and without `align_val_t` parameters).  The library would still be required to provide the `nothrow_t` overloads.
 
 The `nothrow_t` overloads are specified to forward to an appropriate throwing overload.  That implementation would still be fine on a system without dynamic storage available.  This alternative was not selected as it is more difficult to teach, and because the target audience would likely be astonished that the `nothrow_t` overload has a `try`/`catch` in it.
 
