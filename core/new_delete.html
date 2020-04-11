@@ -1294,8 +1294,8 @@ Possible extra rowspan handling
     blockquote c-[vi] { color: inherit; } /* Name.Variable.Instance */
     blockquote c-[il] { color: inherit; } /* Literal.Number.Integer.Long */
   </style>
-  <meta content="Bikeshed version c1dbacab, updated Mon Mar 30 18:56:12 2020 -0700" name="generator">
-  <link href="https://wg21.link/P2013R0" rel="canonical">
+  <meta content="Bikeshed version d4d56a96, updated Fri Apr 10 11:10:34 2020 -0700" name="generator">
+  <link href="https://wg21.link/P2013R1" rel="canonical">
   <link href="https://isocpp.org/favicon.ico" rel="icon">
 <style>/* style-autolinks */
 
@@ -1502,20 +1502,20 @@ c-[vg] { color: #0077aa } /* Name.Variable.Global */
 c-[vi] { color: #0077aa } /* Name.Variable.Instance */
 c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
 </style>
- </head><body class="h-entry toc-sidebar"><p id="toc-nav"><a id="toc-jump" href="#toc"><span aria-hidden="true">↑</span> <span>Jump to Table of Contents</span></a><a id="toc-toggle" href="#toc"><span aria-hidden="true">←</span> <span>Collapse Sidebar</span></a></p>
+ </head><body class="h-entry toc-inline"><p id="toc-nav"><a id="toc-jump" href="#toc"><span aria-hidden="true">↑</span> <span>Jump to Table of Contents</span></a><a id="toc-toggle" href="#toc"><span aria-hidden="true">→</span> <span>Pop Out Sidebar</span></a></p>
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">D2013R1.0<br>Freestanding Language: Optional <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code></h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2020-04-05">2020-04-05</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2020-04-11">2020-04-11</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
-     </dt><dd><a class="u-url" href="https://wg21.link/P2013R0">https://wg21.link/P2013R0</a>
+     </dt><dd><a class="u-url" href="https://wg21.link/P2013R1">https://wg21.link/P2013R1</a>
      </dd><dt>Author:
      </dt><dd>
       </dd><dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:ben.craig@gmail.com">Ben Craig</a> (<span class="p-org org">National Instruments</span>)
      </dd><dt>Audience:
-     </dt><dd>SG14, EWG
+     </dt><dd>SG14, EWG, LEWG
      </dd><dt>Project:
      </dt><dd>ISO/IEC JTC1/SC22/WG21 14882: Programming Language — C++
      </dd><dt>Source:
@@ -1556,7 +1556,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      <a href="#polling"><span class="secno">6</span> <span class="content">Polling history</span></a>
      <ol class="toc">
       <li><a href="#ewg_prague"><span class="secno">6.1</span> <span class="content">Feb 14, 2020, EWG, Prague</span></a>
-      </li><li><a href="#ewgi_prague"><span class="secno">6.2</span> <span class="content">Feb 12, 2020, EWGi, Prague</span></a>
+      </li><li><a href="#ewgi_prague"><span class="secno">6.2</span> <span class="content">Feb 12, 2020, EWGI, Prague</span></a>
       </li><li><a href="#sg14_jan_2020"><span class="secno">6.3</span> <span class="content">Jan 8, 2020 SG14 Telecon</span></a>
      </li></ol>
     </li><li>
@@ -1595,11 +1595,13 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <main>
    <h2 class="heading settled" data-level="1" id="revision_history"><span class="secno">1. </span><span class="content">Revision History</span><a class="self-link" href="#revision_history"></a></h2>
    <h3 class="heading settled" data-level="1.1" id="r1"><span class="secno">1.1. </span><span class="content">R1</span><a class="self-link" href="#r1"></a></h3>
-    Added polling results from Prague EWGI and EWG. 
-   <p>Added discussion on feature test macro.</p>
+    Added polling results from Prague <a href="#ewgi_prague">EWGI</a> and <a href="#ewg_prague">EWG</a>. 
+   <p>Added discussion on <a href="#no_macro">feature test macro</a>.</p>
+   <p>Added discussion on <a href="#why_not_fix">not fixing virtual destructors</a>.</p>
    <p>Declaring that <code class="highlight"><c- k="">constexpr</c-> <c- k="">new</c-></code> must continue to work.</p>
-   <p>Added wording.</p>
-   <p>TODO: ensure things render reasonably in bikeshed</p>
+   <p>Added <a href="#wording">wording</a>.</p>
+   <p>Wording includes <a href="#new_delete">changes to library clauses</a>, so added LEWG to the audience.</p>
+   <p>TODO: update shortname, revision, and status before submitting</p>
    <h3 class="heading settled" data-level="1.2" id="r0"><span class="secno">1.2. </span><span class="content">R0</span><a class="self-link" href="#r0"></a></h3>
     R0 of this paper was extracted from <a data-link-type="biblio" href="#biblio-p1105r1">[P1105R1]</a>. 
    <p>The proposed solution is different than the one proposed for 
@@ -1608,11 +1610,10 @@ still listed as a design alternative.</p>
    <h2 class="heading settled" data-level="2" id="the_changes"><span class="secno">2. </span><span class="content">What is changing</span><a class="self-link" href="#the_changes"></a></h2>
     On freestanding systems without default heap storage, the presence of the replaceable allocation functions (i.e. allocating <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>, including the <code class="highlight"><c- n="">nothrow_t</c-></code> and <code class="highlight"><c- n="">align_val_t</c-></code>
  overloads, single and array forms) will be implementation defined.  
-Implementations shall provide all of the replaceable allocation 
-functions, or none of them.  If none of the replaceable allocation 
-functions are provided, then an ODR-use of the functions will cause the 
-program to be ill-formed.  This will typically manifest as a linker 
-error. 
+Implementations shall provide all the replaceable allocation functions, 
+or none of them.  If none of the replaceable allocation functions are 
+provided, then an ODR-use of the functions will cause the program to be 
+ill-formed.  This will typically manifest as a linker error. 
    <p>As a consequence of the above, coroutines that are relying on the 
 global allocation functions will be ill-formed so long as those global 
 allocation functions are not present.</p>
@@ -1690,7 +1691,7 @@ means that users are already forced into choosing between not having <code class
 and standardize this existing practice, especially since we already have
  the extension point mechanism in place.</p>
    <h3 class="heading settled" data-level="4.3" id="allocators"><span class="secno">4.3. </span><span class="content">What about allocators?</span><a class="self-link" href="#allocators"></a></h3>
-    The C++20 freestanding freestanding library does not include allocators. <a data-link-type="biblio" href="#biblio-p1642r1">[P1642R1]</a> proposes adding allocator machinery to freestanding, but doesn’t add <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">allocator</c-></code>
+    The C++20 freestanding library does not include allocators. <a data-link-type="biblio" href="#biblio-p1642r1">[P1642R1]</a> proposes adding allocator machinery to freestanding, but doesn’t add <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">allocator</c-></code>
  itself.  In addition, none of the allocating standard containers are in
  C++20’s freestanding library or any current freestanding library 
 proposal that the author is aware of.  From a minimalist freestanding 
@@ -1741,21 +1742,21 @@ and this proposal makes it no worse.
 environment.  GCC was used, and the language support library was 
 intentionally omitted.  A no-op <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> was provided by the users.  The no-op <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code>
  enabled a small amount of code sharing between a hosted environment and
- this micro-controller environment.  Some of the shared code involved 
-classes with <code class="highlight"><c- k="">virtual</c-></code> destructors. 
+ this micro-controller environment.  Some shared code involved classes 
+with <code class="highlight"><c- k="">virtual</c-></code> destructors. 
    <h2 class="heading settled" data-level="6" id="polling"><span class="secno">6. </span><span class="content">Polling history</span><a class="self-link" href="#polling"></a></h2>
    <h3 class="heading settled" data-level="6.1" id="ewg_prague"><span class="secno">6.1. </span><span class="content">Feb 14, 2020, EWG, Prague</span><a class="self-link" href="#ewg_prague"></a></h3>
     We are interested in freestanding having an optional operator new, please come back with wording 
    <p>SF/F/N/A/SA</p>
    <p>8/10/7/0/0</p>
-   <h3 class="heading settled" data-level="6.2" id="ewgi_prague"><span class="secno">6.2. </span><span class="content">Feb 12, 2020, EWGi, Prague</span><a class="self-link" href="#ewgi_prague"></a></h3>
+   <h3 class="heading settled" data-level="6.2" id="ewgi_prague"><span class="secno">6.2. </span><span class="content">Feb 12, 2020, EWGI, Prague</span><a class="self-link" href="#ewgi_prague"></a></h3>
     Given the time constraints of the committee, should we spend additional committee effort on P2013? 
    <p>SF/F/N/A/SA</p>
    <p>7/6/1/0/0</p>
    <p>Is a Feature test macro a valuable addition to this paper?</p>
    <p>SF/F/N/A/SA</p>
    <p>0/5/5/2/0</p>
-   <p>Do we believe that P2013 is sufficently developed to be seen by EWG?</p>
+   <p>Do we believe that P2013 is sufficiently developed to be seen by EWG?</p>
    <p>SF/F/N/A/SA</p>
    <p>5/8/0/0/0</p>
    <h3 class="heading settled" data-level="6.3" id="sg14_jan_2020"><span class="secno">6.3. </span><span class="content">Jan 8, 2020 SG14 Telecon</span><a class="self-link" href="#sg14_jan_2020"></a></h3>
@@ -1767,7 +1768,7 @@ classes with <code class="highlight"><c- k="">virtual</c-></code> destructors.
    <h3 class="heading settled" data-level="7.1" id="alternative_nop_dealloc"><span class="secno">7.1. </span><span class="content">Alternative 0: All-or-nothing allocating <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>, no-op default deallocation functions (Proposed above)</span><a class="self-link" href="#alternative_nop_dealloc"></a></h3>
     This option preserves much functionality, without using any novel techniques.  See above for further explanation. 
    <h3 class="heading settled" data-level="7.2" id="alternative_throwing_new"><span class="secno">7.2. </span><span class="content">Alternative 1: Optional throwing <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>s, no-op default deallocation functions</span><a class="self-link" href="#alternative_throwing_new"></a></h3>
-    Rather than making all of the replaceable allocation functions optional, we could make just the throwing <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>s optional (array and single form, with and without <code class="highlight"><c- n="">align_val_t</c-></code> parameters).  The library would still be required to provide the <code class="highlight"><c- n="">nothrow_t</c-></code> overloads. 
+    Rather than making all the replaceable allocation functions optional, we could make just the throwing <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>s optional (array and single form, with and without <code class="highlight"><c- n="">align_val_t</c-></code> parameters).  The library would still be required to provide the <code class="highlight"><c- n="">nothrow_t</c-></code> overloads. 
    <p>The <code class="highlight"><c- n="">nothrow_t</c-></code> 
 overloads are specified to forward to an appropriate throwing overload. 
  That implementation would still be fine on a system without dynamic 
@@ -1873,7 +1874,7 @@ program.
    <blockquote>
     <ins><i>Mandates:</i> These functions are not odr-used ([basic.def.odr]) unless a definition of these functions has been provided. [<i>Note</i>: On hosted implementations, the library provides default definitions of these functions ([basic.stc.dynamic]).- <i>end note</i>]</ins>
    </blockquote>
-   <p>The above mimics wording in [declval].</p>
+   <p>The above mimics wording in <a href="https://wg21.link/declval">declval</a>.  I believe it is compatible with <a href="https://wg21.link/intro.compliance#4.sentence-2">intro.compliance/4</a>.</p>
    <h2 class="heading settled" data-level="9" id="ack"><span class="secno">9. </span><span class="content">Acknowledgments</span><a class="self-link" href="#ack"></a></h2>
     Thank you to the many reviewers of this paper:
 Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred 
