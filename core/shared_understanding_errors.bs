@@ -61,7 +61,7 @@ TODO: maybe retitle and combine with #disagree?  Then just mark up the ones wher
 
 1. `try`, `catch` and `throw` are not supported in the context of a signal. [support.signal](http://eel.is/c++draft/support.signal)
 1. Table-based exceptions are challenging on micro-controllers due to tight space constraints. [[#microcontrollers]]
-1. New code in mainstream operating system kernels cannot use full C++ exception support without modifying the operating system kernel itself. [[#kernel]]
+1. Implementing full C++ exception support in mainstream operating system kernel environments is either challenging, or impossible, without modifying the operating system kernel itself. [[#kernel]]
 1. Partial C++ exception support is possible in mainstream operating system kernels without modifying the operating system kernel itself. [[#kernel]]
 1. Table-based exceptions are challenging on bare-metal, in part because of the high implementation cost and dependency on operating system facilities. [[#baremetal]]
 1. Table-based exceptions are challenging on GPUs because they cause divergent code flow, and can inhibit the most valuable optimization in that domain. [[#gpus]]
@@ -169,19 +169,31 @@ Table based exceptions have a large one-time cost for the exception handling mac
 
 Kernel environments {#kernel}
 -----------------------------
-1. New code in mainstream operating system kernels cannot use full C++ exception support without modifying the operating system kernel itself. [[#kernel]]
-1. Partial C++ exception support is possible in mainstream operating system kernels without modifying the operating system kernel itself. [[#kernel]]
+Some aspects of exception handling require storage that is local to a thread [[#tls]].  Microsoft Windows, Linux, Apple OSX, and the various BSDs do not implement arbitrary TLS that is exposed to driver developers.  This means that implementing these aspects of exception handling require one of the following tactics:
+1. Modify the operating system.
+2. Implement a form of TLS that is compatible with the OS, but doesn't require modifying the OS.
 
+In kernel mode, most operating systems have some concept of a thread id.  Such a thread id can be used to construct a global associative container correlating thread id to some arbitrary state.  A map like this would further degrade performance in the `throw` code path, and introduce an additional point of failure, but it could be made conforming.  No known runtime implementation takes this approach though.
 
-TODO: [[Gylfason2004]]
-    [[Baker2017]]
-    [[Quinn2016]]
-    [[ntke_cpprtl]]
+[[Baker2017]] and [[Quinn2016]] have demonstrated working C++ exceptions in the Windows kernel, but both of those were using hypervisors, and involved little interaction with the Windows kernel.
 
+[[ntke_cpprtl]] does not appear to support `std::uncaught_exceptions` in the Windows kernel.
+
+[[Gylfason2004]] is able to support full C++ exceptions in a modified Linux kernel.  The modification adds a small size overhead to every kernel mode thread, even those that do not use C++.
+
+In each of these cases, a very useful subset of C++ exceptions is still available, even without changing the kernel code or re-implementing TLS.  Users can `throw` and `catch` arbitrary types, while invoking the correct destructors along the way.
 
 Bare metal environments {#baremetal}
 ------------------------------------
-TODO
+Note: Bare metal environments are often associated with real-time applications and microcontrollers.  While this is often the case, bare metal challenges are also an issue for the early stages of a server, desktop, or mobile OS boot process.  These environments have ample RAM and storage space, and often have multiple hardware threads available.
+
+Some aspects of exception handling require storage that is local to a thread [[#tls]].  Compilers and library runtimes typically implement this in terms of thread local storage.  Thread local storage is traditionally an operating system facility.  Implementing thread local storage requires agreement between the operating environment, the compiler, the linker, and the runtime.  Each of these pieces may be implemented by different vendors.
+
+The allocation of the exception object can be an issue in bare metal environments.  [[#eh_alloc]]
+
+None of these technical concerns are an issue for error codes.
+
+If the operating environment and the toolchain do not have a working, vendor supplied implementation of exceptions, then many programmers will choose to use error codes, rather than fix the toolchain and operating environment.
 
 GPU and accelerator environments {#gpus}
 -----------------------------
