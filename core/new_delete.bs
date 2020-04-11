@@ -2,7 +2,7 @@
 Title: Freestanding Language: Optional <code>::operator new</code>
 Shortname: D2013
 Revision: 1.0
-Audience: SG14, EWG
+Audience: SG14, EWG, LEWG
 Status: D
 Group: WG21
 URL: https://wg21.link/P2013R1
@@ -16,15 +16,19 @@ Revision History {#revision_history}
 ====================================
 R1 {#r1}
 -----
-Added polling results from Prague EWGI and EWG.
+Added polling results from Prague \[EWGI](#ewgi_prague) and \[EWG](#ewg_prague).
 
-Added discussion on feature test macro.
+Added discussion on \[feature test macro](#no_macro).
+
+Added discussion on \[not fixing virtual destructors](#why_not_fix).
 
 Declaring that `constexpr new` must continue to work.
 
-Added wording.
+Added \[wording](#wording).
 
-TODO: ensure things render reasonably in bikeshed
+Wording includes \[changes to library clauses](#new_delete), so added LEWG to the audience.
+
+TODO: update shortname, revision, and status before submitting
 
 R0 {#r0}
 -------
@@ -126,7 +130,7 @@ SF/F/N/A/SA
 
 8/10/7/0/0
 
-Feb 12, 2020, EWGi, Prague {#ewgi_prague}
+Feb 12, 2020, EWGI, Prague {#ewgi_prague}
 ------------------------
 Given the time constraints of the committee, should we spend additional committee effort on P2013?
 
