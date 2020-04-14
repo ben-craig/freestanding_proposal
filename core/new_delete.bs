@@ -1,9 +1,9 @@
 <pre class='metadata'>
 Title: Freestanding Language: Optional <code>::operator new</code>
-Shortname: D2013
-Revision: 1.0
+Shortname: P2013
+Revision: 1
 Audience: SG14, EWG, LEWG
-Status: D
+Status: P
 Group: WG21
 URL: https://wg21.link/P2013R1
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
@@ -27,8 +27,6 @@ Declaring that `constexpr new` must continue to work.
 Added \[wording](#wording).
 
 Wording includes \[changes to library clauses](#new_delete), so added LEWG to the audience.
-
-TODO: update shortname, revision, and status before submitting
 
 R0 {#r0}
 -------
