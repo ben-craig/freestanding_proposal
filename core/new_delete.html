@@ -1502,11 +1502,11 @@ c-[vg] { color: #0077aa } /* Name.Variable.Global */
 c-[vi] { color: #0077aa } /* Name.Variable.Instance */
 c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
 </style>
- </head><body class="h-entry toc-inline"><p id="toc-nav"><a id="toc-jump" href="#toc"><span aria-hidden="true">↑</span> <span>Jump to Table of Contents</span></a><a id="toc-toggle" href="#toc"><span aria-hidden="true">→</span> <span>Pop Out Sidebar</span></a></p>
+ </head><body class="h-entry toc-sidebar"><p id="toc-nav"><a id="toc-jump" href="#toc"><span aria-hidden="true">↑</span> <span>Jump to Table of Contents</span></a><a id="toc-toggle" href="#toc"><span aria-hidden="true">←</span> <span>Collapse Sidebar</span></a></p>
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">D2013R1.0<br>Freestanding Language: Optional <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code></h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2020-04-11">2020-04-11</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2020-04-13">2020-04-13</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1836,23 +1836,22 @@ unless it is
     <p>
      <ins>3.1.2 -- a call to a replaceable global allocation function during the evaluation of a constant expression.</ins>
     </p>
-    <p>
-     <ins>3.1.3</ins>
-      [<i>Note</i>: This covers taking the address of functions (7.3.3, 
-7.6.2.1), calls to named functions (7.6.1.2), operator overloading 
+    <p>[<i>Note</i>: This covers taking the address of functions (7.3.3,
+ 7.6.2.1), calls to named functions (7.6.1.2), operator overloading 
 (Clause 12), user-defined conversions (11.4.7.2), allocation functions 
 for <i>new-expressions</i> (7.6.2.7), as well as non-default 
 initialization (9.4). A constructor selected to copy or move an object 
 of class type is considered to be named by an expression or conversion 
-even if the call is actually elided by the implementation (11.10.5).— <i>end note</i>]
-    </p>
+even if the call is actually elided by the implementation (11.10.5).— <i>end note</i>]</p>
    </blockquote>
    <h3 class="heading settled" data-level="8.2" id="basic_stc_dynamic"><span class="secno">8.2. </span><span class="content">basic.stc.dynamic</span><a class="self-link" href="#basic_stc_dynamic"></a></h3>
     Modify <a href="https://wg21.link/basic.stc.dynamic#2">basic.stc.dynamic/2</a> 
    <blockquote>
     <del>The</del>
     <ins>On hosted implementations, the</ins>
-     library provides default definitions for the global allocation and deallocation functions. 
+     library provides default definitions for the global allocation and 
+deallocation functions. Some global allocation and deallocation 
+functions are replaceable (17.6.2). 
     <ins>On freestanding implementations, the library provides default 
 definitions for the non-replaceable allocation functions and all the 
 global deallocation functions. It is implementation-defined whether a 
@@ -1861,18 +1860,18 @@ the replaceable global allocation functions. A freestanding
 implementation’s library shall either provide the definitions for all 
 the replaceable global allocation functions, or none of the replaceable 
 global allocation functions.</ins>
-     Some global allocation and deallocation functions are replaceable 
-(17.6.2). A C++ program shall provide at most one definition of a 
-replaceable allocation or deallocation function. Any such function 
-definition replaces the default version provided in the library 
-(16.5.4.6). The following allocation and deallocation functions (17.6) 
-are implicitly declared in global scope in each translation unit of a 
-program. 
+     A C++ program shall provide at most one definition of a replaceable
+ allocation or deallocation function. Any such function definition 
+replaces the default version provided in the library (16.5.4.6). The 
+following allocation and deallocation functions (17.6) are implicitly 
+declared in global scope in each translation unit of a program. 
    </blockquote>
    <h3 class="heading settled" data-level="8.3" id="new_delete"><span class="secno">8.3. </span><span class="content">new.delete</span><a class="self-link" href="#new_delete"></a></h3>
     Insert the following Mandate clause before <a href="https://wg21.link/new.delete.single#1">new.delete.single/1</a>, <a href="https://wg21.link/new.delete.single#5">new.delete.single/5</a>, <a href="https://wg21.link/new.delete.array#1">new.delete.array/1</a>, and <a href="https://wg21.link/new.delete.array#5">new.delete.array/5</a>: 
    <blockquote>
-    <ins><i>Mandates:</i> These functions are not odr-used ([basic.def.odr]) unless a definition of these functions has been provided. [<i>Note</i>: On hosted implementations, the library provides default definitions of these functions ([basic.stc.dynamic]).- <i>end note</i>]</ins>
+    <ins><i>Mandates:</i> These allocation functions are not odr-used 
+([basic.def.odr]) unless a definition of these allocation functions has 
+been provided. [<i>Note</i>: On hosted implementations, the library provides default definitions of these allocation functions ([basic.stc.dynamic]).- <i>end note</i>]</ins>
    </blockquote>
    <p>The above mimics wording in <a href="https://wg21.link/declval">declval</a>.  I believe it is compatible with <a href="https://wg21.link/intro.compliance#4.sentence-2">intro.compliance/4</a>.</p>
    <h2 class="heading settled" data-level="9" id="ack"><span class="secno">9. </span><span class="content">Acknowledgments</span><a class="self-link" href="#ack"></a></h2>
@@ -1880,6 +1879,7 @@ program.
 Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred 
 Bratterud, Phil Hindman, Arthur O’Dwyer, Laurin-Luis Lehning, JF 
 Bastien, and Matthew Bentley 
+   <p>Thank you to Daveed Vandevoorde, for providing feedback on the wording.</p>
   </main>
 <script>
 (function() {
