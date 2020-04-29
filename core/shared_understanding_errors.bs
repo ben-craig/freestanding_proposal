@@ -60,7 +60,7 @@ TODO: maybe retitle and combine with #disagree?  Then just mark up the ones wher
     <br/><br/>
 
 1. `try`, `catch` and `throw` are not supported in the context of a signal. [support.signal](http://eel.is/c++draft/support.signal)
-1. Table-based exceptions are challenging on micro-controllers due to tight space constraints. [[#microcontrollers]]
+1. Table-based exceptions are challenging on microcontrollers due to tight space constraints. [[#microcontrollers]]
 1. Implementing full C++ exception support in mainstream operating system kernel environments is either challenging, or impossible, without modifying the operating system kernel itself. [[#kernel]]
 1. Partial C++ exception support is possible in mainstream operating system kernels without modifying the operating system kernel itself. [[#kernel]]
 1. Table-based exceptions are challenging on bare-metal, in part because of the high implementation cost and dependency on operating system facilities. [[#baremetal]]
@@ -76,8 +76,8 @@ TODO: maybe retitle and combine with #disagree?  Then just mark up the ones wher
     <br/><br/>
 
 1. Throwing an exception requires a dynamic allocation. [[#eh_alloc]]
-1. It is challenging to support heap allocations for exception objects in kernel, micro-controller, bare-metal, and FPGA environments. [[#eh_alloc]]
-1. It is challenging to support stack allocations for exception objects in kernel, micro-controller, bare-metal, and FPGA environments, due to limited stack space. [[#eh_alloc]]
+1. It is challenging to support heap allocations for exception objects in kernel, microcontroller, bare-metal, and FPGA environments. [[#eh_alloc]]
+1. It is challenging to support stack allocations for exception objects in kernel, microcontroller, bare-metal, and FPGA environments, due to limited stack space. [[#eh_alloc]]
 1. Exceptions require out-of-band mutable storage that is local to a thread (though not necessarily <i>thread-local-storage</i>). [[#tls]]
     <br/><br/>
 
@@ -97,6 +97,9 @@ TODO: maybe retitle and combine with #disagree?  Then just mark up the ones wher
 1. Exceptions allow the transportation of arbitrary error information from a callback, through the invoker.
 1. Error codes can be constructed that allow the transportation of arbitrary error information from a callback, through the invoker (e.g. a std::pair<int, std::any>).
     <br/><br/>
+
+1. The performance characteristics of exceptions are a program-global decision made by the toolchain implementer. [[#global_decision]]
+1. Developers may want different performance characteristics for error handling in different parts of the program. [[#global_decision]]
 
 1. Error codes, in the general case, cannot be used to propagate error information across code that is unaware of error codes.
 1. Exceptions, in the general case, cannot be used to propagate error information across code that is unaware of C++ exceptions.
@@ -187,7 +190,7 @@ Bare metal environments {#baremetal}
 ------------------------------------
 Note: Bare metal environments are often associated with real-time applications and microcontrollers.  While this is often the case, bare metal challenges are also an issue for the early stages of a server, desktop, or mobile OS boot process.  These environments have ample RAM and storage space, and often have multiple hardware threads available.
 
-Some aspects of exception handling require storage that is local to a thread [[#tls]].  Compilers and library runtimes typically implement this in terms of thread local storage.  Thread local storage is traditionally an operating system facility.  Implementing thread local storage requires agreement between the operating environment, the compiler, the linker, and the runtime.  Each of these pieces may be implemented by different vendors.
+Some aspects of table-based exception handling require storage that is local to a thread [[#tls]].  Compilers and library runtimes typically implement this in terms of thread local storage.  Thread local storage is traditionally an operating system facility.  Implementing thread local storage requires agreement between the operating environment, the compiler, the linker, and the runtime.  Each of these pieces may be implemented by different vendors.
 
 The allocation of the exception object can be an issue in bare metal environments.  [[#eh_alloc]]
 
@@ -201,11 +204,21 @@ TODO
 
 Direct FPGA environments {#fpgas}
 -----------------------------
-TODO
+I use the term "direct FPGA" to mean that C++ code is synthesized into a netlist.  This is in opposition to use cases that have a CPU or microcontroller programmed into the FPGA fabric, with a program running on the CPU or microcontroller.
 
-Unimportant failure performance {#unnoticed_fail}
+Many constructs in C and C++ can be converted into an electronic circuit in a straigtforward way.  Indirect calls, through function pointers, virtual calls, and table-based stack unwinding, are all challenges.  One does not simply "jump" from one portion of an FPGA to another portion of the FPGA that has the logic that needs to run.  Tackling this challenge is an ongoing area of research.
+
+FPGAs are heavily space constrained, similar to microcontrollers [[#microcontrollers]].  Code size is even more constrained though, as code goes into FPGA gates, and FPGA gates are signficantly more expensive than RAM.
+
+Non-critical failure performance {#unnoticed_fail}
 -------------------------------------
-TODO: also, work on the title of this section
+There are a great many applications where the performance on the failure path is of low importance.
+
+In many interactive applications, a user interaction will often cause some operation to take place, and if that operation fails, then a dialog, or some other kind of user interaction is shown (e.g. opening a document of some kind).  The value of the program is the same whether the dialog shows up in 1 millisecond or 50 milliseconds.
+
+There are non-interactive applications that care a great deal about latency on the success path [[#cant_go_fast_enough]], but don't care about performance on the failure path.  In the failure cases, no transaction needs to happen, so it is acceptable to take a longer amount of time, so long as the latency of the next success path operation is unaffected.
+
+There are non-interactive simulation and modeling applications (e.g. high-performance computing) where no exceptions happen during a successful simulation, and an exception is only thrown during an unsuccessful run.  When these exceptions happen, it normally indicates some kind of failure that requires human intervention, like adjusting the starting paramters, or freeing up hard disk space, or plugging a network cable back in.  A few extra milleseconds to account for stack unwinding is perfectly acceptable in these circumstances.
 
 Throughput applications {#throughput_apps}
 -----------------------------------------
@@ -240,6 +253,30 @@ There is no shortage of error handling mechanisms in the standard library and in
 Creating a new error handling mechanism does not make the old mechanisms go away.  If you had N mechanisms before, a new mechanism, no matter how superior a choice, will leave you with N+1 mechanisms.  The existence of `std::error_code` in C++11 did not make exceptions, `errno`, or integer error codes leave the ecosystem.  Each of these error mechanisms is likely to remain in use for decades to come.  Similarly, P0709 exceptions and `expected` are unlikely to make old error handling strategies disappear, even if P0709 exceptions and `expected` become the most common error handling strategies.
 
 A new error handling mechanism could change how we teach error handling, and how we write error handling in new code.  This has happened in the past, and could happen again.  There is very little educational effort spent on `errno` best practices, and very little new C++ code is written with `errno` as the primary error handling mechanism.  The main interaction with `errno` is in handling the errors and translating them to newer mechanisms.  A new error handling mechanism can aspire to replace other mechanisms as well as `errno` has been replaced.
+
+Local vs. global tradeoffs with error handling {#global_decision}
+------------------
+There are cases where there are different needs for error handling performance within the same program, translation unit, or even function.  Users cannot make a local decision on whether exceptions prefer "happy path" performance or worst-case-execution-time performance.  Users can make local choices as to whether to use exceptions or not, with the assumption that exceptions prefer "happy path" performance.  Choosing something other than exceptions will often lead to impoverished syntax.
+
+Imagine a server application that can normally handle 10,000 concurrent clients.  It has a function that looks up a trusted string using an integer key from an untrusted source.  During normal usage with no malicious users, the untrusted id will always correspond to an item in the map.  A malicious user can trivially choose a number that is not in the map.  A naive implementation may look like this:
+```const std::map<int, std::string> global_map = { /*elements*/ };
+std::string get_name(int untrusted_id) {
+    return global_map.at(untrusted_id);
+}```
+There are two main points of failure in get_name.  The lookup could fail, or the copy construction of `std::string` could fail.
+
+Since these strings are known at compile time, it would be reasonable to assume that they are of a relatively small size (i.e. not megabytes or larger), and therefore, the copy construction of the string will almost never fail.  Table-based exceptions seem reasonable as a way to handle the potential `std::string` failures.  
+
+The lookup failure is more problematic.  Failure to find the item will trigger an exception.  Semantically, an exception is a reasonable thing to do here, as this is an error path.  Syntactically, an exception is reasonable, as now the calling code doesn't need to worry about whether the return value exists or not.  However, if the underlying implementation is a table-based exception implementation, then this exception will consume a large amount of CPU, and such CPU usage can be used as part of a denial-of-service attack.  The server that could normally handle 10,000 concurrent clients may now only be able to deal with 5,000 malicious requests.
+
+An alternative implementation may use `std::optional` to represent a possible failure:
+```std::optional<std::string> get_opt_name(int untrusted_id) {
+    auto it = global_map.find(untrusted_id);
+    if(it == global_map.end())
+        return {};
+    return it->second;
+}```
+This code has similar performance for both successful and failed lookups, which is desirable.  However, it takes more code to express this, and the usage of this function is also more complicated. `auto name = get_opt_name(id); name->c_str();` compiles, but invokes undefined behavior if the item isn't present.  We have gained performance, but lost notational convenience.  Currently, if users want portable worst-case-execution-time performance, they lose notational convenience.  There is no way to portably express that a program should prefer "happy path" execution time in its error handling code.
 
 Exception handling overhead is difficult to avoid {#using_is_easy}
 ----------------------------------------------------------------
