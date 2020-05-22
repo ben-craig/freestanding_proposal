@@ -358,14 +358,20 @@ span.indented {
 }
 </style>
 
-<title>P1642R2: Freestanding Library: Easy [utilities], [ranges], and [iterators]</title>
+<title>TODO D1642R3: Freestanding Library: Easy [utilities], [ranges], and [iterators]</title>
 <body>
 <h1>Freestanding Library: Easy [utilities], [ranges], and [iterators]</h1>
-Document number: P1642R2<br/>
-Date: 2020-01-10<br/>
+Document number: TODO: D1642R3<br/>
+Date: 2020-01-10 TODO<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
-Audience: SG14, Library Evolution Working Group
+Audience: Library Evolution Working Group
 <h1>Change history</h1>
+<h3> R3 </h3>
+<ul>
+  <li>Rebased to N4861</li>
+  <li>Putting wording back (in the form of instructions to editor)</li>
+  <li>Per-header feature test macro, similar to <code>constexpr</code> macros</li>
+</ul>
 <h3> R2 </h3>
 <ul>
   <li>Rebased to N4842</li>
@@ -439,21 +445,37 @@ The following classes rely on iostreams facilities.  iostreams facilities use dy
 The ExecutionPolicy overloads of algorithms are of minimal utility on systems that do not support C++ threads.
 </p>
 <h1>Feature test macros</h1>
-Add the following feature test macro to freestanding only:
+Add the following feature test macros to <b>freestanding only</b>:
 <table border="1">
     <thead><tr>
         <th>Name</th>
-        <th>Value</th>
         <th>Header</th>
     </tr></thead>
     <tbody><tr>
+        <td><code>__cpp_lib_freestanding_utility</code></td>
+        <td><code>&lt;utility&gt;<code></td>
+    </tr><tr>
+        <td><code>__cpp_lib_freestanding_tuple</code></td>
+        <td><code>&lt;tuple&gt;<code></td>
+    </tr><tr>
+        <td><code>__cpp_lib_freestanding_ratio</code></td>
+        <td><code>&lt;ratio&gt;<code></td>
+    </tr><tr>
+        <td><code>__cpp_lib_freestanding_memory</code></td>
+        <td><code>&lt;memory&gt;<code></td>
+    </tr><tr>
+        <td><code>__cpp_lib_freestanding_functional</code></td>
+        <td><code>&lt;functional&gt;<code></td>
+    </tr><tr>
         <td><code>__cpp_lib_freestanding_iterator</code></td>
-        <td><var ignore="true">202001</var></td>
-        <td><code>&lt;version&gt;<code></td>
+        <td><code>&lt;iterator&gt;<code></td>
+    </tr><tr>
+        <td><code>__cpp_lib_freestanding_ranges</code></td>
+        <td><code>&lt;ranges&gt;<code></td>
     </tr></tbody>
 </table>
 
-<p>The following, existing feature test macros cover some features that I am making freestanding, and some features that I am not requiring to be freestanding.  These feature test macros won't be required in freestanding, as they could cause substantial confusion when the hosted parts of those features aren't available.</p>
+<p>The following, existing feature test macros cover some features that I am making freestanding, and some features that I am not requiring to be freestanding.  These feature test macros won't be required in freestanding, as they could cause substantial confusion when the hosted parts of those features aren't available.  The header-based <code>__cpp_lib_freestanding_*</code> macros should provide a suitable replacement in freestanding environments.</p>
 <ul>
   <li><code>__cpp_lib_boyer_moore_searcher</code></li>
   <li><code>__cpp_lib_constexpr_dynamic_alloc</code></li>
@@ -461,15 +483,21 @@ Add the following feature test macro to freestanding only:
   <li><code>__cpp_lib_raw_memory_algorithms</code></li>
 </ul>
 
-<h1>Summary of inclusions</h1>
-<p>
-The entirety of the following headers are included:
+<h1>Wording</h1>
+Wording assumes that <a href="https://wg21.link/P1641">P1641</a> has been applied.<br>
+
+<h2>Full headers</h2>
+Instructions to the editor:<br>
+Please add a <span class="comment">// <span class="textit">freestanding</span></span> comment to the beginning of the following synopses.  These headers are entirely freestanding.
 <ul>
-  <li><code>&lt;utility&gt;</code></li>
-  <li><code>&lt;tuple&gt;</code></li>
-  <li><code>&lt;ratio&gt;</code></li>
+<li><a href="https://wg21.link/utility.syn">[utility.syn]</a></li>
+<li><a href="https://wg21.link/tuple.syn">[tuple.syn]</a></li>
+<li><a href="https://wg21.link/ratio.syn">[ratio.syn]</a></li>
 </ul>
-The following portions of <code>&lt;memory&gt;</code> are included:
+
+<h2>Change in <a href="https://wg21.link/memory.syn">[memory.syn]</a></h2>
+Instructions to the editor:<br>
+Please add a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following declarations:
 <ul>
   <li><code>pointer_traits</code></li>
   <li><code>to_address</code></li>
@@ -490,7 +518,8 @@ The following portions of <code>&lt;memory&gt;</code> are included:
   <li><code>unique_ptr</code> specialization of <code>hash</code></li>
   <li><code>atomic</code></li>
 </ul>
-The following portions of <code>&lt;memory&gt;</code> are <b>omitted</b>:
+
+Note: the following portions of <code>&lt;memory&gt;</code> are <b>omitted</b>.  No change to the working draft should be made for these declarations:
 <ul>
   <li>[util.dynamic.safety], pointer safety</li>
   <li><code>make_obj_using_allocator</code></li>
@@ -522,7 +551,9 @@ The following portions of <code>&lt;memory&gt;</code> are <b>omitted</b>:
   <li><code>weak_ptr</code> specialization of <code>atomic</code></li>
 </ul>
 
-Mark everything in <code>&lt;functional&gt;</code> as freestanding <b>except</b> for the following entities:
+<h2>Change in <a href="https://wg21.link/functional.syn">[functional.syn]</a></h2>
+Instructions to the editor:<br>
+Please add a <span class="comment">// <span class="textit">freestanding</span></span> comment to every entity in <code>&lt;functional&gt;</code> <b>except</b> for the following entities:
 <ul>
   <li><code>bad_function_call</code></li>
   <li><code>function</code></li>
@@ -532,7 +563,9 @@ Mark everything in <code>&lt;functional&gt;</code> as freestanding <b>except</b>
   <li><code>boyer_moore_horspool_searcher</code></li>
 </ul>
 
-Mark everything in <code>&lt;iterator&gt;</code> as freestanding <b>except</b> for the following entities:
+<h2>Change in <a href="https://wg21.link/iterator.synopsis">[iterator.synopsis]</a></h2>
+Instructions to the editor:<br>
+Please add a <span class="comment">// <span class="textit">freestanding</span></span> comment to every entity in <code>&lt;iterator&gt;</code> <b>except</b> for the following entities:
 <ul>
   <li><code>istream_iterator</code> and associated comparison operators</li>
   <li><code>ostream_iterator</code></li>
@@ -540,13 +573,16 @@ Mark everything in <code>&lt;iterator&gt;</code> as freestanding <b>except</b> f
   <li><code>ostreambuf_iterator</code></li>
 </ul>
 
-Mark everything in <code>&lt;ranges&gt;</code> as freestanding <b>except</b> for the following entities:
+<h2>Change in <a href="https://wg21.link/ranges.syn">[ranges.syn]</a></h2>
+Instructions to the editor:<br>
+Please add a <span class="comment">// <span class="textit">freestanding</span></span> comment to every entity in <code>&lt;ranges&gt;</code> <b>except</b> for the following entities:
 <ul>
   <li><code>basic_istream_view</code></li>
   <li><code>istream_view</code></li>
 </ul>
 
-Mark the following macros in <code>&lt;version&gt;</code> as freestanding
+<h2>Change in <a href="https://wg21.link/version.syn">[version.syn]</a></h2>
+Please add a <span class="comment">// <span class="textit">freestanding</span></span> comment to each of the following macro definitions:
 <ul>
   <li><code>__cpp_lib_addressof_constexpr</code></li>
   <li><code>__cpp_lib_allocator_traits_is_always_equal</code></li>
@@ -575,6 +611,17 @@ Mark the following macros in <code>&lt;version&gt;</code> as freestanding
   <li><code>__cpp_lib_tuples_by_type</code></li>
   <li><code>__cpp_lib_unwrap_ref</code></li>
 </ul>
+Please add the following macro definitions:
+
+<blockquote class="std"><pre class="codeblock"><ins>
+#define __cpp_lib_freestanding_functional   202005L // also in &lt;functional&gt;, freestanding only
+#define __cpp_lib_freestanding_iterator     202005L // also in &lt;iterator&gt;, freestanding only
+#define __cpp_lib_freestanding_memory       202005L // also in &lt;memory&gt;, freestanding only
+#define __cpp_lib_freestanding_ranges       202005L // also in &lt;ranges&gt;, freestanding only
+#define __cpp_lib_freestanding_ratio        202005L // also in &lt;ratio&gt;, freestanding only
+#define __cpp_lib_freestanding_tuple        202005L // also in &lt;tuple&gt;, freestanding only
+#define __cpp_lib_freestanding_utility      202005L // also in &lt;utility&gt;, freestanding only
+</pre></blockquote></ins>
 
 <h1>Acknowledgements</h1>
 <p>
