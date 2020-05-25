@@ -64,12 +64,12 @@ TODO: maybe retitle and combine with #disagree?  Then just mark up the ones wher
 1. Implementing full C++ exception support in mainstream operating system kernel environments is either challenging, or impossible, without modifying the operating system kernel itself. [[#kernel]]
 1. Partial C++ exception support is possible in mainstream operating system kernels without modifying the operating system kernel itself. [[#kernel]]
 1. Table-based exceptions are challenging on bare-metal, in part because of the high implementation cost and dependency on operating system facilities. [[#baremetal]]
-1. Table-based exceptions are challenging on GPUs because they cause divergent code flow, and can inhibit the most valuable optimization in that domain. [[#gpus]]
 1. Table-based exceptions are challenging on FPGAs because of space constraints, and because of indirect calls. [[#fpgas]]
 1. Table-based exceptions are well suited to applications where extra milliseconds of latency on the failure path will go unnoticed. [[#unnoticed_fail]]
 1. #DUP?# Table-based exceptions are well suited to interactive and low-latency applications where extra milliseconds of latency on the failure path will go unnoticed. [[#unnoticed_fail]]
 1. Table-based exceptions are well suited to throughput-oriented applications where failure is rare and can be modeled with a random (i.e. non-correlated) process. [[#throughput_apps]]
 1. Table-based exceptions are well suited to applications where all speed improvements on the happy path provide value. [[#cant_go_fast_enough]]
+1. Flow-control based error handling is challenging on GPUs because it causes divergent code flow, and can inhibit the most valuable optimization in that domain. [[#gpus]]
     <br/><br/>
 
 1. There are other exception implementation approaches that may address the challenges with table-based exceptions, or at least provide a different set of trade offs.  [[#other_approaches]]
@@ -115,8 +115,8 @@ TODO: maybe retitle and combine with #disagree?  Then just mark up the ones wher
 1. Dual error interface libraries are not ideal (e.g. `std::filesystem`).
 1. Authors of an API do not always know whether a failure is expected, common, or program-recoverable.
 
-1. The sad path of error code based programs is roughly as analyzable as the happy path. [[#sad_path_analysis]]
-1. The sad path of exception based programs is much harder to analyze than the happy path. [[#sad_path_analysis]]
+1. The sad path of integer error code based programs is roughly as analyzable as the happy path. [[#sad_path_analysis]]
+1. The sad path of dynamically-typed exception based programs is much harder to analyze than the happy path. [[#sad_path_analysis]]
 
 
 Rationale {#rationale}
@@ -176,7 +176,7 @@ Some aspects of exception handling require storage that is local to a thread [[#
 1. Modify the operating system.
 2. Implement a form of TLS that is compatible with the OS, but doesn't require modifying the OS.
 
-In kernel mode, most operating systems have some concept of a thread id.  Such a thread id can be used to construct a global associative container correlating thread id to some arbitrary state.  A map like this would further degrade performance in the `throw` code path, and introduce an additional point of failure, but it could be made conforming.  No known runtime implementation takes this approach though.
+In kernel mode, most operating systems have some concept of a thread ID.  Such a thread ID can be used to construct a global associative container correlating thread ID to some arbitrary state.  A map like this would further degrade performance in the `throw` code path, and introduce an additional point of failure, but it could be made conforming.  No known runtime implementation takes this approach though.
 
 [[Baker2017]] and [[Quinn2016]] have demonstrated working C++ exceptions in the Windows kernel, but both of those were using hypervisors, and involved little interaction with the Windows kernel.
 
@@ -200,15 +200,21 @@ If the operating environment and the toolchain do not have a working, vendor sup
 
 GPU and accelerator environments {#gpus}
 -----------------------------
-TODO
+TODO: Get Olivier to review this.  Replace convergent with the right term.
+
+Flow-control based error handling is challenging on GPUs because it causes divergent code flow, and can inhibit the most valuable optimization in that domain.  I define flow-control based error handling as any error handling that changes the main sequence of instructions executed.  This covers exception-based programming models, error code based programming models, and even things like `expected`.  Tools like floating-point NaN propagation are an alternate, but unpopular way to propagate errors in a way that doesn't suffer from divergent control flow.
+
+Potentially divergent control flow is substantially slower than coherent control flow.  A different set of instructions needs to be generated to handle potentially divergent control flow.  This extra code often involves setting up execution masks and dealing with their overhead.  Distant, non-call based control transfers (e.g. `setjmp`) have additional implementation challenges in some existing hardware.  In addition, if any threads take the sad path, performance is negatively affected for threads on the happy path.
+
+By default, in C++, every function has the potential to throw and introduce an extra control flow edge into the caller.  This default makes it easy to accidentally introduce divergent code flow into code that has no need of an error path.  The default adds verbosity to the common case in GPU programming.
 
 Direct FPGA environments {#fpgas}
 -----------------------------
 I use the term "direct FPGA" to mean that C++ code is synthesized into a netlist.  This is in opposition to use cases that have a CPU or microcontroller programmed into the FPGA fabric, with a program running on the CPU or microcontroller.
 
-Many constructs in C and C++ can be converted into an electronic circuit in a straigtforward way.  Indirect calls, through function pointers, virtual calls, and table-based stack unwinding, are all challenges.  One does not simply "jump" from one portion of an FPGA to another portion of the FPGA that has the logic that needs to run.  Tackling this challenge is an ongoing area of research.
+Many constructs in C and C++ can be converted into an electronic circuit in a straightforward way.  Indirect calls, through function pointers, virtual calls, and table-based stack unwinding, are all challenges.  One does not simply "jump" from one portion of an FPGA to another portion of the FPGA that has the logic that needs to run.  Tackling this challenge is an ongoing area of research.
 
-FPGAs are heavily space constrained, similar to microcontrollers [[#microcontrollers]].  Code size is even more constrained though, as code goes into FPGA gates, and FPGA gates are signficantly more expensive than RAM.
+FPGAs are heavily space constrained, similar to microcontrollers [[#microcontrollers]].  Code size is even more constrained though, as code goes into FPGA gates, and FPGA gates are significantly more expensive than RAM.
 
 Non-critical failure performance {#unnoticed_fail}
 -------------------------------------
@@ -218,15 +224,20 @@ In many interactive applications, a user interaction will often cause some opera
 
 There are non-interactive applications that care a great deal about latency on the success path [[#cant_go_fast_enough]], but don't care about performance on the failure path.  In the failure cases, no transaction needs to happen, so it is acceptable to take a longer amount of time, so long as the latency of the next success path operation is unaffected.
 
-There are non-interactive simulation and modeling applications (e.g. high-performance computing) where no exceptions happen during a successful simulation, and an exception is only thrown during an unsuccessful run.  When these exceptions happen, it normally indicates some kind of failure that requires human intervention, like adjusting the starting paramters, or freeing up hard disk space, or plugging a network cable back in.  A few extra milleseconds to account for stack unwinding is perfectly acceptable in these circumstances.
+There are non-interactive simulation and modeling applications (e.g. high-performance computing) where no exceptions happen during a successful simulation, and an exception is only thrown during an unsuccessful run.  When these exceptions happen, it normally indicates some kind of failure that requires human intervention, like adjusting the starting parameters, or freeing up hard disk space, or plugging a network cable back in.  A few extra milliseconds to account for stack unwinding is perfectly acceptable in these circumstances.
 
 Throughput applications {#throughput_apps}
 -----------------------------------------
-TODO: include discussion of correlated errors
+1. Table-based exceptions are well suited to throughput-oriented applications where failure is rare and can be modeled with a random (i.e. non-correlated) process. [[#throughput_apps]]
+In some applications, failure is rare and random.
 
 Performance as a competitive advantage {#cant_go_fast_enough}
 -------------------------------------------------------------
-TODO
+The value of a performance gain varies across domains and applications.  In some applications, extra performance gains past a certain threshold are largely meaningless.  Once the application has reached it's performance goal, it is going "fast enough".  Some applications and domains either have no such upper limit, or the limit is sufficiently distant from the current state of the art to be unreachable.
+
+Latency sensitive financial operations are another example of an application where all performance gains are beneficial.  In some of these operations, the absolute performance doesn't matter.  What matters is whether you are faster than your competitor.  The performance on the sad path doesn't have these same constraints.  This usually means that programmers are willing to make substantial sacrifices to sad path performance in order to get any benefit to happy path performance.
+
+Table-based exceptions provide such a trade-off.  Extraordinary effort is taken on behalf of the implementation to ensure that the happy path is as fast as can be, at the expense of a slow sad path.  This is a good trade-off for applications that "can't go fast enough".
 
 Other implementation approaches to exceptions {#other_approaches}
 ---------------------------------------------------
@@ -240,7 +251,13 @@ Other ABIs can store thrown exceptions in other ways, but this storage is either
 
 Exception handling and storage that is local to a thread {#tls}
 --------------------------------------------------------------
-TODO
+`std::uncaught_exceptions`, `throw;`, and `std::current_exception` area all "non-local" facilities that impose additional requirements on exception handling implementations beyond the basic, `throw`, `catch`, and destructor requirements.  Each of the non-local facilities takes no parameters, but still yield state about the current state of the exception handling machinery.  The common way to implement these non-local facilities is with thread-local storage.  `throw` will store information in a thread-local variable, the non-local facilities will use the data, and `catch` will clean it up.  Users generally expect to be able to query this information, even when calling across non-C++ languages.  For example, if a destructor calls into a C function, and the C function calls into another C++ free function, the free function is expected to be able to get valid results from `std::uncaught_exceptions`.
+
+Thread local storage is usually implemented in terms of a reserved register that points to a thread control block.  The thread control block contains information such as the thread ID, a pointer to the base of the stack, and pointer(s) to thread local storage.  The `thread_local` keyword in particular usually requires special linker and OS support in order to make it efficient.  An inefficient implementation of the `thread_local` keyword can use a locked map with the thread ID as a key.
+
+If the implementation is restricted to a single thread, then a global can be used.  If the implementation has substantial control over the ABI and calling conventions of the system, then a register can be reserved for passing around the exception state.  A hidden parameter can be used to pass along exception state, but the state needs to be passed to _all_ functions, even destructors and `noexcept` functions, as those functions can (and do) use `std::uncaught_exceptions`, `throw;` and `std::current_exception`.  Note that the hidden parameter and exception state register approaches are isomorphic to thread local storage.  Also note that these end up being platform requirements, and not just C++ requirements.  In order to support the cross-language use cases, these hidden parameters and reserved registers must be respected by all languages in use, and not just C++.  In these case, the platform ABI imposes a cost on all code, even non-C++ code, and even when no C++ code is being invoked at the time.
+
+None of the major desktop operating systems on the market today support arbitrary thread local storage in the kernel (Windows, Linux, OSX, BSD).  All have a thread ID available though, so inefficient `thread_local` storage could be implemented.  In the embedded space, most of the off-the-shelf RTOS's do not support the `thread_local` keyword, and do not implement the OS side of the complicated hand shake that the compilers, linkers, and runtimes expect.  Embedded RTOS's usually do have thread IDs available, and they also frequently support adding particular items to thread local storage, such as `errno`.
 
 Dubious business value {#dubious_business_value}
 ----------------------------------------------
@@ -248,7 +265,11 @@ TODO: improve the title
 
 The N+1 problem {#n_plus_one}
 ----------------------------
-There is no shortage of error handling mechanisms in the standard library and in the wild today.  The "N" is already a large number.  The C portions of the standard library use integer error codes and `errno`.  `qsort` and `bsearch` take callbacks, and those callbacks are allowed to throw exceptions through `qsort` and `bsearch`.  In the filesystem library, both `std::exception` based exceptions and `std::error_code` based error codes are used.  It is common place for users to need to translate the results of these error handling mechanisms into the error handling mechanism that their program uses.  This happens routinely when a C++ program using exceptions calls into a C library that uses callbacks and error codes.  The translation is not difficult, though it is verbose and error prone (lots of `try` / `catch` blocks and error testing `if` statements).
+There is no shortage of error handling mechanisms in the standard library and in the wild today.  The "N" is already a large number.  The C portions of the standard library use integer error codes and `errno`.  `qsort` and `bsearch` take callbacks, and those callbacks are allowed to throw exceptions through `qsort` and `bsearch`.  In the filesystem library, both `std::exception` based exceptions and `std::error_code` based error codes are used.  
+
+Even if the C++ standard does not add new error handling mechanisms, the community will likely do so.  `expected`, `outcome`, and `LEAF` are all community libraries dealing with error handling.  More will continue to be authored.
+
+It is common place for users to need to translate the results of various error handling mechanisms into the error handling mechanism that their program uses.  This happens routinely when a C++ program using exceptions calls into a C library that uses callbacks and error codes.  The translation is not difficult, though it is verbose and error prone (lots of `try` / `catch` blocks and error testing `if` statements).
 
 Creating a new error handling mechanism does not make the old mechanisms go away.  If you had N mechanisms before, a new mechanism, no matter how superior a choice, will leave you with N+1 mechanisms.  The existence of `std::error_code` in C++11 did not make exceptions, `errno`, or integer error codes leave the ecosystem.  Each of these error mechanisms is likely to remain in use for decades to come.  Similarly, P0709 exceptions and `expected` are unlikely to make old error handling strategies disappear, even if P0709 exceptions and `expected` become the most common error handling strategies.
 
@@ -258,7 +279,7 @@ Local vs. global tradeoffs with error handling {#global_decision}
 ------------------
 There are cases where there are different needs for error handling performance within the same program, translation unit, or even function.  Users cannot make a local decision on whether exceptions prefer "happy path" performance or worst-case-execution-time performance.  Users can make local choices as to whether to use exceptions or not, with the assumption that exceptions prefer "happy path" performance.  Choosing something other than exceptions will often lead to impoverished syntax.
 
-Imagine a server application that can normally handle 10,000 concurrent clients.  It has a function that looks up a trusted string using an integer key from an untrusted source.  During normal usage with no malicious users, the untrusted id will always correspond to an item in the map.  A malicious user can trivially choose a number that is not in the map.  A naive implementation may look like this:
+Imagine a server application that can normally handle 10,000 concurrent clients.  It has a function that looks up a trusted string using an integer key from an untrusted source.  During normal usage with no malicious users, the untrusted ID will always correspond to an item in the map.  A malicious user can trivially choose a number that is not in the map.  A naive implementation may look like this:
 ```const std::map<int, std::string> global_map = { /*elements*/ };
 std::string get_name(int untrusted_id) {
     return global_map.at(untrusted_id);
@@ -286,7 +307,27 @@ This is particularly concerning when calling into non-C++ code.  Non-C++ code is
 
 Tooling analysis of sad paths {#sad_path_analysis}
 -----------------------------------------------
-TODO
+TODO: Get this section reviewed by full time static analyzer folks.  Aaron Ballman, Tom Honerman
+
+There is a spectrum of difficulty in dealing with the various error handling schemes, with integer error codes on one side, and dynamically-typed exceptions on the other.  Error codes with dynamic aspects and statically-typed exceptions (i.e. throwing and catching a non-polymorphic type) lie somewhere in between these two extremes.
+
+Static analyzers routinely analyze code like the following:
+```int compute_velocity(const point_container &points);
+int fetch_speed(const simulation_parameters *params) {
+	point_container points = params->points;
+	int vel = compute_velocity(points);
+	if(vel < 0)
+		return -vel;
+	return vel;
+}```
+Static analyzer's can reason about the cases where `vel` is positive or negative.  They can deal with multiple return statements in the same function.  They can deal with destructors.
+
+Programs using integer error codes will have very similar branching structures.  In these programs, the reasoning needed for high quality diagnostics, stack usage, or worst case execution time is the same for both the happy path and the sad path.
+
+There are constructs that provide more difficulty, and provide more opportunities for static analyzers to differentiate themselves.  Indirect calls (whether through function pointers, virtual calls, or otherwise) are challenging.  Mutations to non-local state are difficult.  For integer error codes, these are aspects that are equally difficult in the happy path and the sad path.
+
+For programs using dynamically-typed exceptions, analysis is much harder.  Determining which catch statements can handle a given exception requires an indirect call.  Determining which catch statements might be invoked requires crossing any indirect calls in the static call graph.  For performance analysis, table-based exceptions fare poorly, as the performance of the exception handling mechanism depends on the size of the table, the complexity of the inheritance hierarchies, and in many cases, the performance characteristics of the system allocator.  These are all things that can be analyzed, but they are static analyzer requirements that aren't necessarily present on the happy path.
+
 
 Definitions {#definitions}
 ============
