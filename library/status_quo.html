@@ -358,14 +358,21 @@ span.indented {
 }
 </style>
 
-<title>TODO D1641R3.0: Freestanding Library: Rewording the Status Quo</title>
+<title>TODO D1641R4.0: Freestanding Library: Rewording the Status Quo</title>
 <body>
 <h1>Freestanding Library: Rewording the Status Quo</h1>
-Document number: D1641R3.0 TODO<br/>
+Document number: D1641R4.0 TODO<br/>
 Date: 2020-01-10 TODO<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: SG14, Library Evolution Working Group
 <h1>Change history</h1>
+<h3> R4 </h3>
+<ul>
+   <li>Removed numerous incorrect "shall"s from the wording</li>
+   <li>Added design and wording allowing implementations to provide more than the minimum for freestanding, so long as it meets the hosted requirements</li>
+   <li>Moved wording demonstrating how to use editorial techniques into [<i>Example</i>] blocks</li>
+   <li>Using <code>defined</code> in the feature test macro example</li>
+</ul>
 <h3> R3 </h3>
 <ul>
   <li>Rebased to N4849</li>
@@ -406,22 +413,26 @@ Many existing facilities in the C++ standard library could be used without troub
 </p><p>
 For a more in depth rationale, see P0829.
 </p><p>
-This paper is going to add blanket wording to make it easier to mark things freestanding, and it will retrofit the existing freestanding facilities.  It also includes a non-normative note that should allow implementers to use existing no-exception builds of their libraries as an implementation defined extensions, with a fair number of qualifications.  Here's that note, reproduced so that it can be debated more effectively:
+This paper is going to add blanket wording to make it easier to mark things freestanding, and it will retrofit the existing freestanding facilities.  It also includes a non-normative note that should allow implementers to use existing no-exception builds of their libraries as an implementation-defined extensions, with a fair number of qualifications.  Here's that note, reproduced so that it can be debated more effectively:
 </p><p>
 <div class='note'>[ <span class='textit'>Note</span><span class='textit'>:</span> Throwing a standard library provided exception is not observably different from <span class='texttt'>terminate()</span> if the implementation doesn't unwind the stack during exception handling (<a href="http://eel.is/c++draft/except.handle#9">[except.handle#9]</a>) and the user's program contains no catch blocks. -<i>end note</i>]</div>
 </p><p>
-The one intentional design change in this paper is in the feature test macros.  A new feature test macro will be added, and the existing library feature test macros will be annotated as required in freestanding or not.
+There are two intentional design changes in this paper.  The first is giving implementers freedom to include facilities in a freestanding implementation beyond those required in the specification, so long as the additional facilities meet the same requirements as for hosted implementations.  The second is marking feature test macros for hosted facilities as being optional.
+</p>
+<h1>Beyond the Bare Minimum</h1>
+<p>
+This paper grants implementations the freedom to include more than just the facilities that are marked <code>//freestanding</code>.  There will be platforms where, for example, floating point is both available and frequently used (e.g. GPU environments).  On those platforms, it is desirable for implementations to provide many of the <code>&lt;cmath&gt;</code> and <code>&lt;complex&gt;</code> facilities.  We must be careful here though, as we don't want to allow divergence of implementation, and we want to be able to add facilities to the required subset of freestanding.  To permit both vendor extension and future freestanding growth, this paper will require that additionally included facilities must meet the same requirements as for a hosted implementation.
 </p>
 <h1>Feature Test Macro</h1>
 <p>
 This paper does not need a direct feature test macro.  Users can already detect whether an implementation is hosted or freestanding by testing the <code>__STDC_HOSTED__</code> macro <a href="http://eel.is/c++draft/cpp.predefined#1.5">[cpp.predefined]</a>.
 </p><p>
-The library feature macros have been partitioned into those that must be present in both freestanding and hosted mode, and those that only need to be present in hosted mode.  If the implementation provides more than the minimal freestanding subset, then the implementation shall also provide the corresponding feature test macros.
+The library feature macros have been partitioned into those that must be present in both freestanding and hosted mode, and those that only need to be present in hosted mode.  If the implementation provides more than the minimal freestanding subset, then the implementation should also provide the corresponding feature test macros.  This "should" is left as Quality-of-Implementation though, as nothing binds the individual feature test macros to specific sections of wording.
 </p><p>
 Example of a freestanding user detecting the presence of an optional feature:
 </p>
 <pre class='codeblock'>
-#if __cpp_lib_addressof_constexpr &gt;= 201603
+#if defined(__cpp_lib_addressof_constexpr) && __cpp_lib_addressof_constexpr &gt;= 201603
 #include &lt;memory&gt;
 template &lt;class T&gt;
 constexpr std::decay_t&lt;T&gt;* my_addressof(T && arg) {
@@ -448,27 +459,33 @@ Add a new subclause [freestanding.membership], under [conventions] and after [ob
     <div class='marginalizedparent'><a class='marginalized'>1</a></div>
     <div class='sentence'>Freestanding implementations have several declarations and macro definitions that shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
     <div class='note'>[ <span class='textit'>Note</span><span class='textit'>:</span> Throwing a standard library provided exception is not observably different from <span class='texttt'>terminate()</span> if the implementation doesn't unwind the stack during exception handling ([except.handle#9]) and the user's program contains no catch blocks. -<i>end note</i>]</div>
-    <div class='sentence'>In the associated header synopsis for such declarations and macro definitions, the items shall be followed with a comment that ends with <span class='textit'>freestanding</span>, as in:</div>
+    <div class='sentence'>In the associated header synopsis for such declarations and macro definitions, the items are followed with a comment that ends with <span class='textit'>freestanding</span>.</div>
+	<div class='example'>[  <span class='textit'>Example:</span>
 <pre class='codeblock'>
 #define E2BIG <span class='textit'><span class='texttt'>see below</span></span> <span class='comment'>// <span class='textit'>freestanding</span></span>
 </pre>
+	-<i>end example</i>]</div>
 </div>
 <div class='para'>
     <div class='marginalizedparent'><a class='marginalized'>2</a></div>
     <div class='sentence'>Freestanding implementations have several headers that shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
-    <div class='sentence'>The synopsis for these headers shall start with a comment that ends with <span class='textit'>freestanding</span>, as in:</div>
+    <div class='sentence'>The synopsis for these headers start with a comment that ends with <span class='textit'>freestanding</span>.</div>
+	<div class='example'>[  <span class='textit'>Example:</span>
 <pre class='codeblock'>
 <span class='comment'>// <span class='textit'>freestanding</span></span>
 namespace std {
 </pre>
+	-<i>end example</i>]</div>
 </div>
 <div class='para'>
     <div class='marginalizedparent'><a class='marginalized'>3</a></div>
     <div class='sentence'>Freestanding implementations have some macro definitions that shall not be present on hosted implementations.</div>
-    <div class='sentence'>In the associated header synopsis for such macro definitions, the items shall be followed with a comment that ends with <span class='textit'>freestanding only</span>, as in:</div>
+    <div class='sentence'>In the associated header synopsis for such macro definitions, the items are followed with a comment that ends with <span class='textit'>freestanding only</span>.</div>
+	<div class='example'>[  <span class='textit'>Example:</span>
 <pre class='codeblock'>
 #define __cpp_lib_freestanding 202001L <span class='comment'>// <span class='textit'>freestanding only</span></span>
 </pre>
+	-<i>end example</i>]</div>
 </div>
 <div class='para'>
     <div class='marginalizedparent'><a class='marginalized'>4</a></div>
@@ -508,6 +525,16 @@ Change in [compliance] paragraph 3:
 
 <ins>
     <div class='sentence'>The headers listed in this table shall meet the requirements for a freestanding implementation, as specified in the respective header synopsis.</div>
+</ins>
+</div>
+</blockquote>
+
+Add a paragraph to [compliance]:
+<blockquote class="std">
+<div class='para'>
+<ins>
+    <div class='sentence'>A freestanding implementation may optionally provide an implementation-defined set of additional facilities from the C++ standard library, beyond those required for freestanding implementations.</div>
+    <div class='sentence'>All additional facilities provided beyond those required for a freestanding implementation shall meet the requirements for a hosted implementation.</div>
 </ins>
 </div>
 </blockquote>
