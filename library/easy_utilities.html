@@ -358,14 +358,23 @@ span.indented {
 }
 </style>
 
-<title>P1642R3: Freestanding Library: Easy [utilities], [ranges], and [iterators]</title>
+<title>TODO D1642R4: Freestanding Library: Easy [utilities], [ranges], and [iterators]</title>
 <body>
 <h1>Freestanding Library: Easy [utilities], [ranges], and [iterators]</h1>
-Document number: P1642R3<br/>
-Date: 2020-05-24<br/>
+Document number: D1642R4 TODO<br/>
+Date: 2020-05-24 TODO<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: Library Evolution Working Group
 <h1>Change history</h1>
+<h3> R4 </h3>
+<ul>
+  <li>Moved feature test macros to PXXXX TODO</li>
+  <li>Pulled in wording approach from P1641.  Abandoning the P1641 paper number</li>
+  <li>Adding <code>make_obj_using_allocator</code> and <code>uninitialized_construct_using_allocator</code>.  These do not allocate memory using an allocator, they construct a <code>T</code> while passing along an allocator when possible</li>
+  <li>Including additional rationale about the omission of allocating functions TODO</li>
+  <li>Added editorial alternatives TODO</li>
+  <li>Added implementation and deployment experience TODO</li>
+</ul>
 <h3> R3 </h3>
 <ul>
   <li>Rebased to N4861</li>
@@ -387,22 +396,30 @@ Audience: Library Evolution Working Group
   <li>Dropping wording for now</li>
 </ul>
 <h3> R0 </h3>
-<p>
-Branching from P0829R4.  This "omnibus" paper is still the direction I am aiming for.  However, it is too difficult to review.  It needs to change with almost every meeting.  Therefore, it is getting split up into smaller, more manageable chunks.
-</p><p>
-Limiting paper to the [utilities], [ranges], and [iterators] clauses.
+<ul>
+  <li>Branching from P0829R4.  This "omnibus" paper is still the direction I am aiming for.  However, it is too difficult to review.  It needs to change with almost every meeting.  Therefore, it is getting split up into smaller, more manageable chunks</li>
+  <li>Limiting paper to the [utilities], [ranges], and [iterators] clauses</li>
 </p>
+</ul>
 <h1>Introduction</h1>
 <p>
 This paper proposes adding many of the facilities in the [utilities], [ranges], and [iterators] clause to the freestanding subset of C++.  The paper will only be adding complete entities, and will not tackle partial classes.  In other words, classes like <code>pair</code> and <code>tuple</code> are being added, but trickier classes like <code>optional</code>, <code>variant</code>, and <code>bitset</code> will come in another paper.
 </p><p>
 The <code>&lt;memory&gt;</code> header has a dependency on facilities in <code>&lt;ranges&gt;</code> and <code>&lt;iterator&gt;</code>, so those headers (and clauses) are addressed as well.
+</p><p>
+This paper is also updating the editorial techniques for declaring facilities as freestanding. This update will make it easier to mark headers as partially freestanding. This wording change will make it easier to mark in-flight proposals as freestanding, without causing a major blocking point in the standardization process.
+</p><p>
+Changes to the design of feature test macros are discussed in PXXX TODO.  This paper maintains the status quo for feature test macros on freestanding.
 </p>
 <h1>Motivation and Design</h1>
 <p>
 Many existing facilities in the C++ standard library could be used without trouble in freestanding environments.  This series of papers will specify the maximal subset of the C++ standard library that does not require an OS or space overhead.
 </p><p>
 For a more in depth rationale, see P0829.
+</p><p>
+This paper adds blanket wording to make it easier to mark things freestanding, and it retrofits the existing freestanding facilities to use the new editorial approach.  It also includes a non-normative note that should allow implementers to use existing no-exception builds of their libraries as an implementation-defined extensions, with a fair number of qualifications.  Here's that note, reproduced so that it can be debated more effectively:
+</p><p>
+<div class='note'>[ <span class='textit'>Note</span><span class='textit'>:</span> Throwing a standard library provided exception is not observably different from <span class='texttt'>terminate()</span> if the implementation doesn't unwind the stack during exception handling (<a href="http://eel.is/c++draft/except.handle#9">[except.handle#9]</a>) and the user's program contains no catch blocks. -<i>end note</i>]</div>
 </p><p>
 <code>&lt;optional&gt;</code>, <code>&lt;variant&gt;</code>, and <code>&lt;bitset&gt;</code> are not in this paper, as all have non-essential functions that can throw an exception.  <code>&lt;charconv&gt;</code> is not in this paper as it will require us to deal with the thorny issue of overload sets involving floating point and non-floating point types.  I plan on addressing all four of these headers in later papers, so that the topics in question can be debated in relative isolation.
 </p>
@@ -416,12 +433,15 @@ My approach will be to avoid splitting overload sets that could cause accidental
 </p><p>
 Also note that the <code>swap</code> overload set visible to a given translation unit is already indeterminate.  A user may include <code>&lt;memory&gt;</code> which guarantees the smart pointer overloads, but an implementation could expose any (or none!) of the other <code>swap</code> overloads from other STL headers.
 </p>
+<h1>Memory allocation</h1>
+<p>
+TODO
+</p>
 <h1>Justification for omissions</h1>
 <p>
 The following functions and classes rely on dynamic memory allocation and exceptions:
 </p>
 <ul>
-  <li><code>make_obj_using_allocator</code></li>
   <li><code>make_unique</code></li>
   <li><code>make_unique_default_init</code></li>
   <li><code>shared_ptr</code></li>
@@ -445,59 +465,191 @@ The following classes rely on iostreams facilities.  iostreams facilities use dy
 The ExecutionPolicy overloads of algorithms are of minimal utility on systems that do not support C++ threads.
 </p>
 <h1>Feature test macros</h1>
-Add the following feature test macros to <b>freestanding only</b>:
-<table border="1">
-    <thead><tr>
-        <th>Name</th>
-        <th>Header</th>
-    </tr></thead>
-    <tbody><tr>
-        <td><code>__cpp_lib_freestanding_utility</code></td>
-        <td><code>&lt;utility&gt;<code></td>
-    </tr><tr>
-        <td><code>__cpp_lib_freestanding_tuple</code></td>
-        <td><code>&lt;tuple&gt;<code></td>
-    </tr><tr>
-        <td><code>__cpp_lib_freestanding_ratio</code></td>
-        <td><code>&lt;ratio&gt;<code></td>
-    </tr><tr>
-        <td><code>__cpp_lib_freestanding_memory</code></td>
-        <td><code>&lt;memory&gt;<code></td>
-    </tr><tr>
-        <td><code>__cpp_lib_freestanding_functional</code></td>
-        <td><code>&lt;functional&gt;<code></td>
-    </tr><tr>
-        <td><code>__cpp_lib_freestanding_iterator</code></td>
-        <td><code>&lt;iterator&gt;<code></td>
-    </tr><tr>
-        <td><code>__cpp_lib_freestanding_ranges</code></td>
-        <td><code>&lt;ranges&gt;<code></td>
-    </tr></tbody>
-</table>
+<p>
+Feature test macros are non-trivial for this new design space, and are now discussed in paper PXXX TODO.  This paper is maintaining the status quo with regards to the contents of <code>&lt;version&gt;</code>.
+</p>
 
-<p>The following, existing feature test macros cover some features that I am making freestanding, and some features that I am not requiring to be freestanding.  These feature test macros won't be required in freestanding, as they could cause substantial confusion when the hosted parts of those features aren't available.  The header-based <code>__cpp_lib_freestanding_*</code> macros should provide a suitable replacement in freestanding environments.</p>
-<ul>
-  <li><code>__cpp_lib_boyer_moore_searcher</code></li>
-  <li><code>__cpp_lib_constexpr_dynamic_alloc</code></li>
-  <li><code>__cpp_lib_ranges</code></li>
-  <li><code>__cpp_lib_raw_memory_algorithms</code></li>
-</ul>
+<h1>Dependency on <code>optional</code>-like thing in ranges</h1>
+<p>
+<a href="https://eel.is/c++draft/range.semi.wrap">[range.semi.wrap]</a> describes an exposition-only type with behavior specified in terms of <code>std::optional</code>.  This exposition-only type is used to specify <code>single_view</code>, <code>filter_view</code>, <code>transform_view</code>, <code>take_while</code>, and <code>drop_while_view</code>.  <code>std::optional</code> is not added in this paper.
+</p><p>
+I claim that this is not a problem.  First, the type <code>std::optional</code> is not required to be used here.  Second, <a href="https://eel.is/c++draft/compliance#2">[compliance] paragraph 2</a> permits implementations to provide extra headers, and an implementation could provide <code>std::optional</code> if it so desired.  Third, I plan on getting <code>std::optional</code> added to freestanding in a future paper that tackles the issue of omitting potentially throwing members, like <code>optional::value</code>.
+</p>
+
+<h1>Status Quo</h1>
+<p>
+Please see <a href="https://wg21.link/compliance">[compliance]</a> to see what is freestanding in C++20.  Note that <code>NULL</code> and <code>size_t</code> are declared in both <code>&lt;cstdlib&gt;</code> and <code>&lt;cstddef&gt;</code>.  The wording in <a href="https://wg21.link/compliance">[compliance]</a> does not make it clear that <code>&lt;cstdlib&gt;</code> should continue to provide those declarations in a freestanding implementation.
+</p>
 
 <h1>Wording</h1>
-Wording assumes that <a href="https://wg21.link/P1641">P1641</a> has been applied.<br>
+<h2>Change in <a href="https://wg21.link/conventions">[conventions]</a></h2>
+Add a new subclause [freestanding.membership], under [conventions] and after [objects.within.classes]:
+<blockquote class="stdins">
+<h4 ><a class='secnum' style='min-width:118pt'>?.?.?.?</a> Freestanding membership <a class='abbr_ref'>[freestanding.membership]</a></h4>
+<div class='para'>
+    <div class='marginalizedparent'><a class='marginalized'>1</a></div>
+    <div class='sentence'>Freestanding implementations have several declarations and macro definitions that shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
+    <div class='note'>[ <span class='textit'>Note</span><span class='textit'>:</span> Throwing a standard library provided exception is not observably different from <span class='texttt'>terminate()</span> if the implementation doesn't unwind the stack during exception handling ([except.handle#9]) and the user's program contains no catch blocks. -<i>end note</i>]</div>
+    <div class='sentence'>In the associated header synopsis for such declarations and macro definitions, the items are followed with a comment that ends with <span class='textit'>freestanding</span>.</div>
+	<div class='example'>[  <span class='textit'>Example:</span>
+<pre class='codeblock'>
+#define NULL <span class='textit'><span class='texttt'>see below</span></span> <span class='comment'>// <span class='textit'>freestanding</span></span>
+</pre>
+	-<i>end example</i>]</div>
+</div>
+<div class='para'>
+    <div class='marginalizedparent'><a class='marginalized'>2</a></div>
+    <div class='sentence'>Freestanding implementations have several headers that shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
+    <div class='sentence'>The synopsis for these headers start with a comment that ends with <span class='textit'>freestanding</span>.</div>
+	<div class='example'>[  <span class='textit'>Example:</span>
+<pre class='codeblock'>
+<span class='comment'>// <span class='textit'>freestanding</span></span>
+namespace std {
+</pre>
+	-<i>end example</i>]</div>
+</div>
+<div class='para'>
+    <div class='marginalizedparent'><a class='marginalized'>3</a></div>
+    <div class='sentence'>Deduction guides for <i>freestanding class templates</i> shall be implemented in freestanding implementations.</div>
+    <div class='sentence'>Freestanding class templates are class templates that are implemented (partially or fully) in freestanding implementations.</div>
+    <div class='marginalizedparent'><a class='marginalized'>4</a></div>
+    <div class='sentence'>The containing namespace of each <i>freestanding declaration</i> shall be provided in a freestanding implementation.</div>
+    <div class='sentence'>Freestanding declarations are non-namespace declarations that are implemented (partially or fully) in a freestanding implementation</div>
+</div>
+</blockquote>
+
+<h2>Changes in <a href="https://wg21.link/compliance">[compliance]</a></h2>
+Add new rows to <a href="https://wg21.link/compliance#tab:headers.cpp.fs">Table 24</a>:</p>
+<table style="border: 1px solid black">
+<caption>Table 24 &mdash; C++ headers for freestanding implementations</caption>
+<thead>
+<tr style="border: 1px solid black">
+<th colspan="2" style="text-align: center">Subclause</th><th style="text-align: center">Header(s)</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+</tr>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/utility">[utility]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>Utility components</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;utility&gt;</tt></ins></td>
+</tr>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/tuple">[tuple]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>Tuples</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;tuple&gt;</tt></ins></td>
+</tr>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/memory">[memory]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>Memory</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;memory&gt;</tt></ins></td>
+</tr>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/function.objects">[function.objects]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>Function objects</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;functional&gt;</tt></ins></td>
+</tr>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/ratio">[ratio]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>Compile-time rational arithmetic</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;ratio&gt;</tt></ins></td>
+</tr>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/iterators">[iterators]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>Iterators library</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;iterator&gt;</tt></ins></td>
+</tr>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/ranges">[ranges]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>Ranges library</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;ranges&gt;</tt></ins></td>
+</tr>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+</tr>
+</tbody>
+</table>
+
+Change in <a href="https://wg21.link/compliance#3">[compliance] paragraph 3</a>:
+<blockquote class="std">
+<div class='para'>
+<del>
+    <div class='sentence'>The supplied version of the header
+    <span class='texttt'><span class='anglebracket'>&lt;</span>cstdlib<span class='anglebracket'>&gt;</span></span>
+    shall declare at least the functions
+    <span class='texttt'>abort</span>,
+    <span class='texttt'>atexit</span>,
+    <span class='texttt'>at_&shy;quick_&shy;exit</span>,
+    <span class='texttt'>exit</span>,
+    and
+    <span class='texttt'>quick_&shy;exit</span> ([support.start.term]).</div>
+
+    <div class='sentence'>The supplied version of the header <span class='texttt'><span class='anglebracket'>&lt;</span>atomic<span class='anglebracket'>&gt;</span></span>
+    shall meet the same requirements as for a hosted implementation
+    except that support for
+    always lock-free integral atomic types ([atomics.lockfree])
+    is implementation-defined, and
+    whether or not the type aliases <span class='texttt'>atomic_&shy;signed_&shy;lock_&shy;free</span> and
+    <span class='texttt'>atomic_&shy;unsigned_&shy;lock_&shy;free</span> are defined ([atomics.alias])
+    is implementation-defined.</div>
+    <div class='sentence'>The other headers listed in this table
+    shall meet the same requirements as for a hosted implementation.</div>
+</del>
+
+<ins>
+    <div class='sentence'>The headers listed in this table shall meet the requirements for a freestanding implementation, as specified in the respective header synopsis.</div>
+</ins>
+</div>
+</blockquote>
 
 <h2>Full headers</h2>
 Instructions to the editor:<br>
 Please add a <span class="comment">// <span class="textit">freestanding</span></span> comment to the beginning of the following synopses.  These headers are entirely freestanding.
 <ul>
+<li><a href="https://wg21.link/cstddef.syn">[cstddef.syn]</a></li>
+<li><a href="https://wg21.link/limits.syn">[version.syn]</a></li>
+<li><a href="https://wg21.link/limits.syn">[limits.syn]</a></li>
+<li><a href="https://wg21.link/climits.syn">[climits.syn]</a></li>
+<li><a href="https://wg21.link/cfloat.syn">[cfloat.syn]</a></li>
+<li><a href="https://wg21.link/cstdint.syn">[cstdint.syn]</a></li>
+<li><a href="https://wg21.link/new.syn">[new.syn]</a></li>
+<li><a href="https://wg21.link/typeinfo.syn">[typeinfo.syn]</a></li>
+<li><a href="https://wg21.link/source_location.syn">[source_location.syn]</a></li>
+<li><a href="https://wg21.link/exception.syn">[exception.syn]</a></li>
+<li><a href="https://wg21.link/initializer.list.syn">[initializer.list.syn]</a></li>
+<li><a href="https://wg21.link/compare.syn">[compare.syn]</a></li>
+<li><a href="https://wg21.link/coroutine.syn">[coroutine.syn]</a></li>
+<li><a href="https://wg21.link/cstdarg.syn">[cstdarg.syn]</a></li>
+<li><a href="https://wg21.link/concepts.syn">[concepts.syn]</a></li>
 <li><a href="https://wg21.link/utility.syn">[utility.syn]</a></li>
 <li><a href="https://wg21.link/tuple.syn">[tuple.syn]</a></li>
+<li><a href="https://wg21.link/meta.type.synop">[meta.type.synop]</a></li>
 <li><a href="https://wg21.link/ratio.syn">[ratio.syn]</a></li>
+<li><a href="https://wg21.link/bit.syn">[bit.syn]</a></li>
+</ul>
+
+<h2>Change in <a href="https://wg21.link/cstdlib.syn">[cstdlib.syn]</a></h2>
+Instructions to the editor:<br>
+Please add a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following entities:
+<ul>
+  <li><code>size_t</code></li>
+  <li><code>NULL</code></li>
+  <li><code>abort</code></li>
+  <li>all overloads of <code>atexit</code></li>
+  <li>all overloads of <code>at_quick_exit</code></li>
+  <li><code>exit</code></li>
+  <li><code>quick_exit</code></li>
 </ul>
 
 <h2>Change in <a href="https://wg21.link/memory.syn">[memory.syn]</a></h2>
 Instructions to the editor:<br>
-Please add a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following declarations:
+Please add a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following entities:
 <ul>
   <li><code>pointer_traits</code></li>
   <li><code>to_address</code></li>
@@ -508,6 +660,8 @@ Please add a <span class="comment">// <span class="textit">freestanding</span></
   <li><code>uses_allocator</code></li>
   <li><code>uses_allocator_v</code></li>
   <li><code>uses_allocator_construction_args</code></li>
+  <li><code>make_obj_using_allocator</code></li>
+  <li><code>uninitialized_construct_using_allocator</code></li>
   <li><code>allocator_traits</code></li>
   <li>[specialized.algorithms], except for the <code>ExecutionPolicy</code> overloads.  This includes the algorithms in the <code>ranges</code> namespace</li>
   <li><code>default_delete</code></li>
@@ -519,11 +673,9 @@ Please add a <span class="comment">// <span class="textit">freestanding</span></
   <li><code>atomic</code></li>
 </ul>
 
-Note: the following portions of <code>&lt;memory&gt;</code> are <b>omitted</b>.  No change to the working draft should be made for these declarations:
+Note: the following portions of <code>&lt;memory&gt;</code> are <b>omitted</b>.  No change to the working draft should be made for these entities:
 <ul>
   <li>[util.dynamic.safety], pointer safety</li>
-  <li><code>make_obj_using_allocator</code></li>
-  <li><code>uninitialized_construct_using_allocator</code></li>
   <li><code>allocator</code> and associated comparisons</li>
   <li><code>ExecutionPolicy</code> overloads in [specialized.algorithms]</li>
   <li><code>make_unique</code></li>
@@ -581,47 +733,15 @@ Please add a <span class="comment">// <span class="textit">freestanding</span></
   <li><code>istream_view</code></li>
 </ul>
 
-<h2>Change in <a href="https://wg21.link/version.syn">[version.syn]</a></h2>
-Please add a <span class="comment">// <span class="textit">freestanding</span></span> comment to each of the following macro definitions:
-<ul>
-  <li><code>__cpp_lib_addressof_constexpr</code></li>
-  <li><code>__cpp_lib_allocator_traits_is_always_equal</code></li>
-  <li><code>__cpp_lib_apply</code></li>
-  <li><code>__cpp_lib_as_const</code></li>
-  <li><code>__cpp_lib_assume_aligned</code></li>
-  <li><code>__cpp_lib_atomic_value_initialization</code></li>
-  <li><code>__cpp_lib_bind_front</code></li>
-  <li><code>__cpp_lib_constexpr_functional</code></li>
-  <li><code>__cpp_lib_constexpr_iterator</code></li>
-  <li><code>__cpp_lib_constexpr_memory</code></li>
-  <li><code>__cpp_lib_constexpr_tuple</code></li>
-  <li><code>__cpp_lib_constexpr_utility</code></li>
-  <li><code>__cpp_lib_exchange_function</code></li>
-  <li><code>__cpp_lib_integer_sequence</code></li>
-  <li><code>__cpp_lib_invoke</code></li>
-  <li><code>__cpp_lib_make_from_tuple</code></li>
-  <li><code>__cpp_lib_make_reverse_iterator</code></li>
-  <li><code>__cpp_lib_nonmember_container_access</code></li>
-  <li><code>__cpp_lib_not_fn</code></li>
-  <li><code>__cpp_lib_null_iterators</code></li>
-  <li><code>__cpp_lib_ssize</code></li>
-  <li><code>__cpp_lib_to_address</code></li>
-  <li><code>__cpp_lib_transparent_operators</code></li>
-  <li><code>__cpp_lib_tuple_element_t</code></li>
-  <li><code>__cpp_lib_tuples_by_type</code></li>
-  <li><code>__cpp_lib_unwrap_ref</code></li>
-</ul>
-Please add the following macro definitions:
-
-<blockquote class="std"><pre class="codeblock"><ins>
-#define __cpp_lib_freestanding_functional   202005L // also in &lt;functional&gt;, freestanding only
-#define __cpp_lib_freestanding_iterator     202005L // also in &lt;iterator&gt;, freestanding only
-#define __cpp_lib_freestanding_memory       202005L // also in &lt;memory&gt;, freestanding only
-#define __cpp_lib_freestanding_ranges       202005L // also in &lt;ranges&gt;, freestanding only
-#define __cpp_lib_freestanding_ratio        202005L // also in &lt;ratio&gt;, freestanding only
-#define __cpp_lib_freestanding_tuple        202005L // also in &lt;tuple&gt;, freestanding only
-#define __cpp_lib_freestanding_utility      202005L // also in &lt;utility&gt;, freestanding only
-</pre></blockquote></ins>
+<h2>Change in <a href="https://wg21.link/atomics.lockfree">[atomics.lockfree]</a>, paragraph 2</h2>
+<blockquote class="std">
+<div class='para'>
+<div class='sentence'><ins>On hosted implementations ([compliance]), a</ins><del>A</del>t least one signed integral specialization of the <span class='texttt'>atomic</span> template,
+along with the specialization
+for the corresponding unsigned type ([basic.fundamental]),
+is always lock-free.</div>
+<del><div class='note'>[&nbsp;<span class='textit'>Note</span><div class='noteBody'><span class='textit'>:</span> <div class='sentence'>This requirement is optional in freestanding implementations ([compliance]).</div> —&nbsp;<i>end note</i></div>&nbsp;]</div></del> </div>
+</blockquote>
 
 <h1>Acknowledgements</h1>
 <p>
