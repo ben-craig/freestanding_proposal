@@ -369,11 +369,11 @@ Audience: Library Evolution Working Group
 <h3> R4 </h3>
 <ul>
   <li>Moved feature test macros to PXXXX TODO</li>
-  <li>Pulled in wording approach from P1641.  Abandoning the P1641 paper number</li>
+  <li>Pulled in wording approach from <a href="https://wg21.link/P1641">P1641</a>.  Abandoning the P1641 paper number</li>
   <li>Adding <code>make_obj_using_allocator</code> and <code>uninitialized_construct_using_allocator</code>.  These do not allocate memory using an allocator, they construct a <code>T</code> while passing along an allocator when possible</li>
-  <li>Including additional rationale about the omission of allocating functions TODO</li>
-  <li>Added editorial alternatives TODO</li>
-  <li>Added implementation and deployment experience TODO</li>
+  <li>Including additional rationale about the omission of allocating functions</li>
+  <li>Added editorial alternatives</li>
+  <li>Added implementation and deployment experience</li>
 </ul>
 <h3> R3 </h3>
 <ul>
@@ -397,7 +397,7 @@ Audience: Library Evolution Working Group
 </ul>
 <h3> R0 </h3>
 <ul>
-  <li>Branching from P0829R4.  This "omnibus" paper is still the direction I am aiming for.  However, it is too difficult to review.  It needs to change with almost every meeting.  Therefore, it is getting split up into smaller, more manageable chunks</li>
+  <li>Branching from <a href="https://wg21.link/P0829R4">P0829R4</a>.  This "omnibus" paper is still the direction I am aiming for.  However, it is too difficult to review.  It needs to change with almost every meeting.  Therefore, it is getting split up into smaller, more manageable chunks</li>
   <li>Limiting paper to the [utilities], [ranges], and [iterators] clauses</li>
 </p>
 </ul>
@@ -415,7 +415,7 @@ Changes to the design of feature test macros are discussed in PXXX TODO.  This p
 <p>
 Many existing facilities in the C++ standard library could be used without trouble in freestanding environments.  This series of papers will specify the maximal subset of the C++ standard library that does not require an OS or space overhead.
 </p><p>
-For a more in depth rationale, see P0829.
+For a more in depth rationale, see <a href="https://wg21.link/P0829">P0829</a>.
 </p><p>
 This paper adds blanket wording to make it easier to mark things freestanding, and it retrofits the existing freestanding facilities to use the new editorial approach.  It also includes a non-normative note that should allow implementers to use existing no-exception builds of their libraries as an implementation-defined extensions, with a fair number of qualifications.  Here's that note, reproduced so that it can be debated more effectively:
 </p><p>
@@ -433,9 +433,17 @@ My approach will be to avoid splitting overload sets that could cause accidental
 </p><p>
 Also note that the <code>swap</code> overload set visible to a given translation unit is already indeterminate.  A user may include <code>&lt;memory&gt;</code> which guarantees the smart pointer overloads, but an implementation could expose any (or none!) of the other <code>swap</code> overloads from other STL headers.
 </p>
-<h1>Memory allocation</h1>
+<h1>Memory allocation and allocators</h1>
 <p>
-TODO
+<a href="https://wg21.link/P2013">P2013</a> makes the default allocating <code>::operator new</code>s optional in freestanding.  This would make <code>std::allocator::allocate</code> ill-formed on implementations without an <code>::operator new</code> definition.
+</p><p>
+This paper (and most of the freestanding papers) will attempt to avoid adding facilities to freestanding that throw exceptions.
+</p><p>
+The Cpp17Allocator requirements only permit one and a half ways of signaling failures.  The first way to signal a failure is by throwing an exception.  This is the only way to signal a failure that is explicitly described in <a href="https://wg21.link/allocator.requirements">[allocator.requirements]</a>.  The "half" of a way to signal a failure from an allocator is to <code>terminate</code>.  This can happen if the implementation has exceeded its (potentially tiny) implementation limits.  Note that returning <code>nullptr</code> is not an option here.  Making <code>nullptr</code> a standard permitted error handling strategy for <code>std::allocator::allocate</code> would be a massively breaking change.
+</p><p>
+Future papers will attempt to add <code>constexpr</code> facilities to freestanding, so long as they are only evaluated at compile time.  The intent is for these future papers to allow a compile-time <code>std::vector</code> and <code>std::allocator</code>, but not to require a runtime <code>std::vector</code> or <code>std::allocator</code>.
+</p><p>
+This paper shouldn't make any of those efforts more difficult to address in a distinct paper.  WG21 should not wait for those problems to be solved before adding the facilities in this paper to freestanding.
 </p>
 <h1>Justification for omissions</h1>
 <p>
@@ -476,6 +484,36 @@ Feature test macros are non-trivial for this new design space, and are now discu
 I claim that this is not a problem.  First, the type <code>std::optional</code> is not required to be used here.  Second, <a href="https://eel.is/c++draft/compliance#2">[compliance] paragraph 2</a> permits implementations to provide extra headers, and an implementation could provide <code>std::optional</code> if it so desired.  Third, I plan on getting <code>std::optional</code> added to freestanding in a future paper that tackles the issue of omitting potentially throwing members, like <code>optional::value</code>.
 </p>
 
+<h1>Implementation and field experience</h1>
+<p>
+NI has been using a modified form of STLPort in the Microsoft Windows, Linux, and Apple OSX kernel for more than 10 years.  That only covers C++03 facilities though.
+</p><p>
+Paul Bendixen has implemented <a href="https://wg21.link/P0829">P0829</a> in a libstdc++ fork.  P0829 is (almost) a superset of the facilities in this paper.  This implementation is available on Conan.
+</p><p>
+I have run a 2018 era of libc++'s test suite against the Microsoft Visual Studio 15.8 (released Aug 14, 2018) STL implementation, run in the Microsoft Windows kernel.  Running in that environment allowed me to audit whether exceptions, RTTI, memory allocation, or floating point was used in appropriately.  This largely tested the C++14 parts of the STL.  The C++17 and C++20 parts were either missing implementations, or tests.
+</p>
+
+<h1>Editorial alternatives</h1>
+<p>
+This paper uses an opt-in editorial syntax like the following:
+<pre class='codeblock'>
+#define NULL <span class='textit'><span class='texttt'>see below</span></span> <span class='comment'>// <span class='textit'>freestanding</span></span>
+</pre>
+</p><p>
+This gives normative meaning to a comment in the synopsis.  There is precedent for this, particularly for <code>// exposition only</code> comments.  The wording currently says that the "freestanding" words need to appear at the end of the comment.  This is similar to the wording for "exposition only".  At some point in the future, we may have multiple comment annotations fighting for the last spot, which will require us to figure out some other wording to handle annotations.
+</p><p>
+An alternative used by the POSIX spec would be to use an extra-lingual annotation to mark entities as freestanding or not.  Here, I'll use an italicized <code>[FS]</code> to indicate freestanding membership.
+<pre class='codeblock'>
+<i>[FS]</i> #define NULL <span class='textit'><span class='texttt'>see below</span></span>
+</pre>
+</p><p>
+The choices of square brackets and the "FS" tag are arbitrary .  Other separators or tags could be used instead.  This would be a substantially new editorial technique for the C++ standard.
+</p><p>
+We could continue with the current approach, and use prose to indicate freestanding membership, similar to what we do with <code>abort</code> and friends in <a href="https://wg21.link/compliance">[compliance]</a>.  This would be a substantial amount of specification work for some headers.  It also hides the choice of freestanding, such that future paper authors are even less likely to keep it in mind.
+</p><p>
+When picking an editorial alternative, we should keep in mind likely future needs.  <a href="https://wg21.link/P0829">P0829</a> makes use of <i><code>//freestanding, partial</code></i> and <i><code>//freestanding, omit</code></i> annotations.  <a href="https://wg21.link/P1641R3">P1641R3</a> makes use of <i><code>//freestanding only</code></i> annotations.  I can also see uses for a <i><code>//freestanding delete</code></i> annotation, for maintaining overload sets while removing functionality.  These could be represented in the POSIX-like annotation as follows: <i><code>[FS partial]</code></i>, <i><code>[FS omit]</code></i>, <i><code>[FS only]</code></i>, and <i><code>[FS delete]</code></i>.
+</p>
+
 <h1>Status Quo</h1>
 <p>
 Please see <a href="https://wg21.link/compliance">[compliance]</a> to see what is freestanding in C++20.  Note that <code>NULL</code> and <code>size_t</code> are declared in both <code>&lt;cstdlib&gt;</code> and <code>&lt;cstddef&gt;</code>.  The wording in <a href="https://wg21.link/compliance">[compliance]</a> does not make it clear that <code>&lt;cstdlib&gt;</code> should continue to provide those declarations in a freestanding implementation.
@@ -510,13 +548,15 @@ namespace std {
 </div>
 <div class='para'>
     <div class='marginalizedparent'><a class='marginalized'>3</a></div>
-    <div class='sentence'>Deduction guides for <i>freestanding class templates</i> shall be implemented in freestanding implementations.</div>
-    <div class='sentence'>Freestanding class templates are class templates that are implemented (partially or fully) in freestanding implementations.</div>
+    <div class='sentence'>Deduction guides for freestanding class templates shall be implemented in freestanding implementations.</div>
+    <div class='sentence'><i>Freestanding class templates</i> are class templates that are implemented (partially or fully) in freestanding implementations.</div>
     <div class='marginalizedparent'><a class='marginalized'>4</a></div>
-    <div class='sentence'>The containing namespace of each <i>freestanding declaration</i> shall be provided in a freestanding implementation.</div>
-    <div class='sentence'>Freestanding declarations are non-namespace declarations that are implemented (partially or fully) in a freestanding implementation</div>
+    <div class='sentence'>The containing namespace of each freestanding declaration shall be provided in a freestanding implementation.</div>
+    <div class='sentence'><i>Freestanding declarations</i> are non-namespace declarations that are implemented (partially or fully) in a freestanding implementation</div>
 </div>
 </blockquote>
+Wording involving comment placement is inspired by <a href="https://wg21.link/expos.only.func#1">[expos.only.func]#1</a>.
+
 
 <h2>Changes in <a href="https://wg21.link/compliance">[compliance]</a></h2>
 Add new rows to <a href="https://wg21.link/compliance#tab:headers.cpp.fs">Table 24</a>:</p>
