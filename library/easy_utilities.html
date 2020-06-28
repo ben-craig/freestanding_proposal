@@ -403,11 +403,11 @@ Audience: Library Evolution Working Group
 </ul>
 <h1>Introduction</h1>
 <p>
-This paper proposes adding many of the facilities in the [utilities], [ranges], and [iterators] clause to the freestanding subset of C++.  The paper will only be adding complete entities, and will not tackle partial classes.  In other words, classes like <code>pair</code> and <code>tuple</code> are being added, but trickier classes like <code>optional</code>, <code>variant</code>, and <code>bitset</code> will come in another paper.
+This paper proposes adding many of the facilities in the [utilities], [ranges], and [iterators] clause to the freestanding subset of C++.  The paper will be adding only complete entities, and will not tackle partial classes.  For example, classes like <code>pair</code> and <code>tuple</code> are being added, but trickier classes like <code>optional</code>, <code>variant</code>, and <code>bitset</code> will come in another paper.
 </p><p>
-The <code>&lt;memory&gt;</code> header has a dependency on facilities in <code>&lt;ranges&gt;</code> and <code>&lt;iterator&gt;</code>, so those headers (and clauses) are addressed as well.
+The <code>&lt;memory&gt;</code> header depends on facilities in <code>&lt;ranges&gt;</code> and <code>&lt;iterator&gt;</code>, so those headers (and clauses) are addressed as well.
 </p><p>
-This paper is also updating the editorial techniques for declaring facilities as freestanding. This update will make it easier to mark headers as partially freestanding. This wording change will make it easier to mark in-flight proposals as freestanding, without causing a major blocking point in the standardization process.
+This paper also updates the editorial techniques for declaring facilities as freestanding. This update will make it easier to mark headers as partially freestanding. This wording change will also make it easier to mark in-flight proposals as freestanding, without causing a major blocking point in the standardization process.
 </p><p>
 Changes to the design of feature test macros are discussed in PXXX TODO.  This paper maintains the status quo for feature test macros on freestanding.
 </p>
@@ -415,21 +415,21 @@ Changes to the design of feature test macros are discussed in PXXX TODO.  This p
 <p>
 Many existing facilities in the C++ standard library could be used without trouble in freestanding environments.  This series of papers will specify the maximal subset of the C++ standard library that does not require an OS or space overhead.
 </p><p>
-For a more in depth rationale, see <a href="https://wg21.link/P0829">P0829</a>.
+For a more in-depth rationale, see <a href="https://wg21.link/P0829">P0829</a>.
 </p><p>
-This paper adds blanket wording to make it easier to mark things freestanding, and it retrofits the existing freestanding facilities to use the new editorial approach.  It also includes a non-normative note that should allow implementers to use existing no-exception builds of their libraries as an implementation-defined extensions, with a fair number of qualifications.  Here's that note, reproduced so that it can be debated more effectively:
+This paper adds blanket wording to make it easier to mark things freestanding, and it retrofits the existing freestanding facilities to use the new editorial approach.  It also includes a non-normative note to allow implementers to use existing no-exception builds of their libraries as an implementation-defined extensions, with a fair number of qualifications.  Here's that note, reproduced so that it can be discussed more effectively:
 </p><p>
 <div class='note'>[ <span class='textit'>Note</span><span class='textit'>:</span> Throwing a standard library provided exception is not observably different from <span class='texttt'>terminate()</span> if the implementation doesn't unwind the stack during exception handling (<a href="http://eel.is/c++draft/except.handle#9">[except.handle#9]</a>) and the user's program contains no catch blocks. -<i>end note</i>]</div>
 </p><p>
-<code>&lt;optional&gt;</code>, <code>&lt;variant&gt;</code>, and <code>&lt;bitset&gt;</code> are not in this paper, as all have non-essential functions that can throw an exception.  <code>&lt;charconv&gt;</code> is not in this paper as it will require us to deal with the thorny issue of overload sets involving floating point and non-floating point types.  I plan on addressing all four of these headers in later papers, so that the topics in question can be debated in relative isolation.
+<code>&lt;optional&gt;</code>, <code>&lt;variant&gt;</code>, and <code>&lt;bitset&gt;</code> are not discussed in this paper, as all have non-essential functions that can throw an exception.  <code>&lt;charconv&gt;</code> is also not discussed in this paper as it will require us to deal with the thorny issue of overload sets involving floating point and non-floating point types.  I plan on addressing all four of these headers in later papers, so that the topics in question can be discussed in relative isolation.
 </p>
 <h1>Splitting overload sets</h1>
 <p>
-Modifying an overload set needs to be treated with great care.  Ideally, libraries built in freestanding environments will have the same semantics (including selected overloads) when built in a hosted environment.  I don't think that goal is 100% achievable, as sufficiently clever programmers will be able to detect the difference and modify behavior accordingly.
+Modifying an overload set needs to be treated with great care.  Ideally, libraries built in freestanding environments will have the same semantics (including selected overloads) when built in a hosted environment.  I doubt that goal is fully attainable, as sufficiently clever programmers will be able to detect the difference and modify behavior accordingly.
 </p><p>
-My approach will be to avoid splitting overload sets that could cause accidental freestanding / hosted differences.  In future papers, I may need to lean on <code>= delete</code> techniques to avoid silent behavior changes, but this paper hasn't needed that approach.
+My approach will be to avoid splitting overload sets that could cause accidental freestanding / hosted differences.  (In future papers, I may need to lean on <code>= delete</code> techniques to avoid silent behavior changes, but this paper hasn't needed that approach.)
 </p><p>
-<code>swap</code> has <code>shared_ptr</code>, <code>weak_ptr</code>, and <code>unique_ptr</code> overloads, but this paper only marks the <code>unique_ptr</code> overload as freestanding.  <code>&lt;memory&gt;</code> has many algorithms with <code>ExecutionPolicy</code> overloads.  This paper does not mark the <code>ExectuionPolicy</code> overloads as freestanding.  I was unable to come up with any compelling "accidental" way to select one <code>swap</code> or algorithm overload in freestanding, but a different one in hosted.
+<code>swap</code> has <code>shared_ptr</code>, <code>weak_ptr</code>, and <code>unique_ptr</code> overloads, but this paper marks only the <code>unique_ptr</code> overload as freestanding.  <code>&lt;memory&gt;</code> has many algorithms with <code>ExecutionPolicy</code> overloads.  This paper does not mark the <code>ExectuionPolicy</code> overloads as freestanding.  I was unable to come up with any compelling "accidental" way to select one <code>swap</code> or algorithm overload in freestanding, but a different one in hosted.
 </p><p>
 Also note that the <code>swap</code> overload set visible to a given translation unit is already indeterminate.  A user may include <code>&lt;memory&gt;</code> which guarantees the smart pointer overloads, but an implementation could expose any (or none!) of the other <code>swap</code> overloads from other STL headers.
 </p>
@@ -439,9 +439,9 @@ Also note that the <code>swap</code> overload set visible to a given translation
 </p><p>
 This paper (and most of the freestanding papers) will attempt to avoid adding facilities to freestanding that throw exceptions.
 </p><p>
-The Cpp17Allocator requirements only permit one and a half ways of signaling failures.  The first way to signal a failure is by throwing an exception.  This is the only way to signal a failure that is explicitly described in <a href="https://wg21.link/allocator.requirements">[allocator.requirements]</a>.  The "half" of a way to signal a failure from an allocator is to <code>terminate</code>.  This can happen if the implementation has exceeded its (potentially tiny) implementation limits.  Note that returning <code>nullptr</code> is not an option here.  Making <code>nullptr</code> a standard permitted error handling strategy for <code>std::allocator::allocate</code> would be a massively breaking change.
+The Cpp17Allocator requirements permit only one and a half ways of signaling failures.  The first way to signal a failure is by throwing an exception; this is the only way to signal a failure that is explicitly described in <a href="https://wg21.link/allocator.requirements">[allocator.requirements]</a>.  The "half" of a way to signal a failure from an allocator is to <code>terminate</code>.  This can happen if the implementation has exceeded its (potentially tiny) implementation limits.  Note that returning <code>nullptr</code> is not an option here, as making <code>nullptr</code> a standard permitted error handling strategy for <code>std::allocator::allocate</code> would be a massively breaking change.
 </p><p>
-Future papers will attempt to add <code>constexpr</code> facilities to freestanding, so long as they are only evaluated at compile time.  The intent is for these future papers to allow a compile-time <code>std::vector</code> and <code>std::allocator</code>, but not to require a runtime <code>std::vector</code> or <code>std::allocator</code>.
+Future papers will attempt to add <code>constexpr</code> facilities to freestanding, so long as they are evaluated at compile time only.  The intent is for these future papers to allow a compile-time <code>std::vector</code> and <code>std::allocator</code>, but without requiring a runtime <code>std::vector</code> or <code>std::allocator</code>.
 </p><p>
 This paper shouldn't make any of those efforts more difficult to address in a distinct paper.  WG21 should not wait for those problems to be solved before adding the facilities in this paper to freestanding.
 </p>
@@ -474,7 +474,7 @@ The ExecutionPolicy overloads of algorithms are of minimal utility on systems th
 </p>
 <h1>Feature test macros</h1>
 <p>
-Feature test macros are non-trivial for this new design space, and are now discussed in paper PXXX TODO.  This paper is maintaining the status quo with regards to the contents of <code>&lt;version&gt;</code>.
+Feature test macros are non-trivial for this new design space, and are now discussed in paper PXXX TODO.  For now, the present paper maintains the status quo with regards to the contents of <code>&lt;version&gt;</code>.
 </p>
 
 <h1>Dependency on <code>optional</code>-like thing in ranges</h1>
@@ -488,7 +488,7 @@ I claim that this is not a problem.  First, the type <code>std::optional</code> 
 <p>
 NI has been using a modified form of STLPort in the Microsoft Windows, Linux, and Apple OSX kernel for more than 10 years.  That only covers C++03 facilities though.
 </p><p>
-Paul Bendixen has implemented <a href="https://wg21.link/P0829">P0829</a> in a libstdc++ fork.  P0829 is (almost) a superset of the facilities in this paper.  This implementation is available on Conan.
+Paul Bendixen has implemented <a href="https://wg21.link/P0829">P0829</a> in a <a href="https://gitlab.com/avr-libstdcxx">libstdc++ fork</a>.  P0829 is (almost) a superset of the facilities in this paper.  This implementation is <a href="https://bintray.com/paulbendixen/paulbendixen/p0829%3Apaulbendixen">available on Conan</a>.
 </p><p>
 I have run a 2018 era of libc++'s test suite against the Microsoft Visual Studio 15.8 (released Aug 14, 2018) STL implementation, run in the Microsoft Windows kernel.  Running in that environment allowed me to audit whether exceptions, RTTI, memory allocation, or floating point was used in appropriately.  This largely tested the C++14 parts of the STL.  The C++17 and C++20 parts were either missing implementations, or tests.
 </p>
@@ -526,9 +526,9 @@ Add a new subclause [freestanding.membership], under [conventions] and after [ob
 <h4 ><a class='secnum' style='min-width:118pt'>?.?.?.?</a> Freestanding membership <a class='abbr_ref'>[freestanding.membership]</a></h4>
 <div class='para'>
     <div class='marginalizedparent'><a class='marginalized'>1</a></div>
-    <div class='sentence'>Freestanding implementations have several declarations and macro definitions that shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
+    <div class='sentence'>Unless otherwise specified, the requirements on declarations and macro definitions in freestanding implementations shall be the same as the corresponding requirements in a hosted implementation.</div>
     <div class='note'>[ <span class='textit'>Note</span><span class='textit'>:</span> Throwing a standard library provided exception is not observably different from <span class='texttt'>terminate()</span> if the implementation doesn't unwind the stack during exception handling ([except.handle#9]) and the user's program contains no catch blocks. -<i>end note</i>]</div>
-    <div class='sentence'>In the associated header synopsis for such declarations and macro definitions, the items are followed with a comment that ends with <span class='textit'>freestanding</span>.</div>
+    <div class='sentence'>In the associated header synopsis for such declarations and macro definitions, the items are followed with a comment that includes <span class='textit'>freestanding</span>.</div>
 	<div class='example'>[  <span class='textit'>Example:</span>
 <pre class='codeblock'>
 #define NULL <span class='textit'><span class='texttt'>see below</span></span> <span class='comment'>// <span class='textit'>freestanding</span></span>
@@ -537,8 +537,7 @@ Add a new subclause [freestanding.membership], under [conventions] and after [ob
 </div>
 <div class='para'>
     <div class='marginalizedparent'><a class='marginalized'>2</a></div>
-    <div class='sentence'>Freestanding implementations have several headers that shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
-    <div class='sentence'>The synopsis for these headers start with a comment that ends with <span class='textit'>freestanding</span>.</div>
+    <div class='sentence'>A header all of whose declarations and macro definitions would be commented as specified above shall instead have a single such comment at the beginning of its synopsis.</div>
 	<div class='example'>[  <span class='textit'>Example:</span>
 <pre class='codeblock'>
 <span class='comment'>// <span class='textit'>freestanding</span></span>
@@ -548,11 +547,11 @@ namespace std {
 </div>
 <div class='para'>
     <div class='marginalizedparent'><a class='marginalized'>3</a></div>
+    <div class='sentence'>A <i>freestanding class template</i> is a class template that is implemented (partially or fully) in freestanding implementations.</div>
     <div class='sentence'>Deduction guides for freestanding class templates shall be implemented in freestanding implementations.</div>
-    <div class='sentence'><i>Freestanding class templates</i> are class templates that are implemented (partially or fully) in freestanding implementations.</div>
     <div class='marginalizedparent'><a class='marginalized'>4</a></div>
+    <div class='sentence'>A <i>freestanding declaration</i> is a non-namespace declaration that is implemented (partially or fully) in a freestanding implementation.</div>
     <div class='sentence'>The containing namespace of each freestanding declaration shall be provided in a freestanding implementation.</div>
-    <div class='sentence'><i>Freestanding declarations</i> are non-namespace declarations that are implemented (partially or fully) in a freestanding implementation</div>
 </div>
 </blockquote>
 Wording involving comment placement is inspired by <a href="https://wg21.link/expos.only.func#1">[expos.only.func]#1</a>.  The "shalls" are all requirements on the implementation, and are similar to <a href="https://wg21.link/global.functions#3">[global.functions]#3</a>.
@@ -561,7 +560,7 @@ Wording involving comment placement is inspired by <a href="https://wg21.link/ex
 <h2>Changes in <a href="https://wg21.link/compliance">[compliance]</a></h2>
 Add new rows to <a href="https://wg21.link/compliance#tab:headers.cpp.fs">Table 24</a>:</p>
 <table style="border: 1px solid black">
-<caption>Table 24 &mdash; C++ headers for freestanding implementations</caption>
+<caption>Table 24 &mdash; C++ headers for freestanding implementations [tab:headers.cpp.fs]</caption>
 <thead>
 <tr style="border: 1px solid black">
 <th colspan="2" style="text-align: center">Subclause</th><th style="text-align: center">Header(s)</th>
@@ -643,14 +642,14 @@ Change in <a href="https://wg21.link/compliance#3">[compliance] paragraph 3</a>:
 </del>
 
 <ins>
-    <div class='sentence'>The headers listed in this table shall meet the requirements for a freestanding implementation, as specified in the respective header synopsis.</div>
+    <div class='sentence'>The headers listed in Table 24 shall meet the requirements for a freestanding implementation, as specified in the respective header synopsis.</div>
 </ins>
 </div>
 </blockquote>
 
 <h2>Full headers</h2>
 Instructions to the editor:<br>
-Please add a <span class="comment">// <span class="textit">freestanding</span></span> comment to the beginning of the following synopses.  These headers are entirely freestanding.
+Please insert a <span class="comment">// <span class="textit">freestanding</span></span> comment to the beginning of the following synopses.  These headers are entirely freestanding.
 <ul>
 <li><a href="https://wg21.link/cstddef.syn">[cstddef.syn]</a></li>
 <li><a href="https://wg21.link/limits.syn">[version.syn]</a></li>
@@ -676,7 +675,7 @@ Please add a <span class="comment">// <span class="textit">freestanding</span></
 
 <h2>Change in <a href="https://wg21.link/cstdlib.syn">[cstdlib.syn]</a></h2>
 Instructions to the editor:<br>
-Please add a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following entities:
+Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following entities:
 <ul>
   <li><code>size_t</code></li>
   <li><code>NULL</code></li>
@@ -689,7 +688,7 @@ Please add a <span class="comment">// <span class="textit">freestanding</span></
 
 <h2>Change in <a href="https://wg21.link/memory.syn">[memory.syn]</a></h2>
 Instructions to the editor:<br>
-Please add a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following entities:
+Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following entities:
 <ul>
   <li><code>pointer_traits</code></li>
   <li><code>to_address</code></li>
@@ -745,7 +744,7 @@ Note: the following portions of <code>&lt;memory&gt;</code> are <b>omitted</b>. 
 
 <h2>Change in <a href="https://wg21.link/functional.syn">[functional.syn]</a></h2>
 Instructions to the editor:<br>
-Please add a <span class="comment">// <span class="textit">freestanding</span></span> comment to every entity in <code>&lt;functional&gt;</code> <b>except</b> for the following entities:
+Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to every entity in <code>&lt;functional&gt;</code> <b>except</b> for the following entities:
 <ul>
   <li><code>bad_function_call</code></li>
   <li><code>function</code></li>
@@ -757,7 +756,7 @@ Please add a <span class="comment">// <span class="textit">freestanding</span></
 
 <h2>Change in <a href="https://wg21.link/iterator.synopsis">[iterator.synopsis]</a></h2>
 Instructions to the editor:<br>
-Please add a <span class="comment">// <span class="textit">freestanding</span></span> comment to every entity in <code>&lt;iterator&gt;</code> <b>except</b> for the following entities:
+Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to every entity in <code>&lt;iterator&gt;</code> <b>except</b> for the following entities:
 <ul>
   <li><code>istream_iterator</code> and associated comparison operators</li>
   <li><code>ostream_iterator</code></li>
@@ -767,7 +766,7 @@ Please add a <span class="comment">// <span class="textit">freestanding</span></
 
 <h2>Change in <a href="https://wg21.link/ranges.syn">[ranges.syn]</a></h2>
 Instructions to the editor:<br>
-Please add a <span class="comment">// <span class="textit">freestanding</span></span> comment to every entity in <code>&lt;ranges&gt;</code> <b>except</b> for the following entities:
+Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to every entity in <code>&lt;ranges&gt;</code> <b>except</b> for the following entities:
 <ul>
   <li><code>basic_istream_view</code></li>
   <li><code>istream_view</code></li>
@@ -790,6 +789,8 @@ Thanks to Brandon Streiff, Joshua Cannon, Phil Hindman, and Irwan Djajadi for re
 Thanks to Odin Holmes for providing feedback and helping publicize P0829.
 </p><p>
 Thanks to Paul Bendixen for providing feedback while prototyping P0829.
+</p><p>
+Thanks to Walter Brown for providing wording feedback.
 </p><p>
 Similar work was done in the C++11 timeframe by Lawrence Crowl and Alberto Ganesh Barbati in <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3256.html">N3256</a>.
 </p>
