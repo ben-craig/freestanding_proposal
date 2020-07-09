@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<html>
+<style type="text/css">
+  ins, ins * { text-decoration:none; font-weight:bold; background-color:#A0FFA0 }
+  del, del * { text-decoration:line-through; background-color:#FFA0A0 }
+  #hidedel:checked ~ * del, #hidedel:checked ~ * del * { display:none; visibility:hidden }
+
+blockquote {
+  padding: .5em;
+  border: .5em;
+  border-color: silver;
+  border-left-style: solid;
+}
+
+blockquote.std { color: #000000; background-color: #F1F1F1;
+  border: 1px solid #D1D1D1;
+  padding-left: 0.5em; padding-right: 0.5em; }
+blockquote.stdins { text-decoration: underline;
+  color: #000000; background-color: #C8FFC8;
+  border: 1px solid #B3EBB3; padding: 0.5em; }
+blockquote.stddel { text-decoration: line-through;
+  color: #000000; background-color: #FFEBFF;
+  border: 1px solid #ECD7EC;
+  padding-left: 0.5em; padding-right: 0.5em; }
+
+p.grammarlhs { margin-bottom: 0 }
+p.grammarrhs { margin-left:8em; margin-top:0; margin-bottom:0; text-indent:-4em }
+
+div.wrapper {
+    max-width: 60em;
+    margin: auto;
+}
+
+a { text-decoration: none; }
+
+a.hidden_link {
+    text-decoration: none;
+    color: inherit;
+}
+
+li {
+    margin-top: 0.0em;
+    margin-bottom: 0.0em;
+}
+
+h1 { line-height: 1; }
+h2 { line-height: 1; }
+h3 { line-height: 1; }
+h4 { line-height: 1; }
+
+:target { background-color: #C9FBC9; }
+:target .codeblock { background-color: #C9FBC9; }
+:target ul { background-color: #C9FBC9; }
+
+.abbr_ref { float: right; }
+
+.folded_abbr_ref { float: right; }
+:target .folded_abbr_ref { display: none; }
+
+:target .unfolded_abbr_ref { float: right; display: inherit; }
+.unfolded_abbr_ref { display: none; }
+
+.secnum { display: inline-block; min-width: 35pt; }
+.annexnum { display: block; }
+
+div.sourceLinkParent {
+    float: right;
+}
+
+a.sourceLink {
+    position: absolute;
+    opacity: 0;
+    margin-left: 10pt;
+}
+
+a.sourceLink:hover {
+    opacity: 1;
+}
+
+div.marginalizedparent {
+    position: relative;
+    left: -5em;
+}
+
+div.footnoteNumberParent {
+    position: relative;
+    left: -4.7em;
+}
+
+a.marginalized {
+    position: absolute;
+    font-size: 75%;
+    text-align: right;
+    width: 5em;
+}
+
+a.enumerated_item_num {
+    position: relative;
+    left: -3.5em;
+    display: inline-block;
+    margin-right: -3em;
+    text-align: right;
+    width: 3em;
+}
+
+div.para { margin-bottom: 0.6em; margin-top: 0.6em; text-align: justify; }
+div.section { text-align: justify; }
+div.sentence { display: inline; }
+
+span.indexparent {
+    display: inline;
+    position: relative;
+    float: right;
+    right: -1em;
+}
+
+a.index {
+    position: absolute;
+    display: none;
+}
+
+a.index:before { content: "âŸµ"; }
+    /* this way the content is not selectable */
+
+a.index:target {
+    display: inline;
+}
+
+.indexitems {
+    margin-left: 2em;
+    text-indent: -2em;
+}
+
+div.itemdescr {
+    margin-left: 3em;
+}
+
+.bnf {
+    font-family: serif;
+    margin-left: 40pt;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.ncbnf {
+    font-family: serif;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+.bnftab {
+    font-family: serif;
+    font-style: italic;
+    margin-left: 40pt;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.ncsimplebnf {
+    font-family: serif;
+    font-style: italic;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+.ncbnftab {
+    font-family: serif;
+    font-style: italic;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+.bnfkeywordtab {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+span.textnormal {
+    font-style: normal;
+    font-family: serif;
+    white-space: normal;
+    display: inline-block;
+}
+
+span.descr { font-style: normal; font-family: serif; }
+span.grammarterm { font-style: italic; }
+span.term { font-style: italic; }
+span.terminal { font-family: monospace; font-style: normal; }
+span.nonterminal { font-style: italic; }
+span.tcode { font-family: monospace; font-style: normal; }
+span.textbf { font-weight: bold; }
+span.textsc { font-variant: small-caps; }
+a.nontermdef { font-style: italic; font-family: serif; }
+span.emph { font-style: italic; }
+span.techterm { font-style: italic; }
+span.mathit { font-style: italic; }
+span.mathsf { font-family: sans-serif; }
+span.mathrm { font-family: serif; font-style: normal; }
+span.textrm { font-family: serif; }
+span.textsl { font-style: italic; }
+span.mathtt { font-family: monospace; font-style: normal; }
+span.mbox { font-family: serif; font-style: normal; }
+span.ungap { display: inline-block; width: 2pt; }
+span.textit { font-style: italic; }
+span.texttt { font-family: monospace; }
+span.tcode_in_codeblock { font-family: monospace; font-style: normal; }
+
+span.phantom { color: white; }
+span.math { }
+
+span.mathblock {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1.2em;
+    margin-bottom: 1.2em;
+    text-align: center;
+}
+
+span.mathalpha {
+    font-style: italic;
+}
+
+span.synopsis {
+    font-weight: bold;
+    margin-top: 0.5em;
+    display: block;
+}
+
+span.definition {
+    font-weight: bold;
+    display: block;
+}
+
+.codeblock {
+    margin-left: 1.2em;
+    line-height: 127%;
+}
+
+code {
+    font-family: monospace;
+    font-style: normal;
+}
+
+code.itemdecl {
+    margin-top: 2ex;
+    white-space: pre;
+    display: block;
+}
+
+.comment {
+    font-style: italic;
+    font-family: serif;
+}
+
+span.textsuperscript {
+    vertical-align: super;
+    font-size: smaller;
+    line-height: 0;
+}
+
+.footnotenum { vertical-align: super; font-size: smaller; line-height: 0; }
+
+.footnote {
+    font-size: small;
+    margin-left: 2em;
+    margin-right: 2em;
+    margin-top: 0.6em;
+    margin-bottom: 0.6em;
+}
+
+div.minipage {
+    display: inline-block;
+    margin-right: 3em;
+}
+
+div.numberedTable {
+    text-align: center;
+    margin: 2em;
+}
+
+div.figure {
+    text-align: center;
+    margin: 2em;
+}
+
+table {
+    border: 1px solid black;
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0.8em;
+    text-align: left;
+    hyphens: none; /* otherwise some columns get very narrow, e.g. [tab:hash] */
+}
+
+td, th {
+    padding-left: 1em;
+    padding-right: 1em;
+    vertical-align: top;
+}
+
+td.left {
+    text-align: left;
+}
+
+td.right {
+    text-align: right;
+}
+
+td.center {
+    text-align: center;
+}
+
+td.justify {
+    text-align: justify;
+}
+
+td.border {
+    border-left: 1px solid black;
+}
+
+tr.rowsep, td.cline {
+    border-top: 1px solid black;
+}
+
+tr.capsep {
+    border-top: 3px solid black;
+    border-top-style: double;
+}
+
+th {
+    border-bottom: 1px solid black;
+}
+
+span.centry {
+    font-weight: bold;
+}
+
+div.table {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    width: 90%;
+}
+
+span.indented {
+    display: block;
+    margin-left: 2em;
+    margin-bottom: 1em;
+    margin-top: 1em;
+}
+</style>
+
+<title>TODO DXXXXR0.0: Freestanding Feature Test Macros and Implementation Defined Extensions</title>
+<body>
+<h1>Freestanding Feature Test Macros and Implementation Defined Extensions</h1>
+Document number: DXXXXR0.0 TODO<br/>
+Date: 2020-05-24 TODO<br/>
+Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
+Audience: Library Evolution Working Group
+<h1>Change history</h1>
+<h3> R0 </h3>
+<ul>
+  <li>Branching from <a href="https://wg21.link/P1641R3">P1641R3</a> and <a href="https://wg21.link/P1642R3">P1642R3</a>.</li>
+  <li>Freestanding feature test macros now required to be present in hosted.</li>
+  <li>Added examples and use cases.</li>
+  <li>Elaborating on how an implementation can extend the bare minimum of freestanding.</li>
+</ul>
+<h1>Introduction</h1>
+<p>
+Users of freestanding implementations would like to be able to detect which library facilities are available for use.
+With the C++20 feature test macros, all the feature test macros are required to be defined in both freestanding and hosted implementations, even when the associated hosted facilities are not available.
+This paper will make the presence of feature test macros for hosted facilities implementation defined.
+This paper will also bump the version number on all library feature test macros, so that extensions can be detected.
+</p><p>
+This paper also clarifies that freestanding implementations need not stop at the bare minimum support for freestanding.
+Freestanding implementations may provide additional facilities from the standard library, so long as those facilities meet the associated hosted requirements.
+</p>
+<h1>Motivation and Design</h1>
+<h2>Beyond the bare minimum</h2>
+<p>
+This paper grants implementations the freedom to include more than just the facilities that are marked <code>//freestanding</code>.
+There will be platforms where, for example, floating point is both available and frequently used (e.g. GPU environments).
+On those platforms, it is desirable for implementations to provide many of the <code>&lt;cmath&gt;</code> and <code>&lt;complex&gt;</code> facilities.
+We must be careful here though, as we don't want to allow divergence of implementation, and we want to be able to add facilities to the required subset of freestanding.
+To permit both vendor extension and future freestanding growth, this paper will require that additionally included facilities must meet the same requirements as for a hosted implementation, with a few exceptions.
+</p><p>
+Freestanding implementations may include additional facilities at the function, typedef, and macro granularity. This means that a freestanding implementation may supply a header where only some of the contents are present.  A freestanding implementation may also supply a class where only some of the functions and typedefs are present.  The parts of a class that are present must meet all hosted requirements.  The enclosing type is permitted to not meet all of its requirements, so long as the violation is due to missing facilities, and not because of some other change in semantics.
+</p><p>
+Freestanding implementations may make the use of any non-freestanding function ill-formed (e.g. by marking it <code>=delete</code>, by <code>static_assert</code>ing in a template body, or through a linker error).  The intent is to allow the freestanding implementation to control overload resolution, so that a library that works with a freestanding implementation will have the same semantics in a hosted implementation.
+</p><p>
+Allowing for partial classes gives implementers a great deal of freedom to experiment and to provide extensions.  It also permits abuse by the implementers.  On the positive side, an implementation could provide <code>std::array</code> without <code>at</code>.  This helps replace C facilities with better facilities from C++.  On the negative side, an implementation could <code>=delete</code> the copy constructor.  Removing the wrong functions would also mean that a class may not satisfy the same concepts in hosted vs. freestanding.  The author expects bug reports and market pressures will be sufficient to ensure that nothing too strange is done by implementations.
+</p><p>
+Users will be able to rely on the freestanding portions of the standard library.  The freestanding portions have portable semantics, and are required to be present.  Users may then decide to rely on implementation-defined additions.  WG21 will be able to add hosted entities to the freestanding subset without little fear of breaking implementation-defined additions, because the implementation-defined additions needed to meet the hosted requirements.
+</p>
+<h2>Library feature test macro bump</h2>
+<p>
+C++20 requires that all implementations (freestanding and hosted) define all of the library feature test macros in <code>&lt;version&gt;</code>, even the feature test macros that correspond to facilities not required to be present in freestanding implementations.
+This means that those feature test macros provide misleading results on freestanding implementations.
+This isn't just a theoretical problem.
+<a href="https://godbolt.org/z/73YpRJ">Existing implementations</a> are already deploying <code>&lt;version&gt;</code> headers that report support for std::filesystem, std::chrono, and many others, even though those feature test macros indicate support for features that require the support of an operating system.
+</p><p>
+In order for users of freestanding implementations to be able to detect extensions of freestanding, the users need a way of distinguishing the C++20 macro requirements from a genuine expression of extension.
+This paper will bump all library macro versions, so that users can distinguish between these cases.
+</p>
+<h2>Freestanding feature test macros</h2>
+The following macros are now required to be present in freestanding implementations.
+The corresponding facilities were either required to be present in C++20, or are added in P1642.
+<ul>
+  <li><code>__cpp_lib_addressof_constexpr</code></li>
+  <li><code>__cpp_lib_allocator_traits_is_always_equal</code></li>
+  <li><code>__cpp_lib_apply</code></li>
+  <li><code>__cpp_lib_as_const</code></li>
+  <li><code>__cpp_lib_assume_aligned</code></li>
+  <li><code>__cpp_lib_atomic_flag_test</code></li>
+  <li><code>__cpp_lib_atomic_float</code></li>
+  <li><code>__cpp_lib_atomic_is_always_lock_free</code></li>
+  <li><code>__cpp_lib_atomic_ref</code></li>
+  <li><code>__cpp_lib_atomic_value_initialization</code></li>
+  <li><code>__cpp_lib_atomic_value_initialization</code></li>
+  <li><code>__cpp_lib_atomic_wait</code></li>
+  <li><code>__cpp_lib_bind_front</code></li>
+  <li><code>__cpp_lib_bit_cast</code></li>
+  <li><code>__cpp_lib_bitops</code></li>
+  <li><code>__cpp_lib_bool_constant</code></li>
+  <li><code>__cpp_lib_bounded_array_traits</code></li>
+  <li><code>__cpp_lib_byte</code></li>
+  <li><code>__cpp_lib_char8_t</code></li>
+  <li><code>__cpp_lib_concepts</code></li>
+  <li><code>__cpp_lib_constexpr_functional</code></li>
+  <li><code>__cpp_lib_constexpr_iterator</code></li>
+  <li><code>__cpp_lib_constexpr_memory</code></li>
+  <li><code>__cpp_lib_constexpr_tuple</code></li>
+  <li><code>__cpp_lib_constexpr_utility</code></li>
+  <li><code>__cpp_lib_destroying_delete</code></li>
+  <li><code>__cpp_lib_endian</code></li>
+  <li><code>__cpp_lib_exchange_function</code></li>
+  <li><code>__cpp_lib_hardware_interference_size</code></li>
+  <li><code>__cpp_lib_has_unique_object_representations</code></li>
+  <li><code>__cpp_lib_int_pow2</code></li>
+  <li><code>__cpp_lib_integer_sequence</code></li>
+  <li><code>__cpp_lib_integral_constant_callable</code></li>
+  <li><code>__cpp_lib_invoke</code></li>
+  <li><code>__cpp_lib_is_aggregate</code></li>
+  <li><code>__cpp_lib_is_constant_evaluated</code></li>
+  <li><code>__cpp_lib_is_final</code></li>
+  <li><code>__cpp_lib_is_invocable</code></li>
+  <li><code>__cpp_lib_is_layout_compatible</code></li>
+  <li><code>__cpp_lib_is_nothrow_convertible</code></li>
+  <li><code>__cpp_lib_is_null_pointer</code></li>
+  <li><code>__cpp_lib_is_pointer_interconvertible</code></li>
+  <li><code>__cpp_lib_is_swappable</code></li>
+  <li><code>__cpp_lib_launder</code></li>
+  <li><code>__cpp_lib_logical_traits</code></li>
+  <li><code>__cpp_lib_make_from_tuple</code></li>
+  <li><code>__cpp_lib_make_reverse_iterator</code></li>
+  <li><code>__cpp_lib_nonmember_container_access</code></li>
+  <li><code>__cpp_lib_not_fn</code></li>
+  <li><code>__cpp_lib_null_iterators</code></li>
+  <li><code>__cpp_lib_remove_cvref</code></li>
+  <li><code>__cpp_lib_result_of_sfinae</code></li>
+  <li><code>__cpp_lib_source_location</code></li>
+  <li><code>__cpp_lib_ssize</code></li>
+  <li><code>__cpp_lib_three_way_comparison</code></li>
+  <li><code>__cpp_lib_to_address</code></li>
+  <li><code>__cpp_lib_transformation_trait_aliases</code></li>
+  <li><code>__cpp_lib_transparent_operators</code></li>
+  <li><code>__cpp_lib_tuple_element_t</code></li>
+  <li><code>__cpp_lib_tuples_by_type</code></li>
+  <li><code>__cpp_lib_type_identity</code></li>
+  <li><code>__cpp_lib_type_trait_variable_templates</code></li>
+  <li><code>__cpp_lib_uncaught_exceptions</code></li>
+  <li><code>__cpp_lib_unwrap_ref</code></li>
+  <li><code>__cpp_lib_void_t</code></li>
+</ul>
+<h2>New feature test macros</h2>
+<p>
+Users of freestanding implementations will want to know whether including a formerly hosted-only header will work or not.
+Users of freestanding implementations will also what to know if all the facilities that are required to be in freestanding have been made available yet.
+This is only a concern for highly portable libraries, and for users that need to support old and new compilers, but that is the general use case for feature test macros.
+</p><p>
+These feature test macros are provided at a per-header granularity.
+This enables implementations to advertise new capabilities more easily than a single feature test macro for the entirety of this paper.
+This also follows the precedent set by the <code>__cpp_lib_constexpr_*</code> macros.
+</p><p>
+If new, pre-C++20 functionality is added to the freestanding subset of C++, then the respective feature test macro for the header should be bumped.
+If the functionality is new in C++23 or later, then alternative approaches should be taken.
+These alternative approaches are discussed in the examples section.
+</p>
+<table border="1">
+    <thead><tr>
+        <th>Name</th>
+        <th>Header</th>
+    </tr></thead>
+    <tbody><tr>
+        <td><code>__cpp_lib_freestanding_utility</code></td>
+        <td><code>&lt;utility&gt;<code></td>
+    </tr><tr>
+        <td><code>__cpp_lib_freestanding_tuple</code></td>
+        <td><code>&lt;tuple&gt;<code></td>
+    </tr><tr>
+        <td><code>__cpp_lib_freestanding_ratio</code></td>
+        <td><code>&lt;ratio&gt;<code></td>
+    </tr><tr>
+        <td><code>__cpp_lib_freestanding_memory</code></td>
+        <td><code>&lt;memory&gt;<code></td>
+    </tr><tr>
+        <td><code>__cpp_lib_freestanding_functional</code></td>
+        <td><code>&lt;functional&gt;<code></td>
+    </tr><tr>
+        <td><code>__cpp_lib_freestanding_iterator</code></td>
+        <td><code>&lt;iterator&gt;<code></td>
+    </tr><tr>
+        <td><code>__cpp_lib_freestanding_ranges</code></td>
+        <td><code>&lt;ranges&gt;<code></td>
+    </tr></tbody>
+</table>
+<h2>Partial macro coverage</h2>
+<p>
+The following, existing feature test macros cover some features that I am making freestanding, and some features that I am not requiring to be freestanding.
+These feature test macros won't be required in freestanding, as they could cause substantial confusion when the hosted parts of those features aren't available.
+The header-based <code>__cpp_lib_freestanding_*</code> macros should provide a suitable replacement in freestanding environments.
+</p>
+<ul>
+  <li><code>__cpp_lib_boyer_moore_searcher</code>: <code>default_searcher</code> is in, other searchers require the heap.</li>
+  <li><code>__cpp_lib_constexpr_dynamic_alloc</code>: <code>constexpr</code>ification of various memory algorithms is in, anything dealing with <code>std::allocator</code> is out</li>
+  <li><code>__cpp_lib_ranges</code>: stream iterators are out</li>
+  <li><code>__cpp_lib_raw_memory_algorithms</code>: ExecutionPolicy overloads are out</li>
+</ul>
+<h2>Examples</h2>
+The following feature detection examples should ...
+<ul>
+    <li>... work on freestanding, hosted, and with implementation-defined freestanding extensions.</li>
+    <li>... work with old standards and new standards.</li>
+    <li>... provide a conservative "false" answer when working with an old standard.</li>
+    <li>... not cause warnings with <code>-Wundef</code></li>
+</ul>
+
+<h3>Detect C++20 (or older) feature that is not required in freestanding</h3>
+<i>Is <code>filesystem::copy</code> available?</i>
+<pre class='codeblock'>
+#if __STDC_HOSTED__ && defined(__cpp_lib_filesystem) && __cpp_lib_filesystem &gt;= 201703L
+// hosted success path
+#elif defined(__cpp_lib_filesystem) && __cpp_lib_filesystem &gt;= 202007L
+// freestanding extension path
+#else
+// fallback path
+#endif
+</pre>
+
+<h3>Detect C++20 (or older) feature that is now entirely required in freestanding</h3>
+<i>Is <code>ssize</code> available?</i>
+<pre class='codeblock'>
+#if __STDC_HOSTED__ && defined(__cpp_lib_ssize) && __cpp_lib_ssize &gt;= 201902L
+// hosted success path
+#elif defined(__cpp_lib_ssize) && __cpp_lib_ssize &gt;= 202007L
+// freestanding path
+#else
+// fallback path
+#endif
+</pre>
+
+<h3>Detect C++20 (or older) feature that is now partially required in freestanding</h3>
+<i>Is the non-parallel version of <code>uninitialized_default_construct</code> available?</i>
+<pre class='codeblock'>
+#if defined(__cpp_lib_raw_memory_algorithms) && __cpp_lib_raw_memory_algorithms &gt;= 201606L
+// hosted success path and freestanding extension path
+#elif defined(__cpp_lib_freestanding_memory) && __cpp_lib_freestanding_memory &gt;= 202007L
+// freestanding path
+#else
+// fallback path
+#endif
+</pre>
+
+<h3>Detect pre-feature-test-macro feature that is required in freestanding</h3>
+<i>Is <code>tuple</code> available?</i>
+<pre class='codeblock'>
+#if defined(__cpp_lib_freestanding_tuple) && __cpp_lib_freestanding_tuple &gt;= 202007L
+// freestanding and future hosted success path
+#elif __STDC_HOSTED__
+// flakey hosted success path.  Assume tuple works here
+#else
+// fallback path
+#endif
+</pre>
+
+<h3>Detect pre-feature-test-macro feature that is not required in freestanding</h3>
+<i>Is <code>thread</code> available?</i>
+<pre class='codeblock'>
+// No good answers here.  Currently calling this out of scope.
+</pre>
+
+<h3>Detect C++23 feature that is entirely freestanding in the initial paper</h3>
+<pre class='codeblock'>
+#if defined(__cpp_lib_always_freestanding_feature) && __cpp_lib_always_freestanding_feature &gt;= 202202L
+// hosted and freestanding success path
+#else
+// fallback path
+#endif
+</pre>
+
+<h3>Detect C++23 feature that is hosted in the initial paper, but made entirely freestanding later (possibly in another version of C++)</h3>
+For this category of features, the recommendation will be to bump the integer constant in the version test macro.
+<pre class='codeblock'>
+#if defined(__cpp_lib_eventually_freestanding_feature)
+    #if __cpp_lib_eventually_freestanding_feature &gt;= 202702L
+    // freestanding success path.  Will also trigger for new hosted toolchains
+    #elif __STDC_HOSTED__ && __cpp_lib_eventually_freestanding_feature &gt;= 202102L
+    // Interim hosted success path
+    #else
+    // Interim freestanding fallback path
+    #endif
+#else
+// fallback path
+#endif
+
+// Alternative that will work 99% of the time
+#if defined(__cpp_lib_eventually_freestanding_feature)
+// freestanding and hosted success, probably
+#else
+// fallback path
+#endif
+</pre>
+
+<h3>Detect freestanding part of C++23 feature that is partially freestanding in the initial paper</h3>
+For this category of features, the recommendation will be to have two macros, one for the freestanding portion, and one for the entire paper.  The macros should follow the convention <code>__cpp_lib_foo</code> for the full paper, and <code>__cpp_lib_freestanding_foo</code> for the freestanding portion.<br/>
+<i>Is the freestanding portion of feature foo available?</i>
+<pre class='codeblock'>
+#if defined(__cpp_lib_freestanding_foo) && __cpp_lib_freestanding_foo &gt;= 202202L
+// hosted and freestanding success path
+#else
+// fallback path
+#endif
+</pre>
+
+<h3>Detect freestanding part of C++23 feature that is made freestanding after the initial paper (possibly in a different C++ release)</h3>
+For this category of features, the recommendation will be to add a new freestanding macro for the feature, following the convention of <code>__cpp_lib_freestanding_bar</code> for the freestanding portion.<br/>
+<i>Is the freestanding portion of feature bar available?</i>
+<pre class='codeblock'>
+#if defined(__cpp_lib_bar) && __cpp_lib_bar &gt;= 202202L
+// Old hosted toolchain path and freestanding extension path
+#elif defined(__cpp_lib_freestanding_bar) && __cpp_lib_freestanding_bar &gt;= 202702L
+// freestanding success path.  Will also trigger for new hosted toolchains
+#else
+// fallback path
+#endif
+</pre>
+
+
+<h2>Rejected alternatives</h2>
+<h3>Don't allow partial classes in conforming vendor extensions to freestanding</h3>
+<p>
+Instead of allowing implementers to provide or not provide a facility at function, typedef, and macro granularity, we could only allow implementers to provide facilities at the declaration granularity.  This would mean that if a class is present at all, then it is entirely present.
+</p><p>
+This prevents some useful vendor extensions, notably <code>at()</code>-less <code>array</code>, <code>value()</code>-less <code>optional</code>, and similarly partial <code>string_view</code> and <code>bitset</code>.
+</p><p>
+If we prohibit partial classes, then we wouldn't be able to get conforming user experience with these classes in freestanding implementations.  We would still be able to choose to make these partially freestanding in the standard though.
+</p>
+
+<h3>Only update old feature test macros to indicate freestanding status</h3>
+<p>
+Rather than have a <code>__cpp_lib_freestanding_ratio</code> (for example), we could instead update <code>__cpp_lib_chrono</code>.
+Users could test the value of <code>__cpp_lib_chrono</code> to determine if it is freestanding safe or not.
+</p><p>
+There are at least two big flaws with this approach.
+</p><p>
+First, not all facilities (particularly older ones) have existing feature test macros to bump (e.g. <code>unique_ptr</code>).
+Users would still like to be able to detect the availability of the features in freestanding.
+</p><p>
+Second, implementers don't always implement features in the same order that they are added to the working draft.
+If a new feature were added to <code>&lt;chrono&gt;</code> that necessitated a feature test macro bump, and an implementer addressed that feature before making <code>&lt;ratio&gt;</code> freestanding safe, then the implementer would either need to stick with the pre-freestanding feature test macro version, or provide a misleading feature test macro version.
+
+<h3>Per-freestanding paper feature test macro granularity</h3>
+<p>
+Rather than introduce a feature test macro per header in this paper, I could instead introduce one feature test macro... perhaps <code>__cpp_lib_freestanding</code>.  Each paper that adds old facilities to freestanding could then introduce it's own macro, or bump the old one.
+</p><p>
+This approach can work, but it restricts the order in which implementers can meaningfully implement freestanding features.  All of the old paper needs to be done before any of the old paper's progress can be advertised.  All of the old paper needs to be done before advertising any newer papers.
+</p>
+
+<h3>Per-facility feature test macro granularity</h3>
+<p>
+This paper could choose to add a feature test macro for <code>__cpp_lib_freestanding_unique_ptr</code>, <code>__cpp_lib_freestanding_pair</code>, and <code>__cpp_lib_freestanding_iterator_categories</code>.  
+There would be some value to users in that they could express exactly what it is they need, and see if that very specific facility is available.
+</p><p>
+However, this approach is an implementation hassle, and prone to endless wg21 debates on how to partition and name the facilities.
+Grouping facilities by header provides a natural partitioning and naming scheme.
+</p>
+
+<h3>Rely on <code>__has_include</code></h3>
+<p>
+Some have suggested using <code>__has_include</code> to detect whether <code>&lt;tuple&gt;</code> (for example) is present on a freestanding implementation.
+This doesn't work in practice for multiple reasons.
+<p></p>
+The first example is <code>&lt;iterator&gt;</code>.
+In older versions of Visual Studio, a user could attempt to <code>#include &lt;iterator&gt;</code>.
+The streaming iterators in the header would result in compiler errors.
+We need feature test macros to indicate whether it is safe to include the header.
+<p></p>
+The second example is headers that do standard versions checks inside.
+The libstdc++ implementation of <code>&lt;ranges&gt;</code> is empty if the language version is less than C++20.
+<code>__has_include</code> will still report the header as present though.
+</p>
+
+<h3>Don't bump all the library feature test macros</h3>
+<p>
+This makes it even more difficult to detect extensions to freestanding.  <a href="https://godbolt.org/z/73YpRJ">Existing implementations</a> report support for <code>__cpp_lib_filesystem</code> when the <code>-ffreestanding</code> flag is passed, even though it is unlikely that filesystem is supported on such platforms.  The C++20 standard currently requires this behavior.
+</p>
+
+<h3>Make <code>__cpp_lib_freestanding_*</code> macros freestanding only</h3>
+<p>
+This complicates the client feature test code for features that were marked freestanding in their initial papers.
+It doesn't make any of the client feature test code any simpler.
+It also violates the principle that freestanding should be a subset of hosted.
+</p>
+<h3>Define <code>__cpp_lib_freestanding_*</code> macros to 0 in hosted</h3>
+<p>
+Users of the freestanding macros would still need to account for the case where the macro isn't present.
+Defining the macro to zero doesn't provide any information beyond what <code>__STDC_HOSTED__</code> provides.
+</p>
+
+<h1>Wording</h1>
+TODO
+<h1>Acknowledgements</h1>
+TODO
+
+</body>
+</html>
