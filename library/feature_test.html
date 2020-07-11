@@ -392,13 +392,18 @@ On those platforms, it is desirable for implementations to provide many of the <
 We must be careful here though, as we don't want to allow divergence of implementation, and we want to be able to add facilities to the required subset of freestanding.
 To permit both vendor extension and future freestanding growth, this paper will require that additionally included facilities must meet the same requirements as for a hosted implementation, with a few exceptions.
 </p><p>
-Freestanding implementations may include additional facilities at the function, typedef, and macro granularity. This means that a freestanding implementation may supply a header where only some of the contents are present.  A freestanding implementation may also supply a class where only some of the functions and typedefs are present.  The parts of a class that are present must meet all hosted requirements.  The enclosing type is permitted to not meet all of its requirements, so long as the violation is due to missing facilities, and not because of some other change in semantics.
+Freestanding implementations may include additional macros, and namespace scoped entities, beyond what is required in a minimal freestanding implementation.
+A freestanding implementation does not need to provide the entirety of a header.
+If a freestanding implementation supplies an additional class, the entirety of the class must be present and meet all the hosted requirements.
+This prevents some useful vendor extensions, notably <code>at()</code>-less <code>array</code>, <code>value()</code>-less <code>optional</code>, and similarly partial <code>string_view</code> and <code>bitset</code>.
+This does not prevent us from standardizing a partial class in the future, though it does prevent us from getting usage experience in a conforming implementation.
 </p><p>
-Freestanding implementations may make the use of any non-freestanding function ill-formed (e.g. by marking it <code>=delete</code>, by <code>static_assert</code>ing in a template body, or through a linker error).  The intent is to allow the freestanding implementation to control overload resolution, so that a library that works with a freestanding implementation will have the same semantics in a hosted implementation.
+Freestanding implementations may make the use of any non-freestanding, namespace scoped function or function template ill-formed (e.g. generally by marking it <code>=delete</code>).  The intent is to allow the freestanding implementation to control overload resolution, so that a library that works with a freestanding implementation will have the same semantics in a hosted implementation.
 </p><p>
-Allowing for partial classes gives implementers a great deal of freedom to experiment and to provide extensions.  It also permits abuse by the implementers.  On the positive side, an implementation could provide <code>std::array</code> without <code>at</code>.  This helps replace C facilities with better facilities from C++.  On the negative side, an implementation could <code>=delete</code> the copy constructor.  Removing the wrong functions would also mean that a class may not satisfy the same concepts in hosted vs. freestanding.  The author expects bug reports and market pressures will be sufficient to ensure that nothing too strange is done by implementations.
-</p><p>
-Users will be able to rely on the freestanding portions of the standard library.  The freestanding portions have portable semantics, and are required to be present.  Users may then decide to rely on implementation-defined additions.  WG21 will be able to add hosted entities to the freestanding subset without little fear of breaking implementation-defined additions, because the implementation-defined additions needed to meet the hosted requirements.
+Users will be able to rely on the freestanding portions of the standard library.
+The freestanding portions have portable semantics, and are required to be present.
+Users may then decide to rely on implementation-defined additions.
+WG21 will be able to add hosted entities to the freestanding subset without little fear of breaking implementation-defined additions, because the implementation-defined additions needed to meet the hosted requirements.
 </p>
 <h2>Library feature test macro bump</h2>
 <p>
@@ -423,7 +428,6 @@ The corresponding facilities were either required to be present in C++20, or are
   <li><code>__cpp_lib_atomic_float</code></li>
   <li><code>__cpp_lib_atomic_is_always_lock_free</code></li>
   <li><code>__cpp_lib_atomic_ref</code></li>
-  <li><code>__cpp_lib_atomic_value_initialization</code></li>
   <li><code>__cpp_lib_atomic_value_initialization</code></li>
   <li><code>__cpp_lib_atomic_wait</code></li>
   <li><code>__cpp_lib_bind_front</code></li>
@@ -655,13 +659,14 @@ For this category of features, the recommendation will be to add a new freestand
 
 
 <h2>Rejected alternatives</h2>
-<h3>Don't allow partial classes in conforming vendor extensions to freestanding</h3>
+<h3>Allow partial classes in conforming vendor extensions to freestanding</h3>
 <p>
-Instead of allowing implementers to provide or not provide a facility at function, typedef, and macro granularity, we could only allow implementers to provide facilities at the declaration granularity.  This would mean that if a class is present at all, then it is entirely present.
-</p><p>
-This prevents some useful vendor extensions, notably <code>at()</code>-less <code>array</code>, <code>value()</code>-less <code>optional</code>, and similarly partial <code>string_view</code> and <code>bitset</code>.
-</p><p>
-If we prohibit partial classes, then we wouldn't be able to get conforming user experience with these classes in freestanding implementations.  We would still be able to choose to make these partially freestanding in the standard though.
+Allowing partial classes gives implementers a great deal of freedom to experiment and to provide extensions.
+It also permits abuse by the implementers.
+On the positive side, an implementation could provide <code>std::array</code> without <code>at</code>.
+This helps replace C facilities with better facilities from C++.
+On the negative side, an implementation could <code>=delete</code> the copy constructor.
+Removing the wrong functions would also mean that a class may not satisfy the same concepts in hosted vs. freestanding.
 </p>
 
 <h3>Only update old feature test macros to indicate freestanding status</h3>
@@ -726,9 +731,174 @@ Defining the macro to zero doesn't provide any information beyond what <code>__S
 </p>
 
 <h1>Wording</h1>
-TODO
-<h1>Acknowledgements</h1>
-TODO
+<h2>Additions to <a href="https://wg21.link/compliance">[compliance]</a></h2>
+<p>
+Please append the following paragraphs to <a href="https://wg21.link/compliance">[compliance]</a>.
+<blockquote class="stdins">
+<div class="para">
+    <div class="marginalizedparent"><a class="marginalized">4</a></div>
+    <div class="sentence">The <i>hosted library facilities</i> are the set of facilities described in this document that are required for hosted implementations, but not required for freestanding implementations.</div>
+    <div class="sentence">A freestanding implementation provides a (possibly empty) implementation-defined subset of the hosted library facilities.</div>
+    <div class="sentence">Unless otherwise specified, the requirements on each macro and namespace scoped entity provided in this way shall be the same as the corresponding requirements in a hosted implementation.</div>
+</div>
+<div class="para">
+    <div class="marginalizedparent"><a class="marginalized">5</a></div>
+    <div class="sentence">A freestanding implementation provides <a href="https://eel.is/c++draft/dcl.fct.def.delete#def:deleted_definition">deleted definition</a>s for a (possibly empty) implementation-defined subset of the namespace scoped functions and function templates from the hosted library facilities.</div>
+    <div class="note">[ <span class="textit">Note</span><span class="textit">:</span> An implementation may provide a deleted definition so that overload resolution does not silently change when migrating a library from a freestanding implementation to a hosted implementation. -<i>end note</i>]</div>
+</div>
+</blockquote>
+<h2>Change in <a href="https://wg21.link/version.syn#2">[version.syn]</a></h2>
+<p>
+Please make the following changes to <a href="https://wg21.link/version.syn#2">[version.syn]</a>.  Use the current year-based constant instead of "<i>new-val</i>".
+</p>
+<blockquote class="std"><pre class='codeblock'>
+#define __cpp_lib_addressof_constexpr               <del>201603L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;memory&gt;
+#define __cpp_lib_allocator_traits_is_always_equal  <del>201411L</del><ins><i>new-val</i></ins>
+  // <ins>freestanding, </ins>also in &lt;memory&gt;, &lt;scoped-allocator&gt;, &lt;string&gt;, &lt;deque&gt;, &lt;forward-list&gt;, &lt;list&gt;, &lt;vector&gt;,
+  // &lt;map&gt;, &lt;set&gt;, &lt;unordered-map&gt;, &lt;unordered-set&gt;
+#define __cpp_lib_any                               <del>201606L</del><ins><i>new-val</i></ins> // also in &lt;any&gt;
+#define __cpp_lib_apply                             <del>201603L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;tuple&gt;
+#define __cpp_lib_array_constexpr                   <del>201811L</del><ins><i>new-val</i></ins> // also in &lt;iterator&gt;, &lt;array&gt;
+#define __cpp_lib_as_const                          <del>201510L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;utility&gt;
+#define __cpp_lib_assume_aligned                    <del>201811L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;memory&gt;
+#define __cpp_lib_atomic_flag_test                  <del>201907L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;atomic&gt;
+#define __cpp_lib_atomic_float                      <del>201711L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;atomic&gt;
+#define __cpp_lib_atomic_is_always_lock_free        <del>201603L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;atomic&gt;
+#define __cpp_lib_atomic_lock_free_type_aliases     <del>201907L</del><ins><i>new-val</i></ins> // also in &lt;atomic&gt;
+#define __cpp_lib_atomic_ref                        <del>201806L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;atomic&gt;
+#define __cpp_lib_atomic_shared_ptr                 <del>201711L</del><ins><i>new-val</i></ins> // also in &lt;memory&gt;
+#define __cpp_lib_atomic_value_initialization       <del>201911L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;atomic&gt;, &lt;memory&gt;
+#define __cpp_lib_atomic_wait                       <del>201907L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;atomic&gt;
+#define __cpp_lib_barrier                           <del>201907L</del><ins><i>new-val</i></ins> // also in &lt;barrier&gt;
+#define __cpp_lib_bind_front                        <del>201907L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;functional&gt;
+#define __cpp_lib_bit_cast                          <del>201806L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;bit&gt;
+#define __cpp_lib_bitops                            <del>201907L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;bit&gt;
+#define __cpp_lib_bool_constant                     <del>201505L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_bounded_array_traits              <del>201902L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_boyer_moore_searcher              <del>201603L</del><ins><i>new-val</i></ins> // also in &lt;functional&gt;
+#define __cpp_lib_byte                              <del>201603L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;cstddef&gt;
+#define __cpp_lib_char8_t                           <del>201907L</del><ins><i>new-val</i></ins>
+  // <ins>freestanding, </ins>also in &lt;atomic&gt;, &lt;filesystem&gt;, &lt;istream&gt;, &lt;limits&gt;, &lt;locale&gt;, &lt;ostream&gt;, &lt;string&gt;, &lt;string-view&gt;
+#define __cpp_lib_chrono                            <del>201907L</del><ins><i>new-val</i></ins> // also in &lt;chrono&gt;
+#define __cpp_lib_chrono_udls                       <del>201304L</del><ins><i>new-val</i></ins> // also in &lt;chrono&gt;
+#define __cpp_lib_clamp                             <del>201603L</del><ins><i>new-val</i></ins> // also in &lt;algorithm&gt;
+#define __cpp_lib_complex_udls                      <del>201309L</del><ins><i>new-val</i></ins> // also in &lt;complex&gt;
+#define __cpp_lib_concepts                          <del>202002L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;concepts&gt;
+#define __cpp_lib_constexpr_algorithms              <del>201806L</del><ins><i>new-val</i></ins> // also in &lt;algorithm&gt;
+#define __cpp_lib_constexpr_complex                 <del>201711L</del><ins><i>new-val</i></ins> // also in &lt;complex&gt;
+#define __cpp_lib_constexpr_dynamic_alloc           <del>201907L</del><ins><i>new-val</i></ins> // also in &lt;memory&gt;
+#define __cpp_lib_constexpr_functional              <del>201907L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;functional&gt;
+#define __cpp_lib_constexpr_iterator                <del>201811L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;iterator&gt;
+#define __cpp_lib_constexpr_memory                  <del>201811L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;memory&gt;
+#define __cpp_lib_constexpr_numeric                 <del>201911L</del><ins><i>new-val</i></ins> // also in &lt;numeric&gt;
+#define __cpp_lib_constexpr_string                  <del>201907L</del><ins><i>new-val</i></ins> // also in &lt;string&gt;
+#define __cpp_lib_constexpr_string_view             <del>201811L</del><ins><i>new-val</i></ins> // also in &lt;string-view&gt;
+#define __cpp_lib_constexpr_tuple                   <del>201811L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;tuple&gt;
+#define __cpp_lib_constexpr_utility                 <del>201811L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;utility&gt;
+#define __cpp_lib_constexpr_vector                  <del>201907L</del><ins><i>new-val</i></ins> // also in &lt;vector&gt;
+#define __cpp_lib_coroutine                         <del>201902L</del><ins><i>new-val</i></ins> // also in &lt;coroutine&gt;
+#define __cpp_lib_destroying_delete                 <del>201806L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;new&gt;
+#define __cpp_lib_enable_shared_from_this           <del>201603L</del><ins><i>new-val</i></ins> // also in &lt;memory&gt;
+#define __cpp_lib_endian                            <del>201907L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;bit&gt;
+#define __cpp_lib_erase_if                          <del>202002L</del><ins><i>new-val</i></ins>
+  // also in &lt;string&gt;, &lt;deque&gt;, &lt;forward-list&gt;, &lt;list&gt;, &lt;vector&gt;, &lt;map&gt;, &lt;set&gt;, &lt;unordered-map&gt;,
+  // &lt;unordered-set&gt;
+#define __cpp_lib_exchange_function                 <del>201304L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;utility&gt;
+#define __cpp_lib_execution                         <del>201902L</del><ins><i>new-val</i></ins> // also in &lt;execution&gt;
+#define __cpp_lib_filesystem                        <del>201703L</del><ins><i>new-val</i></ins> // also in &lt;filesystem&gt;
+#define __cpp_lib_format                            <del>201907L</del><ins><i>new-val</i></ins> // also in &lt;format&gt;
+<ins>#define __cpp_lib_freestanding_functional           <i>new-val</i> // freestanding, also in &lt;functional&gt;
+#define __cpp_lib_freestanding_iterator             <i>new-val</i> // freestanding, also in &lt;iterator&gt;
+#define __cpp_lib_freestanding_memory               <i>new-val</i> // freestanding, also in &lt;memory&gt;
+#define __cpp_lib_freestanding_ranges               <i>new-val</i> // freestanding, also in &lt;ranges&gt;
+#define __cpp_lib_freestanding_ratio                <i>new-val</i> // freestanding, also in &lt;ratio&gt;
+#define __cpp_lib_freestanding_tuple                <i>new-val</i> // freestanding, also in &lt;tuple&gt;
+#define __cpp_lib_freestanding_utility              <i>new-val</i> // freestanding, also in &lt;utility&gt;</ins>
+#define __cpp_lib_gcd_lcm                           <del>201606L</del><ins><i>new-val</i></ins> // also in &lt;numeric&gt;
+#define __cpp_lib_generic_associative_lookup        <del>201304L</del><ins><i>new-val</i></ins> // also in &lt;map&gt;, &lt;set&gt;
+#define __cpp_lib_generic_unordered_lookup          <del>201811L</del><ins><i>new-val</i></ins>
+  // also in &lt;unordered-map&gt;, &lt;unordered-set&gt;
+#define __cpp_lib_hardware_interference_size        <del>201703L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;new&gt;
+#define __cpp_lib_has_unique_object_representations <del>201606L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_hypot                             <del>201603L</del><ins><i>new-val</i></ins> // also in &lt;cmath&gt;
+#define __cpp_lib_incomplete_container_elements     <del>201505L</del><ins><i>new-val</i></ins>
+  // also in &lt;forward-list&gt;, &lt;list&gt;, &lt;vector&gt;
+#define __cpp_lib_int_pow2                          <del>202002L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;bit&gt;
+#define __cpp_lib_integer_comparison_functions      <del>202002L</del><ins><i>new-val</i></ins> // also in &lt;utility&gt;
+#define __cpp_lib_integer_sequence                  <del>201304L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;utility&gt;
+#define __cpp_lib_integral_constant_callable        <del>201304L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_interpolate                       <del>201902L</del><ins><i>new-val</i></ins> // also in &lt;cmath&gt;, &lt;numeric&gt;
+#define __cpp_lib_invoke                            <del>201411L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;functional&gt;
+#define __cpp_lib_is_aggregate                      <del>201703L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_is_constant_evaluated             <del>201811L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_is_final                          <del>201402L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_is_invocable                      <del>201703L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_is_layout_compatible              <del>201907L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_is_nothrow_convertible            <del>201806L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_is_null_pointer                   <del>201309L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_is_pointer_interconvertible       <del>201907L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_is_swappable                      <del>201603L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_jthread                           <del>201911L</del><ins><i>new-val</i></ins> // also in &lt;stop-token&gt;, &lt;thread&gt;
+#define __cpp_lib_latch                             <del>201907L</del><ins><i>new-val</i></ins> // also in &lt;latch&gt;
+#define __cpp_lib_launder                           <del>201606L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;new&gt;
+#define __cpp_lib_list_remove_return_type           <del>201806L</del><ins><i>new-val</i></ins> // also in &lt;forward-list&gt;, &lt;list&gt;
+#define __cpp_lib_logical_traits                    <del>201510L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_make_from_tuple                   <del>201606L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;tuple&gt;
+#define __cpp_lib_make_reverse_iterator             <del>201402L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;iterator&gt;
+#define __cpp_lib_make_unique                       <del>201304L</del><ins><i>new-val</i></ins> // also in &lt;memory&gt;
+#define __cpp_lib_map_try_emplace                   <del>201411L</del><ins><i>new-val</i></ins> // also in &lt;map&gt;
+#define __cpp_lib_math_constants                    <del>201907L</del><ins><i>new-val</i></ins> // also in &lt;numbers&gt;
+#define __cpp_lib_math_special_functions            <del>201603L</del><ins><i>new-val</i></ins> // also in &lt;cmath&gt;
+#define __cpp_lib_memory_resource                   <del>201603L</del><ins><i>new-val</i></ins> // also in &lt;memory-resource&gt;
+#define __cpp_lib_node_extract                      <del>201606L</del><ins><i>new-val</i></ins>
+  // also in &lt;map&gt;, &lt;set&gt;, &lt;unordered-map&gt;, &lt;unordered-set&gt;
+#define __cpp_lib_nonmember_container_access        <del>201411L</del><ins><i>new-val</i></ins>
+  // <ins>freestanding, </ins>also in &lt;array&gt;, &lt;deque&gt;, &lt;forward-list&gt;, &lt;iterator&gt;, &lt;list&gt;, &lt;map&gt;, &lt;regex&gt;, &lt;set&gt;, &lt;string&gt;,
+  // &lt;unordered-map&gt;, &lt;unordered-set&gt;, &lt;vector&gt;
+#define __cpp_lib_not_fn                            <del>201603L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;functional&gt;
+#define __cpp_lib_null_iterators                    <del>201304L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;iterator&gt;
+#define __cpp_lib_optional                          <del>201606L</del><ins><i>new-val</i></ins> // also in &lt;optional&gt;
+#define __cpp_lib_parallel_algorithm                <del>201603L</del><ins><i>new-val</i></ins> // also in &lt;algorithm&gt;, &lt;numeric&gt;
+#define __cpp_lib_polymorphic_allocator             <del>201902L</del><ins><i>new-val</i></ins> // also in &lt;memory&gt;
+#define __cpp_lib_quoted_string_io                  <del>201304L</del><ins><i>new-val</i></ins> // also in &lt;iomanip&gt;
+#define __cpp_lib_ranges                            <del>201911L</del><ins><i>new-val</i></ins>
+  // also in &lt;algorithm&gt;, &lt;functional&gt;, &lt;iterator&gt;, &lt;memory&gt;, &lt;ranges&gt;
+#define __cpp_lib_raw_memory_algorithms             <del>201606L</del><ins><i>new-val</i></ins> // also in &lt;memory&gt;
+#define __cpp_lib_remove_cvref                      <del>201711L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_result_of_sfinae                  <del>201210L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;functional&gt;, &lt;type-traits&gt;
+#define __cpp_lib_robust_nonmodifying_seq_ops       <del>201304L</del><ins><i>new-val</i></ins> // also in &lt;algorithm&gt;
+#define __cpp_lib_sample                            <del>201603L</del><ins><i>new-val</i></ins> // also in &lt;algorithm&gt;
+#define __cpp_lib_scoped_lock                       <del>201703L</del><ins><i>new-val</i></ins> // also in &lt;mutex&gt;
+#define __cpp_lib_semaphore                         <del>201907L</del><ins><i>new-val</i></ins> // also in &lt;semaphore&gt;
+#define __cpp_lib_shared_mutex                      <del>201505L</del><ins><i>new-val</i></ins> // also in &lt;shared-mutex&gt;
+#define __cpp_lib_shared_ptr_arrays                 <del>201707L</del><ins><i>new-val</i></ins> // also in &lt;memory&gt;
+#define __cpp_lib_shared_ptr_weak_type              <del>201606L</del><ins><i>new-val</i></ins> // also in &lt;memory&gt;
+#define __cpp_lib_shared_timed_mutex                <del>201402L</del><ins><i>new-val</i></ins> // also in &lt;shared-mutex&gt;
+#define __cpp_lib_shift                             <del>201806L</del><ins><i>new-val</i></ins> // also in &lt;algorithm&gt;
+#define __cpp_lib_smart_ptr_for_overwrite           <del>202002L</del><ins><i>new-val</i></ins> // also in &lt;memory&gt;
+#define __cpp_lib_source_location                   <del>201907L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;source-location&gt;
+#define __cpp_lib_span                              <del>202002L</del><ins><i>new-val</i></ins> // also in &lt;span&gt;
+#define __cpp_lib_ssize                             <del>201902L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;iterator&gt;
+#define __cpp_lib_starts_ends_with                  <del>201711L</del><ins><i>new-val</i></ins> // also in &lt;string&gt;, &lt;string-view&gt;
+#define __cpp_lib_string_udls                       <del>201304L</del><ins><i>new-val</i></ins> // also in &lt;string&gt;
+#define __cpp_lib_string_view                       <del>201803L</del><ins><i>new-val</i></ins> // also in &lt;string&gt;, &lt;string-view&gt;
+#define __cpp_lib_syncbuf                           <del>201803L</del><ins><i>new-val</i></ins> // also in &lt;syncstream&gt;
+#define __cpp_lib_three_way_comparison              <del>201907L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;compare&gt;
+#define __cpp_lib_to_address                        <del>201711L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;memory&gt;
+#define __cpp_lib_to_array                          <del>201907L</del><ins><i>new-val</i></ins> // also in &lt;array&gt;
+#define __cpp_lib_to_chars                          <del>201611L</del><ins><i>new-val</i></ins> // also in &lt;charconv&gt;
+#define __cpp_lib_transformation_trait_aliases      <del>201304L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_transparent_operators             <del>201510L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;memory&gt;, &lt;functional&gt;
+#define __cpp_lib_tuple_element_t                   <del>201402L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;tuple&gt;
+#define __cpp_lib_tuples_by_type                    <del>201304L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;utility&gt;, &lt;tuple&gt;
+#define __cpp_lib_type_identity                     <del>201806L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_type_trait_variable_templates     <del>201510L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_uncaught_exceptions               <del>201411L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;exception&gt;
+#define __cpp_lib_unordered_map_try_emplace         <del>201411L</del><ins><i>new-val</i></ins> // also in &lt;unordered-map&gt;
+#define __cpp_lib_unwrap_ref                        <del>201811L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_variant                           <del>201606L</del><ins><i>new-val</i></ins> // also in &lt;variant&gt;
+#define __cpp_lib_void_t                            <del>201411L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+</pre></blockquote>
 
 </body>
 </html>
