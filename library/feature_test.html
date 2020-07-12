@@ -358,27 +358,27 @@ span.indented {
 }
 </style>
 
-<title>TODO DXXXXR0.0: Freestanding Feature Test Macros and Implementation Defined Extensions</title>
+<title>TODO D2198R0.0: Freestanding Feature-Test Macros and Implementation-Defined Extensions</title>
 <body>
-<h1>Freestanding Feature Test Macros and Implementation Defined Extensions</h1>
-Document number: DXXXXR0.0 TODO<br/>
-Date: 2020-05-24 TODO<br/>
+<h1>Freestanding Feature-Test Macros and Implementation-Defined Extensions</h1>
+Document number: D2198R0.0 TODO<br/>
+Date: 2020-07-12 TODO<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: Library Evolution Working Group
 <h1>Change history</h1>
 <h3> R0 </h3>
 <ul>
   <li>Branching from <a href="https://wg21.link/P1641R3">P1641R3</a> and <a href="https://wg21.link/P1642R3">P1642R3</a>.</li>
-  <li>Freestanding feature test macros now required to be present in hosted.</li>
+  <li>Freestanding feature-test macros now required to be present in hosted.</li>
   <li>Added examples and use cases.</li>
   <li>Elaborating on how an implementation can extend the bare minimum of freestanding.</li>
 </ul>
 <h1>Introduction</h1>
 <p>
 Users of freestanding implementations would like to be able to detect which library facilities are available for use.
-With the C++20 feature test macros, all the feature test macros are required to be defined in both freestanding and hosted implementations, even when the associated hosted facilities are not available.
-This paper will make the presence of feature test macros for hosted facilities implementation defined.
-This paper will also bump the version number on all library feature test macros, so that extensions can be detected.
+With the C++20 feature-test macros, all the feature-test macros are required to be defined in both freestanding and hosted implementations, even when the associated hosted facilities are not available.
+This paper will make the presence of feature-test macros for hosted facilities implementation-defined.
+This paper will also bump the version number on all library feature-test macros, so that extensions can be detected.
 </p><p>
 This paper also clarifies that freestanding implementations need not stop at the bare minimum support for freestanding.
 Freestanding implementations may provide additional facilities from the standard library, so long as those facilities meet the associated hosted requirements.
@@ -388,11 +388,11 @@ Freestanding implementations may provide additional facilities from the standard
 <p>
 This paper grants implementations the freedom to include more than just the facilities that are marked <code>//freestanding</code>.
 There will be platforms where, for example, floating point is both available and frequently used (e.g. GPU environments).
-On those platforms, it is desirable for implementations to provide many of the <code>&lt;cmath&gt;</code> and <code>&lt;complex&gt;</code> facilities.
+On those platforms, it is desirable for implementations to provide many of the facilities in the <code>&lt;cmath&gt;</code> and <code>&lt;complex&gt;</code> headers.
 We must be careful here though, as we don't want to allow divergence of implementation, and we want to be able to add facilities to the required subset of freestanding.
 To permit both vendor extension and future freestanding growth, this paper will require that additionally included facilities must meet the same requirements as for a hosted implementation, with a few exceptions.
 </p><p>
-Freestanding implementations may include additional macros, and namespace scoped entities, beyond what is required in a minimal freestanding implementation.
+Freestanding implementations may include additional macros and namespace scoped entities, beyond what is required in a minimal freestanding implementation.
 A freestanding implementation does not need to provide the entirety of a header.
 If a freestanding implementation supplies an additional class, the entirety of the class must be present and meet all the hosted requirements.
 This prevents some useful vendor extensions, notably <code>at()</code>-less <code>array</code>, <code>value()</code>-less <code>optional</code>, and similarly partial <code>string_view</code> and <code>bitset</code>.
@@ -405,19 +405,20 @@ The freestanding portions have portable semantics, and are required to be presen
 Users may then decide to rely on implementation-defined additions.
 WG21 will be able to add hosted entities to the freestanding subset without little fear of breaking implementation-defined additions, because the implementation-defined additions needed to meet the hosted requirements.
 </p>
-<h2>Library feature test macro bump</h2>
+<h2>Library feature-test macro bump</h2>
 <p>
-C++20 requires that all implementations (freestanding and hosted) define all of the library feature test macros in <code>&lt;version&gt;</code>, even the feature test macros that correspond to facilities not required to be present in freestanding implementations.
-This means that those feature test macros provide misleading results on freestanding implementations.
+C++20 requires that all implementations (freestanding and hosted) define all of the library feature-test macros in the <code>&lt;version&gt;</code> header, even the feature-test macros that correspond to facilities not required to be present in freestanding implementations.
+This means that those feature-test macros provide misleading results on freestanding implementations.
 This isn't just a theoretical problem.
-<a href="https://godbolt.org/z/73YpRJ">Existing implementations</a> are already deploying <code>&lt;version&gt;</code> headers that report support for std::filesystem, std::chrono, and many others, even though those feature test macros indicate support for features that require the support of an operating system.
+<a href="https://godbolt.org/z/73YpRJ">Existing implementations</a> are already deploying <code>&lt;version&gt;</code> headers that report support for <code>std::filesystem</code> facilities, <code>std::chrono</code> facilities, and many others, even though those feature-test macros indicate support for features that require the support of an operating system.
 </p><p>
-In order for users of freestanding implementations to be able to detect extensions of freestanding, the users need a way of distinguishing the C++20 macro requirements from a genuine expression of extension.
+In order for users of freestanding implementations to be able to detect extensions of freestanding, the users need a way of distinguishing the C++20 macro requirements from an accurate expression of extension.
 This paper will bump all library macro versions, so that users can distinguish between these cases.
 </p>
-<h2>Freestanding feature test macros</h2>
+<h2>Freestanding feature-test macros</h2>
 The following macros are now required to be present in freestanding implementations.
-The corresponding facilities were either required to be present in C++20, or are added in P1642.
+The other library feature test macros in the <code>&lt;version&gt;</code> header are not required to be present on freestanding implementations.
+The corresponding facilities were either required to be present in C++20, or are added in <a href="https://wg21.link/P1642">P1642</a>.
 <ul>
   <li><code>__cpp_lib_addressof_constexpr</code></li>
   <li><code>__cpp_lib_allocator_traits_is_always_equal</code></li>
@@ -484,17 +485,17 @@ The corresponding facilities were either required to be present in C++20, or are
   <li><code>__cpp_lib_unwrap_ref</code></li>
   <li><code>__cpp_lib_void_t</code></li>
 </ul>
-<h2>New feature test macros</h2>
+<h2>New feature-test macros</h2>
 <p>
 Users of freestanding implementations will want to know whether including a formerly hosted-only header will work or not.
 Users of freestanding implementations will also what to know if all the facilities that are required to be in freestanding have been made available yet.
-This is only a concern for highly portable libraries, and for users that need to support old and new compilers, but that is the general use case for feature test macros.
+This is a concern for highly portable libraries, and for users that need to support old and new compilers.
 </p><p>
-These feature test macros are provided at a per-header granularity.
-This enables implementations to advertise new capabilities more easily than a single feature test macro for the entirety of this paper.
+These feature-test macros are provided at a per-header granularity.
+This enables implementations to advertise new capabilities more easily than a single feature-test macro for the entirety of this paper.
 This also follows the precedent set by the <code>__cpp_lib_constexpr_*</code> macros.
 </p><p>
-If new, pre-C++20 functionality is added to the freestanding subset of C++, then the respective feature test macro for the header should be bumped.
+If new, pre-C++20 functionality is added to the freestanding subset of C++, then the respective feature-test macro for the header should be bumped.
 If the functionality is new in C++23 or later, then alternative approaches should be taken.
 These alternative approaches are discussed in the examples section.
 </p>
@@ -526,11 +527,12 @@ These alternative approaches are discussed in the examples section.
         <td><code>&lt;ranges&gt;<code></td>
     </tr></tbody>
 </table>
+
 <h2>Partial macro coverage</h2>
 <p>
-The following, existing feature test macros cover some features that I am making freestanding, and some features that I am not requiring to be freestanding.
-These feature test macros won't be required in freestanding, as they could cause substantial confusion when the hosted parts of those features aren't available.
-The header-based <code>__cpp_lib_freestanding_*</code> macros should provide a suitable replacement in freestanding environments.
+The following, existing feature-test macros cover some features that I am making freestanding, and some features that I am not requiring to be freestanding.
+These feature-test macros won't be required in freestanding, as they could cause substantial confusion when the hosted parts of those features aren't available.
+The per-header <code>__cpp_lib_freestanding_*</code> macros should provide a suitable replacement in freestanding environments.
 </p>
 <ul>
   <li><code>__cpp_lib_boyer_moore_searcher</code>: <code>default_searcher</code> is in, other searchers require the heap.</li>
@@ -538,13 +540,24 @@ The header-based <code>__cpp_lib_freestanding_*</code> macros should provide a s
   <li><code>__cpp_lib_ranges</code>: stream iterators are out</li>
   <li><code>__cpp_lib_raw_memory_algorithms</code>: ExecutionPolicy overloads are out</li>
 </ul>
+
+<h2>Feature-test macro policy recommendations</h2>
+<p>
+This paper patches up many of the historical problems with freestanding and feature-test macros.  The following are the guidelines I recommend to keep feature-test macros useful for freestanding in the future.
+</p>
+<ul>
+  <li>If a paper contains some facilities that are freestanding, and some that are hosted, then the paper needs at least two feature test macros.  <code>__cpp_lib_foo</code> will cover the full paper in the hosted case, and <code>__cpp_lib_freestanding_foo</code> will cover the freestanding portions.</li>
+  <li>If a paper adds facilities to the hosted implementation and has a feature-test macro, and a later paper adds the entirety of the paper to freestanding, then bump the version of the original feature-test macro.</li>
+  <li>If a paper adds facilities to the hosted implementation and has a feature-test macro, and a later paper adds a portion of the paper to freestanding, then add a new freestanding macro for the feature, of the form <code>__cpp_lib_freestanding_foo</code>.</li>
+</ul>
+
 <h2>Examples</h2>
 The following feature detection examples should ...
 <ul>
     <li>... work on freestanding, hosted, and with implementation-defined freestanding extensions.</li>
     <li>... work with old standards and new standards.</li>
     <li>... provide a conservative "false" answer when working with an old standard.</li>
-    <li>... not cause warnings with <code>-Wundef</code></li>
+    <li>... not cause warnings for the use of an undefined macro, like with <code>-Wundef</code>.</li>
 </ul>
 
 <h3>Detect C++20 (or older) feature that is not required in freestanding</h3>
@@ -669,29 +682,29 @@ On the negative side, an implementation could <code>=delete</code> the copy cons
 Removing the wrong functions would also mean that a class may not satisfy the same concepts in hosted vs. freestanding.
 </p>
 
-<h3>Only update old feature test macros to indicate freestanding status</h3>
+<h3>Update old feature-test macros to indicate freestanding status</h3>
 <p>
 Rather than have a <code>__cpp_lib_freestanding_ratio</code> (for example), we could instead update <code>__cpp_lib_chrono</code>.
 Users could test the value of <code>__cpp_lib_chrono</code> to determine if it is freestanding safe or not.
 </p><p>
 There are at least two big flaws with this approach.
 </p><p>
-First, not all facilities (particularly older ones) have existing feature test macros to bump (e.g. <code>unique_ptr</code>).
+First, not all facilities (particularly older ones) have existing feature-test macros to bump (e.g. <code>unique_ptr</code>).
 Users would still like to be able to detect the availability of the features in freestanding.
 </p><p>
 Second, implementers don't always implement features in the same order that they are added to the working draft.
-If a new feature were added to <code>&lt;chrono&gt;</code> that necessitated a feature test macro bump, and an implementer addressed that feature before making <code>&lt;ratio&gt;</code> freestanding safe, then the implementer would either need to stick with the pre-freestanding feature test macro version, or provide a misleading feature test macro version.
+If a new feature were added to the <code>&lt;chrono&gt;</code> header that necessitated a feature-test macro bump, and an implementer addressed that feature before making the <code>&lt;ratio&gt;</code> header freestanding safe, then the implementer would either need to stick with the pre-freestanding feature-test macro version, or provide a misleading feature-test macro version.
 
-<h3>Per-freestanding paper feature test macro granularity</h3>
+<h3>Per-freestanding paper feature-test macro granularity</h3>
 <p>
-Rather than introduce a feature test macro per header in this paper, I could instead introduce one feature test macro... perhaps <code>__cpp_lib_freestanding</code>.  Each paper that adds old facilities to freestanding could then introduce it's own macro, or bump the old one.
+Rather than introduce a feature-test macro per header in this paper, I could instead introduce one feature-test macro... perhaps <code>__cpp_lib_freestanding</code>.  Each paper that adds old facilities to freestanding could then introduce it's own macro, or bump the old one.
 </p><p>
 This approach can work, but it restricts the order in which implementers can meaningfully implement freestanding features.  All of the old paper needs to be done before any of the old paper's progress can be advertised.  All of the old paper needs to be done before advertising any newer papers.
 </p>
 
-<h3>Per-facility feature test macro granularity</h3>
+<h3>Per-facility feature-test macro granularity</h3>
 <p>
-This paper could choose to add a feature test macro for <code>__cpp_lib_freestanding_unique_ptr</code>, <code>__cpp_lib_freestanding_pair</code>, and <code>__cpp_lib_freestanding_iterator_categories</code>.  
+This paper could choose to add a feature-test macro for <code>__cpp_lib_freestanding_unique_ptr</code>, <code>__cpp_lib_freestanding_pair</code>, and <code>__cpp_lib_freestanding_iterator_categories</code>.  
 There would be some value to users in that they could express exactly what it is they need, and see if that very specific facility is available.
 </p><p>
 However, this approach is an implementation hassle, and prone to endless wg21 debates on how to partition and name the facilities.
@@ -700,28 +713,28 @@ Grouping facilities by header provides a natural partitioning and naming scheme.
 
 <h3>Rely on <code>__has_include</code></h3>
 <p>
-Some have suggested using <code>__has_include</code> to detect whether <code>&lt;tuple&gt;</code> (for example) is present on a freestanding implementation.
+Some have suggested using <code>__has_include</code> to detect whether the <code>&lt;tuple&gt;</code> header (for example) is usable on a particular freestanding implementation.
 This doesn't work in practice for multiple reasons.
 <p></p>
-The first example is <code>&lt;iterator&gt;</code>.
+The first example is the <code>&lt;iterator&gt;</code> header.
 In older versions of Visual Studio, a user could attempt to <code>#include &lt;iterator&gt;</code>.
-The streaming iterators in the header would result in compiler errors.
-We need feature test macros to indicate whether it is safe to include the header.
+The streaming iterators in the header result in compiler errors.
+We need feature-test macros to indicate whether including the header is well-formed.
 <p></p>
 The second example is headers that do standard versions checks inside.
-The libstdc++ implementation of <code>&lt;ranges&gt;</code> is empty if the language version is less than C++20.
+The libstdc++ implementation of the <code>&lt;ranges&gt;</code> header is mostly empty if the language version is less than C++20.
 <code>__has_include</code> will still report the header as present though.
 </p>
 
-<h3>Don't bump all the library feature test macros</h3>
+<h3>Don't bump all the library feature-test macros</h3>
 <p>
 This makes it even more difficult to detect extensions to freestanding.  <a href="https://godbolt.org/z/73YpRJ">Existing implementations</a> report support for <code>__cpp_lib_filesystem</code> when the <code>-ffreestanding</code> flag is passed, even though it is unlikely that filesystem is supported on such platforms.  The C++20 standard currently requires this behavior.
 </p>
 
 <h3>Make <code>__cpp_lib_freestanding_*</code> macros freestanding only</h3>
 <p>
-This complicates the client feature test code for features that were marked freestanding in their initial papers.
-It doesn't make any of the client feature test code any simpler.
+This complicates the client feature-test code for features that were marked freestanding in their initial papers.
+It doesn't make any of the client feature-test code any simpler.
 It also violates the principle that freestanding should be a subset of hosted.
 </p>
 <h3>Define <code>__cpp_lib_freestanding_*</code> macros to 0 in hosted</h3>
