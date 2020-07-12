@@ -362,13 +362,13 @@ span.indented {
 <body>
 <h1>Freestanding Library: Easy [utilities], [ranges], and [iterators]</h1>
 Document number: D1642R4.0 TODO<br/>
-Date: 2020-05-24 TODO<br/>
+Date: 2020-07-12 TODO<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: Library Evolution Working Group
 <h1>Change history</h1>
 <h3> R4 </h3>
 <ul>
-  <li>Moved feature test macros to PXXXX TODO</li>
+  <li>Moved feature test macros to <a href="https://wg21.link/P2198">P2198</a></li>
   <li>Pulled in wording approach from <a href="https://wg21.link/P1641">P1641</a>.  Abandoning the P1641 paper number</li>
   <li>Adding <code>make_obj_using_allocator</code> and <code>uninitialized_construct_using_allocator</code>.  These do not allocate memory using an allocator, they construct a <code>T</code> while passing along an allocator when possible</li>
   <li>Including additional rationale about the omission of allocating functions</li>
@@ -409,7 +409,7 @@ The <code>&lt;memory&gt;</code> header depends on facilities in <code>&lt;ranges
 </p><p>
 This paper also updates the editorial techniques for declaring facilities as freestanding. This update will make it easier to mark headers as partially freestanding. This wording change will also make it easier to mark in-flight proposals as freestanding, without causing a major blocking point in the standardization process.
 </p><p>
-Changes to the design of feature test macros are discussed in PXXX TODO.  This paper maintains the status quo for feature test macros on freestanding.
+Changes to the design of feature test macros are discussed in <a href="https://wg21.link/P2198">P2198</a>.  This paper maintains the status quo for feature test macros on freestanding.
 </p>
 <h1>Motivation and Design</h1>
 <p>
@@ -474,7 +474,7 @@ The ExecutionPolicy overloads of algorithms are of minimal utility on systems th
 </p>
 <h1>Feature test macros</h1>
 <p>
-Feature test macros are non-trivial for this new design space, and are now discussed in paper PXXX TODO.  For now, the present paper maintains the status quo with regards to the contents of <code>&lt;version&gt;</code>.
+Feature test macros are non-trivial for this new design space, and are now discussed in paper <a href="https://wg21.link/P2198">P2198</a>.  For now, the present paper maintains the status quo with regards to the contents of <code>&lt;version&gt;</code>.
 </p>
 
 <h1>Dependency on <code>optional</code>-like thing in ranges</h1>
