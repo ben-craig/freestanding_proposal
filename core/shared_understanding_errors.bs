@@ -18,8 +18,6 @@ This paper aims to reflect the shared understanding of the authors regarding err
 
 Areas of agreement {#agree}
 ===========
-TODO: maybe retitle and combine with #disagree?  Then just mark up the ones where we disagree?
-
 1. We should continue to discuss error handling and exceptions in order to drive improvements. [[#discuss]]
 1. Large portions of the C++ community build their code with exceptions turned off. [[#eh_off]]
     <br/><br/>
@@ -82,7 +80,8 @@ TODO: maybe retitle and combine with #disagree?  Then just mark up the ones wher
     <br/><br/>
 
 1. Migrating a large code base from one error handling strategy to another is a significant undertaking.
-1. The business value of improving sad-path exception performance is dubious. [[#dubious_business_value]]
+1. Many users do not use exceptions because of exception unsafe code. [[#dubious_business_value]]
+1. The business value for implementers to improve the sad-path exception performance is dubious. [[#dubious_business_value]]
     <br/><br/>
 
 1. [[P0709]] exceptions are an additional form of error handling. [[#n_plus_one]]
@@ -130,7 +129,7 @@ These discussions could result in new facilities in C++, improved quality of too
 
 Exceptions turned off {#eh_off}
 -------------------------------
-The [[SC++F_2018]] and [[SC++F_2019]] results indicate that around half of all developers are not allowed to use exceptions in all projects, and around 20% aren't allowed to use exceptions at all.
+The [[SC++F_2018]], [[SC++F_2019]], and [[SC++F_2020]] results indicate that around half of all developers are not allowed to use exceptions in all projects, and more than 15% aren't allowed to use exceptions at all.
 
 The Standard C++ Foundation surveys are more likely to be answered by enfranchised C++ developers, and as a result have a bias.  Unfortunately, we don't have data to know how it is biased, as it is exceedingly difficult to get data about the "dark matter" programmers.
 
@@ -140,23 +139,17 @@ Room for optimizations {#room_for_optimizations}
 ------------------------------------------------
 There are cases where the compiler could detect certain exception patterns and avoid many of the costs of exception handling.  [[P1676R0]] and [[Glisse2013]] discuss many of these patterns.
 
-[[MoFH4]] discusses optimizations made to the Microsoft Visual Studio 2019 x64 compiler that substantially reduced size overhead, without breaking ABI.
+[[MoFH4]] discusses optimizations made to the Microsoft Visual Studio 2019 x86_64 compiler that substantially reduced size overhead, without breaking ABI.
 
 Error propagation {#error_prop}
 -------------------------------
-TODO: ensure that all these points are well supported
-1. Manual error propagation requires a lot of mistake-prone boilerplate. [[#error_prop]]
-1. Forgetting to test for an error code is a common source of bugs. [[#error_prop]]
-1. Automatic error propagation adds invisible control flow that can be easy to overlook. [[#error_prop]]
-1. Forgetting to account for a propagating exception is a common source of bugs. [[#error_prop]]
-1. #SUBJECTIVE# Automatic error propagation is preferable. [[#error_prop]]
-1. RAII is an enormous boon to error handling in general. [[#error_prop]]
-
 Programs based on error codes are usually littered with statements of the form `if(FAILED(err)) {return err;}`.  Programs based on error codes where the error code is the return value also have boilerplate where they need to declare out-parameters in advance of a function call, and even more boilerplate when results of functions need to be composed.
 
 Error codes can be accidentally ignored.  Doing "the right thing" requires the programmer to write additional code in order to avoid "the wrong thing".  `[[nodiscard]]` substantially improves this situation.
 
 [[Cargill1994]] covers many pitfalls of forgotten exceptions, especially those involved when calling functions associated with template argument types (e.g. potentially throwing copy constructors).  The techniques and idioms available in 2020 are significantly more advanced than those that were well known in 1994, but the problems mentioned in the article still exist today.
+
+Whether using error codes or exceptions, RAII makes code substantially more mistake-resistant.  Success paths, error paths, early returns, and exceptions can all be handled through the same mechanism.
 
 Real-time environments {#real_time}
 ----------------------------------
@@ -168,7 +161,7 @@ Microcontroller environments {#microcontrollers}
 -----------------------------------
 Microcontrollers are notoriously space constrained.  These systems can range from having megabytes of RAM and ROM to having bytes of ROM and only registers for mutable state.  Increasing the amount of storage available on microcontrollers is often a complicated affair.  The next larger offering will often take more physical space, consume more power, and have a different pin-out.  A larger part almost certainly costs more, cutting into profit margins.
 
-Table based exceptions have a large one-time cost for the exception handling machinery [[P1640R1]].  In some systems, this one-time cost exceeds the entire space budget of the program.  The incremental cost for table-based exceptions is larger than that of integer error codes, so at no point do you "break even".  Even if the incremental costs were smaller, it is unlikely that a microcontroller based program would be capable of growing large enough to gain the benefit, without going over the size budget.
+Table-based exceptions have a large one-time cost for the exception handling machinery [[P1640R1]].  In some systems, this one-time cost exceeds the entire space budget of the program.  The incremental cost for table-based exceptions is larger than that of integer error codes, so at no point do you "break even".  Even if the incremental costs were smaller, it is unlikely that a microcontroller based program would be capable of growing large enough to gain the benefit, without going over the size budget.
 
 Kernel environments {#kernel}
 -----------------------------
@@ -200,7 +193,7 @@ If the operating environment and the toolchain do not have a working, vendor sup
 
 GPU and accelerator environments {#gpus}
 -----------------------------
-TODO: Get Olivier to review this.  Replace convergent with the right term.
+TODO: Get Olivier to review this. 
 
 Flow-control based error handling is challenging on GPUs because it causes divergent code flow, and can inhibit the most valuable optimization in that domain.  I define flow-control based error handling as any error handling that changes the main sequence of instructions executed.  This covers exception-based programming models, error code based programming models, and even things like `expected`.  Tools like floating-point NaN propagation are an alternate, but unpopular way to propagate errors in a way that doesn't suffer from divergent control flow.
 
@@ -241,7 +234,18 @@ Table-based exceptions provide such a trade-off.  Extraordinary effort is taken 
 
 Other implementation approaches to exceptions {#other_approaches}
 ---------------------------------------------------
-TODO: [[Renwick2019]]
+There are two major strategies to implementing standards conforming C++ exceptions: [=table-based exceptions=] and [=frame-tracking exceptions=].  There are multiple implementations and ABIs of each of these strategies in use today:
+* Table-based exceptions
+** GCC, Clang, and Intel implementations using the Itanium ABI [[ItaniumEHABI]], notably on x86_64
+** GCC and Clang implementations using the EHABI, notably on some ARM platforms
+** Four different iterations of exceptions on Visual Studio x86_64
+* Frame-tracking
+** Various implementations of "SLJL" exceptions (setjmp / longjmp), most commonly used on mingw32
+** Three iterations of exceptions on Visual Studio x86
+
+In general, the market has converged on table-based exceptions, and the remaining frame-tracking implementations exist largely for compatibility reasons.  The dominant voices in the C++ community and market prefer the inherent trade offs of table-based exceptions to those of frame-tracking.  Frame-tracking looks really bad when comparing Visual Studio's x86 implementation (frame-tracking) to Visual Studio's x86_64 implementation (table-based).  [[P1886R0]] Shows the x86_64 implementation having faster happy path and sad path execution times.  [[P1640R1]] show higher incremental error-neutral and error handling space costs for the x86 implementation.
+
+However, there are other approaches to frame tracking.  [[Renwick2019]] discusses a frame-tracking implementation that performs orders of magnitude better than table-based exceptions in the sad path, while having very similar performance on the happy path.  The implementation is also able to avoid pulling in heavy-weight runtime support.  The improved sad path execution time is ideal for systems that are concerned about worst case execution time.
 
 Exception handling allocation {#eh_alloc}
 ----------------------------------------
@@ -259,9 +263,16 @@ If the implementation is restricted to a single thread, then a global can be use
 
 None of the major desktop operating systems on the market today support arbitrary thread local storage in the kernel (Windows, Linux, OSX, BSD).  All have a thread ID available though, so inefficient `thread_local` storage could be implemented.  In the embedded space, most of the off-the-shelf RTOS's do not support the `thread_local` keyword, and do not implement the OS side of the complicated hand shake that the compilers, linkers, and runtimes expect.  Embedded RTOS's usually do have thread IDs available, and they also frequently support adding particular items to thread local storage, such as `errno`.
 
-Dubious business value {#dubious_business_value}
+Are fast exceptions important enough? {#dubious_business_value}
 ----------------------------------------------
-TODO: improve the title
+1. Many users do not use exceptions because of exception unsafe code. [[#dubious_business_value]]
+1. The business value for implementers to improve the sad-path exception performance is dubious. [[#dubious_business_value]]
+
+Suppose implementers research ways to make their C++ exception implementation faster on the sad path, and suppose they wildly succeed.  Somehow, the implementers produced an implementation that has the same happy path characteristics as today's implementations, but is only twice as slow as error codes on the sad path, rather than more than 100 times slower [[P1886R0]]. According to [[SC++F_2020]], this would, at best, allow 25% of current non-exception users to start using exceptions.  The other non-users of exceptions are blocked on other reasons.  Some of the users are based on technical reasons, like space overhead.  Others are non-users for more philosophical reasons, such as a dislike of invisible propagation.
+
+When an implementer works on any feature, including exceptions, there is an opportunity cost.  Is working on exceptions more valuable than squeezing half a percent more throughput out of the automatic vectorizer?  Is it more valuable than adding another warning to the front end?  One way that implementers gauge how important a change is is by looking at quantity of bug reports.  A search for "exception slow" on the GCC bug tracker has 21 hits, but only 2 of those (bugs [92823](https://gcc.gnu.org/bugzilla/show_bug.cgi?id=92823) and [68606](https://gcc.gnu.org/bugzilla/show_bug.cgi?id=68606) )  are really C++ exception handling related.  On the LLVM bug tracker, there are 18 hits, but again, only 2 for C++ exception handling (bugs [1916](https://bugs.llvm.org/show_bug.cgi?id=1916) and [17467](https://bugs.llvm.org/show_bug.cgi?id=17467) ) .  Users have been trained to not put exceptions in performance critical areas, so users rarely complain about exception performance because there aren't exceptions in their performance critical areas.
+
+Now, suppose that wg21 does something to exceptions to make them more appealing to users that do not currently use exceptions.  Would we end up compromising the design of C++ to try to satisfy a group of developers that won't every be satisfied?  How many developers do we need to migrate to consider our efforts a success?
 
 The N+1 problem {#n_plus_one}
 ----------------------------
@@ -337,7 +348,9 @@ Definitions {#definitions}
 
 <dfn>Program-recoverable</dfn> The ability to recover from a failure or error without terminating the program.  Note that there exist systems of programs where recovery of the system involves terminating and restarting constituent programs.  Errors and failures leading to this kind of termination and restarting are not program-recoverable.
 
-<dfn>Table-based exceptions</dfn> An implementation strategy for exceptions where the program counter is used as an index into a table of exception unwinding actions.
+<dfn>Table-based exceptions</dfn> An implementation strategy for exceptions where the program counter is used as an index into a table of exception unwinding actions.  Table-based exceptions typically have very low (possibly zero) time overhead on the happy path, at the cost of very slow sad path execution.
+
+<dfn>Frame-tracking exceptions</dfn> An implementation strategy for exceptions where book-keeping information is tracked during normal program execution, so that it can be provided and used during exception unwinding.  Frame-tracking exceptions have some unavoidable time overhead on the happy path, with the benefit of potentially faster sad paths, as well as more straightforward implementations.
 
 Acknowledgments {#ack}
 ======================
@@ -401,7 +414,7 @@ Acknowledgments {#ack}
     "Renwick2019": {
         "authors": ["James Renwick", "Tom Spink", "Björn Franke"],
         "title": "Low-cost deterministic C++ exceptions for embedded systems",
-        "href": "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.100.7504"
+        "href": "https://www.research.ed.ac.uk/portal/en/publications/lowcost-deterministic-c-exceptions-for-embedded-systems(2cfc59d5-fa95-45e0-83b2-46e51098cf1f).html"
     },
     "Cargill1994": {
         "authors": ["Tom Cargill"],
@@ -431,6 +444,11 @@ Acknowledgments {#ack}
         "authors": ["Standard C++ Foundation"],
         "title": "Results summary: 2019 Global Developer Survey 'Lite'",
         "href": "https://isocpp.org/blog/2019/05/results-summary-2019-global-developer-survey-lite"
+    },
+    "SC++F_2020": {
+        "authors": ["Standard C++ Foundation"],
+        "title": "Results summary: 2020 Global Developer Survey 'Lite'",
+        "href": "https://isocpp.org/files/papers/CppDevSurvey-2020-04-summary.pdf"
     },
     "DE1994": {
         "authors": ["Bjarne Stroustrup"],
