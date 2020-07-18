@@ -221,8 +221,10 @@ There are non-interactive simulation and modeling applications (e.g. high-perfor
 
 Throughput applications {#throughput_apps}
 -----------------------------------------
-1. Table-based exceptions are well suited to throughput-oriented applications where failure is rare and can be modeled with a random (i.e. non-correlated) process. [[#throughput_apps]]
-In some applications, failure is rare and random.
+TODO: anyone have a better "errors are random" example than dropped network packets?
+In some applications, failure is rare and largely random.  Suppose you have an application that is sending terabytes of information over an unreliable network.  Suppose that over a long enough time period, only 1 in 100,000 packets are dropped.  In such an application, momentary failure is expected to happen on occasion, but success is by far the most common case.  In such an application, table-based exceptions could provide better throughput than error codes, despite the fact that the sad-path for table-based exceptions is so slow.
+
+Note that there are substantial caveats to the suitability of table-based exceptions in this path.  The failures need to be safely model-able as random and uniform over realistic application run times.  This is a dubious claim for the networking example above.  In real networks, packet loss isn't entirely random.  If packet X was dropped, packet X+1 is substantially more likely to be dropped than a packet chosen at random.  This clustering of errors may cause a cascading series of failures that a single random dropped packet would not cause.  Packet loss can also be directly instigated by a malicious actor.  An attacker could leverage the performance difference in the sad path vs. the happy path could lead to perform a denial-of-service attack.
 
 Performance as a competitive advantage {#cant_go_fast_enough}
 -------------------------------------------------------------
@@ -236,12 +238,12 @@ Other implementation approaches to exceptions {#other_approaches}
 ---------------------------------------------------
 There are two major strategies to implementing standards conforming C++ exceptions: [=table-based exceptions=] and [=frame-tracking exceptions=].  There are multiple implementations and ABIs of each of these strategies in use today:
 * Table-based exceptions
-** GCC, Clang, and Intel implementations using the Itanium ABI [[ItaniumEHABI]], notably on x86_64
-** GCC and Clang implementations using the EHABI, notably on some ARM platforms
-** Four different iterations of exceptions on Visual Studio x86_64
+    * GCC, Clang, and Intel implementations using the Itanium ABI [[ItaniumEHABI]], notably on x86_64
+    * GCC and Clang implementations using the EHABI, notably on some ARM platforms
+    * Four different iterations of exceptions on Visual Studio x86_64
 * Frame-tracking
-** Various implementations of "SLJL" exceptions (setjmp / longjmp), most commonly used on mingw32
-** Three iterations of exceptions on Visual Studio x86
+    * Various implementations of "SJLJ" exceptions (setjmp / longjmp), most commonly used on mingw32
+    * Three iterations of exceptions on Visual Studio x86
 
 In general, the market has converged on table-based exceptions, and the remaining frame-tracking implementations exist largely for compatibility reasons.  The dominant voices in the C++ community and market prefer the inherent trade offs of table-based exceptions to those of frame-tracking.  Frame-tracking looks really bad when comparing Visual Studio's x86 implementation (frame-tracking) to Visual Studio's x86_64 implementation (table-based).  [[P1886R0]] Shows the x86_64 implementation having faster happy path and sad path execution times.  [[P1640R1]] show higher incremental error-neutral and error handling space costs for the x86 implementation.
 
@@ -291,10 +293,12 @@ Local vs. global tradeoffs with error handling {#global_decision}
 There are cases where there are different needs for error handling performance within the same program, translation unit, or even function.  Users cannot make a local decision on whether exceptions prefer "happy path" performance or worst-case-execution-time performance.  Users can make local choices as to whether to use exceptions or not, with the assumption that exceptions prefer "happy path" performance.  Choosing something other than exceptions will often lead to impoverished syntax.
 
 Imagine a server application that can normally handle 10,000 concurrent clients.  It has a function that looks up a trusted string using an integer key from an untrusted source.  During normal usage with no malicious users, the untrusted ID will always correspond to an item in the map.  A malicious user can trivially choose a number that is not in the map.  A naive implementation may look like this:
-```const std::map<int, std::string> global_map = { /*elements*/ };
+```
+const std::map<int, std::string> global_map = { /*elements*/ };
 std::string get_name(int untrusted_id) {
     return global_map.at(untrusted_id);
-}```
+}
+```
 There are two main points of failure in get_name.  The lookup could fail, or the copy construction of `std::string` could fail.
 
 Since these strings are known at compile time, it would be reasonable to assume that they are of a relatively small size (i.e. not megabytes or larger), and therefore, the copy construction of the string will almost never fail.  Table-based exceptions seem reasonable as a way to handle the potential `std::string` failures.  
@@ -302,12 +306,14 @@ Since these strings are known at compile time, it would be reasonable to assume 
 The lookup failure is more problematic.  Failure to find the item will trigger an exception.  Semantically, an exception is a reasonable thing to do here, as this is an error path.  Syntactically, an exception is reasonable, as now the calling code doesn't need to worry about whether the return value exists or not.  However, if the underlying implementation is a table-based exception implementation, then this exception will consume a large amount of CPU, and such CPU usage can be used as part of a denial-of-service attack.  The server that could normally handle 10,000 concurrent clients may now only be able to deal with 5,000 malicious requests.
 
 An alternative implementation may use `std::optional` to represent a possible failure:
-```std::optional<std::string> get_opt_name(int untrusted_id) {
+```
+std::optional<std::string> get_opt_name(int untrusted_id) {
     auto it = global_map.find(untrusted_id);
     if(it == global_map.end())
         return {};
     return it->second;
-}```
+}
+```
 This code has similar performance for both successful and failed lookups, which is desirable.  However, it takes more code to express this, and the usage of this function is also more complicated. `auto name = get_opt_name(id); name->c_str();` compiles, but invokes undefined behavior if the item isn't present.  We have gained performance, but lost notational convenience.  Currently, if users want portable worst-case-execution-time performance, they lose notational convenience.  There is no way to portably express that a program should prefer "happy path" execution time in its error handling code.
 
 Exception handling overhead is difficult to avoid {#using_is_easy}
@@ -323,14 +329,16 @@ TODO: Get this section reviewed by full time static analyzer folks.  Aaron Ballm
 There is a spectrum of difficulty in dealing with the various error handling schemes, with integer error codes on one side, and dynamically-typed exceptions on the other.  Error codes with dynamic aspects and statically-typed exceptions (i.e. throwing and catching a non-polymorphic type) lie somewhere in between these two extremes.
 
 Static analyzers routinely analyze code like the following:
-```int compute_velocity(const point_container &points);
+```
+int compute_velocity(const point_container &points);
 int fetch_speed(const simulation_parameters *params) {
 	point_container points = params->points;
 	int vel = compute_velocity(points);
 	if(vel < 0)
 		return -vel;
 	return vel;
-}```
+}
+```
 Static analyzer's can reason about the cases where `vel` is positive or negative.  They can deal with multiple return statements in the same function.  They can deal with destructors.
 
 Programs using integer error codes will have very similar branching structures.  In these programs, the reasoning needed for high quality diagnostics, stack usage, or worst case execution time is the same for both the happy path and the sad path.
