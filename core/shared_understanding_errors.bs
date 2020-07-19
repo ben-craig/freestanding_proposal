@@ -18,30 +18,46 @@ This paper aims to reflect the shared understanding of the authors regarding err
 
 Areas of agreement {#agree}
 ===========
+Big picture {#big_picture}
+--------------------------
 1. We should continue to discuss error handling and exceptions in order to drive improvements. [[#discuss]]
 1. Large portions of the C++ community build their code with exceptions turned off. [[#eh_off]]
-    <br/><br/>
 
+Exception and error code performance comparisons {#perf_cmp}
+--------------------------
 1. [=Table-based exceptions=] have the fastest known [=happy path=] performance among [=program-recoverable=] error handling strategies. [[P1886R0]]
 1. [=Sad path=] performance of exceptions is more than 100x worse than happy path performance on table-based exception implementations. [[P1886R0]]
 1. Error codes perform worse than table-based exceptions on the happy path. [[P1886R0]]
 1. Error codes perform better than table-based exceptions on the sad path. [[P1886R0]]
 1. Table-based exceptions have higher space overhead than error codes. [[P1640R1]]
-1. P0709 exceptions and `expected` are likely to have performance characteristics similar to error codes.
+1. [[P0709]] exceptions and `expected` are likely to have performance characteristics similar to error codes.
 1. Mainstream implementations of table-based exceptions have room for optimization. [[#room_for_optimizations]]
+1. There are other exception implementation approaches that may address the challenges with table-based exceptions, or at least provide a different set of trade offs.  [[#other_approaches]]
 1. Platform ABIs place substantial constraints on how much exceptions can change. [[ItaniumEHABI]]
 1. The performance gap between happy and sad path exception performance has widened over time because of lack of development on the sad path. [[P1947R0]]
-1. Exception syntax works well with constructors and operators.
-1. Error code syntax does not work well with constructors and operators.
-    <br/><br/>
+1. The performance characteristics of exceptions are a program-global decision made by the toolchain implementer. [[#global_decision]]
+1. Developers may want different performance characteristics for error handling in different parts of the program. [[#global_decision]]
 
+Avoiding overhead {#avoiding_overhead}
+--------------------
+1. You shouldn't pay for what you don't use. [[DE1994]]
+1. Callers of `expected<void, std::errc> f1() noexcept;` are using `expected`, and pay the associated costs of `expected`.
+1. Callers of `std::errc f2() noexcept;` are using error codes, and pay the associated costs of error codes.
+1. Callers of `void f3();` are using exceptions, and pay the associated costs of exceptions. [[#using_is_easy]]
+1. A program can use exceptions (and therefore pay for them) even when it doesn't have `try`, `catch`, or `throw` in the program. [[#using_is_easy]]
+
+Error terminates {#terminates}
+--------------------------
 1. Error terminates are not suitable for program-recoverable error handling.
 1. Error terminates are useful as the primary error handling mechanism in many applications.
 1. Error terminates are as fast or faster than table-based exceptions. [[P1886R0]]
 1. Error terminates are smaller than table-based exceptions. [[P1640R1]]
 1. In general, exception support adds non-zero overhead to programs that only need error terminates. [[P1640R1]]
-    <br/><br/>
 
+Error propagation usability {#error_prop_usability}
+--------------------------
+1. Exception syntax works well with constructors and operators.
+1. Error code syntax does not work well with constructors and operators.
 1. Manual error propagation requires a lot of mistake-prone boilerplate. [[#error_prop]]
 1. Forgetting to test for an error code is a common source of bugs. [[#error_prop]]
 1. Automatic error propagation adds invisible control flow that can be easy to overlook. [[#error_prop]]
@@ -50,13 +66,17 @@ Areas of agreement {#agree}
 1. RAII is an enormous boon to error handling in general. [[#error_prop]]
 1. Code that does not use RAII is exceedingly difficult to port to exceptions.
 1. The visibility of error handling is a polarizing topic in the C++ community.
-    <br/><br/>
+1. Dual error interface libraries are not ideal (e.g. `std::filesystem`).
+1. Authors of an API do not always know whether a failure is expected, common, or program-recoverable.
 
+Real-time cases {#real_time_summary}
+--------------------------
 1. Table-based exceptions are challenging to use during operations with hard deadlines (i.e. real-time operations). [[#real_time]]
 1. Table-based exceptions are well suited to the no-deadline portions of real-time applications. [[#real_time]]
 1. In some code paths, a 20% reduction in happy path performance is acceptable if it results in a 100x improvement in sad path performance.  [[#real_time]]
-    <br/><br/>
 
+Application domains {#application_domains}
+--------------------------
 1. `try`, `catch` and `throw` are not supported in the context of a signal. [support.signal](http://eel.is/c++draft/support.signal)
 1. Table-based exceptions are challenging on microcontrollers due to tight space constraints. [[#microcontrollers]]
 1. Implementing full C++ exception support in mainstream operating system kernel environments is either challenging, or impossible, without modifying the operating system kernel itself. [[#kernel]]
@@ -68,52 +88,39 @@ Areas of agreement {#agree}
 1. Table-based exceptions are well suited to throughput-oriented applications where failure is rare and can be modeled with a random (i.e. non-correlated) process. [[#throughput_apps]]
 1. Table-based exceptions are well suited to applications where all speed improvements on the happy path provide value. [[#cant_go_fast_enough]]
 1. Flow-control based error handling is challenging on GPUs because it causes divergent code flow, and can inhibit the most valuable optimization in that domain. [[#gpus]]
-    <br/><br/>
 
-1. There are other exception implementation approaches that may address the challenges with table-based exceptions, or at least provide a different set of trade offs.  [[#other_approaches]]
-    <br/><br/>
-
+Exception allocations {#eh_alloc_summary}
+--------------------------
 1. Throwing an exception requires a dynamic allocation. [[#eh_alloc]]
 1. It is challenging to support heap allocations for exception objects in kernel, microcontroller, bare-metal, and FPGA environments. [[#eh_alloc]]
 1. It is challenging to support stack allocations for exception objects in kernel, microcontroller, bare-metal, and FPGA environments, due to limited stack space. [[#eh_alloc]]
 1. Exceptions require out-of-band mutable storage that is local to a thread (though not necessarily <i>thread-local-storage</i>). [[#tls]]
-    <br/><br/>
 
+Switching error mechanisms {#error_mechanisms}
+--------------------------
 1. Migrating a large code base from one error handling strategy to another is a significant undertaking.
 1. Many users do not use exceptions because of exception unsafe code. [[#dubious_business_value]]
-1. The business value for implementers to improve the sad-path exception performance is dubious. [[#dubious_business_value]]
-    <br/><br/>
+1. The business value for implementers to improve the sad path exception performance is dubious. [[#dubious_business_value]]
 
+N+1 summary {#n_plus_one_summary}
+--------------------------
 1. [[P0709]] exceptions are an additional form of error handling. [[#n_plus_one]]
 1. [[P0323]] `expected` is an additional form of error handling. [[#n_plus_one]]
-1. If P0709 exceptions and / or `expected` are standardized, all prior error handling mechanisms will still be seen in the wild for decades to come. [[#n_plus_one]]
+1. If [[P0709]] exceptions and / or `expected` are standardized, all prior error handling mechanisms will still be seen in the wild for decades to come. [[#n_plus_one]]
 1. Users routinely write code that translates between different error handling schemes. [[#n_plus_one]]
 1. Translating between different error handling schemes usually requires error prone boilerplate. [[#n_plus_one]]
 1. A new error mechanism may replace one or more old mechanisms in teaching materials.  [[#n_plus_one]]
 1. A new error mechanism may replace one or more old mechanisms in new code bases.  [[#n_plus_one]]
-    <br/><br/>
 
+Carrying arbitrary information {#arb_info}
+--------------------------
 1. Exceptions allow the transportation of arbitrary error information from a callback, through the invoker.
 1. Error codes can be constructed that allow the transportation of arbitrary error information from a callback, through the invoker (e.g. a std::pair<int, std::any>).
-    <br/><br/>
-
-1. The performance characteristics of exceptions are a program-global decision made by the toolchain implementer. [[#global_decision]]
-1. Developers may want different performance characteristics for error handling in different parts of the program. [[#global_decision]]
-
 1. Error codes, in the general case, cannot be used to propagate error information across code that is unaware of error codes.
 1. Exceptions, in the general case, cannot be used to propagate error information across code that is unaware of C++ exceptions.
-    <br/><br/>
 
-1. You shouldn't pay for what you don't use. [[DE1994]]
-1. Callers of `expected<void, std::errc> f1() noexcept;` are using `expected`, and pay the associated costs of `expected`.
-1. Callers of `std::errc f2() noexcept;` are using error codes, and pay the associated costs of error codes.
-1. Callers of `void f3();` are using exceptions, and pay the associated costs of exceptions. [[#using_is_easy]]
-1. A program can use exceptions (and therefore pay for them) even when it doesn't have try, catch, or throw in the program. [[#using_is_easy]]
-    <br/><br/>
-
-1. Dual error interface libraries are not ideal (e.g. `std::filesystem`).
-1. Authors of an API do not always know whether a failure is expected, common, or program-recoverable.
-
+Tooling {#tooling}
+------------------
 1. The sad path of integer error code based programs is roughly as analyzable as the happy path. [[#sad_path_analysis]]
 1. The sad path of dynamically-typed exception based programs is much harder to analyze than the happy path. [[#sad_path_analysis]]
 
@@ -153,7 +160,7 @@ Whether using error codes or exceptions, RAII makes code substantially more mist
 
 Real-time environments {#real_time}
 ----------------------------------
-In real-time environments, the worst case execution time (WCET) in certain code paths must be below a certain threshold for a system to be correct.  The thresholds are often on the order of hundreds of microseconds.  Modern table-based exception implementations take multiple microseconds to throw an exception on the "sad path" in the best of cases, while taking nanoseconds to run in the "happy path" [[P1886R0]].  This wide disparity in execution times makes WCET budgeting difficult.  For WCET purposes, developers need to minimize the maximum runtime, and that usually means choosing something besides table-based exceptions.  Modern table-based exception implementations will often allocate memory, and this can reduce the level of determinism in the timings.
+In real-time environments, the worst case execution time (WCET) in certain code paths must be below a certain threshold for a system to be correct.  The thresholds are often on the order of hundreds of microseconds.  Modern table-based exception implementations take multiple microseconds to throw an exception on the sad path in the best of cases, while taking nanoseconds to run in the happy path [[P1886R0]].  This wide disparity in execution times makes WCET budgeting difficult.  For WCET purposes, developers need to minimize the maximum runtime, and that usually means choosing something besides table-based exceptions.  Modern table-based exception implementations will often allocate memory, and this can reduce the level of determinism in the timings.
 
 Not every code path in a real-time environment needs to track WCET.  In many environments, there will be low priority tasks that do not have hard deadlines.  In these code paths, table-based exceptions are fine.
 
@@ -165,7 +172,7 @@ Table-based exceptions have a large one-time cost for the exception handling mac
 
 Kernel environments {#kernel}
 -----------------------------
-Some aspects of exception handling require storage that is local to a thread [[#tls]].  Microsoft Windows, Linux, Apple OSX, and the various BSDs do not implement arbitrary TLS that is exposed to driver developers.  This means that implementing these aspects of exception handling require one of the following tactics:
+Some aspects of exception handling require storage that is local to a thread ([[#tls]]).  Microsoft Windows, Linux, Apple OSX, and the various BSDs do not implement arbitrary TLS that is exposed to driver developers.  This means that implementing these aspects of exception handling require one of the following tactics:
 1. Modify the operating system.
 2. Implement a form of TLS that is compatible with the OS, but doesn't require modifying the OS.
 
@@ -183,9 +190,9 @@ Bare metal environments {#baremetal}
 ------------------------------------
 Note: Bare metal environments are often associated with real-time applications and microcontrollers.  While this is often the case, bare metal challenges are also an issue for the early stages of a server, desktop, or mobile OS boot process.  These environments have ample RAM and storage space, and often have multiple hardware threads available.
 
-Some aspects of table-based exception handling require storage that is local to a thread [[#tls]].  Compilers and library runtimes typically implement this in terms of thread local storage.  Thread local storage is traditionally an operating system facility.  Implementing thread local storage requires agreement between the operating environment, the compiler, the linker, and the runtime.  Each of these pieces may be implemented by different vendors.
+Some aspects of table-based exception handling require storage that is local to a thread ([[#tls]]).  Compilers and library runtimes typically implement this in terms of thread local storage.  Thread local storage is traditionally an operating system facility.  Implementing thread local storage requires agreement between the operating environment, the compiler, the linker, and the runtime.  Each of these pieces may be implemented by different vendors.
 
-The allocation of the exception object can be an issue in bare metal environments.  [[#eh_alloc]]
+The allocation of the exception object can be an issue in bare metal environments ([[#eh_alloc]]).
 
 None of these technical concerns are an issue for error codes.
 
@@ -203,11 +210,13 @@ By default, in C++, every function has the potential to throw and introduce an e
 
 Direct FPGA environments {#fpgas}
 -----------------------------
+TODO: Get Ronan Keryell to review this
+
 I use the term "direct FPGA" to mean that C++ code is synthesized into a netlist.  This is in opposition to use cases that have a CPU or microcontroller programmed into the FPGA fabric, with a program running on the CPU or microcontroller.
 
 Many constructs in C and C++ can be converted into an electronic circuit in a straightforward way.  Indirect calls, through function pointers, virtual calls, and table-based stack unwinding, are all challenges.  One does not simply "jump" from one portion of an FPGA to another portion of the FPGA that has the logic that needs to run.  Tackling this challenge is an ongoing area of research.
 
-FPGAs are heavily space constrained, similar to microcontrollers [[#microcontrollers]].  Code size is even more constrained though, as code goes into FPGA gates, and FPGA gates are significantly more expensive than RAM.
+FPGAs are heavily space constrained, similar to microcontrollers ([[#microcontrollers]]).  Code size is even more constrained though, as code goes into FPGA gates, and FPGA gates are significantly more expensive than RAM.
 
 Non-critical failure performance {#unnoticed_fail}
 -------------------------------------
@@ -215,22 +224,23 @@ There are a great many applications where the performance on the failure path is
 
 In many interactive applications, a user interaction will often cause some operation to take place, and if that operation fails, then a dialog, or some other kind of user interaction is shown (e.g. opening a document of some kind).  The value of the program is the same whether the dialog shows up in 1 millisecond or 50 milliseconds.
 
-There are non-interactive applications that care a great deal about latency on the success path [[#cant_go_fast_enough]], but don't care about performance on the failure path.  In the failure cases, no transaction needs to happen, so it is acceptable to take a longer amount of time, so long as the latency of the next success path operation is unaffected.
+There are non-interactive applications that care a great deal about latency on the success path ([[#cant_go_fast_enough]]), but don't care about performance on the failure path.  In the failure cases, no transaction needs to happen, so it is acceptable to take a longer amount of time, so long as the latency of the next success path operation is unaffected.
 
 There are non-interactive simulation and modeling applications (e.g. high-performance computing) where no exceptions happen during a successful simulation, and an exception is only thrown during an unsuccessful run.  When these exceptions happen, it normally indicates some kind of failure that requires human intervention, like adjusting the starting parameters, or freeing up hard disk space, or plugging a network cable back in.  A few extra milliseconds to account for stack unwinding is perfectly acceptable in these circumstances.
 
 Throughput applications {#throughput_apps}
 -----------------------------------------
 TODO: anyone have a better "errors are random" example than dropped network packets?
-In some applications, failure is rare and largely random.  Suppose you have an application that is sending terabytes of information over an unreliable network.  Suppose that over a long enough time period, only 1 in 100,000 packets are dropped.  In such an application, momentary failure is expected to happen on occasion, but success is by far the most common case.  In such an application, table-based exceptions could provide better throughput than error codes, despite the fact that the sad-path for table-based exceptions is so slow.
 
-Note that there are substantial caveats to the suitability of table-based exceptions in this path.  The failures need to be safely model-able as random and uniform over realistic application run times.  This is a dubious claim for the networking example above.  In real networks, packet loss isn't entirely random.  If packet X was dropped, packet X+1 is substantially more likely to be dropped than a packet chosen at random.  This clustering of errors may cause a cascading series of failures that a single random dropped packet would not cause.  Packet loss can also be directly instigated by a malicious actor.  An attacker could leverage the performance difference in the sad path vs. the happy path could lead to perform a denial-of-service attack.
+In some applications, failure is rare and largely random.  Suppose you have an application that is sending terabytes of information over an unreliable network.  Suppose that over a long enough time period, only 1 in 100,000 packets are dropped.  In such an application, momentary failure is expected to happen on occasion, but success is by far the most common case.  In such an application, table-based exceptions could provide better throughput than error codes, despite the fact that the sad path for table-based exceptions is so slow.
+
+Note that there are substantial caveats to the suitability of table-based exceptions in this path.  The failures need to be safe to model as uniformly distributed failures over realistic application run times.  This is a dubious claim for the networking example above.  In real networks, packet loss isn't entirely random.  If packet X was dropped, packet X+1 is substantially more likely to be dropped than a packet chosen at random.  This clustering of errors may cause a cascading series of failures that a single random dropped packet would not cause.  Packet loss can also be directly instigated by a malicious actor.  An attacker could leverage the performance difference in the sad path vs. the happy path, and that difference could lead to a denial-of-service attack.
 
 Performance as a competitive advantage {#cant_go_fast_enough}
 -------------------------------------------------------------
 The value of a performance gain varies across domains and applications.  In some applications, extra performance gains past a certain threshold are largely meaningless.  Once the application has reached it's performance goal, it is going "fast enough".  Some applications and domains either have no such upper limit, or the limit is sufficiently distant from the current state of the art to be unreachable.
 
-Latency sensitive financial operations are another example of an application where all performance gains are beneficial.  In some of these operations, the absolute performance doesn't matter.  What matters is whether you are faster than your competitor.  The performance on the sad path doesn't have these same constraints.  This usually means that programmers are willing to make substantial sacrifices to sad path performance in order to get any benefit to happy path performance.
+Latency sensitive financial operations are an example of an application where all performance gains are beneficial.  In some of these operations, the absolute performance doesn't matter.  What matters is whether you are faster than your competitor.  The performance on the sad path doesn't have these same constraints.  This usually means that programmers are willing to make substantial sacrifices to sad path performance in order to get any benefit to happy path performance.
 
 Table-based exceptions provide such a trade-off.  Extraordinary effort is taken on behalf of the implementation to ensure that the happy path is as fast as can be, at the expense of a slow sad path.  This is a good trade-off for applications that "can't go fast enough".
 
@@ -253,11 +263,11 @@ Exception handling allocation {#eh_alloc}
 ----------------------------------------
 The Itanium ABI requires thrown exception objects to be placed in a non-local location, frequently the heap.  Stateless, well-known exception types can potentially be stored and thrown as global singletons.  Heap allocation is challenging in environments that do not support the heap, or do not have a single appropriate approach for allocating from the heap.  In order to mitigate the risk of running out of memory during an exception throw, some implementations have a fall-back buffer.  This fall-back buffer is often too expensive in memory constrained environments.
 
-Other ABIs can store thrown exceptions in other ways, but this storage is either forced to be a fixed size, or dynamic in some way or another.  In the Microsoft implementations (x86 and x86-64), a dynamic stack allocation is made, and the throw exception is stored there.  The Microsoft x86-64 implementation of exceptions consumes roughly 9KB of stack in order to rethrow an exception.  9KB is larger that the entire stack on some microcontroller environments.  A space constrained implementation would need to be more stack-space efficient than 9KB per rethrow.
+Other ABIs can store thrown exceptions in other ways, but this storage is either forced to be a fixed size, or dynamic in some way or another.  In the Microsoft implementations (x86 and x86-64), a dynamic stack allocation is made, and the thrown exception is stored there.  The Microsoft x86-64 implementation of exceptions consumes roughly 9KB of stack in order to rethrow an exception.  9KB is larger that the entire stack on some microcontroller environments.  A space constrained implementation would need to be more stack-space efficient than 9KB per rethrow.
 
 Exception handling and storage that is local to a thread {#tls}
 --------------------------------------------------------------
-`std::uncaught_exceptions`, `throw;`, and `std::current_exception` area all "non-local" facilities that impose additional requirements on exception handling implementations beyond the basic, `throw`, `catch`, and destructor requirements.  Each of the non-local facilities takes no parameters, but still yield state about the current state of the exception handling machinery.  The common way to implement these non-local facilities is with thread-local storage.  `throw` will store information in a thread-local variable, the non-local facilities will use the data, and `catch` will clean it up.  Users generally expect to be able to query this information, even when calling across non-C++ languages.  For example, if a destructor calls into a C function, and the C function calls into another C++ free function, the free function is expected to be able to get valid results from `std::uncaught_exceptions`.
+`std::uncaught_exceptions`, `throw;`, and `std::current_exception` are all "non-local" facilities that impose additional requirements on exception handling implementations beyond the basic, `throw`, `catch`, and destructor requirements.  Each of the non-local facilities takes no parameters, but still yield state about the current state of the exception handling machinery.  The common way to implement these non-local facilities is with thread-local storage.  `throw` will store information in a thread-local variable, the non-local facilities will use the data, and `catch` will clean it up.  Users generally expect to be able to query this information, even when calling across non-C++ languages.  For example, if a destructor calls into a C function, and the C function calls into another C++ free function, the free function is expected to be able to get valid results from `std::uncaught_exceptions`.
 
 Thread local storage is usually implemented in terms of a reserved register that points to a thread control block.  The thread control block contains information such as the thread ID, a pointer to the base of the stack, and pointer(s) to thread local storage.  The `thread_local` keyword in particular usually requires special linker and OS support in order to make it efficient.  An inefficient implementation of the `thread_local` keyword can use a locked map with the thread ID as a key.
 
@@ -267,14 +277,11 @@ None of the major desktop operating systems on the market today support arbitrar
 
 Are fast exceptions important enough? {#dubious_business_value}
 ----------------------------------------------
-1. Many users do not use exceptions because of exception unsafe code. [[#dubious_business_value]]
-1. The business value for implementers to improve the sad-path exception performance is dubious. [[#dubious_business_value]]
-
 Suppose implementers research ways to make their C++ exception implementation faster on the sad path, and suppose they wildly succeed.  Somehow, the implementers produced an implementation that has the same happy path characteristics as today's implementations, but is only twice as slow as error codes on the sad path, rather than more than 100 times slower [[P1886R0]]. According to [[SC++F_2020]], this would, at best, allow 25% of current non-exception users to start using exceptions.  The other non-users of exceptions are blocked on other reasons.  Some of the users are based on technical reasons, like space overhead.  Others are non-users for more philosophical reasons, such as a dislike of invisible propagation.
 
 When an implementer works on any feature, including exceptions, there is an opportunity cost.  Is working on exceptions more valuable than squeezing half a percent more throughput out of the automatic vectorizer?  Is it more valuable than adding another warning to the front end?  One way that implementers gauge how important a change is is by looking at quantity of bug reports.  A search for "exception slow" on the GCC bug tracker has 21 hits, but only 2 of those (bugs [92823](https://gcc.gnu.org/bugzilla/show_bug.cgi?id=92823) and [68606](https://gcc.gnu.org/bugzilla/show_bug.cgi?id=68606) )  are really C++ exception handling related.  On the LLVM bug tracker, there are 18 hits, but again, only 2 for C++ exception handling (bugs [1916](https://bugs.llvm.org/show_bug.cgi?id=1916) and [17467](https://bugs.llvm.org/show_bug.cgi?id=17467) ) .  Users have been trained to not put exceptions in performance critical areas, so users rarely complain about exception performance because there aren't exceptions in their performance critical areas.
 
-Now, suppose that wg21 does something to exceptions to make them more appealing to users that do not currently use exceptions.  Would we end up compromising the design of C++ to try to satisfy a group of developers that won't every be satisfied?  How many developers do we need to migrate to consider our efforts a success?
+Now, suppose that wg21 does something to exceptions to make them more appealing to users that do not currently use exceptions.  Would we end up compromising the design of C++ to try to satisfy a group of developers that won't ever be satisfied?  How many developers do we need to migrate to consider our efforts a success?
 
 The N+1 problem {#n_plus_one}
 ----------------------------
@@ -290,7 +297,7 @@ A new error handling mechanism could change how we teach error handling, and how
 
 Local vs. global tradeoffs with error handling {#global_decision}
 ------------------
-There are cases where there are different needs for error handling performance within the same program, translation unit, or even function.  Users cannot make a local decision on whether exceptions prefer "happy path" performance or worst-case-execution-time performance.  Users can make local choices as to whether to use exceptions or not, with the assumption that exceptions prefer "happy path" performance.  Choosing something other than exceptions will often lead to impoverished syntax.
+There are cases where there are different needs for error handling performance within the same program, translation unit, or even function.  Users cannot make a local decision on whether exceptions prefer happy path performance or worst-case-execution-time performance.  Users can make local choices as to whether to use exceptions or not, with the assumption that exceptions prefer happy path performance.  Choosing something other than exceptions will often lead to impoverished syntax.
 
 Imagine a server application that can normally handle 10,000 concurrent clients.  It has a function that looks up a trusted string using an integer key from an untrusted source.  During normal usage with no malicious users, the untrusted ID will always correspond to an item in the map.  A malicious user can trivially choose a number that is not in the map.  A naive implementation may look like this:
 ```
@@ -314,7 +321,7 @@ std::optional<std::string> get_opt_name(int untrusted_id) {
     return it->second;
 }
 ```
-This code has similar performance for both successful and failed lookups, which is desirable.  However, it takes more code to express this, and the usage of this function is also more complicated. `auto name = get_opt_name(id); name->c_str();` compiles, but invokes undefined behavior if the item isn't present.  We have gained performance, but lost notational convenience.  Currently, if users want portable worst-case-execution-time performance, they lose notational convenience.  There is no way to portably express that a program should prefer "happy path" execution time in its error handling code.
+This code has similar performance for both successful and failed lookups, which is desirable.  However, it takes more code to express this, and the usage of this function is also more complicated. `auto name = get_opt_name(id); name->c_str();` compiles, but invokes undefined behavior if the item isn't present.  We have gained performance, but lost notational convenience.  Currently, if users want portable worst-case-execution-time performance, they lose notational convenience.  There is no way to portably express that a program should prefer happy path execution time in its error handling code.
 
 Exception handling overhead is difficult to avoid {#using_is_easy}
 ----------------------------------------------------------------
@@ -433,11 +440,6 @@ Acknowledgments {#ack}
         "authors": ["Modi Mo"],
         "href": "https://devblogs.microsoft.com/cppblog/making-cpp-exception-handling-smaller-x64/",
         "title": "Making C++ Exception Handling Smaller On x64"
-    },
-    "kernel_switch": {
-        "authors": ["Microsoft Documentation"],
-        "title": "/kernel (Create Kernel Mode Binary)",
-        "href": "https://docs.microsoft.com/en-us/cpp/build/reference/kernel-create-kernel-mode-binary"
     },
     "ItaniumEHABI": {
         "title": "Itanium C++ ABI: Exception Handling",
