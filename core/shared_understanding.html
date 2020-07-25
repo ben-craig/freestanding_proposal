@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="en"><head>
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-  <title>DXXXXR0.0: Shared understanding of errors and exceptions</title>
+  <title>D2018R0.1: Shared understanding of errors and exceptions</title>
 <style data-fill-with="stylesheet">/******************************************************************************
  *                   Style sheet for the W3C specifications                   *
  *
@@ -1167,6 +1167,18 @@ Possible extra rowspan handling
 		margin-left: auto;
 		margin-right: auto;
 	}
+	.overlarge {
+		/* Magic to create good table positioning:
+		   "content column" is 50ems wide at max; less on smaller screens.
+		   Extra space (after ToC + content) is empty on the right.
+
+		   1. When table < content column, centers table in column.
+		   2. When content < table < available, left-aligns.
+		   3. When table > available, fills available + scroll bar.
+		*/
+		display: grid;
+		grid-template-columns: minmax(0, 50em);
+	}
 	.overlarge > table {
 		/* limit preferred width of table */
 		max-width: 50em;
@@ -1176,7 +1188,6 @@ Possible extra rowspan handling
 
 	@media (min-width: 55em) {
 		.overlarge {
-			margin-left: calc(13px + 26.5rem - 50vw);
 			margin-right: calc(13px + 26.5rem - 50vw);
 			max-width: none;
 		}
@@ -1184,14 +1195,12 @@ Possible extra rowspan handling
 	@media screen and (min-width: 78em) {
 		body:not(.toc-inline) .overlarge {
 			/* 30.5em body padding 50em content area */
-			margin-left: calc(40em - 50vw) !important;
 			margin-right: calc(40em - 50vw) !important;
 		}
 	}
 	@media screen and (min-width: 90em) {
 		body:not(.toc-inline) .overlarge {
 			/* 4em html margin 30.5em body padding 50em content area */
-			margin-left: 0 !important;
 			margin-right: calc(84.5em - 100vw) !important;
 		}
 	}
@@ -1285,94 +1294,9 @@ Possible extra rowspan handling
     blockquote c-[vi] { color: inherit; } /* Name.Variable.Instance */
     blockquote c-[il] { color: inherit; } /* Literal.Number.Integer.Long */
   </style>
-  <meta content="Bikeshed version 087ea90e1ebd0321c20373d89950d1c6b73d5df1" name="generator">
-  <link href=" TODO" rel="canonical">
+  <meta content="Bikeshed version 7c63c139, updated Fri Jul 17 17:12:19 2020 -0700" name="generator">
+  <link href="https://api.csswg.org/bikeshed/TODO" rel="canonical">
   <link href="https://isocpp.org/favicon.ico" rel="icon">
-<style>/* style-md-lists */
-
-/* This is a weird hack for me not yet following the commonmark spec
-   regarding paragraph and lists. */
-[data-md] > :first-child {
-    margin-top: 0;
-}
-[data-md] > :last-child {
-    margin-bottom: 0;
-}</style>
-<style>/* style-selflinks */
-
-.heading, .issue, .note, .example, li, dt {
-    position: relative;
-}
-a.self-link {
-    position: absolute;
-    top: 0;
-    left: calc(-1 * (3.5rem - 26px));
-    width: calc(3.5rem - 26px);
-    height: 2em;
-    text-align: center;
-    border: none;
-    transition: opacity .2s;
-    opacity: .5;
-}
-a.self-link:hover {
-    opacity: 1;
-}
-.heading > a.self-link {
-    font-size: 83%;
-}
-li > a.self-link {
-    left: calc(-1 * (3.5rem - 26px) - 2em);
-}
-dfn > a.self-link {
-    top: auto;
-    left: auto;
-    opacity: 0;
-    width: 1.5em;
-    height: 1.5em;
-    background: gray;
-    color: white;
-    font-style: normal;
-    transition: opacity .2s, background-color .2s, color .2s;
-}
-dfn:hover > a.self-link {
-    opacity: 1;
-}
-dfn > a.self-link:hover {
-    color: black;
-}
-
-a.self-link::before            { content: "¶"; }
-.heading > a.self-link::before { content: "§"; }
-dfn > a.self-link::before      { content: "#"; }</style>
-<style>/* style-counters */
-
-body {
-    counter-reset: example figure issue;
-}
-.issue {
-    counter-increment: issue;
-}
-.issue:not(.no-marker)::before {
-    content: "Issue " counter(issue);
-}
-
-.example {
-    counter-increment: example;
-}
-.example:not(.no-marker)::before {
-    content: "Example " counter(example);
-}
-.invalid.example:not(.no-marker)::before,
-.illegal.example:not(.no-marker)::before {
-    content: "Invalid Example" counter(example);
-}
-
-figcaption {
-    counter-increment: figure;
-}
-figcaption:not(.no-marker)::before {
-    content: "Figure " counter(figure) " ";
-}</style>
 <style>/* style-autolinks */
 
 .css.css, .property.property, .descriptor.descriptor {
@@ -1435,6 +1359,35 @@ pre .property::before, pre .property::after {
 [data-link-type=biblio] {
     white-space: pre;
 }</style>
+<style>/* style-counters */
+
+body {
+    counter-reset: example figure issue;
+}
+.issue {
+    counter-increment: issue;
+}
+.issue:not(.no-marker)::before {
+    content: "Issue " counter(issue);
+}
+
+.example {
+    counter-increment: example;
+}
+.example:not(.no-marker)::before {
+    content: "Example " counter(example);
+}
+.invalid.example:not(.no-marker)::before,
+.illegal.example:not(.no-marker)::before {
+    content: "Invalid Example" counter(example);
+}
+
+figcaption {
+    counter-increment: figure;
+}
+figcaption:not(.no-marker)::before {
+    content: "Figure " counter(figure) " ";
+}</style>
 <style>/* style-dfn-panel */
 
 .dfn-panel {
@@ -1472,6 +1425,62 @@ pre .property::before, pre .property::after {
 
 .dfn-paneled { cursor: pointer; }
 </style>
+<style>/* style-md-lists */
+
+/* This is a weird hack for me not yet following the commonmark spec
+   regarding paragraph and lists. */
+[data-md] > :first-child {
+    margin-top: 0;
+}
+[data-md] > :last-child {
+    margin-bottom: 0;
+}</style>
+<style>/* style-selflinks */
+
+.heading, .issue, .note, .example, li, dt {
+    position: relative;
+}
+a.self-link {
+    position: absolute;
+    top: 0;
+    left: calc(-1 * (3.5rem - 26px));
+    width: calc(3.5rem - 26px);
+    height: 2em;
+    text-align: center;
+    border: none;
+    transition: opacity .2s;
+    opacity: .5;
+}
+a.self-link:hover {
+    opacity: 1;
+}
+.heading > a.self-link {
+    font-size: 83%;
+}
+li > a.self-link {
+    left: calc(-1 * (3.5rem - 26px) - 2em);
+}
+dfn > a.self-link {
+    top: auto;
+    left: auto;
+    opacity: 0;
+    width: 1.5em;
+    height: 1.5em;
+    background: gray;
+    color: white;
+    font-style: normal;
+    transition: opacity .2s, background-color .2s, color .2s;
+}
+dfn:hover > a.self-link {
+    opacity: 1;
+}
+dfn > a.self-link:hover {
+    color: black;
+}
+
+a.self-link::before            { content: "¶"; }
+.heading > a.self-link::before { content: "§"; }
+dfn > a.self-link::before      { content: "#"; }</style>
 <style>/* style-syntax-highlighting */
 
 .highlight:not(.idl) { background: hsl(24, 20%, 95%); }
@@ -1530,15 +1539,15 @@ c-[vg] { color: #0077aa } /* Name.Variable.Global */
 c-[vi] { color: #0077aa } /* Name.Variable.Instance */
 c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
 </style>
- </head><body class="h-entry toc-sidebar"><p id="toc-nav"><a id="toc-jump" href=" #toc"><span aria-hidden="true">↑</span> <span>Jump to Table of Contents</span></a><a id="toc-toggle" href=" #toc"><span aria-hidden="true">←</span> <span>Collapse Sidebar</span></a></p>
+ </head><body class="h-entry toc-sidebar"><p id="toc-nav"><a id="toc-jump" href="#toc"><span aria-hidden="true">↑</span> <span>Jump to Table of Contents</span></a><a id="toc-toggle" href="#toc"><span aria-hidden="true">←</span> <span>Collapse Sidebar</span></a></p>
   <div class="head">
    <p data-fill-with="logo"></p>
-   <h1 class="p-name no-ref" id="title">DXXXXR0.0<br>Shared understanding of errors and exceptions</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2020-01-02">2020-01-02</time></span></h2>
+   <h1 class="p-name no-ref" id="title">D2018R0.1<br>Shared understanding of errors and exceptions</h1>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2020-07-25">2020-07-25</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
-     </dt><dd><a class="u-url" href=" TODO">TODO</a>
+     </dt><dd><a class="u-url" href="https://api.csswg.org/bikeshed/TODO">TODO</a>
      </dd><dt>Author:
      </dt><dd>
       </dd><dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:ben.craig@gmail.com">Ben Craig</a> (<span class="p-org org">National Instruments</span>)
@@ -1559,235 +1568,781 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <nav data-fill-with="table-of-contents" id="toc">
    <h2 class="no-num no-toc no-ref" id="contents">Table of Contents</h2>
    <ol class="toc" role="directory">
-    <li><a href=" #intro"><span class="secno">1</span> <span class="content">Introduction</span></a>
-    </li><li><a href=" #agree"><span class="secno">2</span> <span class="content">Areas of agreement</span></a>
+    <li><a href="#intro"><span class="secno">1</span> <span class="content">Introduction</span></a>
     </li><li>
-     <a href=" #rationale"><span class="secno">3</span> <span class="content">Rationale</span></a>
+     <a href="#agree"><span class="secno">2</span> <span class="content">Areas of agreement</span></a>
      <ol class="toc">
-      <li><a href=" #discuss"><span class="secno">3.1</span> <span class="content">Discussion provides value</span></a>
-      </li><li><a href=" #eh_off"><span class="secno">3.2</span> <span class="content">Exceptions turned off</span></a>
-      </li><li><a href=" #room_for_optimizations"><span class="secno">3.3</span> <span class="content">Room for optimizations</span></a>
-      </li><li><a href=" #error_prop"><span class="secno">3.4</span> <span class="content">Error propagation</span></a>
-      </li><li><a href=" #real_time"><span class="secno">3.5</span> <span class="content">Real-time environments</span></a>
-      </li><li><a href=" #microcontrollers"><span class="secno">3.6</span> <span class="content">Microcontroller environments</span></a>
-      </li><li><a href=" #kernel"><span class="secno">3.7</span> <span class="content">Kernel environments</span></a>
-      </li><li><a href=" #baremetal"><span class="secno">3.8</span> <span class="content">Bare metal environments</span></a>
-      </li><li><a href=" #gpus"><span class="secno">3.9</span> <span class="content">GPU and accelerator environments</span></a>
-      </li><li><a href=" #fpgas"><span class="secno">3.10</span> <span class="content">Direct FPGA environments</span></a>
-      </li><li><a href=" #unnoticed_fail"><span class="secno">3.11</span> <span class="content">Unimportant failure performance</span></a>
-      </li><li><a href=" #throughput_apps"><span class="secno">3.12</span> <span class="content">Throughput applications</span></a>
-      </li><li><a href=" #cant_go_fast_enough"><span class="secno">3.13</span> <span class="content">Performance as a competitive advantage</span></a>
-      </li><li><a href=" #other_approaches"><span class="secno">3.14</span> <span class="content">Other implementation approaches to exceptions</span></a>
-      </li><li><a href=" #eh_alloc"><span class="secno">3.15</span> <span class="content">Exception handling allocation</span></a>
-      </li><li><a href=" #tls"><span class="secno">3.16</span> <span class="content">Exception handling and storage that is local to a thread</span></a>
-      </li><li><a href=" #dubious_business_value"><span class="secno">3.17</span> <span class="content">Dubious business value</span></a>
-      </li><li><a href=" #n_plus_one"><span class="secno">3.18</span> <span class="content">The N+1 problem</span></a>
-      </li><li><a href=" #using_is_easy"><span class="secno">3.19</span> <span class="content">Exception handling overhead is difficult to avoid</span></a>
-      </li><li><a href=" #sad_path_analysis"><span class="secno">3.20</span> <span class="content">Tooling analysis of sad paths</span></a>
-     </li></ol>
-    </li><li><a href=" #definitions"><span class="secno">4</span> <span class="content">Definitions</span></a>
-    </li><li><a href=" #ack"><span class="secno">5</span> <span class="content">Acknowledgments</span></a>
-    </li><li>
-     <a href=" #index"><span class="secno"></span> <span class="content">Index</span></a>
-     <ol class="toc">
-      <li><a href=" #index-defined-here"><span class="secno"></span> <span class="content">Terms defined by this specification</span></a>
+      <li><a href="#big_picture"><span class="secno">2.1</span> <span class="content">Big picture</span></a>
+      </li><li><a href="#perf_cmp"><span class="secno">2.2</span> <span class="content">Exception and error code performance comparisons</span></a>
+      </li><li><a href="#avoiding_overhead"><span class="secno">2.3</span> <span class="content">Avoiding overhead</span></a>
+      </li><li><a href="#terminates"><span class="secno">2.4</span> <span class="content">Error terminates</span></a>
+      </li><li><a href="#error_prop_usability"><span class="secno">2.5</span> <span class="content">Error propagation usability</span></a>
+      </li><li><a href="#real_time_summary"><span class="secno">2.6</span> <span class="content">Real-time cases</span></a>
+      </li><li><a href="#application_domains"><span class="secno">2.7</span> <span class="content">Application domains</span></a>
+      </li><li><a href="#eh_alloc_summary"><span class="secno">2.8</span> <span class="content">Exception allocations</span></a>
+      </li><li><a href="#error_mechanisms"><span class="secno">2.9</span> <span class="content">Switching error mechanisms</span></a>
+      </li><li><a href="#n_plus_one_summary"><span class="secno">2.10</span> <span class="content">N+1 summary</span></a>
+      </li><li><a href="#arb_info"><span class="secno">2.11</span> <span class="content">Carrying arbitrary information</span></a>
+      </li><li><a href="#tooling"><span class="secno">2.12</span> <span class="content">Tooling</span></a>
      </li></ol>
     </li><li>
-     <a href=" #references"><span class="secno"></span> <span class="content">References</span></a>
+     <a href="#rationale"><span class="secno">3</span> <span class="content">Rationale</span></a>
      <ol class="toc">
-      <li><a href=" #informative"><span class="secno"></span> <span class="content">Informative References</span></a>
+      <li><a href="#discuss"><span class="secno">3.1</span> <span class="content">Discussion provides value</span></a>
+      </li><li><a href="#eh_off"><span class="secno">3.2</span> <span class="content">Exceptions turned off</span></a>
+      </li><li><a href="#room_for_optimizations"><span class="secno">3.3</span> <span class="content">Room for optimizations</span></a>
+      </li><li><a href="#error_prop"><span class="secno">3.4</span> <span class="content">Error propagation</span></a>
+      </li><li><a href="#real_time"><span class="secno">3.5</span> <span class="content">Real-time environments</span></a>
+      </li><li><a href="#microcontrollers"><span class="secno">3.6</span> <span class="content">Microcontroller environments</span></a>
+      </li><li><a href="#kernel"><span class="secno">3.7</span> <span class="content">Kernel environments</span></a>
+      </li><li><a href="#baremetal"><span class="secno">3.8</span> <span class="content">Bare metal environments</span></a>
+      </li><li><a href="#gpus"><span class="secno">3.9</span> <span class="content">GPU and accelerator environments</span></a>
+      </li><li><a href="#fpgas"><span class="secno">3.10</span> <span class="content">Direct FPGA environments</span></a>
+      </li><li><a href="#unnoticed_fail"><span class="secno">3.11</span> <span class="content">Non-critical failure performance</span></a>
+      </li><li><a href="#throughput_apps"><span class="secno">3.12</span> <span class="content">Throughput applications</span></a>
+      </li><li><a href="#cant_go_fast_enough"><span class="secno">3.13</span> <span class="content">Performance as a competitive advantage</span></a>
+      </li><li><a href="#other_approaches"><span class="secno">3.14</span> <span class="content">Other implementation approaches to exceptions</span></a>
+      </li><li><a href="#eh_alloc"><span class="secno">3.15</span> <span class="content">Exception handling allocation</span></a>
+      </li><li><a href="#tls"><span class="secno">3.16</span> <span class="content">Exception handling and storage that is local to a thread</span></a>
+      </li><li><a href="#dubious_business_value"><span class="secno">3.17</span> <span class="content">Are fast exceptions important enough?</span></a>
+      </li><li><a href="#n_plus_one"><span class="secno">3.18</span> <span class="content">The N+1 problem</span></a>
+      </li><li><a href="#global_decision"><span class="secno">3.19</span> <span class="content">Local vs. global tradeoffs with error handling</span></a>
+      </li><li><a href="#using_is_easy"><span class="secno">3.20</span> <span class="content">Exception handling overhead is difficult to avoid</span></a>
+      </li><li><a href="#sad_path_analysis"><span class="secno">3.21</span> <span class="content">Tooling analysis of sad paths</span></a>
+     </li></ol>
+    </li><li><a href="#definitions"><span class="secno">4</span> <span class="content">Definitions</span></a>
+    </li><li><a href="#ack"><span class="secno">5</span> <span class="content">Acknowledgments</span></a>
+    </li><li>
+     <a href="#index"><span class="secno"></span> <span class="content">Index</span></a>
+     <ol class="toc">
+      <li><a href="#index-defined-here"><span class="secno"></span> <span class="content">Terms defined by this specification</span></a>
+     </li></ol>
+    </li><li>
+     <a href="#references"><span class="secno"></span> <span class="content">References</span></a>
+     <ol class="toc">
+      <li><a href="#informative"><span class="secno"></span> <span class="content">Informative References</span></a>
      </li></ol>
    </li></ol>
   </nav>
   <main>
-   <h2 class="heading settled" data-level="1" id="intro"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href=" #intro"></a></h2>
-    This paper aims to reflect the shared understanding of the authors regarding error handling and exceptions.  The goal is to avoid talking past each other, and productively help us gain consensus.  This paper does not recommend any specific actions or changes.
-   <h2 class="heading settled" data-level="2" id="agree"><span class="secno">2. </span><span class="content">Areas of agreement</span><a class="self-link" href=" #agree"></a></h2>
-    TODO: maybe retitle and combine with #disagree?  Then just mark up the ones where we disagree?
+   <h2 class="heading settled" data-level="1" id="intro"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#intro"></a></h2>
+    This paper aims to reflect the shared understanding of the authors 
+regarding error handling and exceptions.  The goal is to avoid talking 
+past each other, and productively help us gain consensus.  This paper 
+does not recommend any specific actions or changes. 
+   <h2 class="heading settled" data-level="2" id="agree"><span class="secno">2. </span><span class="content">Areas of agreement</span><a class="self-link" href="#agree"></a></h2>
+   <h3 class="heading settled" data-level="2.1" id="big_picture"><span class="secno">2.1. </span><span class="content">Big picture</span><a class="self-link" href="#big_picture"></a></h3>
    <ol>
     <li data-md="">
-     <p>We should continue to discuss error handling and exceptions in order to drive improvements. <a href=" #discuss">§ 3.1 Discussion provides value</a></p>
+     <p>We should continue to discuss error handling and exceptions in order to drive improvements. <a href="#discuss">§ 3.1 Discussion provides value</a></p>
     </li><li data-md="">
-     <p>Large portions of the C++ community build their code with exceptions turned off. <a href=" #eh_off">§ 3.2 Exceptions turned off</a> <br><br></p>
+     <p>Large portions of the C++ community build their code with exceptions turned off. <a href="#eh_off">§ 3.2 Exceptions turned off</a></p>
+   </li></ol>
+   <h3 class="heading settled" data-level="2.2" id="perf_cmp"><span class="secno">2.2. </span><span class="content">Exception and error code performance comparisons</span><a class="self-link" href="#perf_cmp"></a></h3>
+   <ol>
+    <li data-md="">
+     <p><a data-link-type="dfn" href="#table-based-exceptions" id="ref-for-table-based-exceptions">Table-based exceptions</a> have the fastest known <a data-link-type="dfn" href="#happy-path" id="ref-for-happy-path">happy path</a> performance among <a data-link-type="dfn" href="#program-recoverable" id="ref-for-program-recoverable">program-recoverable</a> error handling strategies. <a data-link-type="biblio" href="#biblio-p1886r0">[P1886R0]</a></p>
     </li><li data-md="">
-     <p><a data-link-type="dfn" href=" #table-based-exceptions" id="ref-for-table-based-exceptions">Table-based exceptions</a> have the fastest known <a data-link-type="dfn" href=" #happy-path" id="ref-for-happy-path">happy path</a> performance among <a data-link-type="dfn" href=" #program-recoverable" id="ref-for-program-recoverable">program-recoverable</a> error handling strategies. <a data-link-type="biblio" href=" #biblio-p1886r0">[P1886R0]</a></p>
+     <p><a data-link-type="dfn" href="#sad-path" id="ref-for-sad-path">Sad path</a> performance of exceptions is more than 100x worse than happy path performance on table-based exception implementations. <a data-link-type="biblio" href="#biblio-p1886r0">[P1886R0]</a></p>
     </li><li data-md="">
-     <p><a data-link-type="dfn" href=" #sad-path" id="ref-for-sad-path">Sad path</a> performance of exceptions is more than 100x worse than happy path performance on table-based exception implementations. <a data-link-type="biblio" href=" #biblio-p1886r0">[P1886R0]</a></p>
+     <p>Error codes perform worse than table-based exceptions on the happy path. <a data-link-type="biblio" href="#biblio-p1886r0">[P1886R0]</a></p>
     </li><li data-md="">
-     <p>Error codes perform worse than table-based exceptions on the happy path. <a data-link-type="biblio" href=" #biblio-p1886r0">[P1886R0]</a></p>
+     <p>Error codes perform better than table-based exceptions on the sad path. <a data-link-type="biblio" href="#biblio-p1886r0">[P1886R0]</a></p>
     </li><li data-md="">
-     <p>Error codes perform better than table-based exceptions on the sad path. <a data-link-type="biblio" href=" #biblio-p1886r0">[P1886R0]</a></p>
+     <p>Table-based exceptions have higher space overhead than error codes. <a data-link-type="biblio" href="#biblio-p1640r1">[P1640R1]</a></p>
     </li><li data-md="">
-     <p>Table-based exceptions have higher space overhead than error codes. <a data-link-type="biblio" href=" #biblio-p1640r1">[P1640R1]</a></p>
+     <p><a data-link-type="biblio" href="#biblio-p0709">[P0709]</a> exceptions and <code class="highlight"><c- n="">expected</c-></code> are likely to have performance characteristics similar to error codes.</p>
     </li><li data-md="">
-     <p>Mainstream implementations of table-based exceptions have room for optimization. <a href=" #room_for_optimizations">§ 3.3 Room for optimizations</a></p>
+     <p>Mainstream implementations of table-based exceptions have room for optimization. <a href="#room_for_optimizations">§ 3.3 Room for optimizations</a></p>
     </li><li data-md="">
-     <p>Platform ABIs place substantial constraints on how much exceptions can change. <a data-link-type="biblio" href=" #biblio-itaniumehabi">[ItaniumEHABI]</a></p>
+     <p>There are other exception implementation approaches that may 
+address the challenges with table-based exceptions, or at least provide a
+ different set of trade offs. <a href="#other_approaches">§ 3.14 Other implementation approaches to exceptions</a></p>
     </li><li data-md="">
-     <p>The performance gap between happy and sad path exception performance has widened over time because of lack of development on the sad path. <a data-link-type="biblio" href=" #biblio-p1947r0">[P1947R0]</a></p>
+     <p>Platform ABIs place substantial constraints on how much exceptions can change. <a data-link-type="biblio" href="#biblio-itaniumehabi">[ItaniumEHABI]</a></p>
     </li><li data-md="">
-     <p>Exception syntax works well with constructors and operators.</p>
+     <p>The performance gap between happy and sad path exception 
+performance has widened over time because of lack of development on the 
+sad path. <a data-link-type="biblio" href="#biblio-p1947r0">[P1947R0]</a></p>
     </li><li data-md="">
-     <p>Error code syntax does not work well with constructors and operators. <br><br></p>
+     <p>The performance characteristics of exceptions are a program-global decision made by the toolchain implementer. <a href="#global_decision">§ 3.19 Local vs. global tradeoffs with error handling</a></p>
     </li><li data-md="">
-     <p>Error terminates are not suitable for program-recoverable error handling.</p>
-    </li><li data-md="">
-     <p>Error terminates are useful as the primary error handling mechanism in many applications.</p>
-    </li><li data-md="">
-     <p>Error terminates are as fast or faster than table-based exceptions. <a data-link-type="biblio" href=" #biblio-p1886r0">[P1886R0]</a></p>
-    </li><li data-md="">
-     <p>Error terminates are smaller than table-based exceptions. <a data-link-type="biblio" href=" #biblio-p1640r1">[P1640R1]</a></p>
-    </li><li data-md="">
-     <p>In general, exception support adds non-zero overhead to programs that only need error terminates. <a data-link-type="biblio" href=" #biblio-p1640r1">[P1640R1]</a> <br><br></p>
-    </li><li data-md="">
-     <p>Manual error propagation requires a lot of mistake-prone boilerplate. <a href=" #error_prop">§ 3.4 Error propagation</a></p>
-    </li><li data-md="">
-     <p>Forgetting to test for an error code is a common source of bugs. <a href=" #error_prop">§ 3.4 Error propagation</a></p>
-    </li><li data-md="">
-     <p>Automatic error propagation adds invisible control flow that can be easy to overlook. <a href=" #error_prop">§ 3.4 Error propagation</a></p>
-    </li><li data-md="">
-     <p>Forgetting to account for a propagating exception is a common source of bugs. <a href=" #error_prop">§ 3.4 Error propagation</a></p>
-    </li><li data-md="">
-     <p>#SUBJECTIVE# Automatic error propagation is preferable. <a href=" #error_prop">§ 3.4 Error propagation</a></p>
-    </li><li data-md="">
-     <p>RAII is an enormous boon to error handling in general. <a href=" #error_prop">§ 3.4 Error propagation</a></p>
-    </li><li data-md="">
-     <p>Code that does not use RAII is exceedingly difficult to port to exceptions.</p>
-    </li><li data-md="">
-     <p>The visibility of error handling is a polarizing topic in the C++ community. <br><br></p>
-    </li><li data-md="">
-     <p>Table-based exceptions are challenging to use during operations with hard deadlines (i.e. real-time operations). <a href=" #real_time">§ 3.5 Real-time environments</a></p>
-    </li><li data-md="">
-     <p>Table-based exceptions are well suited to the no-deadline portions of real-time applications. <a href=" #real_time">§ 3.5 Real-time environments</a></p>
-    </li><li data-md="">
-     <p>In some code paths, a 20% reduction in happy path performance is acceptable if it results in a 100x improvement in sad path performance. <a href=" #real_time">§ 3.5 Real-time environments</a> <br><br></p>
-    </li><li data-md="">
-     <p><code class="highlight"><c- k="">try</c-></code>, <code class="highlight"><c- k="">catch</c-></code> and <code class="highlight"><c- k="">throw</c-></code> are not supported in the context of a signal. <a href="http://eel.is/c++draft/support.signal">support.signal</a></p>
-    </li><li data-md="">
-     <p>Table-based exceptions are challenging on micro-controllers due to tight space constraints. <a href=" #microcontrollers">§ 3.6 Microcontroller environments</a></p>
-    </li><li data-md="">
-     <p>New code in mainstream operating system kernels cannot use full C++ exception support without modifying the operating system kernel itself. <a href=" #kernel">§ 3.7 Kernel environments</a></p>
-    </li><li data-md="">
-     <p>Partial C++ exception support is possible in mainstream operating system kernels without modifying the operating system kernel itself. <a href=" #kernel">§ 3.7 Kernel environments</a></p>
-    </li><li data-md="">
-     <p>Table-based exceptions are challenging on bare-metal, in part because of the high implementation cost and dependency on operating system facilities. <a href=" #baremetal">§ 3.8 Bare metal environments</a></p>
-    </li><li data-md="">
-     <p>Table-based exceptions are challenging on GPUs because they cause divergent code flow, and can inhibit the most valuable optimization in that domain. <a href=" #gpus">§ 3.9 GPU and accelerator environments</a></p>
-    </li><li data-md="">
-     <p>Table-based exceptions are challenging on FPGAs because of space constraints, and because of indirect calls. <a href=" #fpgas">§ 3.10 Direct FPGA environments</a></p>
-    </li><li data-md="">
-     <p>Table-based exceptions are well suited to applications where extra milliseconds of latency on the failure path will go unnoticed. <a href=" #unnoticed_fail">§ 3.11 Unimportant failure performance</a></p>
-    </li><li data-md="">
-     <p>#DUP?# Table-based exceptions are well suited to interactive and low-latency applications where extra milliseconds of latency on the failure path will go unnoticed. <a href=" #unnoticed_fail">§ 3.11 Unimportant failure performance</a></p>
-    </li><li data-md="">
-     <p>Table-based exceptions are well suited to throughput-oriented applications where failure is rare and can be modeled with a random (i.e. non-correlated) process. <a href=" #throughput_apps">§ 3.12 Throughput applications</a></p>
-    </li><li data-md="">
-     <p>Table-based exceptions are well suited to applications where all speed improvements on the happy path provide value. <a href=" #cant_go_fast_enough">§ 3.13 Performance as a competitive advantage</a> <br><br></p>
-    </li><li data-md="">
-     <p>There are other exception implementation approaches that may address the challenges with table-based exceptions, or at least provide a different set of trade offs. <a href=" #other_approaches">§ 3.14 Other implementation approaches to exceptions</a> <br><br></p>
-    </li><li data-md="">
-     <p>Throwing an exception requires a dynamic allocation. <a href=" #eh_alloc">§ 3.15 Exception handling allocation</a></p>
-    </li><li data-md="">
-     <p>It is challenging to support heap allocations for exception objects in kernel, micro-controller, bare-metal, and FPGA environments. <a href=" #eh_alloc">§ 3.15 Exception handling allocation</a></p>
-    </li><li data-md="">
-     <p>It is challenging to support stack allocations for exception objects in kernel, micro-controller, bare-metal, and FPGA environments, due to limited stack space. <a href=" #eh_alloc">§ 3.15 Exception handling allocation</a></p>
-    </li><li data-md="">
-     <p>Exceptions require out-of-band mutable storage that is local to a thread (though not necessarily <i>thread-local-storage</i>). <a href=" #tls">§ 3.16 Exception handling and storage that is local to a thread</a> <br><br></p>
-    </li><li data-md="">
-     <p>Migrating a large code base from one error handling strategy to another is a significant undertaking.</p>
-    </li><li data-md="">
-     <p>The business value of improving sad-path exception performance is dubious. <a href=" #dubious_business_value">§ 3.17 Dubious business value</a> <br><br></p>
-    </li><li data-md="">
-     <p><a data-link-type="biblio" href=" #biblio-p0709">[P0709]</a> exceptions are an additional form of error handling. <a href=" #n_plus_one">§ 3.18 The N+1 problem</a></p>
-    </li><li data-md="">
-     <p>P0709 exceptions are likely to have performance characteristics similar to error codes.</p>
-    </li><li data-md="">
-     <p>If P0709 exceptions are standardized, all prior error handling mechanisms will still be seen in the wild for decades to come. <a href=" #n_plus_one">§ 3.18 The N+1 problem</a></p>
-    </li><li data-md="">
-     <p>Users routinely write code that translates between different error handling schemes. <a href=" #n_plus_one">§ 3.18 The N+1 problem</a></p>
-    </li><li data-md="">
-     <p>Translating between different error handling schemes usually requires error prone boilerplate. <a href=" #n_plus_one">§ 3.18 The N+1 problem</a> <br><br></p>
-    </li><li data-md="">
-     <p>Exceptions allow the transportation of arbitrary error information from a callback, through the invoker.</p>
-    </li><li data-md="">
-     <p>
-      Error codes can be constructed that allow the transportation of arbitrary error information from a callback, through the invoker (e.g. a std::pair
-      <intu0002c stdu0003au0003aany="">). <br><br></intu0002c>
-     </p>
-    </li><li data-md="">
-     <p>Error codes, in the general case, cannot be used to propagate error information across code that is unaware of error codes.</p>
-    </li><li data-md="">
-     <p>Exceptions, in the general case, cannot be used to propagate error information across code that is unaware of C++ exceptions. <br><br></p>
-    </li><li data-md="">
-     <p>You shouldn’t pay for what you don’t use. <a data-link-type="biblio" href=" #biblio-de1994">[DE1994]</a></p>
+     <p>Developers may want different performance characteristics for error handling in different parts of the program. <a href="#global_decision">§ 3.19 Local vs. global tradeoffs with error handling</a></p>
+   </li></ol>
+   <h3 class="heading settled" data-level="2.3" id="avoiding_overhead"><span class="secno">2.3. </span><span class="content">Avoiding overhead</span><a class="self-link" href="#avoiding_overhead"></a></h3>
+   <ol>
+    <li data-md="">
+     <p>You shouldn’t pay for what you don’t use. <a data-link-type="biblio" href="#biblio-de1994">[DE1994]</a></p>
     </li><li data-md="">
      <p>Callers of <code class="highlight"><c- n="">expected</c-><c- o="">&lt;</c-><c- b="">void</c-><c- p="">,</c-> <c- n="">std</c-><c- o="">::</c-><c- n="">errc</c-><c- o="">&gt;</c-> <c- n="">f1</c-><c- p="">()</c-> <c- k="">noexcept</c-><c- p="">;</c-></code> are using <code class="highlight"><c- n="">expected</c-></code>, and pay the associated costs of <code class="highlight"><c- n="">expected</c-></code>.</p>
     </li><li data-md="">
      <p>Callers of <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">errc</c-> <c- n="">f2</c-><c- p="">()</c-> <c- k="">noexcept</c-><c- p="">;</c-></code> are using error codes, and pay the associated costs of error codes.</p>
     </li><li data-md="">
-     <p>Callers of <code class="highlight"><c- b="">void</c-> <c- nf="">f3</c-><c- p="">();</c-></code> are using exceptions, and pay the associated costs of exceptions. <a href=" #using_is_easy">§ 3.19 Exception handling overhead is difficult to avoid</a></p>
+     <p>Callers of <code class="highlight"><c- b="">void</c-> <c- nf="">f3</c-><c- p="">();</c-></code> are using exceptions, and pay the associated costs of exceptions. <a href="#using_is_easy">§ 3.20 Exception handling overhead is difficult to avoid</a></p>
     </li><li data-md="">
-     <p>A program can use exceptions (and therefore pay for them) even when it doesn’t have try, catch, or throw in the program. <a href=" #using_is_easy">§ 3.19 Exception handling overhead is difficult to avoid</a> <br><br></p>
+     <p>A program can use exceptions (and therefore pay for them) even when it doesn’t have <code class="highlight"><c- k="">try</c-></code>, <code class="highlight"><c- k="">catch</c-></code>, or <code class="highlight"><c- k="">throw</c-></code> in the program. <a href="#using_is_easy">§ 3.20 Exception handling overhead is difficult to avoid</a></p>
+   </li></ol>
+   <h3 class="heading settled" data-level="2.4" id="terminates"><span class="secno">2.4. </span><span class="content">Error terminates</span><a class="self-link" href="#terminates"></a></h3>
+   <ol>
+    <li data-md="">
+     <p>Error terminates are not suitable for program-recoverable error handling.</p>
+    </li><li data-md="">
+     <p>Error terminates are useful as the primary error handling mechanism in many applications.</p>
+    </li><li data-md="">
+     <p>Error terminates are as fast or faster than table-based exceptions. <a data-link-type="biblio" href="#biblio-p1886r0">[P1886R0]</a></p>
+    </li><li data-md="">
+     <p>Error terminates are smaller than table-based exceptions. <a data-link-type="biblio" href="#biblio-p1640r1">[P1640R1]</a></p>
+    </li><li data-md="">
+     <p>In general, exception support adds non-zero overhead to programs that only need error terminates. <a data-link-type="biblio" href="#biblio-p1640r1">[P1640R1]</a></p>
+   </li></ol>
+   <h3 class="heading settled" data-level="2.5" id="error_prop_usability"><span class="secno">2.5. </span><span class="content">Error propagation usability</span><a class="self-link" href="#error_prop_usability"></a></h3>
+   <ol>
+    <li data-md="">
+     <p>Exception syntax works well with constructors and operators.</p>
+    </li><li data-md="">
+     <p>Error code syntax does not work well with constructors and operators.</p>
+    </li><li data-md="">
+     <p>Manual error propagation requires a lot of mistake-prone boilerplate. <a href="#error_prop">§ 3.4 Error propagation</a></p>
+    </li><li data-md="">
+     <p>Forgetting to test for an error code is a common source of bugs. <a href="#error_prop">§ 3.4 Error propagation</a></p>
+    </li><li data-md="">
+     <p>Automatic error propagation adds invisible control flow that can be easy to overlook. <a href="#error_prop">§ 3.4 Error propagation</a></p>
+    </li><li data-md="">
+     <p>Forgetting to account for a propagating exception is a common source of bugs. <a href="#error_prop">§ 3.4 Error propagation</a></p>
+    </li><li data-md="">
+     <p>#SUBJECTIVE# Automatic error propagation is preferable. <a href="#error_prop">§ 3.4 Error propagation</a></p>
+    </li><li data-md="">
+     <p>RAII is an enormous boon to error handling in general. <a href="#error_prop">§ 3.4 Error propagation</a></p>
+    </li><li data-md="">
+     <p>Code that does not use RAII is exceedingly difficult to port to exceptions.</p>
+    </li><li data-md="">
+     <p>The visibility of error handling is a polarizing topic in the C++ community.</p>
     </li><li data-md="">
      <p>Dual error interface libraries are not ideal (e.g. <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">filesystem</c-></code>).</p>
     </li><li data-md="">
      <p>Authors of an API do not always know whether a failure is expected, common, or program-recoverable.</p>
-    </li><li data-md="">
-     <p>The sad path of error code based programs is roughly as analyzable as the happy path. <a href=" #sad_path_analysis">§ 3.20 Tooling analysis of sad paths</a></p>
-    </li><li data-md="">
-     <p>The sad path of exception based programs is much harder to analyze than the happy path. <a href=" #sad_path_analysis">§ 3.20 Tooling analysis of sad paths</a></p>
    </li></ol>
-   <h2 class="heading settled" data-level="3" id="rationale"><span class="secno">3. </span><span class="content">Rationale</span><a class="self-link" href=" #rationale"></a></h2>
-   <h3 class="heading settled" data-level="3.1" id="discuss"><span class="secno">3.1. </span><span class="content">Discussion provides value</span><a class="self-link" href=" #discuss"></a></h3>
-    The continuing error handling discussions serve to remind the committee and the community of forgotten rationale, uncommon use cases, and unfamiliar domains.
-   <p>These discussions could result in new facilities in C++, improved quality of toolchain implementations, or even changes to hardware and software outside the purview of WG21 (e.g. operating systems, GPU silicon, C error handling).</p>
-   <h3 class="heading settled" data-level="3.2" id="eh_off"><span class="secno">3.2. </span><span class="content">Exceptions turned off</span><a class="self-link" href=" #eh_off"></a></h3>
-    The <a data-link-type="biblio" href=" #biblio-scf_2018">[SC++F_2018]</a> and <a data-link-type="biblio" href=" #biblio-scf_2019">[SC++F_2019]</a> results indicate that around half of all developers are not allowed to use exceptions in all projects, and around 20% aren’t allowed to use exceptions at all.
-   <p>The Standard C++ Foundation surveys are more likely to be answered by enfranchised C++ developers, and as a result have a bias.  Unfortunately, we don’t have data to know how it is biased, as it is exceedingly difficult to get data about the "dark matter" programmers.</p>
-   <p>Regardless, the survey data indicates that a significant portion of the C++ community does not use exceptions, even if we don’t know the exact size of that portion.</p>
-   <h3 class="heading settled" data-level="3.3" id="room_for_optimizations"><span class="secno">3.3. </span><span class="content">Room for optimizations</span><a class="self-link" href=" #room_for_optimizations"></a></h3>
-    There are cases where the compiler could detect certain exception patterns and avoid many of the costs of exception handling. <a data-link-type="biblio" href=" #biblio-p1676r0">[P1676R0]</a> and <a data-link-type="biblio" href=" #biblio-glisse2013">[Glisse2013]</a> discuss many of these patterns.
-   <p><a data-link-type="biblio" href=" #biblio-mofh4">[MoFH4]</a> discusses optimizations made to the Microsoft Visual Studio 2019 x64 compiler that substantially reduced size overhead, without breaking ABI.</p>
-   <h3 class="heading settled" data-level="3.4" id="error_prop"><span class="secno">3.4. </span><span class="content">Error propagation</span><a class="self-link" href=" #error_prop"></a></h3>
-    TODO: <a data-link-type="biblio" href=" #biblio-cargill1994">[Cargill1994]</a>
-   <h3 class="heading settled" data-level="3.5" id="real_time"><span class="secno">3.5. </span><span class="content">Real-time environments</span><a class="self-link" href=" #real_time"></a></h3>
-    TODO
-   <h3 class="heading settled" data-level="3.6" id="microcontrollers"><span class="secno">3.6. </span><span class="content">Microcontroller environments</span><a class="self-link" href=" #microcontrollers"></a></h3>
-    TODO
-   <h3 class="heading settled" data-level="3.7" id="kernel"><span class="secno">3.7. </span><span class="content">Kernel environments</span><a class="self-link" href=" #kernel"></a></h3>
-    TODO: <a data-link-type="biblio" href=" #biblio-gylfason2004">[Gylfason2004]</a>
-   <h3 class="heading settled" data-level="3.8" id="baremetal"><span class="secno">3.8. </span><span class="content">Bare metal environments</span><a class="self-link" href=" #baremetal"></a></h3>
-    TODO
-   <h3 class="heading settled" data-level="3.9" id="gpus"><span class="secno">3.9. </span><span class="content">GPU and accelerator environments</span><a class="self-link" href=" #gpus"></a></h3>
-    TODO
-   <h3 class="heading settled" data-level="3.10" id="fpgas"><span class="secno">3.10. </span><span class="content">Direct FPGA environments</span><a class="self-link" href=" #fpgas"></a></h3>
-    TODO
-   <h3 class="heading settled" data-level="3.11" id="unnoticed_fail"><span class="secno">3.11. </span><span class="content">Unimportant failure performance</span><a class="self-link" href=" #unnoticed_fail"></a></h3>
-    TODO: also, work on the title of this section
-   <h3 class="heading settled" data-level="3.12" id="throughput_apps"><span class="secno">3.12. </span><span class="content">Throughput applications</span><a class="self-link" href=" #throughput_apps"></a></h3>
-    TODO: include discussion of correlated errors
-   <h3 class="heading settled" data-level="3.13" id="cant_go_fast_enough"><span class="secno">3.13. </span><span class="content">Performance as a competitive advantage</span><a class="self-link" href=" #cant_go_fast_enough"></a></h3>
-    TODO
-   <h3 class="heading settled" data-level="3.14" id="other_approaches"><span class="secno">3.14. </span><span class="content">Other implementation approaches to exceptions</span><a class="self-link" href=" #other_approaches"></a></h3>
-    TODO: <a data-link-type="biblio" href=" #biblio-renwick2019">[Renwick2019]</a>
-   <h3 class="heading settled" data-level="3.15" id="eh_alloc"><span class="secno">3.15. </span><span class="content">Exception handling allocation</span><a class="self-link" href=" #eh_alloc"></a></h3>
-    TODO
-   <h3 class="heading settled" data-level="3.16" id="tls"><span class="secno">3.16. </span><span class="content">Exception handling and storage that is local to a thread</span><a class="self-link" href=" #tls"></a></h3>
-    TODO
-   <h3 class="heading settled" data-level="3.17" id="dubious_business_value"><span class="secno">3.17. </span><span class="content">Dubious business value</span><a class="self-link" href=" #dubious_business_value"></a></h3>
-    TODO: improve the title
-   <h3 class="heading settled" data-level="3.18" id="n_plus_one"><span class="secno">3.18. </span><span class="content">The N+1 problem</span><a class="self-link" href=" #n_plus_one"></a></h3>
-    TODO
-   <h3 class="heading settled" data-level="3.19" id="using_is_easy"><span class="secno">3.19. </span><span class="content">Exception handling overhead is difficult to avoid</span><a class="self-link" href=" #using_is_easy"></a></h3>
-    TODO
-   <h3 class="heading settled" data-level="3.20" id="sad_path_analysis"><span class="secno">3.20. </span><span class="content">Tooling analysis of sad paths</span><a class="self-link" href=" #sad_path_analysis"></a></h3>
-    TODO
-   <h2 class="heading settled" data-level="4" id="definitions"><span class="secno">4. </span><span class="content">Definitions</span><a class="self-link" href=" #definitions"></a></h2>
-    <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="happy-path">Happy path</dfn> The code path where no errors occur.
+   <h3 class="heading settled" data-level="2.6" id="real_time_summary"><span class="secno">2.6. </span><span class="content">Real-time cases</span><a class="self-link" href="#real_time_summary"></a></h3>
+   <ol>
+    <li data-md="">
+     <p>Table-based exceptions are challenging to use during operations with hard deadlines (i.e. real-time operations). <a href="#real_time">§ 3.5 Real-time environments</a></p>
+    </li><li data-md="">
+     <p>Table-based exceptions are well suited to the no-deadline portions of real-time applications. <a href="#real_time">§ 3.5 Real-time environments</a></p>
+    </li><li data-md="">
+     <p>In some code paths, a 20% reduction in happy path performance is
+ acceptable if it results in a 100x improvement in sad path performance.
+ <a href="#real_time">§ 3.5 Real-time environments</a></p>
+   </li></ol>
+   <h3 class="heading settled" data-level="2.7" id="application_domains"><span class="secno">2.7. </span><span class="content">Application domains</span><a class="self-link" href="#application_domains"></a></h3>
+   <ol>
+    <li data-md="">
+     <p><code class="highlight"><c- k="">try</c-></code>, <code class="highlight"><c- k="">catch</c-></code> and <code class="highlight"><c- k="">throw</c-></code> are not supported in the context of a signal. <a href="http://eel.is/c++draft/support.signal">support.signal</a></p>
+    </li><li data-md="">
+     <p>Table-based exceptions are challenging on microcontrollers due to tight space constraints. <a href="#microcontrollers">§ 3.6 Microcontroller environments</a></p>
+    </li><li data-md="">
+     <p>Implementing full C++ exception support in mainstream operating 
+system kernel environments is either challenging, or impossible, without
+ modifying the operating system kernel itself. <a href="#kernel">§ 3.7 Kernel environments</a></p>
+    </li><li data-md="">
+     <p>Partial C++ exception support is possible in mainstream 
+operating system kernels without modifying the operating system kernel 
+itself. <a href="#kernel">§ 3.7 Kernel environments</a></p>
+    </li><li data-md="">
+     <p>Table-based exceptions are challenging on bare-metal, in part 
+because of the high implementation cost and dependency on operating 
+system facilities. <a href="#baremetal">§ 3.8 Bare metal environments</a></p>
+    </li><li data-md="">
+     <p>Table-based exceptions are challenging on FPGAs because of space constraints, and because of indirect calls. <a href="#fpgas">§ 3.10 Direct FPGA environments</a></p>
+    </li><li data-md="">
+     <p>Table-based exceptions are well suited to applications where 
+extra milliseconds of latency on the failure path will go unnoticed. <a href="#unnoticed_fail">§ 3.11 Non-critical failure performance</a></p>
+    </li><li data-md="">
+     <p>#DUP?# Table-based exceptions are well suited to interactive and
+ low-latency applications where extra milliseconds of latency on the 
+failure path will go unnoticed. <a href="#unnoticed_fail">§ 3.11 Non-critical failure performance</a></p>
+    </li><li data-md="">
+     <p>Table-based exceptions are well suited to throughput-oriented 
+applications where failure is rare and can be modeled with a random 
+(i.e. non-correlated) process. <a href="#throughput_apps">§ 3.12 Throughput applications</a></p>
+    </li><li data-md="">
+     <p>Table-based exceptions are well suited to applications where all speed improvements on the happy path provide value. <a href="#cant_go_fast_enough">§ 3.13 Performance as a competitive advantage</a></p>
+    </li><li data-md="">
+     <p>Flow-control based error handling is challenging on GPUs because
+ it causes divergent code flow, and can inhibit the most valuable 
+optimization in that domain. <a href="#gpus">§ 3.9 GPU and accelerator environments</a></p>
+   </li></ol>
+   <h3 class="heading settled" data-level="2.8" id="eh_alloc_summary"><span class="secno">2.8. </span><span class="content">Exception allocations</span><a class="self-link" href="#eh_alloc_summary"></a></h3>
+   <ol>
+    <li data-md="">
+     <p>Throwing an exception requires a dynamic allocation. <a href="#eh_alloc">§ 3.15 Exception handling allocation</a></p>
+    </li><li data-md="">
+     <p>It is challenging to support heap allocations for exception 
+objects in kernel, microcontroller, bare-metal, and FPGA environments. <a href="#eh_alloc">§ 3.15 Exception handling allocation</a></p>
+    </li><li data-md="">
+     <p>It is challenging to support stack allocations for exception 
+objects in kernel, microcontroller, bare-metal, and FPGA environments, 
+due to limited stack space. <a href="#eh_alloc">§ 3.15 Exception handling allocation</a></p>
+    </li><li data-md="">
+     <p>Exceptions require out-of-band mutable storage that is local to a thread (though not necessarily <i>thread-local-storage</i>). <a href="#tls">§ 3.16 Exception handling and storage that is local to a thread</a></p>
+   </li></ol>
+   <h3 class="heading settled" data-level="2.9" id="error_mechanisms"><span class="secno">2.9. </span><span class="content">Switching error mechanisms</span><a class="self-link" href="#error_mechanisms"></a></h3>
+   <ol>
+    <li data-md="">
+     <p>Migrating a large code base from one error handling strategy to another is a significant undertaking.</p>
+    </li><li data-md="">
+     <p>Many users do not use exceptions because of exception unsafe code. <a href="#dubious_business_value">§ 3.17 Are fast exceptions important enough?</a></p>
+    </li><li data-md="">
+     <p>The business value for implementers to improve the sad path exception performance is dubious. <a href="#dubious_business_value">§ 3.17 Are fast exceptions important enough?</a></p>
+   </li></ol>
+   <h3 class="heading settled" data-level="2.10" id="n_plus_one_summary"><span class="secno">2.10. </span><span class="content">N+1 summary</span><a class="self-link" href="#n_plus_one_summary"></a></h3>
+   <ol>
+    <li data-md="">
+     <p><a data-link-type="biblio" href="#biblio-p0709">[P0709]</a> exceptions are an additional form of error handling. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
+    </li><li data-md="">
+     <p><a data-link-type="biblio" href="#biblio-p0323">[P0323]</a> <code class="highlight"><c- n="">expected</c-></code> is an additional form of error handling. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
+    </li><li data-md="">
+     <p>If <a data-link-type="biblio" href="#biblio-p0709">[P0709]</a> exceptions and / or <code class="highlight"><c- n="">expected</c-></code> are standardized, all prior error handling mechanisms will still be seen in the wild for decades to come. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
+    </li><li data-md="">
+     <p>Users routinely write code that translates between different error handling schemes. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
+    </li><li data-md="">
+     <p>Translating between different error handling schemes usually requires error prone boilerplate. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
+    </li><li data-md="">
+     <p>A new error mechanism may replace one or more old mechanisms in teaching materials. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
+    </li><li data-md="">
+     <p>A new error mechanism may replace one or more old mechanisms in new code bases. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
+   </li></ol>
+   <h3 class="heading settled" data-level="2.11" id="arb_info"><span class="secno">2.11. </span><span class="content">Carrying arbitrary information</span><a class="self-link" href="#arb_info"></a></h3>
+   <ol>
+    <li data-md="">
+     <p>Exceptions allow the transportation of arbitrary error information from a callback, through the invoker.</p>
+    </li><li data-md="">
+     <p>
+      Error codes can be constructed that allow the transportation of 
+arbitrary error information from a callback, through the invoker (e.g. a
+ std::pair
+      <intu0002c stdu0003au0003aany="">).</intu0002c>
+     </p>
+    </li><li data-md="">
+     <p>Error codes, in the general case, cannot be used to propagate error information across code that is unaware of error codes.</p>
+    </li><li data-md="">
+     <p>Exceptions, in the general case, cannot be used to propagate error information across code that is unaware of C++ exceptions.</p>
+   </li></ol>
+   <h3 class="heading settled" data-level="2.12" id="tooling"><span class="secno">2.12. </span><span class="content">Tooling</span><a class="self-link" href="#tooling"></a></h3>
+   <ol>
+    <li data-md="">
+     <p>The sad path of integer error code based programs is roughly as analyzable as the happy path. <a href="#sad_path_analysis">§ 3.21 Tooling analysis of sad paths</a></p>
+    </li><li data-md="">
+     <p>The sad path of dynamically-typed exception based programs is much harder to analyze than the happy path. <a href="#sad_path_analysis">§ 3.21 Tooling analysis of sad paths</a></p>
+   </li></ol>
+   <h2 class="heading settled" data-level="3" id="rationale"><span class="secno">3. </span><span class="content">Rationale</span><a class="self-link" href="#rationale"></a></h2>
+   <h3 class="heading settled" data-level="3.1" id="discuss"><span class="secno">3.1. </span><span class="content">Discussion provides value</span><a class="self-link" href="#discuss"></a></h3>
+    The continuing error handling discussions serve to remind the 
+committee and the community of forgotten rationale, uncommon use cases, 
+and unfamiliar domains. 
+   <p>These discussions could result in new facilities in C++, improved 
+quality of toolchain implementations, or even changes to hardware and 
+software outside the purview of WG21 (e.g. operating systems, GPU 
+silicon, C error handling).</p>
+   <h3 class="heading settled" data-level="3.2" id="eh_off"><span class="secno">3.2. </span><span class="content">Exceptions turned off</span><a class="self-link" href="#eh_off"></a></h3>
+    The <a data-link-type="biblio" href="#biblio-scf_2018">[SC++F_2018]</a>, <a data-link-type="biblio" href="#biblio-scf_2019">[SC++F_2019]</a>, and <a data-link-type="biblio" href="#biblio-scf_2020">[SC++F_2020]</a>
+ results indicate that around half of all developers are not allowed to 
+use exceptions in all projects, and more than 15% aren’t allowed to use 
+exceptions at all. 
+   <p>The Standard C++ Foundation surveys are more likely to be answered
+ by enfranchised C++ developers, and as a result have a bias.  
+Unfortunately, we don’t have data to know how it is biased, as it is 
+exceedingly difficult to get data about the "dark matter" programmers.</p>
+   <p>Regardless, the survey data indicates that a significant portion 
+of the C++ community does not use exceptions, even if we don’t know the 
+exact size of that portion.</p>
+   <h3 class="heading settled" data-level="3.3" id="room_for_optimizations"><span class="secno">3.3. </span><span class="content">Room for optimizations</span><a class="self-link" href="#room_for_optimizations"></a></h3>
+    There are cases where the compiler could detect certain exception 
+patterns and avoid many of the costs of exception handling. <a data-link-type="biblio" href="#biblio-p1676r0">[P1676R0]</a> and <a data-link-type="biblio" href="#biblio-glisse2013">[Glisse2013]</a> discuss many of these patterns. 
+   <p><a data-link-type="biblio" href="#biblio-mofh4">[MoFH4]</a> 
+discusses optimizations made to the Microsoft Visual Studio 2019 x86_64 
+compiler that substantially reduced size overhead, without breaking ABI.</p>
+   <h3 class="heading settled" data-level="3.4" id="error_prop"><span class="secno">3.4. </span><span class="content">Error propagation</span><a class="self-link" href="#error_prop"></a></h3>
+    Programs based on error codes are usually littered with statements of the form <code class="highlight"><c- k="">if</c-><c- p="">(</c-><c- n="">FAILED</c-><c- p="">(</c-><c- n="">err</c-><c- p="">))</c-> <c- p="">{</c-><c- k="">return</c-> <c- n="">err</c-><c- p="">;}</c-></code>.
+  Programs based on error codes where the error code is the return value
+ also have boilerplate where they need to declare out-parameters in 
+advance of a function call, and even more boilerplate when results of 
+functions need to be composed. 
+   <p>Error codes can be accidentally ignored.  Doing "the right thing" 
+requires the programmer to write additional code in order to avoid "the 
+wrong thing". <code class="highlight"><c- p="">[[</c-><c- n="">nodiscard</c-><c- p="">]]</c-></code> substantially improves this situation.</p>
+   <p><a data-link-type="biblio" href="#biblio-cargill1994">[Cargill1994]</a>
+ covers many pitfalls of forgotten exceptions, especially those involved
+ when calling functions associated with template argument types (e.g. 
+potentially throwing copy constructors).  The techniques and idioms 
+available in 2020 are significantly more advanced than those that were 
+well known in 1994, but the problems mentioned in the article still 
+exist today.</p>
+   <p>Whether using error codes or exceptions, RAII makes code 
+substantially more mistake-resistant.  Success paths, error paths, early
+ returns, and exceptions can all be handled through the same mechanism.</p>
+   <h3 class="heading settled" data-level="3.5" id="real_time"><span class="secno">3.5. </span><span class="content">Real-time environments</span><a class="self-link" href="#real_time"></a></h3>
+    In real-time environments, the worst case execution time (WCET) in 
+certain code paths must be below a certain threshold for a system to be 
+correct.  The thresholds are often on the order of hundreds of 
+microseconds.  Modern table-based exception implementations take 
+multiple microseconds to throw an exception on the sad path in the best 
+of cases, while taking nanoseconds to run in the happy path <a data-link-type="biblio" href="#biblio-p1886r0">[P1886R0]</a>.
+  This wide disparity in execution times makes WCET budgeting difficult.
+  For WCET purposes, developers need to minimize the maximum runtime, 
+and that usually means choosing something besides table-based 
+exceptions.  Modern table-based exception implementations will often 
+allocate memory, and this can reduce the level of determinism in the 
+timings. 
+   <p>Not every code path in a real-time environment needs to track 
+WCET.  In many environments, there will be low priority tasks that do 
+not have hard deadlines.  In these code paths, table-based exceptions 
+are fine.</p>
+   <h3 class="heading settled" data-level="3.6" id="microcontrollers"><span class="secno">3.6. </span><span class="content">Microcontroller environments</span><a class="self-link" href="#microcontrollers"></a></h3>
+    Microcontrollers are notoriously space constrained.  These systems 
+can range from having megabytes of RAM and ROM to having bytes of ROM 
+and only registers for mutable state.  Increasing the amount of storage 
+available on microcontrollers is often a complicated affair.  The next 
+larger offering will often take more physical space, consume more power,
+ and have a different pin-out.  A larger part almost certainly costs 
+more, cutting into profit margins. 
+   <p>Table-based exceptions have a large one-time cost for the exception handling machinery <a data-link-type="biblio" href="#biblio-p1640r1">[P1640R1]</a>.
+  In some systems, this one-time cost exceeds the entire space budget of
+ the program.  The incremental cost for table-based exceptions is larger
+ than that of integer error codes, so at no point do you "break even".  
+Even if the incremental costs were smaller, it is unlikely that a 
+microcontroller based program would be capable of growing large enough 
+to gain the benefit, without going over the size budget.</p>
+   <h3 class="heading settled" data-level="3.7" id="kernel"><span class="secno">3.7. </span><span class="content">Kernel environments</span><a class="self-link" href="#kernel"></a></h3>
+    Some aspects of exception handling require storage that is local to a thread (<a href="#tls">§ 3.16 Exception handling and storage that is local to a thread</a>).
+  Microsoft Windows, Linux, Apple OSX, and the various BSDs do not 
+implement arbitrary TLS that is exposed to driver developers.  This 
+means that implementing these aspects of exception handling require one 
+of the following tactics: 
+   <ol>
+    <li data-md="">
+     <p>Modify the operating system.</p>
+    </li><li data-md="">
+     <p>Implement a form of TLS that is compatible with the OS, but doesn’t require modifying the OS.</p>
+   </li></ol>
+   <p>In kernel mode, most operating systems have some concept of a 
+thread ID.  Such a thread ID can be used to construct a global 
+associative container correlating thread ID to some arbitrary state.  A 
+map like this would further degrade performance in the <code class="highlight"><c- k="">throw</c-></code>
+ code path, and introduce an additional point of failure, but it could 
+be made conforming.  No known runtime implementation takes this approach
+ though.</p>
+   <p><a data-link-type="biblio" href="#biblio-baker2017">[Baker2017]</a> and <a data-link-type="biblio" href="#biblio-quinn2016">[Quinn2016]</a>
+ have demonstrated working C++ exceptions in the Windows kernel, but 
+both of those were using hypervisors, and involved little interaction 
+with the Windows kernel.</p>
+   <p><a data-link-type="biblio" href="#biblio-ntke_cpprtl">[ntke_cpprtl]</a> does not appear to support <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">uncaught_exceptions</c-></code> in the Windows kernel.</p>
+   <p><a data-link-type="biblio" href="#biblio-gylfason2004">[Gylfason2004]</a>
+ is able to support full C++ exceptions in a modified Linux kernel.  The
+ modification adds a small size overhead to every kernel mode thread, 
+even those that do not use C++.</p>
+   <p>In each of these cases, a very useful subset of C++ exceptions is 
+still available, even without changing the kernel code or 
+re-implementing TLS.  Users can <code class="highlight"><c- k="">throw</c-></code> and <code class="highlight"><c- k="">catch</c-></code> arbitrary types, while invoking the correct destructors along the way.</p>
+   <h3 class="heading settled" data-level="3.8" id="baremetal"><span class="secno">3.8. </span><span class="content">Bare metal environments</span><a class="self-link" href="#baremetal"></a></h3>
+    Note: Bare metal environments are often associated with real-time 
+applications and microcontrollers.  While this is often the case, bare 
+metal challenges are also an issue for the early stages of a server, 
+desktop, or mobile OS boot process.  These environments have ample RAM 
+and storage space, and often have multiple hardware threads available. 
+   <p>Some aspects of table-based exception handling require storage that is local to a thread (<a href="#tls">§ 3.16 Exception handling and storage that is local to a thread</a>).
+  Compilers and library runtimes typically implement this in terms of 
+thread local storage.  Thread local storage is traditionally an 
+operating system facility.  Implementing thread local storage requires 
+agreement between the operating environment, the compiler, the linker, 
+and the runtime.  Each of these pieces may be implemented by different 
+vendors.</p>
+   <p>The allocation of the exception object can be an issue in bare metal environments (<a href="#eh_alloc">§ 3.15 Exception handling allocation</a>).</p>
+   <p>None of these technical concerns are an issue for error codes.</p>
+   <p>If the operating environment and the toolchain do not have a 
+working, vendor supplied implementation of exceptions, then many 
+programmers will choose to use error codes, rather than fix the 
+toolchain and operating environment.</p>
+   <h3 class="heading settled" data-level="3.9" id="gpus"><span class="secno">3.9. </span><span class="content">GPU and accelerator environments</span><a class="self-link" href="#gpus"></a></h3>
+    TODO: Get Olivier to review this. 
+   <p>Flow-control based error handling is challenging on GPUs because 
+it causes divergent code flow, and can inhibit the most valuable 
+optimization in that domain.  I define flow-control based error handling
+ as any error handling that changes the main sequence of instructions 
+executed.  This covers exception-based programming models, error code 
+based programming models, and even things like <code class="highlight"><c- n="">expected</c-></code>.
+  Tools like floating-point NaN propagation are an alternate, but 
+unpopular way to propagate errors in a way that doesn’t suffer from 
+divergent control flow.</p>
+   <p>Potentially divergent control flow is substantially slower than 
+coherent control flow.  A different set of instructions needs to be 
+generated to handle potentially divergent control flow.  This extra code
+ often involves setting up execution masks and dealing with their 
+overhead.  Distant, non-call based control transfers (e.g. <code class="highlight"><c- n="">setjmp</c-></code>)
+ have additional implementation challenges in some existing hardware.  
+In addition, if any threads take the sad path, performance is negatively
+ affected for threads on the happy path.</p>
+   <p>By default, in C++, every function has the potential to throw and 
+introduce an extra control flow edge into the caller.  This default 
+makes it easy to accidentally introduce divergent code flow into code 
+that has no need of an error path.  The default adds verbosity to the 
+common case in GPU programming.</p>
+   <h3 class="heading settled" data-level="3.10" id="fpgas"><span class="secno">3.10. </span><span class="content">Direct FPGA environments</span><a class="self-link" href="#fpgas"></a></h3>
+    TODO: Get Ronan Keryell to review this 
+   <p>I use the term "direct FPGA" to mean that C++ code is synthesized 
+into a netlist.  This is in opposition to use cases that have a CPU or 
+microcontroller programmed into the FPGA fabric, with a program running 
+on the CPU or microcontroller.</p>
+   <p>Many constructs in C and C++ can be converted into an electronic 
+circuit in a straightforward way.  Indirect calls, through function 
+pointers, virtual calls, and table-based stack unwinding, are all 
+challenges.  One does not simply "jump" from one portion of an FPGA to 
+another portion of the FPGA that has the logic that needs to run.  
+Tackling this challenge is an ongoing area of research.</p>
+   <p>FPGAs are heavily space constrained, similar to microcontrollers (<a href="#microcontrollers">§ 3.6 Microcontroller environments</a>).
+  Code size is even more constrained though, as code goes into FPGA 
+gates, and FPGA gates are significantly more expensive than RAM.</p>
+   <h3 class="heading settled" data-level="3.11" id="unnoticed_fail"><span class="secno">3.11. </span><span class="content">Non-critical failure performance</span><a class="self-link" href="#unnoticed_fail"></a></h3>
+    There are a great many applications where the performance on the failure path is of low importance. 
+   <p>In many interactive applications, a user interaction will often 
+cause some operation to take place, and if that operation fails, then a 
+dialog, or some other kind of user interaction is shown (e.g. opening a 
+document of some kind).  The value of the program is the same whether 
+the dialog shows up in 1 millisecond or 50 milliseconds.</p>
+   <p>There are non-interactive applications that care a great deal about latency on the success path (<a href="#cant_go_fast_enough">§ 3.13 Performance as a competitive advantage</a>),
+ but don’t care about performance on the failure path.  In the failure 
+cases, no transaction needs to happen, so it is acceptable to take a 
+longer amount of time, so long as the latency of the next success path 
+operation is unaffected.</p>
+   <p>There are non-interactive simulation and modeling applications 
+(e.g. high-performance computing) where no exceptions happen during a 
+successful simulation, and an exception is only thrown during an 
+unsuccessful run.  When these exceptions happen, it normally indicates 
+some kind of failure that requires human intervention, like adjusting 
+the starting parameters, or freeing up hard disk space, or plugging a 
+network cable back in.  A few extra milliseconds to account for stack 
+unwinding is perfectly acceptable in these circumstances.</p>
+   <h3 class="heading settled" data-level="3.12" id="throughput_apps"><span class="secno">3.12. </span><span class="content">Throughput applications</span><a class="self-link" href="#throughput_apps"></a></h3>
+    TODO: anyone have a better "errors are random" example than dropped network packets? 
+   <p>In some applications, failure is rare and largely random.  Suppose
+ you have an application that is sending terabytes of information over 
+an unreliable network.  Suppose that over a long enough time period, 
+only 1 in 100,000 packets are dropped.  In such an application, 
+momentary failure is expected to happen on occasion, but success is by 
+far the most common case.  In such an application, table-based 
+exceptions could provide better throughput than error codes, despite the
+ fact that the sad path for table-based exceptions is so slow.</p>
+   <p>Note that there are substantial caveats to the suitability of 
+table-based exceptions in this path.  The failures need to be safe to 
+model as uniformly distributed failures over realistic application run 
+times.  This is a dubious claim for the networking example above.  In 
+real networks, packet loss isn’t entirely random.  If packet X was 
+dropped, packet X+1 is substantially more likely to be dropped than a 
+packet chosen at random.  This clustering of errors may cause a 
+cascading series of failures that a single random dropped packet would 
+not cause.  Packet loss can also be directly instigated by a malicious 
+actor.  An attacker could leverage the performance difference in the sad
+ path vs. the happy path, and that difference could lead to a 
+denial-of-service attack.</p>
+   <h3 class="heading settled" data-level="3.13" id="cant_go_fast_enough"><span class="secno">3.13. </span><span class="content">Performance as a competitive advantage</span><a class="self-link" href="#cant_go_fast_enough"></a></h3>
+    The value of a performance gain varies across domains and 
+applications.  In some applications, extra performance gains past a 
+certain threshold are largely meaningless.  Once the application has 
+reached it’s performance goal, it is going "fast enough".  Some 
+applications and domains either have no such upper limit, or the limit 
+is sufficiently distant from the current state of the art to be 
+unreachable. 
+   <p>Latency sensitive financial operations are an example of an 
+application where all performance gains are beneficial.  In some of 
+these operations, the absolute performance doesn’t matter.  What matters
+ is whether you are faster than your competitor.  The performance on the
+ sad path doesn’t have these same constraints.  This usually means that 
+programmers are willing to make substantial sacrifices to sad path 
+performance in order to get any benefit to happy path performance.</p>
+   <p>Table-based exceptions provide such a trade-off.  Extraordinary 
+effort is taken on behalf of the implementation to ensure that the happy
+ path is as fast as can be, at the expense of a slow sad path.  This is a
+ good trade-off for applications that "can’t go fast enough".</p>
+   <h3 class="heading settled" data-level="3.14" id="other_approaches"><span class="secno">3.14. </span><span class="content">Other implementation approaches to exceptions</span><a class="self-link" href="#other_approaches"></a></h3>
+    There are two major strategies to implementing standards conforming C++ exceptions: <a data-link-type="dfn" href="#table-based-exceptions" id="ref-for-table-based-exceptions①">table-based exceptions</a> and <a data-link-type="dfn" href="#frame-tracking-exceptions" id="ref-for-frame-tracking-exceptions">frame-tracking exceptions</a>.  There are multiple implementations and ABIs of each of these strategies in use today: 
+   <ul>
+    <li data-md="">
+     <p>Table-based exceptions</p>
+     <ul>
+      <li data-md="">
+       <p>GCC, Clang, and Intel implementations using the Itanium ABI <a data-link-type="biblio" href="#biblio-itaniumehabi">[ItaniumEHABI]</a>, notably on x86_64</p>
+      </li><li data-md="">
+       <p>GCC and Clang implementations using the EHABI, notably on some ARM platforms</p>
+      </li><li data-md="">
+       <p>Four different iterations of exceptions on Visual Studio x86_64</p>
+     </li></ul>
+    </li><li data-md="">
+     <p>Frame-tracking</p>
+     <ul>
+      <li data-md="">
+       <p>Various implementations of "SJLJ" exceptions (setjmp / longjmp), most commonly used on mingw32</p>
+      </li><li data-md="">
+       <p>Three iterations of exceptions on Visual Studio x86</p>
+     </li></ul>
+   </li></ul>
+   <p>In general, the market has converged on table-based exceptions, 
+and the remaining frame-tracking implementations exist largely for 
+compatibility reasons.  The dominant voices in the C++ community and 
+market prefer the inherent trade offs of table-based exceptions to those
+ of frame-tracking.  Frame-tracking looks really bad when comparing 
+Visual Studio’s x86 implementation (frame-tracking) to Visual Studio’s 
+x86_64 implementation (table-based). <a data-link-type="biblio" href="#biblio-p1886r0">[P1886R0]</a> Shows the x86_64 implementation having faster happy path and sad path execution times. <a data-link-type="biblio" href="#biblio-p1640r1">[P1640R1]</a> show higher incremental error-neutral and error handling space costs for the x86 implementation.</p>
+   <p>However, there are other approaches to frame tracking. <a data-link-type="biblio" href="#biblio-renwick2019">[Renwick2019]</a>
+ discusses a frame-tracking implementation that performs orders of 
+magnitude better than table-based exceptions in the sad path, while 
+having very similar performance on the happy path.  The implementation 
+is also able to avoid pulling in heavy-weight runtime support.  The 
+improved sad path execution time is ideal for systems that are concerned
+ about worst case execution time.</p>
+   <h3 class="heading settled" data-level="3.15" id="eh_alloc"><span class="secno">3.15. </span><span class="content">Exception handling allocation</span><a class="self-link" href="#eh_alloc"></a></h3>
+    The Itanium ABI requires thrown exception objects to be placed in a 
+non-local location, frequently the heap.  Stateless, well-known 
+exception types can potentially be stored and thrown as global 
+singletons.  Heap allocation is challenging in environments that do not 
+support the heap, or do not have a single appropriate approach for 
+allocating from the heap.  In order to mitigate the risk of running out 
+of memory during an exception throw, some implementations have a 
+fall-back buffer.  This fall-back buffer is often too expensive in 
+memory constrained environments. 
+   <p>Other ABIs can store thrown exceptions in other ways, but this 
+storage is either forced to be a fixed size, or dynamic in some way or 
+another.  In the Microsoft implementations (x86 and x86-64), a dynamic 
+stack allocation is made, and the thrown exception is stored there.  The
+ Microsoft x86-64 implementation of exceptions consumes roughly 9KB of 
+stack in order to rethrow an exception.  9KB is larger that the entire 
+stack on some microcontroller environments.  A space constrained 
+implementation would need to be more stack-space efficient than 9KB per 
+rethrow.</p>
+   <h3 class="heading settled" data-level="3.16" id="tls"><span class="secno">3.16. </span><span class="content">Exception handling and storage that is local to a thread</span><a class="self-link" href="#tls"></a></h3>
+    <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">uncaught_exceptions</c-></code>, <code class="highlight"><c- k="">throw</c-><c- p="">;</c-></code>, and <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">current_exception</c-></code> are all "non-local" facilities that impose additional requirements on exception handling implementations beyond the basic, <code class="highlight"><c- k="">throw</c-></code>, <code class="highlight"><c- k="">catch</c-></code>,
+ and destructor requirements.  Each of the non-local facilities takes no
+ parameters, but still yield state about the current state of the 
+exception handling machinery.  The common way to implement these 
+non-local facilities is with thread-local storage. <code class="highlight"><c- k="">throw</c-></code> will store information in a thread-local variable, the non-local facilities will use the data, and <code class="highlight"><c- k="">catch</c-></code>
+ will clean it up.  Users generally expect to be able to query this 
+information, even when calling across non-C++ languages.  For example, 
+if a destructor calls into a C function, and the C function calls into 
+another C++ free function, the free function is expected to be able to 
+get valid results from <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">uncaught_exceptions</c-></code>. 
+   <p>Thread local storage is usually implemented in terms of a reserved
+ register that points to a thread control block.  The thread control 
+block contains information such as the thread ID, a pointer to the base 
+of the stack, and pointer(s) to thread local storage.  The <code class="highlight"><c- k="">thread_local</c-></code>
+ keyword in particular usually requires special linker and OS support in
+ order to make it efficient.  An inefficient implementation of the <code class="highlight"><c- k="">thread_local</c-></code> keyword can use a locked map with the thread ID as a key.</p>
+   <p>If the implementation is restricted to a single thread, then a 
+global can be used.  If the implementation has substantial control over 
+the ABI and calling conventions of the system, then a register can be 
+reserved for passing around the exception state.  A hidden parameter can
+ be used to pass along exception state, but the state needs to be passed
+ to _all_ functions, even destructors and <code class="highlight"><c- k="">noexcept</c-></code> functions, as those functions can (and do) use <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">uncaught_exceptions</c-></code>, <code class="highlight"><c- k="">throw</c-><c- p="">;</c-></code> and <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">current_exception</c-></code>.
+  Note that the hidden parameter and exception state register approaches
+ are isomorphic to thread local storage.  Also note that these end up 
+being platform requirements, and not just C++ requirements.  In order to
+ support the cross-language use cases, these hidden parameters and 
+reserved registers must be respected by all languages in use, and not 
+just C++.  In these case, the platform ABI imposes a cost on all code, 
+even non-C++ code, and even when no C++ code is being invoked at the 
+time.</p>
+   <p>None of the major desktop operating systems on the market today 
+support arbitrary thread local storage in the kernel (Windows, Linux, 
+OSX, BSD).  All have a thread ID available though, so inefficient <code class="highlight"><c- k="">thread_local</c-></code> storage could be implemented.  In the embedded space, most of the off-the-shelf RTOS’s do not support the <code class="highlight"><c- k="">thread_local</c-></code>
+ keyword, and do not implement the OS side of the complicated hand shake
+ that the compilers, linkers, and runtimes expect.  Embedded RTOS’s 
+usually do have thread IDs available, and they also frequently support 
+adding particular items to thread local storage, such as <code class="highlight"><c- n="">errno</c-></code>.</p>
+   <h3 class="heading settled" data-level="3.17" id="dubious_business_value"><span class="secno">3.17. </span><span class="content">Are fast exceptions important enough?</span><a class="self-link" href="#dubious_business_value"></a></h3>
+    Suppose implementers research ways to make their C++ exception 
+implementation faster on the sad path, and suppose they wildly succeed. 
+ Somehow, the implementers produced an implementation that has the same 
+happy path characteristics as today’s implementations, but is only twice
+ as slow as error codes on the sad path, rather than more than 100 times
+ slower <a data-link-type="biblio" href="#biblio-p1886r0">[P1886R0]</a>. According to <a data-link-type="biblio" href="#biblio-scf_2020">[SC++F_2020]</a>,
+ this would, at best, allow 25% of current non-exception users to start 
+using exceptions.  The other non-users of exceptions are blocked on 
+other reasons.  Some of the users are based on technical reasons, like 
+space overhead.  Others are non-users for more philosophical reasons, 
+such as a dislike of invisible propagation. 
+   <p>When an implementer works on any feature, including exceptions, 
+there is an opportunity cost.  Is working on exceptions more valuable 
+than squeezing half a percent more throughput out of the automatic 
+vectorizer?  Is it more valuable than adding another warning to the 
+front end?  One way that implementers gauge how important a change is is
+ by looking at quantity of bug reports.  A search for "exception slow" 
+on the GCC bug tracker has 21 hits, but only 2 of those (bugs <a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=92823">92823</a> and <a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=68606">68606</a>
+ )  are really C++ exception handling related.  On the LLVM bug tracker,
+ there are 18 hits, but again, only 2 for C++ exception handling (bugs <a href="https://bugs.llvm.org/show_bug.cgi?id=1916">1916</a> and <a href="https://bugs.llvm.org/show_bug.cgi?id=17467">17467</a>
+ ) .  Users have been trained to not put exceptions in performance 
+critical areas, so users rarely complain about exception performance 
+because there aren’t exceptions in their performance critical areas.</p>
+   <p>Now, suppose that wg21 does something to exceptions to make them 
+more appealing to users that do not currently use exceptions.  Would we 
+end up compromising the design of C++ to try to satisfy a group of 
+developers that won’t ever be satisfied?  How many developers do we need
+ to migrate to consider our efforts a success?</p>
+   <h3 class="heading settled" data-level="3.18" id="n_plus_one"><span class="secno">3.18. </span><span class="content">The N+1 problem</span><a class="self-link" href="#n_plus_one"></a></h3>
+    There is no shortage of error handling mechanisms in the standard 
+library and in the wild today.  The "N" is already a large number.  The C
+ portions of the standard library use integer error codes and <code class="highlight"><c- n="">errno</c-></code>. <code class="highlight"><c- n="">qsort</c-></code> and <code class="highlight"><c- n="">bsearch</c-></code> take callbacks, and those callbacks are allowed to throw exceptions through <code class="highlight"><c- n="">qsort</c-></code> and <code class="highlight"><c- n="">bsearch</c-></code>.  In the filesystem library, both <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">exception</c-></code> based exceptions and <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">error_code</c-></code> based error codes are used. 
+   <p>Even if the C++ standard does not add new error handling mechanisms, the community will likely do so. <code class="highlight"><c- n="">expected</c-></code>, <code class="highlight"><c- n="">outcome</c-></code>, and <code class="highlight"><c- n="">LEAF</c-></code> are all community libraries dealing with error handling.  More will continue to be authored.</p>
+   <p>It is common place for users to need to translate the results of 
+various error handling mechanisms into the error handling mechanism that
+ their program uses.  This happens routinely when a C++ program using 
+exceptions calls into a C library that uses callbacks and error codes.  
+The translation is not difficult, though it is verbose and error prone 
+(lots of <code class="highlight"><c- k="">try</c-></code> / <code class="highlight"><c- k="">catch</c-></code> blocks and error testing <code class="highlight"><c- k="">if</c-></code> statements).</p>
+   <p>Creating a new error handling mechanism does not make the old 
+mechanisms go away.  If you had N mechanisms before, a new mechanism, no
+ matter how superior a choice, will leave you with N+1 mechanisms.  The 
+existence of <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">error_code</c-></code> in C++11 did not make exceptions, <code class="highlight"><c- n="">errno</c-></code>,
+ or integer error codes leave the ecosystem.  Each of these error 
+mechanisms is likely to remain in use for decades to come.  Similarly, 
+P0709 exceptions and <code class="highlight"><c- n="">expected</c-></code> are unlikely to make old error handling strategies disappear, even if P0709 exceptions and <code class="highlight"><c- n="">expected</c-></code> become the most common error handling strategies.</p>
+   <p>A new error handling mechanism could change how we teach error 
+handling, and how we write error handling in new code.  This has 
+happened in the past, and could happen again.  There is very little 
+educational effort spent on <code class="highlight"><c- n="">errno</c-></code> best practices, and very little new C++ code is written with <code class="highlight"><c- n="">errno</c-></code> as the primary error handling mechanism.  The main interaction with <code class="highlight"><c- n="">errno</c-></code>
+ is in handling the errors and translating them to newer mechanisms.  A 
+new error handling mechanism can aspire to replace other mechanisms as 
+well as <code class="highlight"><c- n="">errno</c-></code> has been replaced.</p>
+   <h3 class="heading settled" data-level="3.19" id="global_decision"><span class="secno">3.19. </span><span class="content">Local vs. global tradeoffs with error handling</span><a class="self-link" href="#global_decision"></a></h3>
+    There are cases where there are different needs for error handling 
+performance within the same program, translation unit, or even function.
+  Users cannot make a local decision on whether exceptions prefer happy 
+path performance or worst-case-execution-time performance.  Users can 
+make local choices as to whether to use exceptions or not, with the 
+assumption that exceptions prefer happy path performance.  Choosing 
+something other than exceptions will often lead to impoverished syntax. 
+   <p>Imagine a server application that can normally handle 10,000 
+concurrent clients.  It has a function that looks up a trusted string 
+using an integer key from an untrusted source.  During normal usage with
+ no malicious users, the untrusted ID will always correspond to an item 
+in the map.  A malicious user can trivially choose a number that is not 
+in the map.  A naive implementation may look like this:</p>
+<pre class="highlight"><c- k="">const</c-> <c- n="">std</c-><c- o="">::</c-><c- n="">map</c-><c- o="">&lt;</c-><c- b="">int</c-><c- p="">,</c-> <c- n="">std</c-><c- o="">::</c-><c- n="">string</c-><c- o="">&gt;</c-> <c- n="">global_map</c-> <c- o="">=</c-> <c- p="">{</c-> <c- d="">/*elements*/</c-> <c- p="">};</c->
+<c- n="">std</c-><c- o="">::</c-><c- n="">string</c-> <c- n="">get_name</c-><c- p="">(</c-><c- b="">int</c-> <c- n="">untrusted_id</c-><c- p="">)</c-> <c- p="">{</c->
+    <c- k="">return</c-> <c- n="">global_map</c-><c- p="">.</c-><c- n="">at</c-><c- p="">(</c-><c- n="">untrusted_id</c-><c- p="">);</c->
+<c- p="">}</c->
+</pre>
+   There are two main points of failure in get_name.  The lookup could fail, or the copy construction of <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">string</c-></code> could fail. 
+   <p>Since these strings are known at compile time, it would be 
+reasonable to assume that they are of a relatively small size (i.e. not 
+megabytes or larger), and therefore, the copy construction of the string
+ will almost never fail.  Table-based exceptions seem reasonable as a 
+way to handle the potential <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">string</c-></code> failures.</p>
+   <p>The lookup failure is more problematic.  Failure to find the item 
+will trigger an exception.  Semantically, an exception is a reasonable 
+thing to do here, as this is an error path.  Syntactically, an exception
+ is reasonable, as now the calling code doesn’t need to worry about 
+whether the return value exists or not.  However, if the underlying 
+implementation is a table-based exception implementation, then this 
+exception will consume a large amount of CPU, and such CPU usage can be 
+used as part of a denial-of-service attack.  The server that could 
+normally handle 10,000 concurrent clients may now only be able to deal 
+with 5,000 malicious requests.</p>
+   <p>An alternative implementation may use <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">optional</c-></code> to represent a possible failure:</p>
+<pre class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">optional</c-><c- o="">&lt;</c-><c- n="">std</c-><c- o="">::</c-><c- n="">string</c-><c- o="">&gt;</c-> <c- n="">get_opt_name</c-><c- p="">(</c-><c- b="">int</c-> <c- n="">untrusted_id</c-><c- p="">)</c-> <c- p="">{</c->
+    <c- k="">auto</c-> <c- n="">it</c-> <c- o="">=</c-> <c- n="">global_map</c-><c- p="">.</c-><c- n="">find</c-><c- p="">(</c-><c- n="">untrusted_id</c-><c- p="">);</c->
+    <c- k="">if</c-><c- p="">(</c-><c- n="">it</c-> <c- o="">==</c-> <c- n="">global_map</c-><c- p="">.</c-><c- n="">end</c-><c- p="">())</c->
+        <c- k="">return</c-> <c- p="">{};</c->
+    <c- k="">return</c-> <c- n="">it</c-><c- o="">-&gt;</c-><c- n="">second</c-><c- p="">;</c->
+<c- p="">}</c->
+</pre>
+   This code has similar performance for both successful and failed 
+lookups, which is desirable.  However, it takes more code to express 
+this, and the usage of this function is also more complicated. <code class="highlight"><c- k="">auto</c-> <c- n="">name</c-> <c- o="">=</c-> <c- n="">get_opt_name</c-><c- p="">(</c-><c- n="">id</c-><c- p="">);</c-> <c- n="">name</c-><c- o="">-&gt;</c-><c- n="">c_str</c-><c- p="">();</c-></code>
+ compiles, but invokes undefined behavior if the item isn’t present.  We
+ have gained performance, but lost notational convenience.  Currently, 
+if users want portable worst-case-execution-time performance, they lose 
+notational convenience.  There is no way to portably express that a 
+program should prefer happy path execution time in its error handling 
+code. 
+   <h3 class="heading settled" data-level="3.20" id="using_is_easy"><span class="secno">3.20. </span><span class="content">Exception handling overhead is difficult to avoid</span><a class="self-link" href="#using_is_easy"></a></h3>
+    When a compiler sees a function call, and the function call is not marked <code class="highlight"><c- k="">noexcept</c-></code>,
+ the safe thing for the compiler to do is to generate exception 
+bookkeeping code and data structures.  If the compiler has suitable 
+visibility into the function and can prove that it won’t throw, then the
+ compiler can generate less bookkeeping.  In many applications, it is 
+difficult or impossible to get global visibility in order to avoid 
+bookkeeping.  It is difficult to analyze code in pre-built static 
+libraries.  It is difficult to determine, at compile time, the target of
+ indirect calls through virtual functions and function pointers to see 
+if all possible targets avoid exceptional paths.  It is generally 
+impossible for the compiler to infer anything about the exception status
+ of code in a dynamic library if it isn’t explicitly marked as noexcept.
+  This means that the compiler usually needs to do the safe thing, and 
+include exception handling machinery and bookkeeping for large portions 
+of the program.  This has a size cost.  It also introduces places where 
+the compiler believes there are extra code flow paths where they may not
+ exist, and those extra code flow paths can inhibit optimizations. 
+   <p>This is particularly concerning when calling into non-C++ code.  
+Non-C++ code is unlikely to throw exceptions, and it is unlikely to mark
+ such functions as noexcept.  The C++ compiler does not know that 
+though, and generates conservative code as a result.</p>
+   <h3 class="heading settled" data-level="3.21" id="sad_path_analysis"><span class="secno">3.21. </span><span class="content">Tooling analysis of sad paths</span><a class="self-link" href="#sad_path_analysis"></a></h3>
+    TODO: Get this section reviewed by full time static analyzer folks.  Aaron Ballman, Tom Honerman 
+   <p>There is a spectrum of difficulty in dealing with the various 
+error handling schemes, with integer error codes on one side, and 
+dynamically-typed exceptions on the other.  Error codes with dynamic 
+aspects and statically-typed exceptions (i.e. throwing and catching a 
+non-polymorphic type) lie somewhere in between these two extremes.</p>
+   <p>Static analyzers routinely analyze code like the following:</p>
+<pre class="highlight"><c- b="">int</c-> <c- nf="">compute_velocity</c-><c- p="">(</c-><c- k="">const</c-> <c- n="">point_container</c-> <c- o="">&amp;</c-><c- n="">points</c-><c- p="">);</c->
+<c- b="">int</c-> <c- nf="">fetch_speed</c-><c- p="">(</c-><c- k="">const</c-> <c- n="">simulation_parameters</c-> <c- o="">*</c-><c- n="">params</c-><c- p="">)</c-> <c- p="">{</c->
+	<c- n="">point_container</c-> <c- n="">points</c-> <c- o="">=</c-> <c- n="">params</c-><c- o="">-&gt;</c-><c- n="">points</c-><c- p="">;</c->
+	<c- b="">int</c-> <c- n="">vel</c-> <c- o="">=</c-> <c- n="">compute_velocity</c-><c- p="">(</c-><c- n="">points</c-><c- p="">);</c->
+	<c- k="">if</c-><c- p="">(</c-><c- n="">vel</c-> <c- o="">&lt;</c-> <c- mi="">0</c-><c- p="">)</c->
+		<c- k="">return</c-> <c- o="">-</c-><c- n="">vel</c-><c- p="">;</c->
+	<c- k="">return</c-> <c- n="">vel</c-><c- p="">;</c->
+<c- p="">}</c->
+</pre>
+   Static analyzer’s can reason about the cases where <code class="highlight"><c- n="">vel</c-></code> is positive or negative.  They can deal with multiple return statements in the same function.  They can deal with destructors. 
+   <p>Programs using integer error codes will have very similar 
+branching structures.  In these programs, the reasoning needed for high 
+quality diagnostics, stack usage, or worst case execution time is the 
+same for both the happy path and the sad path.</p>
+   <p>There are constructs that provide more difficulty, and provide 
+more opportunities for static analyzers to differentiate themselves.  
+Indirect calls (whether through function pointers, virtual calls, or 
+otherwise) are challenging.  Mutations to non-local state are difficult.
+  For integer error codes, these are aspects that are equally difficult 
+in the happy path and the sad path.</p>
+   <p>For programs using dynamically-typed exceptions, analysis is much 
+harder.  Determining which catch statements can handle a given exception
+ requires an indirect call.  Determining which catch statements might be
+ invoked requires crossing any indirect calls in the static call graph. 
+ For performance analysis, table-based exceptions fare poorly, as the 
+performance of the exception handling mechanism depends on the size of 
+the table, the complexity of the inheritance hierarchies, and in many 
+cases, the performance characteristics of the system allocator.  These 
+are all things that can be analyzed, but they are static analyzer 
+requirements that aren’t necessarily present on the happy path.</p>
+   <h2 class="heading settled" data-level="4" id="definitions"><span class="secno">4. </span><span class="content">Definitions</span><a class="self-link" href="#definitions"></a></h2>
+    <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="happy-path">Happy path</dfn> The code path where no errors occur. 
    <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="sad-path">Sad path</dfn> The code path where an error occurs.</p>
-   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="program-recoverable">Program-recoverable</dfn> The ability to recover from a failure or error without terminating the program.  Note that there exist systems of programs where recovery of the system involves terminating and restarting constituent programs.  Errors and failures leading to this kind of termination and restarting are not program-recoverable.</p>
-   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="table-based-exceptions">Table-based exceptions</dfn> An implementation strategy for exceptions where the program counter is used as an index into a table of exception unwinding actions.</p>
-   <h2 class="heading settled" data-level="5" id="ack"><span class="secno">5. </span><span class="content">Acknowledgments</span><a class="self-link" href=" #ack"></a></h2>
+   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="program-recoverable">Program-recoverable</dfn>
+ The ability to recover from a failure or error without terminating the 
+program.  Note that there exist systems of programs where recovery of 
+the system involves terminating and restarting constituent programs.  
+Errors and failures leading to this kind of termination and restarting 
+are not program-recoverable.</p>
+   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="table-based-exceptions">Table-based exceptions</dfn>
+ An implementation strategy for exceptions where the program counter is 
+used as an index into a table of exception unwinding actions.  
+Table-based exceptions typically have very low (possibly zero) time 
+overhead on the happy path, at the cost of very slow sad path execution.</p>
+   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="frame-tracking-exceptions">Frame-tracking exceptions</dfn>
+ An implementation strategy for exceptions where book-keeping 
+information is tracked during normal program execution, so that it can 
+be provided and used during exception unwinding.  Frame-tracking 
+exceptions have some unavoidable time overhead on the happy path, with 
+the benefit of potentially faster sad paths, as well as more 
+straightforward implementations.</p>
+   <h2 class="heading settled" data-level="5" id="ack"><span class="secno">5. </span><span class="content">Acknowledgments</span><a class="self-link" href="#ack"></a></h2>
   </main>
 <script>
 (function() {
@@ -1918,21 +2473,24 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
 
 })();
 </script>
-  <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href=" #index"></a></h2>
-  <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href=" #index-defined-here"></a></h3>
+  <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
+  <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
-   <li><a href=" #happy-path">Happy path</a><span>, in §4</span>
-   </li><li><a href=" #program-recoverable">Program-recoverable</a><span>, in §4</span>
-   </li><li><a href=" #sad-path">Sad path</a><span>, in §4</span>
-   </li><li><a href=" #table-based-exceptions">Table-based exceptions</a><span>, in §4</span>
+   <li><a href="#frame-tracking-exceptions">Frame-tracking exceptions</a><span>, in §4</span>
+   </li><li><a href="#happy-path">Happy path</a><span>, in §4</span>
+   </li><li><a href="#program-recoverable">Program-recoverable</a><span>, in §4</span>
+   </li><li><a href="#sad-path">Sad path</a><span>, in §4</span>
+   </li><li><a href="#table-based-exceptions">Table-based exceptions</a><span>, in §4</span>
   </li></ul>
-  <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href=" #references"></a></h2>
-  <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href=" #informative"></a></h3>
+  <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
+  <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
-   <dt id="biblio-cargill1994">[Cargill1994]
+   <dt id="biblio-baker2017">[Baker2017]
+   </dt><dd>Billy Baker. <a href="https://www.youtube.com/watch?v=4AMhgkLjVHM">Almost Unlimited Modern C++ in Kernel-Mode Applications</a>. URL: <a href="https://www.youtube.com/watch?v=4AMhgkLjVHM">https://www.youtube.com/watch?v=4AMhgkLjVHM</a>
+   </dd><dt id="biblio-cargill1994">[Cargill1994]
    </dt><dd>Tom Cargill. <a href="http://ptgmedia.pearsoncmg.com/imprint_downloads/informit/aw/meyerscddemo/DEMO/MAGAZINE/CA_FRAME.HTM">Exception Handling: A False Sense of Security</a>. URL: <a href="http://ptgmedia.pearsoncmg.com/imprint_downloads/informit/aw/meyerscddemo/DEMO/MAGAZINE/CA_FRAME.HTM">http://ptgmedia.pearsoncmg.com/imprint_downloads/informit/aw/meyerscddemo/DEMO/MAGAZINE/CA_FRAME.HTM</a>
    </dd><dt id="biblio-de1994">[DE1994]
-   </dt><dd>Bjarne Stroustrup. The Design and Evolution of C++.
+   </dt><dd>Bjarne Stroustrup. The Design and Evolution of C++. 
    </dd><dt id="biblio-glisse2013">[Glisse2013]
    </dt><dd>Marc Glisse. <a href="https://bugs.llvm.org/show_bug.cgi?id=17467">Remove throw when we can see the catch</a>. URL: <a href="https://bugs.llvm.org/show_bug.cgi?id=17467">https://bugs.llvm.org/show_bug.cgi?id=17467</a>
    </dd><dt id="biblio-gylfason2004">[Gylfason2004]
@@ -1941,8 +2499,12 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    </dt><dd><a href="https://itanium-cxx-abi.github.io/cxx-abi/abi-eh.html">Itanium C++ ABI: Exception Handling</a>. URL: <a href="https://itanium-cxx-abi.github.io/cxx-abi/abi-eh.html">https://itanium-cxx-abi.github.io/cxx-abi/abi-eh.html</a>
    </dd><dt id="biblio-mofh4">[MoFH4]
    </dt><dd>Modi Mo. <a href="https://devblogs.microsoft.com/cppblog/making-cpp-exception-handling-smaller-x64/">Making C++ Exception Handling Smaller On x64</a>. URL: <a href="https://devblogs.microsoft.com/cppblog/making-cpp-exception-handling-smaller-x64/">https://devblogs.microsoft.com/cppblog/making-cpp-exception-handling-smaller-x64/</a>
+   </dd><dt id="biblio-ntke_cpprtl">[NTKE_CPPRTL]
+   </dt><dd><a href="https://svn.riouxsvn.com/prj_ntke_cpprtl/trunk/">C++ RTL for NT ke-mode drivers</a>. URL: <a href="https://svn.riouxsvn.com/prj_ntke_cpprtl/trunk/">https://svn.riouxsvn.com/prj_ntke_cpprtl/trunk/</a>
+   </dd><dt id="biblio-p0323">[P0323]
+   </dt><dd>JF Bastien; Vicente Botet. <a href="https://wg21.link/P0323R9">std::expected</a>. URL: <a href="https://wg21.link/P0323R9">https://wg21.link/P0323R9</a>
    </dd><dt id="biblio-p0709">[P0709]
-   </dt><dd>Herb Sutter. <a href="http://wg21.link/P0709R4">Zero-overhead deterministic exceptions: Throwing values</a>. URL: <a href="http://wg21.link/P0709R4">http://wg21.link/P0709R4</a>
+   </dt><dd>Herb Sutter. <a href="https://wg21.link/P0709R4">Zero-overhead deterministic exceptions: Throwing values</a>. URL: <a href="https://wg21.link/P0709R4">https://wg21.link/P0709R4</a>
    </dd><dt id="biblio-p1640r1">[P1640R1]
    </dt><dd>Ben Craig. <a href="https://wg21.link/P1640R1">Error size benchmarking: Redux</a>. URL: <a href="https://wg21.link/P1640R1">https://wg21.link/P1640R1</a>
    </dd><dt id="biblio-p1676r0">[P1676R0]
@@ -1951,35 +2513,46 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    </dt><dd>Ben Craig. <a href="https://wg21.link/P1886R0">Error speed benchmarking</a>. URL: <a href="https://wg21.link/P1886R0">https://wg21.link/P1886R0</a>
    </dd><dt id="biblio-p1947r0">[P1947R0]
    </dt><dd>Bjarne Stroustrup. <a href="https://wg21.link/P1947R0">C++ exceptions and alternatives</a>. URL: <a href="https://wg21.link/P1947R0">https://wg21.link/P1947R0</a>
+   </dd><dt id="biblio-quinn2016">[Quinn2016]
+   </dt><dd>Rian Quinn. <a href="https://www.youtube.com/watch?v=uQSQy-7lveQ">Making C++ and the STL Work in the Linux / Windows Kernels</a>. URL: <a href="https://www.youtube.com/watch?v=uQSQy-7lveQ">https://www.youtube.com/watch?v=uQSQy-7lveQ</a>
    </dd><dt id="biblio-renwick2019">[Renwick2019]
-   </dt><dd>James Renwick; Tom Spink; Björn Franke. <a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.100.7504">Low-cost deterministic C++ exceptions for embedded systems</a>. URL: <a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.100.7504">http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.100.7504</a>
+   </dt><dd>James Renwick; Tom Spink; Björn Franke. <a href="https://www.research.ed.ac.uk/portal/en/publications/lowcost-deterministic-c-exceptions-for-embedded-systems(2cfc59d5-fa95-45e0-83b2-46e51098cf1f).html">Low-cost deterministic C++ exceptions for embedded systems</a>. URL: <a href="https://www.research.ed.ac.uk/portal/en/publications/lowcost-deterministic-c-exceptions-for-embedded-systems(2cfc59d5-fa95-45e0-83b2-46e51098cf1f).html">https://www.research.ed.ac.uk/portal/en/publications/lowcost-deterministic-c-exceptions-for-embedded-systems(2cfc59d5-fa95-45e0-83b2-46e51098cf1f).html</a>
    </dd><dt id="biblio-scf_2018">[SC++F_2018]
    </dt><dd>Standard C++ Foundation. <a href="https://isocpp.org/blog/2018/03/results-summary-cpp-foundation-developer-survey-lite-2018-02">Results summary: C++ Foundation Developer Survey 'Lite', 2018-02</a>. URL: <a href="https://isocpp.org/blog/2018/03/results-summary-cpp-foundation-developer-survey-lite-2018-02">https://isocpp.org/blog/2018/03/results-summary-cpp-foundation-developer-survey-lite-2018-02</a>
    </dd><dt id="biblio-scf_2019">[SC++F_2019]
    </dt><dd>Standard C++ Foundation. <a href="https://isocpp.org/blog/2019/05/results-summary-2019-global-developer-survey-lite">Results summary: 2019 Global Developer Survey 'Lite'</a>. URL: <a href="https://isocpp.org/blog/2019/05/results-summary-2019-global-developer-survey-lite">https://isocpp.org/blog/2019/05/results-summary-2019-global-developer-survey-lite</a>
+   </dd><dt id="biblio-scf_2020">[SC++F_2020]
+   </dt><dd>Standard C++ Foundation. <a href="https://isocpp.org/files/papers/CppDevSurvey-2020-04-summary.pdf">Results summary: 2020 Global Developer Survey 'Lite'</a>. URL: <a href="https://isocpp.org/files/papers/CppDevSurvey-2020-04-summary.pdf">https://isocpp.org/files/papers/CppDevSurvey-2020-04-summary.pdf</a>
   </dd></dl>
   <aside class="dfn-panel" data-for="happy-path">
-   <b><a href=" #happy-path">#happy-path</a></b><b>Referenced in:</b>
+   <b><a href="#happy-path">#happy-path</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href=" #ref-for-happy-path">2. Areas of agreement</a>
+    <li><a href="#ref-for-happy-path">2.2. Exception and error code performance comparisons</a>
    </li></ul>
   </aside>
   <aside class="dfn-panel" data-for="sad-path">
-   <b><a href=" #sad-path">#sad-path</a></b><b>Referenced in:</b>
+   <b><a href="#sad-path">#sad-path</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href=" #ref-for-sad-path">2. Areas of agreement</a>
+    <li><a href="#ref-for-sad-path">2.2. Exception and error code performance comparisons</a>
    </li></ul>
   </aside>
   <aside class="dfn-panel" data-for="program-recoverable">
-   <b><a href=" #program-recoverable">#program-recoverable</a></b><b>Referenced in:</b>
+   <b><a href="#program-recoverable">#program-recoverable</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href=" #ref-for-program-recoverable">2. Areas of agreement</a>
+    <li><a href="#ref-for-program-recoverable">2.2. Exception and error code performance comparisons</a>
    </li></ul>
   </aside>
   <aside class="dfn-panel" data-for="table-based-exceptions">
-   <b><a href=" #table-based-exceptions">#table-based-exceptions</a></b><b>Referenced in:</b>
+   <b><a href="#table-based-exceptions">#table-based-exceptions</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href=" #ref-for-table-based-exceptions">2. Areas of agreement</a>
+    <li><a href="#ref-for-table-based-exceptions">2.2. Exception and error code performance comparisons</a>
+    </li><li><a href="#ref-for-table-based-exceptions①">3.14. Other implementation approaches to exceptions</a>
+   </li></ul>
+  </aside>
+  <aside class="dfn-panel" data-for="frame-tracking-exceptions">
+   <b><a href="#frame-tracking-exceptions">#frame-tracking-exceptions</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-frame-tracking-exceptions">3.14. Other implementation approaches to exceptions</a>
    </li></ul>
   </aside>
 <script>/* script-dfn-panel */
