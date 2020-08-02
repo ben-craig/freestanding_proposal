@@ -1,13 +1,13 @@
 <pre class='metadata'>
 Title: Shared understanding of errors and exceptions
 Shortname: D2018
-Revision: 0.1
+Revision: 0.2
 Audience: SG14, EWG
 Status: D
 Group: WG21
 URL: TODO
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
-Editor: Ben Craig, National Instruments, ben.craig@gmail.com
+Editor: Ben Craig, NI, ben.craig@gmail.com; Niall Douglas, s_sourceforge@nedprod.com
 Abstract:
 Markup Shorthands: markdown yes
 </pre>
@@ -15,6 +15,8 @@ Markup Shorthands: markdown yes
 Introduction {#intro}
 =====================
 This paper aims to reflect the shared understanding of the authors regarding error handling and exceptions.  The goal is to avoid talking past each other, and productively help us gain consensus.  This paper does not recommend any specific actions or changes.
+
+Error handling is a topic with abundant technical and usability trade-offs.  This paper will attempt to highlight many of these trade-offs, both positive and negative.
 
 Areas of agreement {#agree}
 ===========
@@ -27,10 +29,12 @@ Exception and error code performance comparisons {#perf_cmp}
 --------------------------
 1. [=Table-based exceptions=] have the fastest known [=happy path=] performance among [=program-recoverable=] error handling strategies. [[P1886R0]]
 1. [=Sad path=] performance of exceptions is more than 100x worse than happy path performance on table-based exception implementations. [[P1886R0]]
-1. Error codes perform worse than table-based exceptions on the happy path. [[P1886R0]]
+1. Error codes perform the same or worse than table-based exceptions on the happy path. [[P1886R0]]
 1. Error codes perform better than table-based exceptions on the sad path. [[P1886R0]]
+1. When available, branch prediction and speculative execution can mitigate the happy path performance impact of error codes in many use cases.
+1. The standard deviation of sad path execution time of table-based exceptions is more than 50x that of error codes. [[P1886R0]]
 1. Table-based exceptions have higher space overhead than error codes. [[P1640R1]]
-1. [[P0709]] exceptions and `expected` are likely to have performance characteristics similar to error codes.
+1. [[P0709]] exceptions, [[P1095]] failures, and `expected` are likely to have performance characteristics similar to error codes.
 1. Mainstream implementations of table-based exceptions have room for optimization. [[#room_for_optimizations]]
 1. There are other exception implementation approaches that may address the challenges with table-based exceptions, or at least provide a different set of trade offs.  [[#other_approaches]]
 1. Platform ABIs place substantial constraints on how much exceptions can change. [[ItaniumEHABI]]
@@ -66,6 +70,7 @@ Error propagation usability {#error_prop_usability}
 1. RAII is an enormous boon to error handling in general. [[#error_prop]]
 1. Code that does not use RAII is exceedingly difficult to port to exceptions.
 1. The visibility of error handling is a polarizing topic in the C++ community.
+1. Opinions of error handling visibility can vary wildly based on the code under discussion.
 1. Dual error interface libraries are not ideal (e.g. `std::filesystem`).
 1. Authors of an API do not always know whether a failure is expected, common, or program-recoverable.
 
@@ -104,20 +109,25 @@ Switching error mechanisms {#error_mechanisms}
 
 N+1 summary {#n_plus_one_summary}
 --------------------------
-1. [[P0709]] exceptions are an additional form of error handling. [[#n_plus_one]]
+1. [[P0709]] exceptions and [[P1095]] failures are an additional form of error handling. [[#n_plus_one]]
 1. [[P0323]] `expected` is an additional form of error handling. [[#n_plus_one]]
-1. If [[P0709]] exceptions and / or `expected` are standardized, all prior error handling mechanisms will still be seen in the wild for decades to come. [[#n_plus_one]]
+1. If [[P0709]] exceptions, [[P1095]] failures, and / or `expected` are standardized, all prior error handling mechanisms will still be seen in the wild for decades to come. [[#n_plus_one]]
 1. Users routinely write code that translates between different error handling schemes. [[#n_plus_one]]
 1. Translating between different error handling schemes usually requires error prone boilerplate. [[#n_plus_one]]
 1. A new error mechanism may replace one or more old mechanisms in teaching materials.  [[#n_plus_one]]
 1. A new error mechanism may replace one or more old mechanisms in new code bases.  [[#n_plus_one]]
 
-Carrying arbitrary information {#arb_info}
+Error propagation and carrying arbitrary information {#arb_info}
 --------------------------
-1. Exceptions allow the transportation of arbitrary error information from a callback, through the invoker.
-1. Error codes can be constructed that allow the transportation of arbitrary error information from a callback, through the invoker (e.g. a std::pair<int, std::any>).
-1. Error codes, in the general case, cannot be used to propagate error information across code that is unaware of error codes.
-1. Exceptions, in the general case, cannot be used to propagate error information across code that is unaware of C++ exceptions.
+1. Error handling can be coarsely decomposed into a [=failure flag=], a [=failure classification=], and a [=failure payload=].
+1. Failure flags and failure payloads can be transported via different mechanisms. [[LEAF]]
+1. Calling code is coupled to the failure flag mechanism of callees, as calling code needs to be able to [=unwind=] correctly.
+1. In the general case, unwinding cannot be done correctly with error codes across functions that are unaware of error codes.
+1. In the general case, unwinding (particularly cleanup) cannot be done correctly with C++ exceptions across functions that are unaware of C++ exceptions.
+1. Exceptions allow the transportation of an arbitrary failure payload from a callback, through the invoker.
+1. Error codes can be constructed that allow the transportation of an arbitrary failure payload from a callback, through the invoker (e.g. a std::pair<int, std::any>).
+1. Error codes, in the general case, cannot be used to propagate failure payloads across code that is unaware of error codes.
+1. In most cases, thread local storage can be used to propagate error information across code that is unaware of thread local storage.
 
 Tooling {#tooling}
 ------------------
@@ -291,11 +301,11 @@ Even if the C++ standard does not add new error handling mechanisms, the communi
 
 It is common place for users to need to translate the results of various error handling mechanisms into the error handling mechanism that their program uses.  This happens routinely when a C++ program using exceptions calls into a C library that uses callbacks and error codes.  The translation is not difficult, though it is verbose and error prone (lots of `try` / `catch` blocks and error testing `if` statements).
 
-Creating a new error handling mechanism does not make the old mechanisms go away.  If you had N mechanisms before, a new mechanism, no matter how superior a choice, will leave you with N+1 mechanisms.  The existence of `std::error_code` in C++11 did not make exceptions, `errno`, or integer error codes leave the ecosystem.  Each of these error mechanisms is likely to remain in use for decades to come.  Similarly, P0709 exceptions and `expected` are unlikely to make old error handling strategies disappear, even if P0709 exceptions and `expected` become the most common error handling strategies.
+Creating a new error handling mechanism does not make the old mechanisms go away.  If you had N mechanisms before, a new mechanism, no matter how superior a choice, will leave you with N+1 mechanisms.  The existence of `std::error_code` in C++11 did not make exceptions, `errno`, or integer error codes leave the ecosystem.  Each of these error mechanisms is likely to remain in use for decades to come.  Similarly, P0709 exceptions, [[P1095]] failures, and `expected` are unlikely to make old error handling strategies disappear, even if these new strategies become the most common error handling strategies.
 
 A new error handling mechanism could change how we teach error handling, and how we write error handling in new code.  This has happened in the past, and could happen again.  There is very little educational effort spent on `errno` best practices, and very little new C++ code is written with `errno` as the primary error handling mechanism.  The main interaction with `errno` is in handling the errors and translating them to newer mechanisms.  A new error handling mechanism can aspire to replace other mechanisms as well as `errno` has been replaced.
 
-Local vs. global tradeoffs with error handling {#global_decision}
+Local vs. global trade-offs with error handling {#global_decision}
 ------------------
 There are cases where there are different needs for error handling performance within the same program, translation unit, or even function.  Users cannot make a local decision on whether exceptions prefer happy path performance or worst-case-execution-time performance.  Users can make local choices as to whether to use exceptions or not, with the assumption that exceptions prefer happy path performance.  Choosing something other than exceptions will often lead to impoverished syntax.
 
@@ -367,6 +377,14 @@ Definitions {#definitions}
 
 <dfn>Frame-tracking exceptions</dfn> An implementation strategy for exceptions where book-keeping information is tracked during normal program execution, so that it can be provided and used during exception unwinding.  Frame-tracking exceptions have some unavoidable time overhead on the happy path, with the benefit of potentially faster sad paths, as well as more straightforward implementations.
 
+<dfn>Failure flag</dfn> The one bit of information that indicates whether a function has failed.  This bit may be implicit based off of the static control flow in the program, as is the case with exceptions.[[Dotchevski]]
+
+<dfn>Failure classification</dfn> The failure classification indicates the category of an error so that it can be handled in aggregate.  Examples are timeout errors and file system failures.  Some error handling mechanisms allow for rich classification (e.g. C++ exceptions with multiple inheritance based categories).  Some error handling mechanisms have no built in form of classification, and implicitly place all errors in the same category (e.g. errno).  Other classification approaches exist between and beyond these extremes.
+
+<dfn>Failure payload</dfn> Any additional information beyond the failure flag that is carried with an error.  This payload may be of a fixed size, or it may be completely arbitrary.
+
+<dfn>Unwind</dfn> The action of performing cleanup and skipping happy path code that occurs after an error is raised.  Unwinding stops when an error handler has been found and executed.  This process can be automatic, as is the case with exceptions, or manual, as is the case with error codes combined with early returns.
+
 Acknowledgments {#ack}
 ======================
 
@@ -381,6 +399,11 @@ Acknowledgments {#ack}
         "authors": ["Herb Sutter"],
         "href": "https://wg21.link/P0709R4",
         "title": "Zero-overhead deterministic exceptions: Throwing values"
+    },
+    "P1095": {
+        "authors": ["Niall Douglas"],
+        "href": "https://wg21.link/P1095R0",
+        "title": "Zero overhead deterministic failure - A unified mechanism for C and C++"
     },
     "P1886R0": {
         "authors": ["Ben Craig"],
@@ -463,6 +486,16 @@ Acknowledgments {#ack}
     "DE1994": {
         "authors": ["Bjarne Stroustrup"],
         "title": "The Design and Evolution of C++"
+    },
+    "Dotchevski": {
+        "authors": ["Emil Dotchevski"],
+        "title": "Error Handling Principles and Practices",
+        "href": "https://github.com/zajo/leaf/blob/master/doc/whitepaper.md"
+    },
+    "LEAF": {
+        "authors": ["Emil Dotchevski"],
+        "title": "LEAF: Lightweight Error Augmentation Framework",
+        "href": "https://zajo.github.io/leaf/"
     }
 }
 </pre>
