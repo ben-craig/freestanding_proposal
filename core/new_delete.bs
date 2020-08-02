@@ -1,9 +1,9 @@
 <pre class='metadata'>
 Title: Freestanding Language: Optional <code>::operator new</code>
-Shortname: P2013
-Revision: 1
+Shortname: D2013 TODO
+Revision: 2.0
 Audience: SG14, EWG, LEWG
-Status: P
+Status: D
 Group: WG21
 URL: https://wg21.link/P2013R1
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
@@ -14,6 +14,14 @@ Markup Shorthands: markdown yes
 
 Revision History {#revision_history}
 ====================================
+R2 {#r2}
+-----
+Making the status of "placement" new more obvious ("placement" new is still required).
+
+Added words in the design to indicate that the declarations in `<new>` are not changing.
+
+Mentioning that pointer safety remains unchanged.
+
 R1 {#r1}
 -----
 Added polling results from Prague \[EWGI](#ewgi_prague) and \[EWG](#ewg_prague).
@@ -50,11 +58,15 @@ The replaceable deallocating `::operator delete` functions are still required to
 
 Calling `::operator delete` on a non-null pointer that did not come from `::operator new` is still undefined behavior [new.delete.single](http://eel.is/c++draft/new.delete.single#12) [new.delete.array](http://eel.is/c++draft/new.delete.array#11).  Calling `delete` on an object or base that didn't come from `new` is still undefined behavior [expr.delete](http://eel.is/c++draft/expr.delete#2).  This is what makes a no-op `::operator delete` a valid strategy on implementations without a global `::operator new`.
 
-The replaceable allocation functions will still be implicitly declared at global scope in each translation unit [basic.stc.dynamic](http://eel.is/c++draft/basic.stc.dynamic#2).  Non-ODR-uses of the replaceable allocation functions are still permitted (e.g. inside of uninstantiated templates).  Implementations of the replaceable allocation functions can be performed by linking in an extra translation-unit with the definitions of the functions.  Since this replacement typically happens at link time, ODR-uses of missing replaceable allocation functions usually won't be diagnosable at compile time.
+The replaceable allocation functions will still be implicitly declared at global scope in each translation unit [basic.stc.dynamic](http://eel.is/c++draft/basic.stc.dynamic#2).  Non-ODR-uses of the replaceable allocation functions are still permitted (e.g. inside of uninstantiated templates).  The declarations of `::operator new` in the `<new>` header are still required to be present.  Implementations of the replaceable allocation functions can be performed by linking in an extra translation-unit with the definitions of the functions.  Since this replacement typically happens at link time, ODR-uses of missing replaceable allocation functions usually won't be diagnosable at compile time.
 
 "`constexpr new`" is still required to work, even when the replaceable allocation functions are not present.  This requires some tweaking of standardese.
 
-Hosted implementations are unchanged.  Users of freestanding implementations can still provide implementations of the replaceable allocation and deallocation functions.  The behavior of `virtual` destructors is unchanged.  The behavior of class specific `operator new` and `operator delete` overloads is unchanged.  Non-allocating placement `::operator new` and `::operator delete` are still required to be present.  The requirements on user-provided `::operator new` and `::operator delete` overloads remains the same, particularly those requirements involving error behaviors.  Coroutines will behave the same so long as promise-specific allocators are used.  The storage for exception objects will remain unspecified.
+Non-allocating placement `::operator new` (colloquially "placement new") and `::operator delete` (colloquially "placement delete") are still required to be present in freestanding implementations.
+
+Core language concepts of pointer safety remain unchanged.  Note that the pointer safety library facilities [util.dynamic.safety](https://eel.is/c++draft/util.dynamic.safety) are not required to be present in freestanding implementations, and the author is not aware of any papers to make the pointer safety library facilities required in freestanding implementations.
+
+Hosted implementations are unchanged.  Users of freestanding implementations can still provide implementations of the replaceable allocation and deallocation functions.  The behavior of `virtual` destructors is unchanged.  The behavior of class specific `operator new` and `operator delete` overloads is unchanged.  The requirements on user-provided `::operator new` and `::operator delete` overloads remains the same, particularly those requirements involving error behaviors.  Coroutines will behave the same so long as promise-specific allocators are used.  The storage for exception objects will remain unspecified.
 
 Why? {#why}
 ===========
@@ -237,7 +249,7 @@ The above mimics wording in [declval](https://wg21.link/declval).  I believe it 
 Acknowledgments {#ack}
 ======================
 Thank you to the many reviewers of this paper:
-Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred Bratterud, Phil Hindman, Arthur O'Dwyer, Laurin-Luis Lehning, JF Bastien, and Matthew Bentley
+Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred Bratterud, Phil Hindman, Arthur O'Dwyer, Laurin-Luis Lehning, JF Bastien, Matthew Bentley, and Alisdair Meredith.
 
 Thank you to Daveed Vandevoorde, for providing feedback on the wording.
 
