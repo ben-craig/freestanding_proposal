@@ -2,7 +2,7 @@
 <html lang="en"><head>
   <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-  <title>D2018R0.1: Shared understanding of errors and exceptions</title>
+  <title>D2018R0.2: Shared understanding of errors and exceptions</title>
 <style data-fill-with="stylesheet">/******************************************************************************
  *                   Style sheet for the W3C specifications                   *
  *
@@ -1294,7 +1294,7 @@ Possible extra rowspan handling
     blockquote c-[vi] { color: inherit; } /* Name.Variable.Instance */
     blockquote c-[il] { color: inherit; } /* Literal.Number.Integer.Long */
   </style>
-  <meta content="Bikeshed version 7c63c139, updated Fri Jul 17 17:12:19 2020 -0700" name="generator">
+  <meta content="Bikeshed version c05ebec3, updated Fri Jul 31 13:58:05 2020 -0700" name="generator">
   <link href="https://api.csswg.org/bikeshed/TODO" rel="canonical">
   <link href="https://isocpp.org/favicon.ico" rel="icon">
 <style>/* style-autolinks */
@@ -1542,15 +1542,17 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
  </head><body class="h-entry toc-sidebar"><p id="toc-nav"><a id="toc-jump" href="#toc"><span aria-hidden="true">↑</span> <span>Jump to Table of Contents</span></a><a id="toc-toggle" href="#toc"><span aria-hidden="true">←</span> <span>Collapse Sidebar</span></a></p>
   <div class="head">
    <p data-fill-with="logo"></p>
-   <h1 class="p-name no-ref" id="title">D2018R0.1<br>Shared understanding of errors and exceptions</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2020-07-25">2020-07-25</time></span></h2>
+   <h1 class="p-name no-ref" id="title">D2018R0.2<br>Shared understanding of errors and exceptions</h1>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2020-08-02">2020-08-02</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
      </dt><dd><a class="u-url" href="https://api.csswg.org/bikeshed/TODO">TODO</a>
-     </dd><dt>Author:
+     </dd><dt>Authors:
      </dt><dd>
-      </dd><dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:ben.craig@gmail.com">Ben Craig</a> (<span class="p-org org">National Instruments</span>)
+      </dd><dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:ben.craig@gmail.com">Ben Craig</a> (<span class="p-org org">NI</span>)
+     </dd><dd>
+      </dd><dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:s_sourceforge@nedprod.com">Niall Douglas</a>
      </dd><dt>Audience:
      </dt><dd>SG14, EWG
      </dd><dt>Project:
@@ -1582,7 +1584,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
       </li><li><a href="#eh_alloc_summary"><span class="secno">2.8</span> <span class="content">Exception allocations</span></a>
       </li><li><a href="#error_mechanisms"><span class="secno">2.9</span> <span class="content">Switching error mechanisms</span></a>
       </li><li><a href="#n_plus_one_summary"><span class="secno">2.10</span> <span class="content">N+1 summary</span></a>
-      </li><li><a href="#arb_info"><span class="secno">2.11</span> <span class="content">Carrying arbitrary information</span></a>
+      </li><li><a href="#arb_info"><span class="secno">2.11</span> <span class="content">Error propagation and carrying arbitrary information</span></a>
       </li><li><a href="#tooling"><span class="secno">2.12</span> <span class="content">Tooling</span></a>
      </li></ol>
     </li><li>
@@ -1606,7 +1608,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
       </li><li><a href="#tls"><span class="secno">3.16</span> <span class="content">Exception handling and storage that is local to a thread</span></a>
       </li><li><a href="#dubious_business_value"><span class="secno">3.17</span> <span class="content">Are fast exceptions important enough?</span></a>
       </li><li><a href="#n_plus_one"><span class="secno">3.18</span> <span class="content">The N+1 problem</span></a>
-      </li><li><a href="#global_decision"><span class="secno">3.19</span> <span class="content">Local vs. global tradeoffs with error handling</span></a>
+      </li><li><a href="#global_decision"><span class="secno">3.19</span> <span class="content">Local vs. global trade-offs with error handling</span></a>
       </li><li><a href="#using_is_easy"><span class="secno">3.20</span> <span class="content">Exception handling overhead is difficult to avoid</span></a>
       </li><li><a href="#sad_path_analysis"><span class="secno">3.21</span> <span class="content">Tooling analysis of sad paths</span></a>
      </li></ol>
@@ -1630,6 +1632,9 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
 regarding error handling and exceptions.  The goal is to avoid talking 
 past each other, and productively help us gain consensus.  This paper 
 does not recommend any specific actions or changes. 
+   <p>Error handling is a topic with abundant technical and usability 
+trade-offs.  This paper will attempt to highlight many of these 
+trade-offs, both positive and negative.</p>
    <h2 class="heading settled" data-level="2" id="agree"><span class="secno">2. </span><span class="content">Areas of agreement</span><a class="self-link" href="#agree"></a></h2>
    <h3 class="heading settled" data-level="2.1" id="big_picture"><span class="secno">2.1. </span><span class="content">Big picture</span><a class="self-link" href="#big_picture"></a></h3>
    <ol>
@@ -1645,13 +1650,19 @@ does not recommend any specific actions or changes.
     </li><li data-md="">
      <p><a data-link-type="dfn" href="#sad-path" id="ref-for-sad-path">Sad path</a> performance of exceptions is more than 100x worse than happy path performance on table-based exception implementations. <a data-link-type="biblio" href="#biblio-p1886r0">[P1886R0]</a></p>
     </li><li data-md="">
-     <p>Error codes perform worse than table-based exceptions on the happy path. <a data-link-type="biblio" href="#biblio-p1886r0">[P1886R0]</a></p>
+     <p>Error codes perform the same or worse than table-based exceptions on the happy path. <a data-link-type="biblio" href="#biblio-p1886r0">[P1886R0]</a></p>
     </li><li data-md="">
      <p>Error codes perform better than table-based exceptions on the sad path. <a data-link-type="biblio" href="#biblio-p1886r0">[P1886R0]</a></p>
     </li><li data-md="">
+     <p>When available, branch prediction and speculative execution can 
+mitigate the happy path performance impact of error codes in many use 
+cases.</p>
+    </li><li data-md="">
+     <p>The standard deviation of sad path execution time of table-based exceptions is more than 50x that of error codes. <a data-link-type="biblio" href="#biblio-p1886r0">[P1886R0]</a></p>
+    </li><li data-md="">
      <p>Table-based exceptions have higher space overhead than error codes. <a data-link-type="biblio" href="#biblio-p1640r1">[P1640R1]</a></p>
     </li><li data-md="">
-     <p><a data-link-type="biblio" href="#biblio-p0709">[P0709]</a> exceptions and <code class="highlight"><c- n="">expected</c-></code> are likely to have performance characteristics similar to error codes.</p>
+     <p><a data-link-type="biblio" href="#biblio-p0709">[P0709]</a> exceptions, <a data-link-type="biblio" href="#biblio-p1095">[P1095]</a> failures, and <code class="highlight"><c- n="">expected</c-></code> are likely to have performance characteristics similar to error codes.</p>
     </li><li data-md="">
      <p>Mainstream implementations of table-based exceptions have room for optimization. <a href="#room_for_optimizations">§ 3.3 Room for optimizations</a></p>
     </li><li data-md="">
@@ -1665,9 +1676,9 @@ address the challenges with table-based exceptions, or at least provide a
 performance has widened over time because of lack of development on the 
 sad path. <a data-link-type="biblio" href="#biblio-p1947r0">[P1947R0]</a></p>
     </li><li data-md="">
-     <p>The performance characteristics of exceptions are a program-global decision made by the toolchain implementer. <a href="#global_decision">§ 3.19 Local vs. global tradeoffs with error handling</a></p>
+     <p>The performance characteristics of exceptions are a program-global decision made by the toolchain implementer. <a href="#global_decision">§ 3.19 Local vs. global trade-offs with error handling</a></p>
     </li><li data-md="">
-     <p>Developers may want different performance characteristics for error handling in different parts of the program. <a href="#global_decision">§ 3.19 Local vs. global tradeoffs with error handling</a></p>
+     <p>Developers may want different performance characteristics for error handling in different parts of the program. <a href="#global_decision">§ 3.19 Local vs. global trade-offs with error handling</a></p>
    </li></ol>
    <h3 class="heading settled" data-level="2.3" id="avoiding_overhead"><span class="secno">2.3. </span><span class="content">Avoiding overhead</span><a class="self-link" href="#avoiding_overhead"></a></h3>
    <ol>
@@ -1717,6 +1728,8 @@ sad path. <a data-link-type="biblio" href="#biblio-p1947r0">[P1947R0]</a></p>
      <p>Code that does not use RAII is exceedingly difficult to port to exceptions.</p>
     </li><li data-md="">
      <p>The visibility of error handling is a polarizing topic in the C++ community.</p>
+    </li><li data-md="">
+     <p>Opinions of error handling visibility can vary wildly based on the code under discussion.</p>
     </li><li data-md="">
      <p>Dual error interface libraries are not ideal (e.g. <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">filesystem</c-></code>).</p>
     </li><li data-md="">
@@ -1797,11 +1810,11 @@ due to limited stack space. <a href="#eh_alloc">§ 3.15 Exception handling all
    <h3 class="heading settled" data-level="2.10" id="n_plus_one_summary"><span class="secno">2.10. </span><span class="content">N+1 summary</span><a class="self-link" href="#n_plus_one_summary"></a></h3>
    <ol>
     <li data-md="">
-     <p><a data-link-type="biblio" href="#biblio-p0709">[P0709]</a> exceptions are an additional form of error handling. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
+     <p><a data-link-type="biblio" href="#biblio-p0709">[P0709]</a> exceptions and <a data-link-type="biblio" href="#biblio-p1095">[P1095]</a> failures are an additional form of error handling. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
     </li><li data-md="">
      <p><a data-link-type="biblio" href="#biblio-p0323">[P0323]</a> <code class="highlight"><c- n="">expected</c-></code> is an additional form of error handling. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
     </li><li data-md="">
-     <p>If <a data-link-type="biblio" href="#biblio-p0709">[P0709]</a> exceptions and / or <code class="highlight"><c- n="">expected</c-></code> are standardized, all prior error handling mechanisms will still be seen in the wild for decades to come. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
+     <p>If <a data-link-type="biblio" href="#biblio-p0709">[P0709]</a> exceptions, <a data-link-type="biblio" href="#biblio-p1095">[P1095]</a> failures, and / or <code class="highlight"><c- n="">expected</c-></code> are standardized, all prior error handling mechanisms will still be seen in the wild for decades to come. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
     </li><li data-md="">
      <p>Users routinely write code that translates between different error handling schemes. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
     </li><li data-md="">
@@ -1811,21 +1824,34 @@ due to limited stack space. <a href="#eh_alloc">§ 3.15 Exception handling all
     </li><li data-md="">
      <p>A new error mechanism may replace one or more old mechanisms in new code bases. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
    </li></ol>
-   <h3 class="heading settled" data-level="2.11" id="arb_info"><span class="secno">2.11. </span><span class="content">Carrying arbitrary information</span><a class="self-link" href="#arb_info"></a></h3>
+   <h3 class="heading settled" data-level="2.11" id="arb_info"><span class="secno">2.11. </span><span class="content">Error propagation and carrying arbitrary information</span><a class="self-link" href="#arb_info"></a></h3>
    <ol>
     <li data-md="">
-     <p>Exceptions allow the transportation of arbitrary error information from a callback, through the invoker.</p>
+     <p>Error handling can be coarsely decomposed into a <a data-link-type="dfn" href="#failure-flag" id="ref-for-failure-flag">failure flag</a>, a <a data-link-type="dfn" href="#failure-classification" id="ref-for-failure-classification">failure classification</a>, and a <a data-link-type="dfn" href="#failure-payload" id="ref-for-failure-payload">failure payload</a>.</p>
+    </li><li data-md="">
+     <p>Failure flags and failure payloads can be transported via different mechanisms. <a data-link-type="biblio" href="#biblio-leaf">[LEAF]</a></p>
+    </li><li data-md="">
+     <p>Calling code is coupled to the failure flag mechanism of callees, as calling code needs to be able to <a data-link-type="dfn" href="#unwind" id="ref-for-unwind">unwind</a> correctly.</p>
+    </li><li data-md="">
+     <p>In the general case, unwinding cannot be done correctly with error codes across functions that are unaware of error codes.</p>
+    </li><li data-md="">
+     <p>In the general case, unwinding (particularly cleanup) cannot be 
+done correctly with C++ exceptions across functions that are unaware of 
+C++ exceptions.</p>
+    </li><li data-md="">
+     <p>Exceptions allow the transportation of an arbitrary failure payload from a callback, through the invoker.</p>
     </li><li data-md="">
      <p>
-      Error codes can be constructed that allow the transportation of 
-arbitrary error information from a callback, through the invoker (e.g. a
- std::pair
+      Error codes can be constructed that allow the transportation of an
+ arbitrary failure payload from a callback, through the invoker (e.g. a 
+std::pair
       <intu0002c stdu0003au0003aany="">).</intu0002c>
      </p>
     </li><li data-md="">
-     <p>Error codes, in the general case, cannot be used to propagate error information across code that is unaware of error codes.</p>
+     <p>Error codes, in the general case, cannot be used to propagate failure payloads across code that is unaware of error codes.</p>
     </li><li data-md="">
-     <p>Exceptions, in the general case, cannot be used to propagate error information across code that is unaware of C++ exceptions.</p>
+     <p>In most cases, thread local storage can be used to propagate 
+error information across code that is unaware of thread local storage.</p>
    </li></ol>
    <h3 class="heading settled" data-level="2.12" id="tooling"><span class="secno">2.12. </span><span class="content">Tooling</span><a class="self-link" href="#tooling"></a></h3>
    <ol>
@@ -2201,7 +2227,9 @@ mechanisms go away.  If you had N mechanisms before, a new mechanism, no
 existence of <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">error_code</c-></code> in C++11 did not make exceptions, <code class="highlight"><c- n="">errno</c-></code>,
  or integer error codes leave the ecosystem.  Each of these error 
 mechanisms is likely to remain in use for decades to come.  Similarly, 
-P0709 exceptions and <code class="highlight"><c- n="">expected</c-></code> are unlikely to make old error handling strategies disappear, even if P0709 exceptions and <code class="highlight"><c- n="">expected</c-></code> become the most common error handling strategies.</p>
+P0709 exceptions, <a data-link-type="biblio" href="#biblio-p1095">[P1095]</a> failures, and <code class="highlight"><c- n="">expected</c-></code>
+ are unlikely to make old error handling strategies disappear, even if 
+these new strategies become the most common error handling strategies.</p>
    <p>A new error handling mechanism could change how we teach error 
 handling, and how we write error handling in new code.  This has 
 happened in the past, and could happen again.  There is very little 
@@ -2209,7 +2237,7 @@ educational effort spent on <code class="highlight"><c- n="">errno</c-></code> b
  is in handling the errors and translating them to newer mechanisms.  A 
 new error handling mechanism can aspire to replace other mechanisms as 
 well as <code class="highlight"><c- n="">errno</c-></code> has been replaced.</p>
-   <h3 class="heading settled" data-level="3.19" id="global_decision"><span class="secno">3.19. </span><span class="content">Local vs. global tradeoffs with error handling</span><a class="self-link" href="#global_decision"></a></h3>
+   <h3 class="heading settled" data-level="3.19" id="global_decision"><span class="secno">3.19. </span><span class="content">Local vs. global trade-offs with error handling</span><a class="self-link" href="#global_decision"></a></h3>
     There are cases where there are different needs for error handling 
 performance within the same program, translation unit, or even function.
   Users cannot make a local decision on whether exceptions prefer happy 
@@ -2342,6 +2370,29 @@ be provided and used during exception unwinding.  Frame-tracking
 exceptions have some unavoidable time overhead on the happy path, with 
 the benefit of potentially faster sad paths, as well as more 
 straightforward implementations.</p>
+   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="failure-flag">Failure flag</dfn>
+ The one bit of information that indicates whether a function has 
+failed.  This bit may be implicit based off of the static control flow 
+in the program, as is the case with exceptions.<a data-link-type="biblio" href="#biblio-dotchevski">[Dotchevski]</a></p>
+   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="failure-classification">Failure classification</dfn>
+ The failure classification indicates the category of an error so that 
+it can be handled in aggregate.  Examples are timeout errors and file 
+system failures.  Some error handling mechanisms allow for rich 
+classification (e.g. C++ exceptions with multiple inheritance based 
+categories).  Some error handling mechanisms have no built in form of 
+classification, and implicitly place all errors in the same category 
+(e.g. errno).  Other classification approaches exist between and beyond 
+these extremes.</p>
+   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="failure-payload">Failure payload</dfn>
+ Any additional information beyond the failure flag that is carried with
+ an error.  This payload may be of a fixed size, or it may be completely
+ arbitrary.</p>
+   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="unwind">Unwind</dfn>
+ The action of performing cleanup and skipping happy path code that 
+occurs after an error is raised.  Unwinding stops when an error handler 
+has been found and executed.  This process can be automatic, as is the 
+case with exceptions, or manual, as is the case with error codes 
+combined with early returns.</p>
    <h2 class="heading settled" data-level="5" id="ack"><span class="secno">5. </span><span class="content">Acknowledgments</span><a class="self-link" href="#ack"></a></h2>
   </main>
 <script>
@@ -2476,11 +2527,15 @@ straightforward implementations.</p>
   <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
   <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
-   <li><a href="#frame-tracking-exceptions">Frame-tracking exceptions</a><span>, in §4</span>
+   <li><a href="#failure-classification">Failure classification</a><span>, in §4</span>
+   </li><li><a href="#failure-flag">Failure flag</a><span>, in §4</span>
+   </li><li><a href="#failure-payload">Failure payload</a><span>, in §4</span>
+   </li><li><a href="#frame-tracking-exceptions">Frame-tracking exceptions</a><span>, in §4</span>
    </li><li><a href="#happy-path">Happy path</a><span>, in §4</span>
    </li><li><a href="#program-recoverable">Program-recoverable</a><span>, in §4</span>
    </li><li><a href="#sad-path">Sad path</a><span>, in §4</span>
    </li><li><a href="#table-based-exceptions">Table-based exceptions</a><span>, in §4</span>
+   </li><li><a href="#unwind">Unwind</a><span>, in §4</span>
   </li></ul>
   <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
   <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
@@ -2491,12 +2546,16 @@ straightforward implementations.</p>
    </dt><dd>Tom Cargill. <a href="http://ptgmedia.pearsoncmg.com/imprint_downloads/informit/aw/meyerscddemo/DEMO/MAGAZINE/CA_FRAME.HTM">Exception Handling: A False Sense of Security</a>. URL: <a href="http://ptgmedia.pearsoncmg.com/imprint_downloads/informit/aw/meyerscddemo/DEMO/MAGAZINE/CA_FRAME.HTM">http://ptgmedia.pearsoncmg.com/imprint_downloads/informit/aw/meyerscddemo/DEMO/MAGAZINE/CA_FRAME.HTM</a>
    </dd><dt id="biblio-de1994">[DE1994]
    </dt><dd>Bjarne Stroustrup. The Design and Evolution of C++. 
+   </dd><dt id="biblio-dotchevski">[Dotchevski]
+   </dt><dd>Emil Dotchevski. <a href="https://github.com/zajo/leaf/blob/master/doc/whitepaper.md">Error Handling Principles and Practices</a>. URL: <a href="https://github.com/zajo/leaf/blob/master/doc/whitepaper.md">https://github.com/zajo/leaf/blob/master/doc/whitepaper.md</a>
    </dd><dt id="biblio-glisse2013">[Glisse2013]
    </dt><dd>Marc Glisse. <a href="https://bugs.llvm.org/show_bug.cgi?id=17467">Remove throw when we can see the catch</a>. URL: <a href="https://bugs.llvm.org/show_bug.cgi?id=17467">https://bugs.llvm.org/show_bug.cgi?id=17467</a>
    </dd><dt id="biblio-gylfason2004">[Gylfason2004]
    </dt><dd>Halldór Ísak Gylfason; Gísli Hjálmtýsson. <a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.100.7504">Exceptional Kernel -- Using C++ exceptions in the Linux kernel</a>. URL: <a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.100.7504">http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.100.7504</a>
    </dd><dt id="biblio-itaniumehabi">[ItaniumEHABI]
    </dt><dd><a href="https://itanium-cxx-abi.github.io/cxx-abi/abi-eh.html">Itanium C++ ABI: Exception Handling</a>. URL: <a href="https://itanium-cxx-abi.github.io/cxx-abi/abi-eh.html">https://itanium-cxx-abi.github.io/cxx-abi/abi-eh.html</a>
+   </dd><dt id="biblio-leaf">[LEAF]
+   </dt><dd>Emil Dotchevski. <a href="https://zajo.github.io/leaf/">LEAF: Lightweight Error Augmentation Framework</a>. URL: <a href="https://zajo.github.io/leaf/">https://zajo.github.io/leaf/</a>
    </dd><dt id="biblio-mofh4">[MoFH4]
    </dt><dd>Modi Mo. <a href="https://devblogs.microsoft.com/cppblog/making-cpp-exception-handling-smaller-x64/">Making C++ Exception Handling Smaller On x64</a>. URL: <a href="https://devblogs.microsoft.com/cppblog/making-cpp-exception-handling-smaller-x64/">https://devblogs.microsoft.com/cppblog/making-cpp-exception-handling-smaller-x64/</a>
    </dd><dt id="biblio-ntke_cpprtl">[NTKE_CPPRTL]
@@ -2505,6 +2564,8 @@ straightforward implementations.</p>
    </dt><dd>JF Bastien; Vicente Botet. <a href="https://wg21.link/P0323R9">std::expected</a>. URL: <a href="https://wg21.link/P0323R9">https://wg21.link/P0323R9</a>
    </dd><dt id="biblio-p0709">[P0709]
    </dt><dd>Herb Sutter. <a href="https://wg21.link/P0709R4">Zero-overhead deterministic exceptions: Throwing values</a>. URL: <a href="https://wg21.link/P0709R4">https://wg21.link/P0709R4</a>
+   </dd><dt id="biblio-p1095">[P1095]
+   </dt><dd>Niall Douglas. <a href="https://wg21.link/P1095R0">Zero overhead deterministic failure - A unified mechanism for C and C++</a>. URL: <a href="https://wg21.link/P1095R0">https://wg21.link/P1095R0</a>
    </dd><dt id="biblio-p1640r1">[P1640R1]
    </dt><dd>Ben Craig. <a href="https://wg21.link/P1640R1">Error size benchmarking: Redux</a>. URL: <a href="https://wg21.link/P1640R1">https://wg21.link/P1640R1</a>
    </dd><dt id="biblio-p1676r0">[P1676R0]
@@ -2553,6 +2614,30 @@ straightforward implementations.</p>
    <b><a href="#frame-tracking-exceptions">#frame-tracking-exceptions</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-frame-tracking-exceptions">3.14. Other implementation approaches to exceptions</a>
+   </li></ul>
+  </aside>
+  <aside class="dfn-panel" data-for="failure-flag">
+   <b><a href="#failure-flag">#failure-flag</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-failure-flag">2.11. Error propagation and carrying arbitrary information</a>
+   </li></ul>
+  </aside>
+  <aside class="dfn-panel" data-for="failure-classification">
+   <b><a href="#failure-classification">#failure-classification</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-failure-classification">2.11. Error propagation and carrying arbitrary information</a>
+   </li></ul>
+  </aside>
+  <aside class="dfn-panel" data-for="failure-payload">
+   <b><a href="#failure-payload">#failure-payload</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-failure-payload">2.11. Error propagation and carrying arbitrary information</a>
+   </li></ul>
+  </aside>
+  <aside class="dfn-panel" data-for="unwind">
+   <b><a href="#unwind">#unwind</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-unwind">2.11. Error propagation and carrying arbitrary information</a>
    </li></ul>
   </aside>
 <script>/* script-dfn-panel */
