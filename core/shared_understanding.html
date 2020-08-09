@@ -2,7 +2,7 @@
 <html lang="en"><head>
   <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-  <title>D2018R0.2: Shared understanding of errors and exceptions</title>
+  <title>D2018R0.3: Shared understanding of errors and exceptions</title>
 <style data-fill-with="stylesheet">/******************************************************************************
  *                   Style sheet for the W3C specifications                   *
  *
@@ -1542,8 +1542,8 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
  </head><body class="h-entry toc-sidebar"><p id="toc-nav"><a id="toc-jump" href="#toc"><span aria-hidden="true">↑</span> <span>Jump to Table of Contents</span></a><a id="toc-toggle" href="#toc"><span aria-hidden="true">←</span> <span>Collapse Sidebar</span></a></p>
   <div class="head">
    <p data-fill-with="logo"></p>
-   <h1 class="p-name no-ref" id="title">D2018R0.2<br>Shared understanding of errors and exceptions</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2020-08-02">2020-08-02</time></span></h2>
+   <h1 class="p-name no-ref" id="title">D2018R0.3<br>Shared understanding of errors and exceptions</h1>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2020-08-09">2020-08-09</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1558,7 +1558,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      </dd><dt>Project:
      </dt><dd>ISO/IEC JTC1/SC22/WG21 14882: Programming Language — C++
      </dd><dt>Source:
-     </dt><dd><a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
+     </dt><dd><a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/shared_understanding_errors.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/shared_understanding_errors.bs</a>
     </dd></dl>
    </div>
    <div data-fill-with="warning"></div>
@@ -1709,9 +1709,9 @@ sad path. <a data-link-type="biblio" href="#biblio-p1947r0">[P1947R0]</a></p>
    <h3 class="heading settled" data-level="2.5" id="error_prop_usability"><span class="secno">2.5. </span><span class="content">Error propagation usability</span><a class="self-link" href="#error_prop_usability"></a></h3>
    <ol>
     <li data-md="">
-     <p>Exception syntax works well with constructors and operators.</p>
+     <p>Exception syntax allows constructors and operators to propagate errors.</p>
     </li><li data-md="">
-     <p>Error code syntax does not work well with constructors and operators.</p>
+     <p>Error code syntax does not allow constructors or operators to propagate errors.</p>
     </li><li data-md="">
      <p>Manual error propagation requires a lot of mistake-prone boilerplate. <a href="#error_prop">§ 3.4 Error propagation</a></p>
     </li><li data-md="">
@@ -1726,6 +1726,8 @@ sad path. <a data-link-type="biblio" href="#biblio-p1947r0">[P1947R0]</a></p>
      <p>RAII is an enormous boon to error handling in general. <a href="#error_prop">§ 3.4 Error propagation</a></p>
     </li><li data-md="">
      <p>Code that does not use RAII is exceedingly difficult to port to exceptions.</p>
+    </li><li data-md="">
+     <p>The degree to which error categorization should be reflected in function signatures is a polarizing topic in the C++ community.</p>
     </li><li data-md="">
      <p>The visibility of error handling is a polarizing topic in the C++ community.</p>
     </li><li data-md="">
@@ -1833,11 +1835,13 @@ due to limited stack space. <a href="#eh_alloc">§ 3.15 Exception handling all
     </li><li data-md="">
      <p>Calling code is coupled to the failure flag mechanism of callees, as calling code needs to be able to <a data-link-type="dfn" href="#unwind" id="ref-for-unwind">unwind</a> correctly.</p>
     </li><li data-md="">
-     <p>In the general case, unwinding cannot be done correctly with error codes across functions that are unaware of error codes.</p>
+     <p>In the general case, unwinding cannot be done correctly with 
+error codes across functions and languages that are unaware of error 
+codes.</p>
     </li><li data-md="">
      <p>In the general case, unwinding (particularly cleanup) cannot be 
-done correctly with C++ exceptions across functions that are unaware of 
-C++ exceptions.</p>
+done correctly with C++ exceptions across functions and languages that 
+are unaware of C++ exceptions.</p>
     </li><li data-md="">
      <p>Exceptions allow the transportation of an arbitrary failure payload from a callback, through the invoker.</p>
     </li><li data-md="">
@@ -1882,8 +1886,8 @@ exceedingly difficult to get data about the "dark matter" programmers.</p>
 of the C++ community does not use exceptions, even if we don’t know the 
 exact size of that portion.</p>
    <h3 class="heading settled" data-level="3.3" id="room_for_optimizations"><span class="secno">3.3. </span><span class="content">Room for optimizations</span><a class="self-link" href="#room_for_optimizations"></a></h3>
-    There are cases where the compiler could detect certain exception 
-patterns and avoid many of the costs of exception handling. <a data-link-type="biblio" href="#biblio-p1676r0">[P1676R0]</a> and <a data-link-type="biblio" href="#biblio-glisse2013">[Glisse2013]</a> discuss many of these patterns. 
+    There are cases where the compiler could detect certain C++ 
+exception patterns and avoid many of the costs of exception handling. <a data-link-type="biblio" href="#biblio-p1676r0">[P1676R0]</a> and <a data-link-type="biblio" href="#biblio-glisse2013">[Glisse2013]</a> discuss many of these patterns.  It should be possible to optimize cases where all code between a <code class="highlight"><c- k="">throw</c-></code> and a matching <code class="highlight"><c- k="">catch</c-></code> is visible. 
    <p><a data-link-type="biblio" href="#biblio-mofh4">[MoFH4]</a> 
 discusses optimizations made to the Microsoft Visual Studio 2019 x86_64 
 compiler that substantially reduced size overhead, without breaking ABI.</p>
@@ -1990,12 +1994,12 @@ programmers will choose to use error codes, rather than fix the
 toolchain and operating environment.</p>
    <h3 class="heading settled" data-level="3.9" id="gpus"><span class="secno">3.9. </span><span class="content">GPU and accelerator environments</span><a class="self-link" href="#gpus"></a></h3>
     TODO: Get Olivier to review this. 
-   <p>Flow-control based error handling is challenging on GPUs because 
-it causes divergent code flow, and can inhibit the most valuable 
-optimization in that domain.  I define flow-control based error handling
- as any error handling that changes the main sequence of instructions 
-executed.  This covers exception-based programming models, error code 
-based programming models, and even things like <code class="highlight"><c- n="">expected</c-></code>.
+   <p>Flow-control based error handling inhibits the most valuable 
+optimization in that GPU domain because it introduces divergent code 
+flow.  I define flow-control based error handling as any error handling 
+that changes the main sequence of instructions executed.  This covers 
+exception-based programming models, error code based programming models,
+ and even things like <code class="highlight"><c- n="">expected</c-></code>.
   Tools like floating-point NaN propagation are an alternate, but 
 unpopular way to propagate errors in a way that doesn’t suffer from 
 divergent control flow.</p>
@@ -2328,7 +2332,7 @@ non-polymorphic type) lie somewhere in between these two extremes.</p>
 	<c- k="">return</c-> <c- n="">vel</c-><c- p="">;</c->
 <c- p="">}</c->
 </pre>
-   Static analyzer’s can reason about the cases where <code class="highlight"><c- n="">vel</c-></code> is positive or negative.  They can deal with multiple return statements in the same function.  They can deal with destructors. 
+   Static analyzers can reason about the cases where <code class="highlight"><c- n="">vel</c-></code> is positive or negative.  They can deal with multiple return statements in the same function.  They can deal with destructors. 
    <p>Programs using integer error codes will have very similar 
 branching structures.  In these programs, the reasoning needed for high 
 quality diagnostics, stack usage, or worst case execution time is the 
@@ -2394,6 +2398,7 @@ has been found and executed.  This process can be automatic, as is the
 case with exceptions, or manual, as is the case with error codes 
 combined with early returns.</p>
    <h2 class="heading settled" data-level="5" id="ack"><span class="secno">5. </span><span class="content">Acknowledgments</span><a class="self-link" href="#ack"></a></h2>
+    Thank you to Emil Dotchevski, for providing valuable review feedback. 
   </main>
 <script>
 (function() {
