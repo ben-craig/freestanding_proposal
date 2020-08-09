@@ -1,12 +1,12 @@
 <pre class='metadata'>
 Title: Shared understanding of errors and exceptions
 Shortname: D2018
-Revision: 0.2
+Revision: 0.3
 Audience: SG14, EWG
 Status: D
 Group: WG21
 URL: TODO
-!Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
+!Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/shared_understanding_errors.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/shared_understanding_errors.bs</a>
 Editor: Ben Craig, NI, ben.craig@gmail.com
 Editor: Niall Douglas, s_sourceforge@nedprod.com
 Abstract:
@@ -61,8 +61,8 @@ Error terminates {#terminates}
 
 Error propagation usability {#error_prop_usability}
 --------------------------
-1. Exception syntax works well with constructors and operators.
-1. Error code syntax does not work well with constructors and operators.
+1. Exception syntax allows constructors and operators to propagate errors.
+1. Error code syntax does not allow constructors or operators to propagate errors.
 1. Manual error propagation requires a lot of mistake-prone boilerplate. [[#error_prop]]
 1. Forgetting to test for an error code is a common source of bugs. [[#error_prop]]
 1. Automatic error propagation adds invisible control flow that can be easy to overlook. [[#error_prop]]
@@ -70,6 +70,7 @@ Error propagation usability {#error_prop_usability}
 1. #SUBJECTIVE# Automatic error propagation is preferable. [[#error_prop]]
 1. RAII is an enormous boon to error handling in general. [[#error_prop]]
 1. Code that does not use RAII is exceedingly difficult to port to exceptions.
+1. The degree to which error categorization should be reflected in function signatures is a polarizing topic in the C++ community.
 1. The visibility of error handling is a polarizing topic in the C++ community.
 1. Opinions of error handling visibility can vary wildly based on the code under discussion.
 1. Dual error interface libraries are not ideal (e.g. `std::filesystem`).
@@ -123,8 +124,8 @@ Error propagation and carrying arbitrary information {#arb_info}
 1. Error handling can be coarsely decomposed into a [=failure flag=], a [=failure classification=], and a [=failure payload=].
 1. Failure flags and failure payloads can be transported via different mechanisms. [[LEAF]]
 1. Calling code is coupled to the failure flag mechanism of callees, as calling code needs to be able to [=unwind=] correctly.
-1. In the general case, unwinding cannot be done correctly with error codes across functions that are unaware of error codes.
-1. In the general case, unwinding (particularly cleanup) cannot be done correctly with C++ exceptions across functions that are unaware of C++ exceptions.
+1. In the general case, unwinding cannot be done correctly with error codes across functions and languages that are unaware of error codes.
+1. In the general case, unwinding (particularly cleanup) cannot be done correctly with C++ exceptions across functions and languages that are unaware of C++ exceptions.
 1. Exceptions allow the transportation of an arbitrary failure payload from a callback, through the invoker.
 1. Error codes can be constructed that allow the transportation of an arbitrary failure payload from a callback, through the invoker (e.g. a std::pair<int, std::any>).
 1. Error codes, in the general case, cannot be used to propagate failure payloads across code that is unaware of error codes.
@@ -155,7 +156,7 @@ Regardless, the survey data indicates that a significant portion of the C++ comm
 
 Room for optimizations {#room_for_optimizations}
 ------------------------------------------------
-There are cases where the compiler could detect certain exception patterns and avoid many of the costs of exception handling.  [[P1676R0]] and [[Glisse2013]] discuss many of these patterns.
+There are cases where the compiler could detect certain C++ exception patterns and avoid many of the costs of exception handling.  [[P1676R0]] and [[Glisse2013]] discuss many of these patterns.  It should be possible to optimize cases where all code between a `throw` and a matching `catch` is visible.
 
 [[MoFH4]] discusses optimizations made to the Microsoft Visual Studio 2019 x86_64 compiler that substantially reduced size overhead, without breaking ABI.
 
@@ -213,7 +214,7 @@ GPU and accelerator environments {#gpus}
 -----------------------------
 TODO: Get Olivier to review this. 
 
-Flow-control based error handling is challenging on GPUs because it causes divergent code flow, and can inhibit the most valuable optimization in that domain.  I define flow-control based error handling as any error handling that changes the main sequence of instructions executed.  This covers exception-based programming models, error code based programming models, and even things like `expected`.  Tools like floating-point NaN propagation are an alternate, but unpopular way to propagate errors in a way that doesn't suffer from divergent control flow.
+Flow-control based error handling inhibits the most valuable optimization in that GPU domain because it introduces divergent code flow.  I define flow-control based error handling as any error handling that changes the main sequence of instructions executed.  This covers exception-based programming models, error code based programming models, and even things like `expected`.  Tools like floating-point NaN propagation are an alternate, but unpopular way to propagate errors in a way that doesn't suffer from divergent control flow.
 
 Potentially divergent control flow is substantially slower than coherent control flow.  A different set of instructions needs to be generated to handle potentially divergent control flow.  This extra code often involves setting up execution masks and dealing with their overhead.  Distant, non-call based control transfers (e.g. `setjmp`) have additional implementation challenges in some existing hardware.  In addition, if any threads take the sad path, performance is negatively affected for threads on the happy path.
 
@@ -357,7 +358,7 @@ int fetch_speed(const simulation_parameters *params) {
 	return vel;
 }
 ```
-Static analyzer's can reason about the cases where `vel` is positive or negative.  They can deal with multiple return statements in the same function.  They can deal with destructors.
+Static analyzers can reason about the cases where `vel` is positive or negative.  They can deal with multiple return statements in the same function.  They can deal with destructors.
 
 Programs using integer error codes will have very similar branching structures.  In these programs, the reasoning needed for high quality diagnostics, stack usage, or worst case execution time is the same for both the happy path and the sad path.
 
@@ -388,6 +389,7 @@ Definitions {#definitions}
 
 Acknowledgments {#ack}
 ======================
+Thank you to Emil Dotchevski, for providing valuable review feedback.
 
 <pre class=biblio>
 {
