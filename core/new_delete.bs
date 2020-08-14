@@ -1,11 +1,11 @@
 <pre class='metadata'>
 Title: Freestanding Language: Optional <code>::operator new</code>
-Shortname: D2013 TODO
-Revision: 2.0
+Shortname: P2013
+Revision: 2
 Audience: SG14, EWG, LEWG
-Status: D
+Status: P
 Group: WG21
-URL: https://wg21.link/P2013R1
+URL: https://wg21.link/P2013R2
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
 Editor: Ben Craig, National Instruments, ben.craig@gmail.com
 Abstract: In freestanding implementations, standardize existing practices and make the default allocating <code>::operator new</code>s optional.
