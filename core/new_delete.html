@@ -2,7 +2,7 @@
 <html lang="en"><head>
   <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-  <title>P2013R1: Freestanding Language: Optional &lt;code&gt;::operator new&lt;/code&gt;</title>
+  <title>P2013R2: Freestanding Language: Optional &lt;code&gt;::operator new&lt;/code&gt;</title>
 <style data-fill-with="stylesheet">/******************************************************************************
  *                   Style sheet for the W3C specifications                   *
  *
@@ -1175,7 +1175,7 @@ Possible extra rowspan handling
 		   1. When table < content column, centers table in column.
 		   2. When content < table < available, left-aligns.
 		   3. When table > available, fills available + scroll bar.
-		*/ 
+		*/
 		display: grid;
 		grid-template-columns: minmax(0, 50em);
 	}
@@ -1294,8 +1294,8 @@ Possible extra rowspan handling
     blockquote c-[vi] { color: inherit; } /* Name.Variable.Instance */
     blockquote c-[il] { color: inherit; } /* Literal.Number.Integer.Long */
   </style>
-  <meta content="Bikeshed version d4d56a96, updated Fri Apr 10 11:10:34 2020 -0700" name="generator">
-  <link href="https://wg21.link/P2013R1" rel="canonical">
+  <meta content="Bikeshed version 22d05d56, updated Sun Aug 9 20:27:34 2020 -0700" name="generator">
+  <link href="https://wg21.link/P2013R2" rel="canonical">
   <link href="https://isocpp.org/favicon.ico" rel="icon">
 <style>/* style-autolinks */
 
@@ -1505,12 +1505,12 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
  </head><body class="h-entry toc-sidebar"><p id="toc-nav"><a id="toc-jump" href="#toc"><span aria-hidden="true">↑</span> <span>Jump to Table of Contents</span></a><a id="toc-toggle" href="#toc"><span aria-hidden="true">←</span> <span>Collapse Sidebar</span></a></p>
   <div class="head">
    <p data-fill-with="logo"></p>
-   <h1 class="p-name no-ref" id="title">P2013R1<br>Freestanding Language: Optional <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code></h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Published Proposal, <time class="dt-updated" datetime="2020-04-13">2020-04-13</time></span></h2>
+   <h1 class="p-name no-ref" id="title">P2013R2<br>Freestanding Language: Optional <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code></h1>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Published Proposal, <time class="dt-updated" datetime="2020-08-14">2020-08-14</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
-     </dt><dd><a class="u-url" href="https://wg21.link/P2013R1">https://wg21.link/P2013R1</a>
+     </dt><dd><a class="u-url" href="https://wg21.link/P2013R2">https://wg21.link/P2013R2</a>
      </dd><dt>Author:
      </dt><dd>
       </dd><dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:ben.craig@gmail.com">Ben Craig</a> (<span class="p-org org">National Instruments</span>)
@@ -1535,8 +1535,9 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     <li>
      <a href="#revision_history"><span class="secno">1</span> <span class="content">Revision History</span></a>
      <ol class="toc">
-      <li><a href="#r1"><span class="secno">1.1</span> <span class="content">R1</span></a>
-      </li><li><a href="#r0"><span class="secno">1.2</span> <span class="content">R0</span></a>
+      <li><a href="#r2"><span class="secno">1.1</span> <span class="content">R2</span></a>
+      </li><li><a href="#r1"><span class="secno">1.2</span> <span class="content">R1</span></a>
+      </li><li><a href="#r0"><span class="secno">1.3</span> <span class="content">R0</span></a>
      </li></ol>
     </li><li><a href="#the_changes"><span class="secno">2</span> <span class="content">What is changing</span></a>
     </li><li><a href="#non_changes"><span class="secno">3</span> <span class="content">What is staying the same</span></a>
@@ -1594,14 +1595,18 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   </nav>
   <main>
    <h2 class="heading settled" data-level="1" id="revision_history"><span class="secno">1. </span><span class="content">Revision History</span><a class="self-link" href="#revision_history"></a></h2>
-   <h3 class="heading settled" data-level="1.1" id="r1"><span class="secno">1.1. </span><span class="content">R1</span><a class="self-link" href="#r1"></a></h3>
+   <h3 class="heading settled" data-level="1.1" id="r2"><span class="secno">1.1. </span><span class="content">R2</span><a class="self-link" href="#r2"></a></h3>
+    Making the status of "placement" new more obvious ("placement" new is still required). 
+   <p>Added words in the design to indicate that the declarations in <code class="highlight"><c- o="">&lt;</c-><c- k="">new</c-><c- o="">&gt;</c-></code> are not changing.</p>
+   <p>Mentioning that pointer safety remains unchanged.</p>
+   <h3 class="heading settled" data-level="1.2" id="r1"><span class="secno">1.2. </span><span class="content">R1</span><a class="self-link" href="#r1"></a></h3>
     Added polling results from Prague <a href="#ewgi_prague">EWGI</a> and <a href="#ewg_prague">EWG</a>. 
    <p>Added discussion on <a href="#no_macro">feature test macro</a>.</p>
    <p>Added discussion on <a href="#why_not_fix">not fixing virtual destructors</a>.</p>
    <p>Declaring that <code class="highlight"><c- k="">constexpr</c-> <c- k="">new</c-></code> must continue to work.</p>
    <p>Added <a href="#wording">wording</a>.</p>
    <p>Wording includes <a href="#new_delete">changes to library clauses</a>, so added LEWG to the audience.</p>
-   <h3 class="heading settled" data-level="1.2" id="r0"><span class="secno">1.2. </span><span class="content">R0</span><a class="self-link" href="#r0"></a></h3>
+   <h3 class="heading settled" data-level="1.3" id="r0"><span class="secno">1.3. </span><span class="content">R0</span><a class="self-link" href="#r0"></a></h3>
     R0 of this paper was extracted from <a data-link-type="biblio" href="#biblio-p1105r1">[P1105R1]</a>. 
    <p>The proposed solution is different than the one proposed for 
 P1105R1, but the motivation is the same.  The solution from P1105R1 is 
@@ -1623,18 +1628,25 @@ allocation functions are not present.</p>
    <p>Calling <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> on a non-null pointer that did not come from <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> is still undefined behavior <a href="http://eel.is/c++draft/new.delete.single#12">new.delete.single</a> <a href="http://eel.is/c++draft/new.delete.array#11">new.delete.array</a>.  Calling <code class="highlight"><c- k="">delete</c-></code> on an object or base that didn’t come from <code class="highlight"><c- k="">new</c-></code> is still undefined behavior <a href="http://eel.is/c++draft/expr.delete#2">expr.delete</a>.  This is what makes a no-op <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> a valid strategy on implementations without a global <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>.</p>
    <p>The replaceable allocation functions will still be implicitly declared at global scope in each translation unit <a href="http://eel.is/c++draft/basic.stc.dynamic#2">basic.stc.dynamic</a>.
   Non-ODR-uses of the replaceable allocation functions are still 
-permitted (e.g. inside of uninstantiated templates).  Implementations of
- the replaceable allocation functions can be performed by linking in an 
-extra translation-unit with the definitions of the functions.  Since 
-this replacement typically happens at link time, ODR-uses of missing 
+permitted (e.g. inside of uninstantiated templates).  The declarations 
+of <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> in the <code class="highlight"><c- o="">&lt;</c-><c- k="">new</c-><c- o="">&gt;</c-></code>
+ header are still required to be present.  Implementations of the 
+replaceable allocation functions can be performed by linking in an extra
+ translation-unit with the definitions of the functions.  Since this 
+replacement typically happens at link time, ODR-uses of missing 
 replaceable allocation functions usually won’t be diagnosable at compile
  time.</p>
    <p>"<code class="highlight"><c- k="">constexpr</c-> <c- k="">new</c-></code>"
  is still required to work, even when the replaceable allocation 
 functions are not present.  This requires some tweaking of standardese.</p>
+   <p>Non-allocating placement <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> (colloquially "placement new") and <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> (colloquially "placement delete") are still required to be present in freestanding implementations.</p>
+   <p>Core language concepts of pointer safety remain unchanged.  Note that the pointer safety library facilities <a href="https://eel.is/c++draft/util.dynamic.safety">util.dynamic.safety</a>
+ are not required to be present in freestanding implementations, and the
+ author is not aware of any papers to make the pointer safety library 
+facilities required in freestanding implementations.</p>
    <p>Hosted implementations are unchanged.  Users of freestanding 
 implementations can still provide implementations of the replaceable 
-allocation and deallocation functions.  The behavior of <code class="highlight"><c- k="">virtual</c-></code> destructors is unchanged.  The behavior of class specific <code class="highlight"><c- k="">operator</c-> <c- k="">new</c-></code> and <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code> overloads is unchanged.  Non-allocating placement <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> and <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> are still required to be present.  The requirements on user-provided <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> and <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code>
+allocation and deallocation functions.  The behavior of <code class="highlight"><c- k="">virtual</c-></code> destructors is unchanged.  The behavior of class specific <code class="highlight"><c- k="">operator</c-> <c- k="">new</c-></code> and <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code> overloads is unchanged.  The requirements on user-provided <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> and <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code>
  overloads remains the same, particularly those requirements involving 
 error behaviors.  Coroutines will behave the same so long as 
 promise-specific allocators are used.  The storage for exception objects
@@ -1877,7 +1889,7 @@ been provided. [<i>Note</i>: On hosted implementations, the library provides def
     Thank you to the many reviewers of this paper:
 Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred 
 Bratterud, Phil Hindman, Arthur O’Dwyer, Laurin-Luis Lehning, JF 
-Bastien, and Matthew Bentley 
+Bastien, Matthew Bentley, and Alisdair Meredith. 
    <p>Thank you to Daveed Vandevoorde, for providing feedback on the wording.</p>
   </main>
 <script>
