@@ -2,7 +2,7 @@
 <html lang="en"><head>
   <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-  <title>P2013R2: Freestanding Language: Optional &lt;code&gt;::operator new&lt;/code&gt;</title>
+  <title>D2013R3.0: Freestanding Language: Optional &lt;code&gt;::operator new&lt;/code&gt;</title>
 <style data-fill-with="stylesheet">/******************************************************************************
  *                   Style sheet for the W3C specifications                   *
  *
@@ -1294,7 +1294,7 @@ Possible extra rowspan handling
     blockquote c-[vi] { color: inherit; } /* Name.Variable.Instance */
     blockquote c-[il] { color: inherit; } /* Literal.Number.Integer.Long */
   </style>
-  <meta content="Bikeshed version 22d05d56, updated Sun Aug 9 20:27:34 2020 -0700" name="generator">
+  <meta content="Bikeshed version 5f7b0e20, updated Tue Aug 18 15:46:28 2020 -0700" name="generator">
   <link href="https://wg21.link/P2013R2" rel="canonical">
   <link href="https://isocpp.org/favicon.ico" rel="icon">
 <style>/* style-autolinks */
@@ -1505,8 +1505,8 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
  </head><body class="h-entry toc-sidebar"><p id="toc-nav"><a id="toc-jump" href="#toc"><span aria-hidden="true">↑</span> <span>Jump to Table of Contents</span></a><a id="toc-toggle" href="#toc"><span aria-hidden="true">←</span> <span>Collapse Sidebar</span></a></p>
   <div class="head">
    <p data-fill-with="logo"></p>
-   <h1 class="p-name no-ref" id="title">P2013R2<br>Freestanding Language: Optional <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code></h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Published Proposal, <time class="dt-updated" datetime="2020-08-14">2020-08-14</time></span></h2>
+   <h1 class="p-name no-ref" id="title">D2013R3.0<br>Freestanding Language: Optional <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code></h1>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2020-08-23">2020-08-23</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1535,9 +1535,10 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     <li>
      <a href="#revision_history"><span class="secno">1</span> <span class="content">Revision History</span></a>
      <ol class="toc">
-      <li><a href="#r2"><span class="secno">1.1</span> <span class="content">R2</span></a>
-      </li><li><a href="#r1"><span class="secno">1.2</span> <span class="content">R1</span></a>
-      </li><li><a href="#r0"><span class="secno">1.3</span> <span class="content">R0</span></a>
+      <li><a href="#r3"><span class="secno">1.1</span> <span class="content">R3</span></a>
+      </li><li><a href="#r2"><span class="secno">1.2</span> <span class="content">R2</span></a>
+      </li><li><a href="#r1"><span class="secno">1.3</span> <span class="content">R1</span></a>
+      </li><li><a href="#r0"><span class="secno">1.4</span> <span class="content">R0</span></a>
      </li></ol>
     </li><li><a href="#the_changes"><span class="secno">2</span> <span class="content">What is changing</span></a>
     </li><li><a href="#non_changes"><span class="secno">3</span> <span class="content">What is staying the same</span></a>
@@ -1583,9 +1584,15 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      <ol class="toc">
       <li><a href="#basic_def_odr"><span class="secno">8.1</span> <span class="content">basic.def.odr</span></a>
       </li><li><a href="#basic_stc_dynamic"><span class="secno">8.2</span> <span class="content">basic.stc.dynamic</span></a>
-      </li><li><a href="#new_delete"><span class="secno">8.3</span> <span class="content">new.delete</span></a>
+      </li><li><a href="#expr_new"><span class="secno">8.3</span> <span class="content">expr.new</span></a>
+      </li><li><a href="#new_delete"><span class="secno">8.4</span> <span class="content">new.delete</span></a>
      </li></ol>
-    </li><li><a href="#ack"><span class="secno">9</span> <span class="content">Acknowledgments</span></a>
+    </li><li>
+     <a href="#alternative_wording"><span class="secno">9</span> <span class="content">Alternative Wording</span></a>
+     <ol class="toc">
+      <li><a href="#alternative_new_delete"><span class="secno">9.1</span> <span class="content">new.delete</span></a>
+     </li></ol>
+    </li><li><a href="#ack"><span class="secno">10</span> <span class="content">Acknowledgments</span></a>
     </li><li>
      <a href="#references"><span class="secno"></span> <span class="content">References</span></a>
      <ol class="toc">
@@ -1595,18 +1602,24 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   </nav>
   <main>
    <h2 class="heading settled" data-level="1" id="revision_history"><span class="secno">1. </span><span class="content">Revision History</span><a class="self-link" href="#revision_history"></a></h2>
-   <h3 class="heading settled" data-level="1.1" id="r2"><span class="secno">1.1. </span><span class="content">R2</span><a class="self-link" href="#r2"></a></h3>
+   <h3 class="heading settled" data-level="1.1" id="r3"><span class="secno">1.1. </span><span class="content">R3</span><a class="self-link" href="#r3"></a></h3>
+    In the design, an ODR-use without a definition no longer requires 
+ill-formedness.  The intent is still the same, in that it typically 
+results in a linker error. 
+   <p>Updated grammar and ill-formedness of wording.</p>
+   <p>Found an additional note in <a href="https://wg21.link/expr.new#10">expr.new/10</a> that needed adjustment.</p>
+   <h3 class="heading settled" data-level="1.2" id="r2"><span class="secno">1.2. </span><span class="content">R2</span><a class="self-link" href="#r2"></a></h3>
     Making the status of "placement" new more obvious ("placement" new is still required). 
    <p>Added words in the design to indicate that the declarations in <code class="highlight"><c- o="">&lt;</c-><c- k="">new</c-><c- o="">&gt;</c-></code> are not changing.</p>
    <p>Mentioning that pointer safety remains unchanged.</p>
-   <h3 class="heading settled" data-level="1.2" id="r1"><span class="secno">1.2. </span><span class="content">R1</span><a class="self-link" href="#r1"></a></h3>
+   <h3 class="heading settled" data-level="1.3" id="r1"><span class="secno">1.3. </span><span class="content">R1</span><a class="self-link" href="#r1"></a></h3>
     Added polling results from Prague <a href="#ewgi_prague">EWGI</a> and <a href="#ewg_prague">EWG</a>. 
    <p>Added discussion on <a href="#no_macro">feature test macro</a>.</p>
    <p>Added discussion on <a href="#why_not_fix">not fixing virtual destructors</a>.</p>
    <p>Declaring that <code class="highlight"><c- k="">constexpr</c-> <c- k="">new</c-></code> must continue to work.</p>
    <p>Added <a href="#wording">wording</a>.</p>
    <p>Wording includes <a href="#new_delete">changes to library clauses</a>, so added LEWG to the audience.</p>
-   <h3 class="heading settled" data-level="1.3" id="r0"><span class="secno">1.3. </span><span class="content">R0</span><a class="self-link" href="#r0"></a></h3>
+   <h3 class="heading settled" data-level="1.4" id="r0"><span class="secno">1.4. </span><span class="content">R0</span><a class="self-link" href="#r0"></a></h3>
     R0 of this paper was extracted from <a data-link-type="biblio" href="#biblio-p1105r1">[P1105R1]</a>. 
    <p>The proposed solution is different than the one proposed for 
 P1105R1, but the motivation is the same.  The solution from P1105R1 is 
@@ -1616,8 +1629,8 @@ still listed as a design alternative.</p>
  overloads, single and array forms) will be implementation defined.  
 Implementations shall provide all the replaceable allocation functions, 
 or none of them.  If none of the replaceable allocation functions are 
-provided, then an ODR-use of the functions will cause the program to be 
-ill-formed.  This will typically manifest as a linker error. 
+provided, then an ODR-use of the functions will typically manifest as a 
+linker error. 
    <p>As a consequence of the above, coroutines that are relying on the 
 global allocation functions will be ill-formed so long as those global 
 allocation functions are not present.</p>
@@ -1867,30 +1880,109 @@ functions are replaceable (17.6.2).
 definitions for the non-replaceable allocation functions and all the 
 global deallocation functions. It is implementation-defined whether a 
 freestanding implementation’s library provides default definitions for 
-the replaceable global allocation functions. A freestanding 
-implementation’s library shall either provide the definitions for all 
-the replaceable global allocation functions, or none of the replaceable 
-global allocation functions.</ins>
+the replaceable global allocation functions. Either all or none of the 
+replaceable global allocation functions shall be defined by a 
+freestanding implementation’s library.</ins>
      A C++ program shall provide at most one definition of a replaceable
  allocation or deallocation function. Any such function definition 
 replaces the default version provided in the library (16.5.4.6). The 
 following allocation and deallocation functions (17.6) are implicitly 
 declared in global scope in each translation unit of a program. 
    </blockquote>
-   <h3 class="heading settled" data-level="8.3" id="new_delete"><span class="secno">8.3. </span><span class="content">new.delete</span><a class="self-link" href="#new_delete"></a></h3>
-    Insert the following Mandate clause before <a href="https://wg21.link/new.delete.single#1">new.delete.single/1</a>, <a href="https://wg21.link/new.delete.single#5">new.delete.single/5</a>, <a href="https://wg21.link/new.delete.array#1">new.delete.array/1</a>, and <a href="https://wg21.link/new.delete.array#5">new.delete.array/5</a>: 
+   <h3 class="heading settled" data-level="8.3" id="expr_new"><span class="secno">8.3. </span><span class="content">expr.new</span><a class="self-link" href="#expr_new"></a></h3>
+    Modify <a href="https://wg21.link/expr.new#10">expr.new/10</a> 
    <blockquote>
-    <ins><i>Mandates:</i> These allocation functions are not odr-used 
-([basic.def.odr]) unless a definition of these allocation functions has 
-been provided. [<i>Note</i>: On hosted implementations, the library provides default definitions of these allocation functions ([basic.stc.dynamic]).- <i>end note</i>]</ins>
+     A new-expression may obtain storage for the object by calling an 
+allocation function ([basic.stc.dynamic.allocation]).
+If the new-expression terminates by throwing an exception, it may 
+release storage by calling a deallocation function.
+If the allocated type is a non-array type, the allocation function’s 
+name is operator new and the deallocation function’s name is operator 
+delete.
+If the allocated type is an array type, the allocation function’s name 
+is operator new[] and the deallocation function’s name is operator 
+delete[].
+[Note: 
+    <del>An</del>
+    <ins>A hosted</ins>
+     implementation is required to provide default definitions for the 
+global allocation functions ([basic.stc.dynamic], [new.delete.single], 
+[new.delete.array]).
+A C++ program can provide alternative definitions of these functions 
+([replacement.functions]) and/or class-specific versions ([class.free]).
+The set of allocation and deallocation functions that may be called by a
+ new-expression may include functions that do not perform allocation or 
+deallocation; for example, see [new.delete.placement].
+— end note] 
    </blockquote>
-   <p>The above mimics wording in <a href="https://wg21.link/declval">declval</a>.  I believe it is compatible with <a href="https://wg21.link/intro.compliance#4.sentence-2">intro.compliance/4</a>.</p>
-   <h2 class="heading settled" data-level="9" id="ack"><span class="secno">9. </span><span class="content">Acknowledgments</span><a class="self-link" href="#ack"></a></h2>
+   <h3 class="heading settled" data-level="8.4" id="new_delete"><span class="secno">8.4. </span><span class="content">new.delete</span><a class="self-link" href="#new_delete"></a></h3>
+    Modify <a href="https://wg21.link/new.delete">new.delete</a> 
+   <blockquote>
+    <p>17.6.2  Storage allocation and deallocation [new.delete]</p>
+    <p>1 Except where otherwise specified, the provisions of 6.7.5.4 
+apply to the library versions of operator new and operator delete. If 
+the value of an alignment argument passed to any of these functions is 
+not a valid alignment value, the behavior is undefined.</p>
+    <p>
+     <ins>17.6.2.1  Allocating forms [allocating.forms]</ins>
+    </p>
+    <p>
+     <ins>1 Odr-use of the allocation functions in this subclause 
+results in undefined behavior unless a definition of the odr-used 
+allocation function has been provided.
+[<i>Note</i>: On hosted implementations, the library provides default definitions of these allocation functions ([basic.stc.dynamic]).- <i>end note</i>]</ins>
+    </p>
+    <p>
+     <del>17.6.2.1</del>
+     <ins>17.6.2.1.1</ins>
+      Single-object forms [new.delete.single]
+    </p>
+    <p><i>No changes</i></p>
+    <p>
+     <del>17.6.2.2</del>
+     <ins>17.6.2.1.2</ins>
+      Array forms [new.delete.array]
+    </p>
+    <p><i>No changes</i></p>
+    <p>
+     <del>17.6.2.3</del>
+     <ins>17.6.2.2</ins>
+      Non-allocating forms [new.delete.placement]
+    </p>
+    <p><i>No changes</i></p>
+    <p>
+     <del>17.6.2.4</del>
+     <ins>17.6.2.3</ins>
+      Data races [new.delete.dataraces]
+    </p>
+    <p><i>No changes</i></p>
+   </blockquote>
+   <h2 class="heading settled" data-level="9" id="alternative_wording"><span class="secno">9. </span><span class="content">Alternative Wording</span><a class="self-link" href="#alternative_wording"></a></h2>
+   <h3 class="heading settled" data-level="9.1" id="alternative_new_delete"><span class="secno">9.1. </span><span class="content">new.delete</span><a class="self-link" href="#alternative_new_delete"></a></h3>
+    [allocating.forms]/1 uses undefined behavior.  Making the program 
+ill-formed would be preferable, but we cannot use ill-formed to diagnose
+ linker errors.  The following is the wording approach to use if we let 
+the ODR violation provide the normative backing for this design.  This 
+results in IF;NDR when no definitions are present. 
+   <blockquote>
+    <p>
+     <ins>17.6.2.1  Allocating forms [allocating.forms]</ins>
+    </p>
+    <p>
+     <ins>1 [<i>Note</i>: Odr-use of the allocation functions in this 
+subclause results in a one-definition rule violation unless a definition
+ of the odr-used allocation function has been provided. 
+([basic.def.odr]). On hosted implementations, the library provides 
+default definitions of these allocation functions 
+([basic.stc.dynamic]).- <i>end note</i>] </ins>
+    </p>
+   </blockquote>
+   <h2 class="heading settled" data-level="10" id="ack"><span class="secno">10. </span><span class="content">Acknowledgments</span><a class="self-link" href="#ack"></a></h2>
     Thank you to the many reviewers of this paper:
 Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred 
 Bratterud, Phil Hindman, Arthur O’Dwyer, Laurin-Luis Lehning, JF 
 Bastien, Matthew Bentley, and Alisdair Meredith. 
-   <p>Thank you to Daveed Vandevoorde, for providing feedback on the wording.</p>
+   <p>Thank you to Daveed Vandevoorde and Walter Brown for providing feedback on the wording.</p>
   </main>
 <script>
 (function() {
