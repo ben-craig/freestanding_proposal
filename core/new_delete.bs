@@ -1,9 +1,9 @@
 <pre class='metadata'>
 Title: Freestanding Language: Optional <code>::operator new</code>
-Shortname: P2013
-Revision: 2
+Shortname: D2013
+Revision: 3.0
 Audience: SG14, EWG, LEWG
-Status: P
+Status: D
 Group: WG21
 URL: https://wg21.link/P2013R2
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
@@ -14,6 +14,14 @@ Markup Shorthands: markdown yes
 
 Revision History {#revision_history}
 ====================================
+R3 {#r3}
+-----
+In the design, an ODR-use without a definition no longer requires ill-formedness.  The intent is still the same, in that it typically results in a linker error.
+
+Updated grammar and ill-formedness of wording.
+
+Found an additional note in [expr.new/10](https://wg21.link/expr.new#10) that needed adjustment.
+
 R2 {#r2}
 -----
 Making the status of "placement" new more obvious ("placement" new is still required).
@@ -44,7 +52,7 @@ The proposed solution is different than the one proposed for P1105R1, but the mo
 
 What is changing {#the_changes}
 =====================
-On freestanding systems without default heap storage, the presence of the replaceable allocation functions (i.e. allocating `::operator new`, including the `nothrow_t` and `align_val_t` overloads, single and array forms) will be implementation defined.  Implementations shall provide all the replaceable allocation functions, or none of them.  If none of the replaceable allocation functions are provided, then an ODR-use of the functions will cause the program to be ill-formed.  This will typically manifest as a linker error.
+On freestanding systems without default heap storage, the presence of the replaceable allocation functions (i.e. allocating `::operator new`, including the `nothrow_t` and `align_val_t` overloads, single and array forms) will be implementation defined.  Implementations shall provide all the replaceable allocation functions, or none of them.  If none of the replaceable allocation functions are provided, then an ODR-use of the functions will typically manifest as a linker error.
 
 As a consequence of the above, coroutines that are relying on the global allocation functions will be ill-formed so long as those global allocation functions are not present.
 
@@ -233,25 +241,60 @@ basic.stc.dynamic {#basic_stc_dynamic}
 Modify [basic.stc.dynamic/2](https://wg21.link/basic.stc.dynamic#2)
 
 <blockquote>
-<del>The</del><ins>On hosted implementations, the</ins> library provides default definitions for the global allocation and deallocation functions. Some global allocation and deallocation functions are replaceable (17.6.2). <ins>On freestanding implementations, the library provides default definitions for the non-replaceable allocation functions and all the global deallocation functions. It is implementation-defined whether a freestanding implementation's library provides default definitions for the replaceable global allocation functions. A freestanding implementation's library shall either provide the definitions for all the replaceable global allocation functions, or none of the replaceable global allocation functions.</ins> A C++ program shall provide at most one definition of a replaceable allocation or deallocation function. Any such function definition replaces the default version provided in the library (16.5.4.6). The following allocation and deallocation functions (17.6) are implicitly declared in global scope in each translation unit of a program.
+<del>The</del><ins>On hosted implementations, the</ins> library provides default definitions for the global allocation and deallocation functions. Some global allocation and deallocation functions are replaceable (17.6.2). <ins>On freestanding implementations, the library provides default definitions for the non-replaceable allocation functions and all the global deallocation functions. It is implementation-defined whether a freestanding implementation's library provides default definitions for the replaceable global allocation functions. Either all or none of the replaceable global allocation functions shall be defined by a freestanding implementation's library.</ins> A C++ program shall provide at most one definition of a replaceable allocation or deallocation function. Any such function definition replaces the default version provided in the library (16.5.4.6). The following allocation and deallocation functions (17.6) are implicitly declared in global scope in each translation unit of a program.
+</blockquote>
+
+expr.new {#expr_new}
+-------------------------
+Modify [expr.new/10](https://wg21.link/expr.new#10)
+<blockquote>
+A new-expression may obtain storage for the object by calling an allocation function ([basic.stc.dynamic.allocation]).
+If the new-expression terminates by throwing an exception, it may release storage by calling a deallocation function.
+If the allocated type is a non-array type, the allocation function's name is operator new and the deallocation function's name is operator delete.
+If the allocated type is an array type, the allocation function's name is operator new[] and the deallocation function's name is operator delete[].
+[Note: <del>An</del><ins>A hosted</ins> implementation is required to provide default definitions for the global allocation functions ([basic.stc.dynamic], [new.delete.single], [new.delete.array]).
+A C++ program can provide alternative definitions of these functions ([replacement.functions]) and/or class-specific versions ([class.free]).
+The set of allocation and deallocation functions that may be called by a new-expression may include functions that do not perform allocation or deallocation; for example, see [new.delete.placement].
+— end note]
 </blockquote>
 
 new.delete {#new_delete}
 -------------------------
-Insert the following Mandate clause before [new.delete.single/1](https://wg21.link/new.delete.single#1), [new.delete.single/5](https://wg21.link/new.delete.single#5), [new.delete.array/1](https://wg21.link/new.delete.array#1), and [new.delete.array/5](https://wg21.link/new.delete.array#5):
+Modify [new.delete](https://wg21.link/new.delete)
 
 <blockquote>
-<ins><i>Mandates:</i> These allocation functions are not odr-used ([basic.def.odr]) unless a definition of these allocation functions has been provided. [<i>Note</i>: On hosted implementations, the library provides default definitions of these allocation functions ([basic.stc.dynamic]).- <i>end note</i>]</ins>
+<p>17.6.2  Storage allocation and deallocation [new.delete]</p>
+<p>1 Except where otherwise specified, the provisions of 6.7.5.4 apply to the library versions of operator new and operator delete. If the value of an alignment argument passed to any of these functions is not a valid alignment value, the behavior is undefined.</p>
+<p><ins>17.6.2.1  Allocating forms [allocating.forms]</ins></p>
+<p><ins>1 Odr-use of the allocation functions in this subclause results in undefined behavior unless a definition of the odr-used allocation function has been provided.
+[<i>Note</i>: On hosted implementations, the library provides default definitions of these allocation functions ([basic.stc.dynamic]).- <i>end note</i>]</ins></p>
+<p><del>17.6.2.1</del><ins>17.6.2.1.1</ins>  Single-object forms [new.delete.single]</p>
+<p><i>No changes</i></p>
+<p><del>17.6.2.2</del><ins>17.6.2.1.2</ins>  Array forms [new.delete.array]</p>
+<p><i>No changes</i></p>
+<p><del>17.6.2.3</del><ins>17.6.2.2</ins>  Non-allocating forms [new.delete.placement]</p>
+<p><i>No changes</i></p>
+<p><del>17.6.2.4</del><ins>17.6.2.3</ins> Data races [new.delete.dataraces]</p>
+<p><i>No changes</i></p>
 </blockquote>
 
-The above mimics wording in [declval](https://wg21.link/declval).  I believe it is compatible with [intro.compliance/4](https://wg21.link/intro.compliance#4.sentence-2).
+Alternative Wording {#alternative_wording}
+====================
+new.delete {#alternative_new_delete}
+-------------------------
+[allocating.forms]/1 uses undefined behavior.  Making the program ill-formed would be preferable, but we cannot use ill-formed to diagnose linker errors.  The following is the wording approach to use if we let the ODR violation provide the normative backing for this design.  This results in IF;NDR when no definitions are present.
+<blockquote>
+<p><ins>17.6.2.1  Allocating forms [allocating.forms]</ins></p>
+<p><ins>1 [<i>Note</i>: Odr-use of the allocation functions in this subclause results in a one-definition rule violation unless a definition of the odr-used allocation function has been provided. ([basic.def.odr]). On hosted implementations, the library provides default definitions of these allocation functions ([basic.stc.dynamic]).- <i>end note</i>]
+</blockquote>
+
 
 Acknowledgments {#ack}
 ======================
 Thank you to the many reviewers of this paper:
 Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred Bratterud, Phil Hindman, Arthur O'Dwyer, Laurin-Luis Lehning, JF Bastien, Matthew Bentley, and Alisdair Meredith.
 
-Thank you to Daveed Vandevoorde, for providing feedback on the wording.
+Thank you to Daveed Vandevoorde and Walter Brown for providing feedback on the wording.
 
 <pre class=biblio>
 {
