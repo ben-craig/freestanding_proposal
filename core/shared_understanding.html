@@ -2,7 +2,7 @@
 <html lang="en"><head>
   <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-  <title>D2018R0.3: Shared understanding of errors and exceptions</title>
+  <title>D2018R0.4: Shared understanding of errors and exceptions</title>
 <style data-fill-with="stylesheet">/******************************************************************************
  *                   Style sheet for the W3C specifications                   *
  *
@@ -1294,7 +1294,7 @@ Possible extra rowspan handling
     blockquote c-[vi] { color: inherit; } /* Name.Variable.Instance */
     blockquote c-[il] { color: inherit; } /* Literal.Number.Integer.Long */
   </style>
-  <meta content="Bikeshed version c05ebec3, updated Fri Jul 31 13:58:05 2020 -0700" name="generator">
+  <meta content="Bikeshed version 5f7b0e20, updated Tue Aug 18 15:46:28 2020 -0700" name="generator">
   <link href="https://api.csswg.org/bikeshed/TODO" rel="canonical">
   <link href="https://isocpp.org/favicon.ico" rel="icon">
 <style>/* style-autolinks */
@@ -1542,8 +1542,8 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
  </head><body class="h-entry toc-sidebar"><p id="toc-nav"><a id="toc-jump" href="#toc"><span aria-hidden="true">↑</span> <span>Jump to Table of Contents</span></a><a id="toc-toggle" href="#toc"><span aria-hidden="true">←</span> <span>Collapse Sidebar</span></a></p>
   <div class="head">
    <p data-fill-with="logo"></p>
-   <h1 class="p-name no-ref" id="title">D2018R0.3<br>Shared understanding of errors and exceptions</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2020-08-09">2020-08-09</time></span></h2>
+   <h1 class="p-name no-ref" id="title">D2018R0.4<br>Shared understanding of errors and exceptions</h1>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2020-08-29">2020-08-29</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1662,7 +1662,7 @@ cases.</p>
     </li><li data-md="">
      <p>Table-based exceptions have higher space overhead than error codes. <a data-link-type="biblio" href="#biblio-p1640r1">[P1640R1]</a></p>
     </li><li data-md="">
-     <p><a data-link-type="biblio" href="#biblio-p0709">[P0709]</a> exceptions, <a data-link-type="biblio" href="#biblio-p1095">[P1095]</a> failures, and <code class="highlight"><c- n="">expected</c-></code> are likely to have performance characteristics similar to error codes.</p>
+     <p><a data-link-type="biblio" href="#biblio-p0709">[P0709]</a> exceptions, <a data-link-type="biblio" href="#biblio-n2429">[N2429]</a> failures, and <code class="highlight"><c- n="">expected</c-></code> are likely to have performance characteristics similar to error codes.</p>
     </li><li data-md="">
      <p>Mainstream implementations of table-based exceptions have room for optimization. <a href="#room_for_optimizations">§ 3.3 Room for optimizations</a></p>
     </li><li data-md="">
@@ -1721,7 +1721,7 @@ sad path. <a data-link-type="biblio" href="#biblio-p1947r0">[P1947R0]</a></p>
     </li><li data-md="">
      <p>Forgetting to account for a propagating exception is a common source of bugs. <a href="#error_prop">§ 3.4 Error propagation</a></p>
     </li><li data-md="">
-     <p>#SUBJECTIVE# Automatic error propagation is preferable. <a href="#error_prop">§ 3.4 Error propagation</a></p>
+     <p>Automatic error propagation is preferable. <a href="#error_prop">§ 3.4 Error propagation</a></p>
     </li><li data-md="">
      <p>RAII is an enormous boon to error handling in general. <a href="#error_prop">§ 3.4 Error propagation</a></p>
     </li><li data-md="">
@@ -1772,8 +1772,8 @@ system facilities. <a href="#baremetal">§ 3.8 Bare metal environments</a></p>
      <p>Table-based exceptions are well suited to applications where 
 extra milliseconds of latency on the failure path will go unnoticed. <a href="#unnoticed_fail">§ 3.11 Non-critical failure performance</a></p>
     </li><li data-md="">
-     <p>#DUP?# Table-based exceptions are well suited to interactive and
- low-latency applications where extra milliseconds of latency on the 
+     <p>Table-based exceptions are well suited to interactive and 
+low-latency applications where extra milliseconds of latency on the 
 failure path will go unnoticed. <a href="#unnoticed_fail">§ 3.11 Non-critical failure performance</a></p>
     </li><li data-md="">
      <p>Table-based exceptions are well suited to throughput-oriented 
@@ -1812,11 +1812,11 @@ due to limited stack space. <a href="#eh_alloc">§ 3.15 Exception handling all
    <h3 class="heading settled" data-level="2.10" id="n_plus_one_summary"><span class="secno">2.10. </span><span class="content">N+1 summary</span><a class="self-link" href="#n_plus_one_summary"></a></h3>
    <ol>
     <li data-md="">
-     <p><a data-link-type="biblio" href="#biblio-p0709">[P0709]</a> exceptions and <a data-link-type="biblio" href="#biblio-p1095">[P1095]</a> failures are an additional form of error handling. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
+     <p><a data-link-type="biblio" href="#biblio-p0709">[P0709]</a> exceptions and <a data-link-type="biblio" href="#biblio-n2429">[N2429]</a> failures are an additional form of error handling. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
     </li><li data-md="">
      <p><a data-link-type="biblio" href="#biblio-p0323">[P0323]</a> <code class="highlight"><c- n="">expected</c-></code> is an additional form of error handling. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
     </li><li data-md="">
-     <p>If <a data-link-type="biblio" href="#biblio-p0709">[P0709]</a> exceptions, <a data-link-type="biblio" href="#biblio-p1095">[P1095]</a> failures, and / or <code class="highlight"><c- n="">expected</c-></code> are standardized, all prior error handling mechanisms will still be seen in the wild for decades to come. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
+     <p>If <a data-link-type="biblio" href="#biblio-p0709">[P0709]</a> exceptions, <a data-link-type="biblio" href="#biblio-n2429">[N2429]</a> failures, and / or <code class="highlight"><c- n="">expected</c-></code> are standardized, all prior error handling mechanisms will still be seen in the wild for decades to come. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
     </li><li data-md="">
      <p>Users routinely write code that translates between different error handling schemes. <a href="#n_plus_one">§ 3.18 The N+1 problem</a></p>
     </li><li data-md="">
@@ -2231,7 +2231,7 @@ mechanisms go away.  If you had N mechanisms before, a new mechanism, no
 existence of <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">error_code</c-></code> in C++11 did not make exceptions, <code class="highlight"><c- n="">errno</c-></code>,
  or integer error codes leave the ecosystem.  Each of these error 
 mechanisms is likely to remain in use for decades to come.  Similarly, 
-P0709 exceptions, <a data-link-type="biblio" href="#biblio-p1095">[P1095]</a> failures, and <code class="highlight"><c- n="">expected</c-></code>
+P0709 exceptions, <a data-link-type="biblio" href="#biblio-n2429">[N2429]</a> failures, and <code class="highlight"><c- n="">expected</c-></code>
  are unlikely to make old error handling strategies disappear, even if 
 these new strategies become the most common error handling strategies.</p>
    <p>A new error handling mechanism could change how we teach error 
@@ -2316,12 +2316,8 @@ Non-C++ code is unlikely to throw exceptions, and it is unlikely to mark
  such functions as noexcept.  The C++ compiler does not know that 
 though, and generates conservative code as a result.</p>
    <h3 class="heading settled" data-level="3.21" id="sad_path_analysis"><span class="secno">3.21. </span><span class="content">Tooling analysis of sad paths</span><a class="self-link" href="#sad_path_analysis"></a></h3>
-    TODO: Get this section reviewed by full time static analyzer folks.  Aaron Ballman, Tom Honerman 
-   <p>There is a spectrum of difficulty in dealing with the various 
-error handling schemes, with integer error codes on one side, and 
-dynamically-typed exceptions on the other.  Error codes with dynamic 
-aspects and statically-typed exceptions (i.e. throwing and catching a 
-non-polymorphic type) lie somewhere in between these two extremes.</p>
+    There is a spectrum of difficulty in dealing with the various error 
+handling schemes, with small, statically typed errors (e.g. <code class="highlight"><c- b="">int</c-></code>, <code class="highlight"><c- n="">expected</c-><c- o="">&lt;</c-><c- n="">T</c-><c- p="">,</c-> <c- n="">std</c-><c- o="">::</c-><c- n="">errc</c-><c- o="">&gt;</c-></code>) on one side, and dynamically-typed errors (e.g. C++ exceptions, <code class="highlight"><c- n="">expected</c-><c- o="">&lt;</c-><c- n="">T</c-><c- p="">,</c-> <c- n="">std</c-><c- o="">::</c-><c- n="">any</c-><c- o="">&gt;</c-></code>) on the other. 
    <p>Static analyzers routinely analyze code like the following:</p>
 <pre class="highlight"><c- b="">int</c-> <c- nf="">compute_velocity</c-><c- p="">(</c-><c- k="">const</c-> <c- n="">point_container</c-> <c- o="">&amp;</c-><c- n="">points</c-><c- p="">);</c->
 <c- b="">int</c-> <c- nf="">fetch_speed</c-><c- p="">(</c-><c- k="">const</c-> <c- n="">simulation_parameters</c-> <c- o="">*</c-><c- n="">params</c-><c- p="">)</c-> <c- p="">{</c->
@@ -2341,16 +2337,21 @@ same for both the happy path and the sad path.</p>
 more opportunities for static analyzers to differentiate themselves.  
 Indirect calls (whether through function pointers, virtual calls, or 
 otherwise) are challenging.  Mutations to non-local state are difficult.
-  For integer error codes, these are aspects that are equally difficult 
-in the happy path and the sad path.</p>
-   <p>For programs using dynamically-typed exceptions, analysis is much 
-harder.  Determining which catch statements can handle a given exception
- requires an indirect call.  Determining which catch statements might be
- invoked requires crossing any indirect calls in the static call graph. 
- For performance analysis, table-based exceptions fare poorly, as the 
-performance of the exception handling mechanism depends on the size of 
-the table, the complexity of the inheritance hierarchies, and in many 
-cases, the performance characteristics of the system allocator.  These 
+  Objects with large amounts of state that govern flow control are 
+difficult.  For integer error codes, these are aspects that are equally 
+difficult in the happy path and the sad path.</p>
+   <p>For programs using dynamically-typed errors, analysis is much 
+harder.  Connecting error signaling statements to error handling 
+statements requires inter-procedural analysis and, therefore, that the 
+tool has access to all of the relevant source code.  A comprehensive 
+analysis requires consideration of all possible paths in a call graph 
+regardless of whether a runtime error path exists or not.  With 
+dynamically typed errors, it is harder to prune out impossible code 
+paths.  Unpruned impossible code paths lead to false positives.</p>
+   <p>For performance analysis, table-based exceptions fare poorly, as 
+the performance of the exception handling mechanism depends on the size 
+of the table, the complexity of the inheritance hierarchies, and in many
+ cases, the performance characteristics of the system allocator.  These 
 are all things that can be analyzed, but they are static analyzer 
 requirements that aren’t necessarily present on the happy path.</p>
    <h2 class="heading settled" data-level="4" id="definitions"><span class="secno">4. </span><span class="content">Definitions</span><a class="self-link" href="#definitions"></a></h2>
@@ -2398,7 +2399,7 @@ has been found and executed.  This process can be automatic, as is the
 case with exceptions, or manual, as is the case with error codes 
 combined with early returns.</p>
    <h2 class="heading settled" data-level="5" id="ack"><span class="secno">5. </span><span class="content">Acknowledgments</span><a class="self-link" href="#ack"></a></h2>
-    Thank you to Emil Dotchevski, for providing valuable review feedback. 
+    Thank you to Emil Dotchevski and Tom Honermann for providing valuable review feedback. 
   </main>
 <script>
 (function() {
@@ -2563,14 +2564,14 @@ combined with early returns.</p>
    </dt><dd>Emil Dotchevski. <a href="https://zajo.github.io/leaf/">LEAF: Lightweight Error Augmentation Framework</a>. URL: <a href="https://zajo.github.io/leaf/">https://zajo.github.io/leaf/</a>
    </dd><dt id="biblio-mofh4">[MoFH4]
    </dt><dd>Modi Mo. <a href="https://devblogs.microsoft.com/cppblog/making-cpp-exception-handling-smaller-x64/">Making C++ Exception Handling Smaller On x64</a>. URL: <a href="https://devblogs.microsoft.com/cppblog/making-cpp-exception-handling-smaller-x64/">https://devblogs.microsoft.com/cppblog/making-cpp-exception-handling-smaller-x64/</a>
+   </dd><dt id="biblio-n2429">[N2429]
+   </dt><dd>Niall Douglas; Jens Gustedt. <a href="http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2429.pdf">Function failure annotation</a>. URL: <a href="http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2429.pdf">http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2429.pdf</a>
    </dd><dt id="biblio-ntke_cpprtl">[NTKE_CPPRTL]
    </dt><dd><a href="https://svn.riouxsvn.com/prj_ntke_cpprtl/trunk/">C++ RTL for NT ke-mode drivers</a>. URL: <a href="https://svn.riouxsvn.com/prj_ntke_cpprtl/trunk/">https://svn.riouxsvn.com/prj_ntke_cpprtl/trunk/</a>
    </dd><dt id="biblio-p0323">[P0323]
    </dt><dd>JF Bastien; Vicente Botet. <a href="https://wg21.link/P0323R9">std::expected</a>. URL: <a href="https://wg21.link/P0323R9">https://wg21.link/P0323R9</a>
    </dd><dt id="biblio-p0709">[P0709]
    </dt><dd>Herb Sutter. <a href="https://wg21.link/P0709R4">Zero-overhead deterministic exceptions: Throwing values</a>. URL: <a href="https://wg21.link/P0709R4">https://wg21.link/P0709R4</a>
-   </dd><dt id="biblio-p1095">[P1095]
-   </dt><dd>Niall Douglas. <a href="https://wg21.link/P1095R0">Zero overhead deterministic failure - A unified mechanism for C and C++</a>. URL: <a href="https://wg21.link/P1095R0">https://wg21.link/P1095R0</a>
    </dd><dt id="biblio-p1640r1">[P1640R1]
    </dt><dd>Ben Craig. <a href="https://wg21.link/P1640R1">Error size benchmarking: Redux</a>. URL: <a href="https://wg21.link/P1640R1">https://wg21.link/P1640R1</a>
    </dd><dt id="biblio-p1676r0">[P1676R0]
