@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: Shared understanding of errors and exceptions
 Shortname: D2018
-Revision: 0.3
+Revision: 0.4
 Audience: SG14, EWG
 Status: D
 Group: WG21
@@ -35,7 +35,7 @@ Exception and error code performance comparisons {#perf_cmp}
 1. When available, branch prediction and speculative execution can mitigate the happy path performance impact of error codes in many use cases.
 1. The standard deviation of sad path execution time of table-based exceptions is more than 50x that of error codes. [[P1886R0]]
 1. Table-based exceptions have higher space overhead than error codes. [[P1640R1]]
-1. [[P0709]] exceptions, [[P1095]] failures, and `expected` are likely to have performance characteristics similar to error codes.
+1. [[P0709]] exceptions, [[N2429]] failures, and `expected` are likely to have performance characteristics similar to error codes.
 1. Mainstream implementations of table-based exceptions have room for optimization. [[#room_for_optimizations]]
 1. There are other exception implementation approaches that may address the challenges with table-based exceptions, or at least provide a different set of trade offs.  [[#other_approaches]]
 1. Platform ABIs place substantial constraints on how much exceptions can change. [[ItaniumEHABI]]
@@ -67,7 +67,7 @@ Error propagation usability {#error_prop_usability}
 1. Forgetting to test for an error code is a common source of bugs. [[#error_prop]]
 1. Automatic error propagation adds invisible control flow that can be easy to overlook. [[#error_prop]]
 1. Forgetting to account for a propagating exception is a common source of bugs. [[#error_prop]]
-1. #SUBJECTIVE# Automatic error propagation is preferable. [[#error_prop]]
+1. Automatic error propagation is preferable. [[#error_prop]]
 1. RAII is an enormous boon to error handling in general. [[#error_prop]]
 1. Code that does not use RAII is exceedingly difficult to port to exceptions.
 1. The degree to which error categorization should be reflected in function signatures is a polarizing topic in the C++ community.
@@ -91,7 +91,7 @@ Application domains {#application_domains}
 1. Table-based exceptions are challenging on bare-metal, in part because of the high implementation cost and dependency on operating system facilities. [[#baremetal]]
 1. Table-based exceptions are challenging on FPGAs because of space constraints, and because of indirect calls. [[#fpgas]]
 1. Table-based exceptions are well suited to applications where extra milliseconds of latency on the failure path will go unnoticed. [[#unnoticed_fail]]
-1. #DUP?# Table-based exceptions are well suited to interactive and low-latency applications where extra milliseconds of latency on the failure path will go unnoticed. [[#unnoticed_fail]]
+1. Table-based exceptions are well suited to interactive and low-latency applications where extra milliseconds of latency on the failure path will go unnoticed. [[#unnoticed_fail]]
 1. Table-based exceptions are well suited to throughput-oriented applications where failure is rare and can be modeled with a random (i.e. non-correlated) process. [[#throughput_apps]]
 1. Table-based exceptions are well suited to applications where all speed improvements on the happy path provide value. [[#cant_go_fast_enough]]
 1. Flow-control based error handling is challenging on GPUs because it causes divergent code flow, and can inhibit the most valuable optimization in that domain. [[#gpus]]
@@ -111,9 +111,9 @@ Switching error mechanisms {#error_mechanisms}
 
 N+1 summary {#n_plus_one_summary}
 --------------------------
-1. [[P0709]] exceptions and [[P1095]] failures are an additional form of error handling. [[#n_plus_one]]
+1. [[P0709]] exceptions and [[N2429]] failures are an additional form of error handling. [[#n_plus_one]]
 1. [[P0323]] `expected` is an additional form of error handling. [[#n_plus_one]]
-1. If [[P0709]] exceptions, [[P1095]] failures, and / or `expected` are standardized, all prior error handling mechanisms will still be seen in the wild for decades to come. [[#n_plus_one]]
+1. If [[P0709]] exceptions, [[N2429]] failures, and / or `expected` are standardized, all prior error handling mechanisms will still be seen in the wild for decades to come. [[#n_plus_one]]
 1. Users routinely write code that translates between different error handling schemes. [[#n_plus_one]]
 1. Translating between different error handling schemes usually requires error prone boilerplate. [[#n_plus_one]]
 1. A new error mechanism may replace one or more old mechanisms in teaching materials.  [[#n_plus_one]]
@@ -303,7 +303,7 @@ Even if the C++ standard does not add new error handling mechanisms, the communi
 
 It is common place for users to need to translate the results of various error handling mechanisms into the error handling mechanism that their program uses.  This happens routinely when a C++ program using exceptions calls into a C library that uses callbacks and error codes.  The translation is not difficult, though it is verbose and error prone (lots of `try` / `catch` blocks and error testing `if` statements).
 
-Creating a new error handling mechanism does not make the old mechanisms go away.  If you had N mechanisms before, a new mechanism, no matter how superior a choice, will leave you with N+1 mechanisms.  The existence of `std::error_code` in C++11 did not make exceptions, `errno`, or integer error codes leave the ecosystem.  Each of these error mechanisms is likely to remain in use for decades to come.  Similarly, P0709 exceptions, [[P1095]] failures, and `expected` are unlikely to make old error handling strategies disappear, even if these new strategies become the most common error handling strategies.
+Creating a new error handling mechanism does not make the old mechanisms go away.  If you had N mechanisms before, a new mechanism, no matter how superior a choice, will leave you with N+1 mechanisms.  The existence of `std::error_code` in C++11 did not make exceptions, `errno`, or integer error codes leave the ecosystem.  Each of these error mechanisms is likely to remain in use for decades to come.  Similarly, P0709 exceptions, [[N2429]] failures, and `expected` are unlikely to make old error handling strategies disappear, even if these new strategies become the most common error handling strategies.
 
 A new error handling mechanism could change how we teach error handling, and how we write error handling in new code.  This has happened in the past, and could happen again.  There is very little educational effort spent on `errno` best practices, and very little new C++ code is written with `errno` as the primary error handling mechanism.  The main interaction with `errno` is in handling the errors and translating them to newer mechanisms.  A new error handling mechanism can aspire to replace other mechanisms as well as `errno` has been replaced.
 
@@ -343,9 +343,7 @@ This is particularly concerning when calling into non-C++ code.  Non-C++ code is
 
 Tooling analysis of sad paths {#sad_path_analysis}
 -----------------------------------------------
-TODO: Get this section reviewed by full time static analyzer folks.  Aaron Ballman, Tom Honerman
-
-There is a spectrum of difficulty in dealing with the various error handling schemes, with integer error codes on one side, and dynamically-typed exceptions on the other.  Error codes with dynamic aspects and statically-typed exceptions (i.e. throwing and catching a non-polymorphic type) lie somewhere in between these two extremes.
+There is a spectrum of difficulty in dealing with the various error handling schemes, with small, statically typed errors (e.g. `int`, `expected<T, std::errc>`) on one side, and dynamically-typed errors (e.g. C++ exceptions, `expected<T, std::any>`) on the other.
 
 Static analyzers routinely analyze code like the following:
 ```
@@ -362,10 +360,11 @@ Static analyzers can reason about the cases where `vel` is positive or negative.
 
 Programs using integer error codes will have very similar branching structures.  In these programs, the reasoning needed for high quality diagnostics, stack usage, or worst case execution time is the same for both the happy path and the sad path.
 
-There are constructs that provide more difficulty, and provide more opportunities for static analyzers to differentiate themselves.  Indirect calls (whether through function pointers, virtual calls, or otherwise) are challenging.  Mutations to non-local state are difficult.  For integer error codes, these are aspects that are equally difficult in the happy path and the sad path.
+There are constructs that provide more difficulty, and provide more opportunities for static analyzers to differentiate themselves.  Indirect calls (whether through function pointers, virtual calls, or otherwise) are challenging.  Mutations to non-local state are difficult.  Objects with large amounts of state that govern flow control are difficult.  For integer error codes, these are aspects that are equally difficult in the happy path and the sad path.
 
-For programs using dynamically-typed exceptions, analysis is much harder.  Determining which catch statements can handle a given exception requires an indirect call.  Determining which catch statements might be invoked requires crossing any indirect calls in the static call graph.  For performance analysis, table-based exceptions fare poorly, as the performance of the exception handling mechanism depends on the size of the table, the complexity of the inheritance hierarchies, and in many cases, the performance characteristics of the system allocator.  These are all things that can be analyzed, but they are static analyzer requirements that aren't necessarily present on the happy path.
+For programs using dynamically-typed errors, analysis is much harder.  Connecting error signaling statements to error handling statements requires inter-procedural analysis and, therefore, that the tool has access to all of the relevant source code.  A comprehensive analysis requires consideration of all possible paths in a call graph regardless of whether a runtime error path exists or not.  With dynamically typed errors, it is harder to prune out impossible code paths.  Unpruned impossible code paths lead to false positives.
 
+For performance analysis, table-based exceptions fare poorly, as the performance of the exception handling mechanism depends on the size of the table, the complexity of the inheritance hierarchies, and in many cases, the performance characteristics of the system allocator.  These are all things that can be analyzed, but they are static analyzer requirements that aren't necessarily present on the happy path.
 
 Definitions {#definitions}
 ============
@@ -389,7 +388,7 @@ Definitions {#definitions}
 
 Acknowledgments {#ack}
 ======================
-Thank you to Emil Dotchevski, for providing valuable review feedback.
+Thank you to Emil Dotchevski and Tom Honermann for providing valuable review feedback.
 
 <pre class=biblio>
 {
@@ -403,10 +402,10 @@ Thank you to Emil Dotchevski, for providing valuable review feedback.
         "href": "https://wg21.link/P0709R4",
         "title": "Zero-overhead deterministic exceptions: Throwing values"
     },
-    "P1095": {
-        "authors": ["Niall Douglas"],
-        "href": "https://wg21.link/P1095R0",
-        "title": "Zero overhead deterministic failure - A unified mechanism for C and C++"
+    "N2429": {
+        "authors": ["Niall Douglas", "Jens Gustedt"],
+        "href": "http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2429.pdf",
+        "title": "Function failure annotation"
     },
     "P1886R0": {
         "authors": ["Ben Craig"],
