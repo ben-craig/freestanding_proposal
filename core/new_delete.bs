@@ -1,11 +1,11 @@
 <pre class='metadata'>
 Title: Freestanding Language: Optional <code>::operator new</code>
 Shortname: D2013
-Revision: 4.0
-Audience: SG14, EWG, LEWG
+Revision: 3.1
+Audience: EWG
 Status: D
 Group: WG21
-URL: https://wg21.link/P2013R2
+URL: https://wg21.link/P2013R3
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
 Editor: Ben Craig, NI, ben.craig@gmail.com
 Abstract: In freestanding implementations, standardize existing practices and make the default allocating <code>::operator new</code>s optional.
@@ -16,6 +16,8 @@ Revision History {#revision_history}
 ====================================
 R3 {#r3}
 -----
+Added \[EWG Aug 2020 telecon](#ewg_aug_telecon) polling results.
+
 In the design, an ODR-use without a definition no longer requires ill-formedness.  The intent is still the same, in that it typically results in a linker error.
 
 Updated grammar and ill-formedness of wording.
@@ -168,6 +170,14 @@ The proposed design has field experience in a micro-controller environment.  GCC
 
 Polling history {#polling}
 =======================
+
+Aug 19, 2020, EWG, Telecon {#ewg_aug_telecon}
+--------------------------
+After updating wording for “either/of”, mandates, and talking to SG10 about the feature test macro, P2013 is tentatively ready to be forwarded to CWG. Walter volunteers to check that this is done.
+
+SF/F/N/A/SA
+
+2/16/1/0/0
 
 Feb 14, 2020, EWG, Prague {#ewg_prague}
 ------------------------
