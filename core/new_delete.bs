@@ -1,13 +1,13 @@
 <pre class='metadata'>
 Title: Freestanding Language: Optional <code>::operator new</code>
 Shortname: D2013
-Revision: 3.0
+Revision: 4.0
 Audience: SG14, EWG, LEWG
 Status: D
 Group: WG21
 URL: https://wg21.link/P2013R2
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
-Editor: Ben Craig, National Instruments, ben.craig@gmail.com
+Editor: Ben Craig, NI, ben.craig@gmail.com
 Abstract: In freestanding implementations, standardize existing practices and make the default allocating <code>::operator new</code>s optional.
 Markup Shorthands: markdown yes
 </pre>
@@ -22,6 +22,8 @@ Updated grammar and ill-formedness of wording.
 
 Found an additional note in [expr.new/10](https://wg21.link/expr.new#10) that needed adjustment.
 
+Deferred \[feature test macro](#feature_test_macro) decision to a future revision of \[P2198](https://wg21.link/P2198).
+
 R2 {#r2}
 -----
 Making the status of "placement" new more obvious ("placement" new is still required).
@@ -34,7 +36,7 @@ R1 {#r1}
 -----
 Added polling results from Prague \[EWGI](#ewgi_prague) and \[EWG](#ewg_prague).
 
-Added discussion on \[feature test macro](#no_macro).
+Added discussion on \[feature test macro](#feature_test_macro).
 
 Added discussion on \[not fixing virtual destructors](#why_not_fix).
 
@@ -121,13 +123,40 @@ Why not fix `virtual` destructors, instead of keeping a no-op `operator delete`?
 -------------------------------
 This paper attempts to standardize existing practice.  There is not any existing practice for "fixed" `virtual destructors`.  Note that this paper isn't changing any requirements on `operator delete` or `virtual` destructors.  It will be no more difficult to fix it in the future than it would be today.  A motivated author could attempt to fix the problem in a future paper.
 
-No feature test macro {#no_macro}
+Feature test macro {#feature_test_macro}
 -------------------------------
-A feature test macro would be awkward to implement, and would encourage code that is more prone to ODR issues than other feature test macros.
+A future revision of \[P2198](https://wg21.link/P2198) will discuss this in more depth, and provide a recommendation.
 
-In most toolchains, feature test macros can be exposed directly by the compiler (usually for core language features) and by the library (for library features).  The presence or absence of `::operator new` is dictated by the runtime though.  In some implementations, neither the compiler nor the library headers necessarily know detailed information about the runtime.  This hurdle is not intractable, but it is a hurdle nonetheless.
+In order to provide this macro, library implementations are going to require knowledge of the target environment.  That knowledge may be via a list of known target platforms that are detected at build time, or by having the builder of the implementation supply that information in a configuration flag.
 
-The most likely usage of such a feature test macro is to conditionally define a custom `::operator new` iff the implementation did not provide one by default.  This is dangerous territory, as it encourages libraries to provide the one-and-only `::operator new` definition.  If two such libraries do this, then there is an ODR issue.
+The most likely usage of a feature test macro for this feature is to conditionally define a custom `::operator new` iff the implementation did not provide one by default.  This is dangerous territory, as it encourages libraries to provide the one-and-only `::operator new` definition.  If two such libraries do this, then there is an ODR issue.
+
+Another likely usage is to fall back to an implementation that does not use the heap at all.
+
+```
+#if defined(__cpp_lib_no_default_operator_new) && __cpp_lib_no_default_operator_new >= 20200913
+  using my_container = fixed_capacity_vector;
+#else
+  using my_container = my_vector;
+#endif
+```
+
+This is an imprecise check.  Even though there is no default operator new, there may be a user provided operator new that works fine.
+
+If this feature test macro were provided in the positive (`__cpp_lib_has_default_operator_new`), it wouldn't be useful for a very long time.
+
+```
+#if defined(__cpp_lib_has_default_operator_new) && __cpp_lib_has_default_operator_new >= 20200913
+  using my_container = my_vector;
+#else
+  // spuriously triggers for C++20 and earlier code
+  using my_container = fixed_capacity_vector;
+#endif
+```
+
+If this feature test macro were provided in the negative (`__cpp_lib_no_default_operator_new`), it would be the only feature test macro that wouldn't be required to be defined in a conforming implementation.
+
+All these considerations are deserving of dedicated SG10 discussion with \[P2198](https://wg21.link/P2198), and should not hold up the progress of this paper.
 
 Likely misuses and abuses {#abuses}
 -----------------------
