@@ -370,6 +370,7 @@ Audience: Library Evolution Working Group
 <ul>
   <li>Indicating which working draft the wording was based on.</li>
   <li>Indicating the dependence on P1642 wording.</li>
+  <li>Added macro for detecting if <code>::operator new</code> has a library provided definition (related to <a href="https://wg21.link/p2013R3">P2013R3</a>).</li>
 </ul>
 <h3> R0 </h3>
 <ul>
@@ -409,6 +410,24 @@ Users will be able to rely on the freestanding portions of the standard library.
 The freestanding portions have portable semantics, and are required to be present.
 Users may then decide to rely on implementation-defined additions.
 WG21 will be able to add hosted entities to the freestanding subset without little fear of breaking implementation-defined additions, because the implementation-defined additions needed to meet the hosted requirements.
+</p>
+<h2>Detecting once-required features</h2>
+<p>
+<a href="https://wg21.link/p2013R3">P2013R3</a> makes the default allocating <code>::operator new</code>s optional.
+Users may want to detect this in their code so that they can fall-back to a fixed capacity container rather than a dynamically sized container.
+Some users may also want to (ab)use such a feature-test macro so that they can provide an <code>::operator new</code> implementation when one is not provided by the standard library.
+</p><p>
+This paper recommends a macro to detect the absence of an <code>::operator new</code> definition: <code>__cpp_lib_freestanding_no_operator_new</code>.
+This macro is different from every other feature-test macro in the standard and SD-6 (SD-6's <code>__cpp_rtti</code> and <code>__cpp_exceptions</code> are defined in the positive).
+Hosted implementations would never define this macro.
+Freestanding implementations may or may not define the macro.
+This approach has the benefit of being immediately useful though.
+When the user detects this "absence" macro, they can take action confidently.
+When a user fails to detect a "presence" macro, the user needs to carefully consider whether it is because of an old standard library or a missing <code>::operator new</code> definition.
+</p><p>
+Unlike other feature-test macros, this macro will need normative wording to tie the feature-test macro to the feature that it is describing.
+</p><p>
+Further discussion of "presence" macros can be found in the "Detect once-required features with a feature-test presence macro" section of the Rejected Alternatives.
 </p>
 <h2>Library feature-test macro bump</h2>
 <p>
@@ -554,6 +573,7 @@ This paper patches up many of the historical problems with freestanding and feat
   <li>If a paper contains some facilities that are freestanding, and some that are hosted, then the paper needs at least two feature test macros.  <code>__cpp_lib_foo</code> will cover the full paper in the hosted case, and <code>__cpp_lib_freestanding_foo</code> will cover the freestanding portions.</li>
   <li>If a paper adds facilities to the hosted implementation and has a feature-test macro, and a later paper adds the entirety of the paper to freestanding, then bump the version of the original feature-test macro.</li>
   <li>If a paper adds facilities to the hosted implementation and has a feature-test macro, and a later paper adds a portion of the paper to freestanding, then add a new freestanding macro for the feature, of the form <code>__cpp_lib_freestanding_foo</code>.</li>
+  <li>If a paper changes a freestanding facility from required to optional, then add an "absence" feature-test macro of the form <code>__cpp_lib_freestanding_no_foo</code>.</li>
 </ul>
 
 <h2>Examples</h2>
@@ -675,6 +695,17 @@ For this category of features, the recommendation will be to add a new freestand
 #endif
 </pre>
 
+<h3>Detect absence of a previously required freestanding feature</h3>
+<i>Is <code>::operator new</code>'s definition in the standard library?</i>
+<pre class='codeblock'>
+#if defined(__cpp_lib_freestanding_no_operator_new) && __cpp_lib_freestanding_no_operator_new &gt;= 202009L
+// new freestanding "success" path.  No ::operator new available
+#elif (/*vendor specific test*/)
+// old, non-conforming freestanding "success" path.  No ::operator new available.
+#else
+// hosted and heap-capable freestanding code path.  ::operator new is available.
+#endif
+</pre>
 
 <h2>Rejected alternatives</h2>
 <h3>Allow partial classes in conforming vendor extensions to freestanding</h3>
@@ -748,11 +779,21 @@ Users of the freestanding macros would still need to account for the case where 
 Defining the macro to zero doesn't provide any information beyond what <code>__STDC_HOSTED__</code> provides.
 </p>
 
+<h3>Detect once-required features with a feature-test presence macro</h3>
+<p>
+If we have a macro to detect the presence of (for example) an <code>::operator new</code> definition (e.g. <code>__cpp_lib_freestanding_operator_new</code>), then we will have a design that aligns with past feature-test macros.
+This macro describes the presence of a facility.
+Unfortunately, it would take a long time for this macro to be useful in practice.
+Most implementations today have an <code>::operator new</code> definition available, but don't have this macro defined.
+That means that this macro would only be useful in the distant future, where the absence of this macro is more likely to indicate a system without a heap than a system with an old standard library.
+This paper does not recommend a macro indicating the presence of <code>::operator new</code>.
+</p>
+
 <h1>Wording</h1>
 <p>
 The following wording is relative to N4861, and assumes that P1642 has been applied.
 </p>
-
+TODO: add wording for operator new
 <h2>Additions to <a href="https://wg21.link/compliance">[compliance]</a></h2>
 <p>
 Please append the following paragraphs to <a href="https://wg21.link/compliance">[compliance]</a>.
