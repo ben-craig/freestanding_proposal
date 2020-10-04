@@ -802,9 +802,8 @@ Setting the macro to <code>0</code> when the feature is not present is critical 
 
 <h1>Wording</h1>
 <p>
-The following wording is relative to N4861, and assumes that P1642 has been applied.
+The following wording is relative to N4861, and assumes that P1642 and P2013 have been applied.
 </p>
-TODO: add wording for operator new
 <h2>Additions to <a href="https://wg21.link/compliance">[compliance]</a></h2>
 <p>
 Please append the following paragraphs to <a href="https://wg21.link/compliance">[compliance]</a>.
@@ -825,7 +824,9 @@ Please append the following paragraphs to <a href="https://wg21.link/compliance"
 <p>
 Please make the following changes to <a href="https://wg21.link/version.syn#2">[version.syn]</a>.  Use the current year-based constant instead of "<i>new-val</i>".
 </p>
-<blockquote class="std"><pre class='codeblock'>
+<blockquote class="std">
+<div class="para"><div class="marginalizedparent"><a class="marginalized">2</a></div>
+<pre class='codeblock'>
 #define __cpp_lib_addressof_constexpr               <del>201603L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;memory&gt;
 #define __cpp_lib_allocator_traits_is_always_equal  <del>201411L</del><ins><i>new-val</i></ins>
   // <ins>freestanding, </ins>also in &lt;memory&gt;, &lt;scoped-allocator&gt;, &lt;string&gt;, &lt;deque&gt;, &lt;forward-list&gt;, &lt;list&gt;, &lt;vector&gt;,
@@ -884,6 +885,7 @@ Please make the following changes to <a href="https://wg21.link/version.syn#2">[
 <ins>#define __cpp_lib_freestanding_functional           <i>new-val</i> // freestanding, also in &lt;functional&gt;
 #define __cpp_lib_freestanding_iterator             <i>new-val</i> // freestanding, also in &lt;iterator&gt;
 #define __cpp_lib_freestanding_memory               <i>new-val</i> // freestanding, also in &lt;memory&gt;
+#define __cpp_lib_freestanding_operator_new       <i>see below</i> // freestanding, also in &lt;new&gt;
 #define __cpp_lib_freestanding_ranges               <i>new-val</i> // freestanding, also in &lt;ranges&gt;
 #define __cpp_lib_freestanding_ratio                <i>new-val</i> // freestanding, also in &lt;ratio&gt;
 #define __cpp_lib_freestanding_tuple                <i>new-val</i> // freestanding, also in &lt;tuple&gt;
@@ -972,7 +974,13 @@ Please make the following changes to <a href="https://wg21.link/version.syn#2">[
 #define __cpp_lib_unwrap_ref                        <del>201811L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
 #define __cpp_lib_variant                           <del>201606L</del><ins><i>new-val</i></ins> // also in &lt;variant&gt;
 #define __cpp_lib_void_t                            <del>201411L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
-</pre></blockquote>
+</pre></div></blockquote>
+<blockquote class="stdins">
+<div class="para">
+    <div class="marginalizedparent"><a class="marginalized">3</a></div>
+    <div class="sentence">The macro <code>__cpp_lib_freestanding_operator_new</code> shall be defined to the integer literal <code><i>new-val</i></code> if the library provides default definitions for the replaceable global allocation functions, and to the integer literal <code>0</code> otherwise. ([basic.stc.dynamic]).</div>
+</div>
+</blockquote>
 
 </body>
 </html>
