@@ -6,8 +6,8 @@ Audience: SG14
 Status: D
 Group: WG21
 URL: https://TODO
-!Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/TODO.bs">github.com/ben-craig/freestanding_proposal/blob/master/TODO.bs</a>
-Editor: Ben Craig, National Instruments, ben.craig@gmail.com
+!Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/roadmap.bs">github.com/ben-craig/freestanding_proposal/blob/master/roadmap.bs</a>
+Editor: Ben Craig, NI, ben.craig@gmail.com
 Abstract: Describe future, high level freestanding papers
 Markup Shorthands: markdown yes
 </pre>
@@ -23,19 +23,23 @@ Introduction {#intro}
 
 Work in progress {#wip}
 =====================
-* [[P2013]] Freestanding Language: Optional `::operator new`
+
+[[P2013]] Freestanding Language: Optional `::operator new`
+-------------------------------------------------------
 P2013R1 is awaiting further EWG review.
 EWG reviewed P2013R0 favorably in the 2020 Prague meeting, and requested wording.
 Wording is present and ready for review in P2013R1.
 
-* [[P1642]] Freestanding Library: Easy [utilities], [ranges], and [iterators]
+[[P1642]] Freestanding Library: Easy [utilities], [ranges], and [iterators]
+-------------------------------------------------------
 P1642R4 combines the wording in P1641R3 and the library additions from P1642R3.
 P1642R4 is awaiting further LEWG review.
 
 The non-feature test macro parts of P1641R3 and P1642R3 were reviewed favorably over LEWG telecon.
 LEWG requested that those parts be combined into a single paper, and that LEWG not spend future time discussing the contents of the library additions.
 
-* [[P2198]] Freestanding Feature-Test Macros and Implementation-Defined Extensions
+[[P2198]] Freestanding Feature-Test Macros and Implementation-Defined Extensions
+-------------------------------------------------------
 P2198R0 has taken all the feature-test macro parts from P1642R3 and P1641R3, and consolidated them here.
 P2198R0 needs to be reviewed by SG10, as it is doing something more involved than just including a feature test macro.
 
@@ -45,60 +49,217 @@ Related work in progress {#related_wip}
 The way we partition the standard library into modules has the potential to change how freestanding is advertised and messaged significantly.
 The partitioning could also place new constraints on freestanding.
 
-Library additions {#library_add}
+[[P0829]] pieces {#p0829_pieces}
 =====================
-* constexpr -> consteval
-discussed in core
+The following sections are all smaller pieces of the retired [[P0829]].
+They are listed in roughly priority order.
 
-* <cstdlib>, <charconv>, <cmath>, <cinttypes>, char_traits, parts of cstring and cwchar
-Address int + float overloads, probably with =delete
-Address the issue of adding things to C++ freestanding that are not in C freestanding
+`<cstdlib>`, `<charconv>`, `<cmath>`, `<cinttypes>`, `<cstring>`, `<cwchar>`, and `char_traits` {#c_and_float_facilities}
+------------------------
+Adding the relevant parts of the above facilities to freestanding requires answering a few questions.
+* What do we want to do with floating point in the freestanding library?
+* What do we want to do with parts of the C library that could be made freestanding, but aren't freestanding in C?
 
-* [diagnostics], algorithm, numeric, lock_guard, unique_lock, span
-All the error #defines in <cerrno>, but not errno.
-The errc enum from <system_error>. 
-Would be better with the previous paper, because of algorithm memcpy optimizations
+My recommendation will be that we `=delete` floating point overloads.
+This way, freestanding implementations with core language floating point support won't have differing runtime library behavior on hosted and freestanding implementations.
+If the floating point overloads were omitted, then a `float` argument would resolve to an integer overload in freestanding, and a floating point overload in hosted implementations.
+`<charconv>` floating point overloads are particularly challenging, as modern implementations of these facilities involve enormous lookup tables that would prove problematic on space constrained implementations.
 
-* Partial classes
-array, string_view, variant, optional, bitset
+The other major alternative is to keep floating point operations in freestanding implementations.
+This would be the "wrong" behavior for kernel users, as floating point usage on many platforms (32-bit x86 Windows, most Linux platforms) will corrupt the floating point state in user mode code.
 
-For most of the throwing functions, an =delete should do the trick.
-bitset is hard, because it has std::string in the interface.
+Adding C functions to C++ freestanding has precedent, notably with `abort`, `atexit`, `at_quick_exit`, `exit`, and `quick_exit`.
+This is an issue to bring to the newly formed C/C++ liason study group.
+`<cwchar>` may end up being a casualty to consensus here, as even though it would be a useful facility that fundamentally makes sense in freestanding, it is a costly to port facility (because of assembly) that is rarely used.
 
-string_view is blocked on char_traits and cstring
+[ [diagnostics] ](https://wg21.link/diagnostics), `<algorithm>`, `<numeric>`, `lock_guard`, `unique_lock`, `<span>` {#algorithms_and_friends}
+------------------------
+The above list of facilities is largely a grab-bag, but many of them are more useful if `memcpy` is made available in the `<cstring>` paper.
 
-* random
-This paper would need to deal with the specification hurdles of the hidden friend op<<.
+Very little in [ [diagnostics] ](https://wg21.link/diagnostics) is usable in freestanding, but the error code definitions in `<cerrno>` and `<system_error>` are fine.
 
-* [time]
-* Need to deal with systems that don't have clocks that the OS knows about.
+The details on specifically what to keep for these headers can be extracted from [[P0829]].
 
+Partial classes {#partial_classes}
+------------------------
+`array`, `string_view`, `variant`, `optional`, and `bitset` are all classes that are fundamentally compatible with freestanding, but they all have non-critical functions that are not compatible.
+These are generally functions that throw exceptions, or, in `bitset`'s case, use std::string.
 
-Core changes {#core_changes}
+[[P0829]] highlights which functions need to be addressed.
+Rather than omitting the throwing functions, the functions should be "=deleted", so as to avoid overload resolution differences.
+This is needed for cases where users derive from standard types and add overloads of standard functions.
+
+`bitset` is more complicated because of the constructor overload set.
+One of the overloads accepts a `basic_string`, and another accepts `charT *`.
+Passing a `string_view` to `bitset` seems entirely reasonable.
+Given the difficulty in making this work, it may be prudent to _not_ bring `bitset` to freestanding.
+It is the author's belief that this would not be a great loss, as `bitset` doesn't actually solve the bit manipulation problems that kernel and embedded developers commonly encounter.
+
+`string_view` requires `char_traits` and `<cstring>`.
+
+`<random>`
+------------------------
+[[P0829]] describes which `<random>` facilities are a good fit for freestanding.
+This paper would need to deal with the specification hurdles of `operator<<`.
+`operator<<` is not listed in the synopsis, as it is permitted to be either a hidden friend, or a free function.
+
+`<chrono>` / [time]
+------------------------
+Time arithmetic with underlying integer types is entirely reasonable on freestanding platforms.
+However, `<chrono>` `time_point`s need an underlying Cpp17Clock.
+Cpp17Clock requires a `now()` function, which requires OS or hardware knowledge that is not appropriate for a freestanding implementation.
+This paper would need to figure out what should be done with the existing types that satisfy the Cpp17Clock requirements.
+Note that the in-flight [[P2212]] should be kept in mind when working through the details.
+
+Beyond [[P0829]] {#beyond_p0829}
 =====================
-Likely {#likely}
+The following are papers that go beyond what [[P0829]] proposes.
+These all need implementation experience before being proposed to WG21.
+
+`constexpr` as `consteval` {#constexpr_to_consteval}
+------------------------
+Freestanding has restrictions on the execution environment, but generally doesn't have restrictions on the compilation environment.
+In principle, everything that can be done at compile time for a hosted target can also be done at compile time for a freestanding target.
+Having a compile time `std::vector` would be beneficial, even on systems without a heap.
+
+A paper in this area would add blanket wording that ensures everything in the standard library that is `constexpr` is available at compile time for freestanding implementations.
+If the entity is marked `// freestanding`, then it would be available at runtime as well.
+This would generally be implemented (and possibly specified) as making the function optionally `consteval` on freestanding implementations.
+The freestanding implementation would either provide a `consteval` version of the facility, or a `constexpr` version if the target can support it.
+
+This paper would need to audit the standard library's constexpr facilities and audit the constexpr papers in flight.
+The paper would need to resolve complications of split overload sets, if any exist.
+
+The paper would need to evaluate semantic changes that could occur when porting freestanding code to hosted, particularly for classes that are `constexpr` but not freestanding (like `std::vector` and `std::string`).
+`consteval` objects can be destroyed at different times than `constexpr` objects.
+
+Startup and termination control {#startup_termintation}
+--------------------------
+
+### Replaceable `std::terminate`
+
+By default, `std::terminate` delegates the work of termination to `std::abort`.
+`std::abort` will then use OS facilities to terminate the process.
+On freestanding platforms, there's a good chance that the C library `std::abort` won't link, because it is attempting to use OS facilities that don't exist.
+In addition, there are often additional or customized actions that need to be performed on embedded platforms.
+
+C++ already has a way to provide additional or customized actions for `std::terminate`, and that is by changing the terminate handler at runtime.
+The problem with this approach is that runtime is too late.
+You've already linked in a `std::abort` implementation you may not even want to use.
+You may have also linked in an atomics support library in order to do call set_terminate without causing a data race.
+
+A paper addressing this would make `std::terminate` a replaceable function, similar to `::operator new`.
+Input would be needed from the ABI review group, as it is unclear whether making `std::terminate` replaceable would be an ABI break or not.
+
+A further step could be taken to make `std::terminate` optional on freestanding implementations, similar to how `::operator new` was made optional in [[P2013]].
+This would be controversial, as it would effectively make exceptions, `dynamic_cast`, and other features ([ [except.terminate] ](https://eel.is/c++draft/except.terminate#1) ) optional as well.
+Note that there is usage experience for not having `std::terminate` or it's associated features ( [[P1105]]).
+
+If `std::terminate` where made a build-time replaceable function, then `get_terminate` and `set_terminate` would no longer need to be freestanding.
+
+### Link-time arrays
+
+C++ linkers have the ability to take symbols from multiple translation units and merge those symbols into a single array.
+This facility is used as an implementation strategy for global constructors, thread local storage areas, and exception handling tables.
+Each translation unit's object file advertises some portion of the array.
+The linker then either concatenates the arrays together in the final binary, or does some other kind of merging operation.
+
+It would be useful to expose this facility directly to the programmer.
+Unit test frameworks usually have macros that create global objects that register a unit test with a singleton during program startup.
+All the registrants are known at link time, yet we end up paying a runtime cost for the registration.
+LLVM internals have optimization passes that are also registered via global object constructors.
+
+Here's some expositional, strawman syntax to further convey the ideas suggested above.
+```
+// test_framework.h
+using test_func = bool (*)();
+// declare link-time array
+extern const test_func g_tests[register];
+
+// always_pass.cpp
+#include "test_framework.h"
+bool always_pass() {return true;}
+// add items to link-time array
+const test_func g_tests[register] = {always_pass};
+
+// always_fail.cpp
+#include "test_framework.h"
+bool fail1() {return false;}
+bool fail2() {return false;}
+// add items to link-time array
+const test_func g_tests[register] = {fail1, fail2};
+
+// main.cpp
+#include "test_framework.h"
+int main() {
+    // g_tests contains {always_pass, fail1, fail2},
+    // though not necessarily in that order
+    for(test_func f : g_tests) {
+        if(!f()) return 1;
+    }
+    return 0;
+}
+```
+
+The use of `register` in the above code is strawman syntax.
+The author of this future paper needs to figure out how to expose the end of the array.
+This could be done with a non-constant-expression `sizeof`.
+It could be done with a "magic" type, perhaps `std::span`.
+It could be done by exposing an end iterator / pointer.
+There are likely other options as well.
+
+Link-time arrays are a useful primitive, as evidenced by their existing use for other language features.
+Exposing them to programmers would allow for opt-in fixes to current problems.
+Imagine having a link-time array that contains a "priority" value alongside an initialization function.
+The consumer of the array could then sort the array (or a copy of it) by priority, then run the initialization functions.
+This would portably solve some users issues with static initialization ordering by giving users the power to express the desired ordering.
+
+It is unclear to me how this feature could expose heterogenous "arrays" like those needed for thread_local storage initialization.
+Getting the alignment right on individual elements seems particularly challenging.
+
+### Exposing existing global constructor link-time arrays
+
+Link-time arrays on their own are useful for freestanding, but not uniquely so.
+The reason they get mentioned in this freestanding roadmap is that implementations could then portably expose existing facilities, like the global constructor list.
+Kernel and embedded users could then portably control when the global constructors are called.
+
+An author of such a paper needs to be sure to keep the destruction side of things in mind as well.
+
+### `thread_local` customization points
+
+`thread_local` currently requires the compiler, linker, and operating system to collaborate on a `thread_local` protocol.
+When the OS creates a thread, it will often want to know how much storage to set aside for `thread_local` variables.
+It will want to know what the initial contents of that storage should be.
+Currently, that information is not made portably available to users authoring their own OS.
+
+Once the per-thread storage is initialized, the compiler needs to know how to find the storage when accessing a variable.
+Perhaps an extension point that exposes a numeric thread ID can be the bridge between the compiler runtime and user code.
+
+This potential paper has many unknowns.  There are many challenges regarding ABI compatibility and existing implementations.
+
+Error handling {#error_handling}
 ---------------
-* startup and termination
-* Destructor call reason
+Error handling as a whole is the area in most need of work in freestanding.
+There aren't currently any good, standardized error handling facilities for freestanding platforms.
+
+The following facilities could help make Renwick exceptions or [[P0709]] exceptions more useful on freestanding platforms, while still satisfying the underlying use cases.
+
+
+### Destructor call reason
 ** Allow an alternate destructor signature that takes a bool (or enum).
 ** Parameter would indicate whether the dtor was called because of unwinding, or normal execution
 ** Only one dtor allowed per class
 ** Classes with bool dtor can be locals, or contained in other classes with bool dtors.
 ** Classes without bool dtor can be members of classes with bool dtor.
-* Non-local exception objects
+### Non-local exception objects
 ** Need some way to get a std::exception_ptr, or std::exception_ptr-like object from a catch statement, without relying on TLS.
 ** Needs to be able to address transporting exceptions across threads.
 ** Needs to be able to address Lippincott functions.
+** Resurrect P1066?
+### Trim exception header
+** Remove uncaught_exceptions(), current_exception(), and `throw;` from freestanding
 
-Somewhat Likely {#somewhat_likely}
-------------------
-* terminate
-* exception header
-* thread_local
-** maybe have a replaceable thread id extension point
-** Would need to couple that with lifetime control somehow
-** And make sure it doesn't screw over hosted implementations
-** Maybe this can use some of the extension points from startup and termination to define the thread local space
+
 
 Hard {#hard}
 -----------
@@ -107,9 +268,6 @@ Hard {#hard}
 * Locked atomics
 * thread safe statics
 
-Super hard {#super_hard}
--------------------
-* Error handling
 
 Applied papers and issues {#papers_and_issues}
 ==========================================
