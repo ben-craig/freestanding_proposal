@@ -49,6 +49,15 @@ Related work in progress {#related_wip}
 The way we partition the standard library into modules has the potential to change how freestanding is advertised and messaged significantly.
 The partitioning could also place new constraints on freestanding.
 
+* [[P0323]] `std::expected`
+Error handling is currently the largest sore point in freestanding, and `std::expected` is one proven approach that can address many error handling needs.
+
+* [[P0709]] Zero-overhead deterministic exceptions: Throwing values
+TODO
+
+* [Renwick exceptions][[RenwickLowCost]]
+TODO
+
 [[P0829]] pieces {#p0829_pieces}
 =====================
 The following sections are all smaller pieces of the retired [[P0829]].
@@ -109,7 +118,7 @@ Time arithmetic with underlying integer types is entirely reasonable on freestan
 However, `<chrono>` `time_point`s need an underlying Cpp17Clock.
 Cpp17Clock requires a `now()` function, which requires OS or hardware knowledge that is not appropriate for a freestanding implementation.
 This paper would need to figure out what should be done with the existing types that satisfy the Cpp17Clock requirements.
-Note that the in-flight [[P2212]] should be kept in mind when working through the details.
+Note that the in-flight ["Relax Requirements for time_point::clock"][[P2212]] should be kept in mind when working through the details.
 
 Beyond [[P0829]] {#beyond_p0829}
 =====================
@@ -133,6 +142,8 @@ The paper would need to resolve complications of split overload sets, if any exi
 The paper would need to evaluate semantic changes that could occur when porting freestanding code to hosted, particularly for classes that are `constexpr` but not freestanding (like `std::vector` and `std::string`).
 `consteval` objects can be destroyed at different times than `constexpr` objects.
 
+A `consteval` `std::string` may be part of a solution to excluding `std::bitset` functions that take a `std::string` at runtime.
+
 Startup and termination control {#startup_termintation}
 --------------------------
 
@@ -153,7 +164,7 @@ Input would be needed from the ABI review group, as it is unclear whether making
 
 A further step could be taken to make `std::terminate` optional on freestanding implementations, similar to how `::operator new` was made optional in [[P2013]].
 This would be controversial, as it would effectively make exceptions, `dynamic_cast`, and other features ([ [except.terminate] ](https://eel.is/c++draft/except.terminate#1) ) optional as well.
-Note that there is usage experience for not having `std::terminate` or it's associated features ( [[P1105]]).
+Note that there is usage experience for not having `std::terminate` or it's associated features ([[P1105]]).
 
 If `std::terminate` where made a build-time replaceable function, then `get_terminate` and `set_terminate` would no longer need to be freestanding.
 
@@ -235,39 +246,170 @@ Currently, that information is not made portably available to users authoring th
 Once the per-thread storage is initialized, the compiler needs to know how to find the storage when accessing a variable.
 Perhaps an extension point that exposes a numeric thread ID can be the bridge between the compiler runtime and user code.
 
-This potential paper has many unknowns.  There are many challenges regarding ABI compatibility and existing implementations.
+This potential paper has many unknowns.
+There are many challenges regarding ABI compatibility and existing implementations.
+It may also make sense to make `thread_local` support on freestanding implementations optional.
+
+SG1 in the San Diego 2018 meeting provided this feedback on [[P1105]]:
+
+Conforming freestanding implementations could make thread_local ill-formed<br/>
+SF F N A SA<br/>
+3 12 5 0 0
 
 Error handling {#error_handling}
 ---------------
 Error handling as a whole is the area in most need of work in freestanding.
 There aren't currently any good, standardized error handling facilities for freestanding platforms.
 
-The following facilities could help make Renwick exceptions or [[P0709]] exceptions more useful on freestanding platforms, while still satisfying the underlying use cases.
-
+The following facilities could help make [Renwick exceptions][[RenwickLowCost]] or [[P0709]] exceptions more useful on freestanding platforms, while still satisfying the underlying use cases.
 
 ### Destructor call reason
-** Allow an alternate destructor signature that takes a bool (or enum).
-** Parameter would indicate whether the dtor was called because of unwinding, or normal execution
-** Only one dtor allowed per class
-** Classes with bool dtor can be locals, or contained in other classes with bool dtors.
-** Classes without bool dtor can be members of classes with bool dtor.
-### Non-local exception objects
-** Need some way to get a std::exception_ptr, or std::exception_ptr-like object from a catch statement, without relying on TLS.
-** Needs to be able to address transporting exceptions across threads.
-** Needs to be able to address Lippincott functions.
-** Resurrect P1066?
-### Trim exception header
-** Remove uncaught_exceptions(), current_exception(), and `throw;` from freestanding
+[Generic Scope Guard and RAII Wrapper for the Standard Library][[P0052]] proposes `scope_fail` and `scope_success` (among other facilities).
+These facilities need to know whether a destructor is being called as part of unwinding, or as part of normal execution.
+The reference implementation relies on `std::uncaught_exceptions`, which typically relies on some form of thread-local storage.
 
+In practice, thread-local storage is not widely available on freestanding platforms.
+In addition, thread-local storage has concurrency issues with coroutines that migrate threads, as well as [[P0876]] fibers.
+It would be nice to be able to implement `scope_fail`, `scope_success`, and similar facilities without the need to rely on thread-local storage.
+
+One way is to have an alternate signature for destructors that allows the user to discriminate between the two cases.
+```
+struct Strawman {
+  ~Strawman(bool success) {
+    if(success) {
+      success_action();
+    } else {
+      fail_action();
+    }
+  }
+};
+```
+
+We only need to allow one destructor per class.
+A class with boolean destructor would only be able to be used as a non-member, a member of a class with a boolean destructor, or as a subobject of a class with a boolean destructor.
+Classes with void destructors could be members of classes with boolean destructors.
+More definition and exploration is needed around things like inheritance and virtual destructors.
+
+This general approach would likely make classes like `scope_success` and `scope_fail` faster and smaller, as the happy path doesn't need to capture any state to compare later.
+It removes the need for thread-local storage for this use case.
+
+### Non-local exception objects
+`std::uncaught_exceptions` isn't the only way in which the exception handling mechanism uses thread-local storage.
+`std::current_exception` and `throw;` also use thread-local storage.
+If we could directly capture a `std::exception_ptr`, or something similar to one, then we could avoid thread-local storage.
+
+```
+// strawman syntax only
+int may_throw();
+std::expected<int, std::ex_ptr2> f() {
+  try {
+    return may_throw();
+  } catch(std::ex_ptr2 e : std::exception &orig) {
+    // catches everything derived from std::exception, provides
+    // an ex_ptr2 for capturing and rethrowing purposes
+    std::cout<<orig.what();
+    return std::unexpected(e);
+  } catch(std::ex_ptr2 e : ...) {
+    // catches everything, provides an ex_ptr2 for capturing and
+    // rethrowing purposes
+    return std::unexpected(e);
+  }
+}
+```
+
+Such a facility could be used to implement ["Lippincott" functions][[Guillemot]], or to transport an exception across threads.
+It may be possible to reuse the current `std::exception_ptr` for this facility, but reuse here shouldn't be considered a necessary design constraint.
+A new type may be able to do deep, stack based copies of exception objects, potentially avoiding using the heap entirely (offer not valid in Itanium ABI jurisdictions).
+
+There is likely a lot of overlap between this suggestion, and ["How to catch an `exception_ptr` without even `try`-ing"][[P1066]].
+
+### `noexcept` blocks
+One of the ways to combat exception overhead is by accurately marking large numbers of functions as `noexcept`.
+This only reduces overhead when the `noexcept` function only calls other functions that the implementation can prove don't throw.
+Marking lots of functions as `noexcept` adds a fair amount of syntactic noise though.
+`noexcept` blocks could reduce that noise.
+
+```
+noexcept {
+  void f1();
+  void f2();
+  void f3() noexcept(true);
+}
+```
+
+One of the major challenges in accurate `noexcept` annotation is dealing with functions from C libraries.
+`extern "C"` functions are allowed to throw, but most don't.
+Even fewer C functions are marked as `noexcept`.
+`noexcept` blocks are one way to deal with that.
+
+```
+noexcept {
+  #include "some_c_header.h"
+}
+```
+
+This is likely to lead to (usually harmless) ODR violations.
+
+### Trim exception header
+As the above two facilities are standardized, we could remove freestanding-hostile functionality from freestanding.
+In particular, we could stop requiring `uncaught_exceptions()`, `current_exception()`, and `throw;` from being required on freestanding implementations.
+This may be sufficient for something like [Renwick exceptions][[RenwickLowCost]] or [[P0709]] to be successful without requiring thread-local storage.
 
 
 Hard {#hard}
 -----------
-* RTTI
-* floating point
-* Locked atomics
-* thread safe statics
+The following topics are problem areas for freestanding, but the author doesn't have any great ideas on how to address them in WG21.
 
+### Locked atomics
+Operating systems and embedded devices often need to write interrupt handling code.
+The rules for interrupt-safe code are very similar to the rules for signal-safe code.
+Locked atomics / non-lock-free atomics are a portability trap in these environments.
+
+[[P1105]] proposed making locked atomics ill-formed on freestanding platforms.
+
+SG1 in the San Diego 2018 meeting provided this feedback on [[P1105]]:
+
+Conforming freestanding implementations could omit lock-free[sic] atomics<br/>
+SF F N A SA<br/>
+2 6 4 6 2 
+
+[--Note
+The wording of the poll seems to have been minuted slightly wrong.
+Omitting non-lock-free atomics was the intent.
+--end note --]
+
+### Thread-safe statics
+Thread-safe statics require locking support.
+Similar to locked atomics, there is no one right choice.
+
+[[P1105]] Proposed making thread-safe statics ill-formed on freestanding platforms.
+
+SG1 in the San Diego 2018 meeting provided this feedback on [[P1105]]:
+
+Conforming freestanding implementations could omit thread-safe statics<br/>
+SF F N A SA<br/>
+0 6 8 4 2<br/>
+
+### RTTI
+The non-throwing parts of RTTI are implementable on most freestanding platforms.
+The issue is that it is very hard to optimize away unused `type_info`s.
+
+[[P1105]] recommends making `typeid(expr)` and `dynamic_cast` ill-formed on freestanding platforms.
+It seems unlikely that such a direction will gain consensus in WG21.
+
+### Floating point
+Unprotected use of floating point operations in kernel environments will corrupt the user mode state on many operating systems.  This is true even when the operations are just loads and stores.
+Some operating systems provide a way to explicitly save and restore the floating point state, so that floating point can be used in a given region.
+
+Embedded processors often do not have dedicated floating point units.
+On these platforms, floating point is emulated in software.
+This floating point emulation is often very large in terms of code size.
+
+Ideally, there would be a portable way to discourage floating point use in these environments, without making it impossible.
+
+[[P1105]] recommended making the floating point types ill-formed in environments where floating point isn't supported.
+This approach would be difficult to get consensus on.
+It would also make it much more difficult to get consistent overload set behavior when moving code between floating point and hosted environments.
 
 Applied papers and issues {#papers_and_issues}
 ==========================================
@@ -288,7 +430,6 @@ Most of the wording aspects of this paper have moved to P1642, and the feature t
 P1105 was meant to describe a direction.
 Follow-on papers were meant to act on that direction.
 P2013 is one such paper.
-[[core_changes]] describes other possible future papers.
 
 When SG1 reviewed this paper in the 2018 San Diego meeting, they reacted favorably to the thread_local parts, and unfavorably to the locked atomics and thread safe static parts.
 
@@ -306,10 +447,100 @@ Acknowledgments {#ack}
 
 <pre class=biblio>
 {
-    "P1105R1": {
+    "Guillemot": {
+        "authors": ["Nicolas Guillemot"],
+        "href": "http://cppsecrets.blogspot.com/2013/12/using-lippincott-function-for.html",
+        "title": "Using a Lippincott Function for Centralized Exception Handling"
+    },
+    "RenwickLowCost": {
+        "authors": ["James Renwick", "Tom Spink", "Bjoern Franke"],
+        "href": "https://www.research.ed.ac.uk/portal/en/publications/lowcost-deterministic-c-exceptions-for-embedded-systems(2cfc59d5-fa95-45e0-83b2-46e51098cf1f).html",
+        "title": "Low-cost Deterministic C++ Exceptions for Embedded Systems"
+    },
+    "LWG3148": {
+        "authors": ["Casey Carter"],
+        "href": "https://wg21.link/LWG3148",
+        "title": "`<concepts>` should be freestanding"
+    },
+    "P0052": {
+        "authors": ["Peter Sommerlad", "Andrew L. Sandoval"],
+        "href": "https://wg21.link/P0052r10",
+        "title": "Generic Scope Guard and RAII Wrapper for the Standard Library"
+    },
+    "P0323": {
+        "authors": ["Vicente Botet", "JF Bastien"],
+        "href": "https://wg21.link/P0323",
+        "title": "`std::expected`"
+    },
+    "P0581": {
+        "authors": ["Marshall Clow", "Beman Dawes", "Gabriel Dos Reis", "Stephan T. Lavavej", "Billy O’Neal", "Bjarne Stroustrup", "Jonathan Wakely"],
+        "href": "http://wg21.link/P0581",
+        "title": "Standard Library Modules"
+    },
+    "P0709": {
+        "authors": ["Herb Sutter"],
+        "href": "http://wg21.link/P0709",
+        "title": "Zero-overhead deterministic exceptions: Throw values"
+    },
+    "P0829": {
+        "authors": ["Ben Craig"],
+        "title": "Freestanding Proposal",
+        "href": "https://wg21.link/P0829"
+    },
+    "P0876": {
+        "authors": ["Oliver Kowalke", "Nat Goodspeed"],
+        "title": "fiber_context- fibers without scheduler",
+        "href": "https://wg21.link/P0876R10"
+    },
+    "P1066": {
+        "authors": ["Mathias Stearn"],
+        "href": "http://wg21.link/P1066R1",
+        "title": "How to catch an exception_ptr without even try-ing"
+    },
+    "P1105": {
         "authors": ["Ben Craig", "Ben Saks"],
         "title": "Leaving no room for a lower-level language: A C++ Subset",
         "href": "https://wg21.link/P1105R1"
+    },
+    "P1212": {
+        "authors": ["Ben Craig"],
+        "title": "Modules and Freestanding",
+        "href": "https://wg21.link/P1212R0"
+    },
+    "P1372": {
+        "authors": ["Daisy Hollman"],
+        "title": "Giving `atomic_ref` implementers more flexibility by providing customization points for non-lock-free implementation",
+        "href": "https://wg21.link/P1372R0"
+    },
+    "P1641": {
+        "authors": ["Ben Craig"],
+        "title": "Freestanding Library: Rewording the Status Quo",
+        "href": "https://wg21.link/P1641R3"
+    },
+    "P1642": {
+        "authors": ["Ben Craig"],
+        "title": "Freestanding Library: Easy [utilities], [ranges], and [iterators]",
+        "href": "https://wg21.link/P1642R4"
+    },
+    "P1855": {
+        "authors": ["Ben Craig"],
+        "title": "Make <compare> freestanding",
+        "href": "https://wg21.link/P1855R0"
+    },
+    "P2013": {
+        "authors": ["Ben Craig"],
+        "title": "Freestanding Language: Optional `::operator new`",
+        "href": "https://wg21.link/P2013R3"
+    },
+    "P2198": {
+        "authors": ["Ben Craig"],
+        "title": "Freestanding Feature-Test Macros and Implementation-Defined Extensions",
+        "href": "https://wg21.link/P2198R1"
+    },
+    "P2212": {
+        "authors": ["Alexey Dmitriev", "Howard Hinnant"],
+        "title": "Relax Requirements for time_point::clock",
+        "href": "https://wg21.link/p2212r2"
     }
 }
 </pre>
