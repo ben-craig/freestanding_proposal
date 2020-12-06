@@ -368,7 +368,9 @@ Audience: Library Evolution Working Group
 <h1>Change history</h1>
 <h3> R5 </h3>
 <ul>
-  <li>Indicating which working draft the wording was based on.</li>
+  <li>Rebasing to N4868</li>
+  <li>Adding <code>_Exit</code>, as <code>quick_exit</code> is specified in terms of <code>_Exit</code>.</li>
+  <li>Explicitly listing out the algorithms from <a href="https://wg21.link/specialized.algorithms">[specialized.algorithms]</a> instead of referring to them by the stable name tag.</li>
 </ul>
 <h3> R4 </h3>
 <ul>
@@ -455,7 +457,7 @@ The following functions and classes rely on dynamic memory allocation and except
 </p>
 <ul>
   <li><code>make_unique</code></li>
-  <li><code>make_unique_default_init</code></li>
+  <li><code>make_unique_for_overwrite</code></li>
   <li><code>shared_ptr</code></li>
   <li><code>weak_ptr</code></li>
   <li><code>function</code></li>
@@ -525,7 +527,7 @@ Please see <a href="https://wg21.link/compliance">[compliance]</a> to see what i
 
 <h1>Wording</h1>
 <p>
-The following wording is relative to N4861.
+The following wording is relative to N4868.
 </p>
 
 <h2>Change in <a href="https://wg21.link/conventions">[conventions]</a></h2>
@@ -568,7 +570,7 @@ Wording involving comment placement is inspired by <a href="https://wg21.link/ex
 <h2>Changes in <a href="https://wg21.link/compliance">[compliance]</a></h2>
 Add new rows to <a href="https://wg21.link/compliance#tab:headers.cpp.fs">Table 24</a>:</p>
 <table style="border: 1px solid black">
-<caption>Table 24 &mdash; C++ headers for freestanding implementations [tab:headers.cpp.fs]</caption>
+<caption>Table 24: C++ headers for freestanding implementations [tab:headers.cpp.fs]</caption>
 <thead>
 <tr style="border: 1px solid black">
 <th colspan="2" style="text-align: center">Subclause</th><th style="text-align: center">Header(s)</th>
@@ -667,7 +669,7 @@ Please insert a <span class="comment">// <span class="textit">freestanding</span
 <li><a href="https://wg21.link/cstdint.syn">[cstdint.syn]</a></li>
 <li><a href="https://wg21.link/new.syn">[new.syn]</a></li>
 <li><a href="https://wg21.link/typeinfo.syn">[typeinfo.syn]</a></li>
-<li><a href="https://wg21.link/source_location.syn">[source_location.syn]</a></li>
+<li><a href="https://wg21.link/source.location.syn">[source.location.syn]</a></li>
 <li><a href="https://wg21.link/exception.syn">[exception.syn]</a></li>
 <li><a href="https://wg21.link/initializer.list.syn">[initializer.list.syn]</a></li>
 <li><a href="https://wg21.link/compare.syn">[compare.syn]</a></li>
@@ -691,6 +693,7 @@ Please append a <span class="comment">// <span class="textit">freestanding</span
   <li>all overloads of <code>atexit</code></li>
   <li>all overloads of <code>at_quick_exit</code></li>
   <li><code>exit</code></li>
+  <li><code>_Exit</code></li>
   <li><code>quick_exit</code></li>
 </ul>
 
@@ -710,7 +713,6 @@ Please append a <span class="comment">// <span class="textit">freestanding</span
   <li><code>make_obj_using_allocator</code></li>
   <li><code>uninitialized_construct_using_allocator</code></li>
   <li><code>allocator_traits</code></li>
-  <li>[specialized.algorithms], except for the <code>ExecutionPolicy</code> overloads.  This includes the algorithms in the <code>ranges</code> namespace</li>
   <li><code>default_delete</code></li>
   <li><code>unique_ptr</code></li>
   <li><code>unique_ptr</code> overload of <code>swap</code></li>
@@ -720,20 +722,43 @@ Please append a <span class="comment">// <span class="textit">freestanding</span
   <li><code>atomic</code></li>
 </ul>
 
+Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to all overloads of the following function templates, except for the ExecutionPolicy overloads.
+This includes the function templates in the <code>ranges</code> namespace.
+<ul>
+  <li><code>uninitialized_default_construct</code></li>
+  <li><code>uninitialized_default_construct_n</code></li>
+  <li><code>uninitialized_value_construct</code></li>
+  <li><code>uninitialized_value_construct_n</code></li>
+  <li><code>uninitialized_copy_result</code></li>
+  <li><code>uninitialized_copy</code></li>
+  <li><code>uninitialized_copy_n_result</code></li>
+  <li><code>uninitialized_copy_n</code></li>
+  <li><code>uninitialized_move_result</code></li>
+  <li><code>uninitialized_move</code></li>
+  <li><code>uninitialized_move_n_result</code></li>
+  <li><code>uninitialized_move_n</code></li>
+  <li><code>uninitialized_fill</code></li>
+  <li><code>uninitialized_fill_n</code></li>
+  <li><code>construct_at</code></li>
+  <li><code>destroy_at</code></li>
+  <li><code>destroy</code></li>
+  <li><code>destroy_n</code></li>
+</ul>
+
 Note: the following portions of <code>&lt;memory&gt;</code> are <b>omitted</b>.  No change to the working draft should be made for these entities:
 <ul>
   <li>[util.dynamic.safety], pointer safety</li>
   <li><code>allocator</code> and associated comparisons</li>
   <li><code>ExecutionPolicy</code> overloads in [specialized.algorithms]</li>
   <li><code>make_unique</code></li>
-  <li><code>make_unique_default_init</code></li>
+  <li><code>make_unique_for_overwrite</code></li>
   <li>All <code>operator&lt;&lt;</code> overloads</li>
   <li><code>bad_weak_ptr</code></li>
   <li><code>shared_ptr</code></li>
   <li><code>make_shared</code></li>
   <li><code>allocate_shared</code></li>
-  <li><code>make_shared_default_init</code></li>
-  <li><code>allocate_shared_default_init</code></li>
+  <li><code>make_shared_for_overwrite</code></li>
+  <li><code>allocate_shared_for_overwrite</code></li>
   <li>relational operators (including three-way / spaceship) involving <code>shared_ptr</code></li>
   <li><code>shared_ptr</code> overload of <code>swap</code></li>
   <li><code>static_pointer_cast</code></li>
