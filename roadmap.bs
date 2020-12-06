@@ -5,79 +5,26 @@ Revision: 0.0
 Audience: SG14
 Status: D
 Group: WG21
-URL: https://TODO
+URL: https://wg21.link/TODO
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/roadmap.bs">github.com/ben-craig/freestanding_proposal/blob/master/roadmap.bs</a>
 Editor: Ben Craig, NI, ben.craig@gmail.com
 Abstract: Describe future, high level freestanding papers
 Markup Shorthands: markdown yes
 </pre>
 
-Revision History {#revision_history}
-====================================
-R0 {#r0}
--------
-Initial revision.
-
 Introduction {#intro}
 =====================
-TODO
-
-Work in progress {#wip}
-=====================
-
-[[P2013]] Freestanding Language: Optional `::operator new` {#p2013}
--------------------------------------------------------
-P2013R1 is awaiting further EWG review.
-EWG reviewed P2013R0 favorably in the 2020 Prague meeting, and requested wording.
-Wording is present and ready for review in P2013R1.
-
-[[P1642]] Freestanding Library: Easy [utilities], [ranges], and [iterators] {#P1642}
--------------------------------------------------------
-P1642R4 combines the wording in P1641R3 and the library additions from P1642R3.
-P1642R4 is awaiting further LEWG review.
-
-The non-feature test macro parts of P1641R3 and P1642R3 were reviewed favorably over LEWG telecon.
-LEWG requested that those parts be combined into a single paper, and that LEWG not spend future time discussing the contents of the library additions.
-
-[[P2198]] Freestanding Feature-Test Macros and Implementation-Defined Extensions {#P2198}
--------------------------------------------------------
-P2198R0 has taken all the feature-test macro parts from P1642R3 and P1641R3, and consolidated them here.
-P2198R0 needs to be reviewed by SG10, as it is doing something more involved than just including a feature test macro.
-
-Related work in progress {#related_wip}
-=====================
-[[P0581]] Standard Library Modules {#related_stl_modules}
---------------
-The way we partition the standard library into modules has the potential to change how freestanding is advertised and messaged significantly.
-The partitioning could also place new constraints on freestanding.
-
-[[P0323]] `std::expected` {#related_expected}
-----------------
-Error handling is currently the largest sore point in freestanding, and `std::expected` is one proven approach that can address many error handling needs.
-
-<a data-lt="RenwickLowCost" data-link-type=biblio data-biblio-type="informative">Renwick exceptions</a> {#related_renwick}
--------------------
-This paper describes an implementation method of exceptions that could resolve many long standing implementability and performance issues with exceptions in freestanding environments.
-This is currently the best hope that C++ has for a one-size-fits-most error handling mechanism.
-
-Most of the work in this paper is beyond the authority of WG21.
-The paper asks for ABI changes, and for implementers to make different trade-offs than they have traditionally made.
-The paper asks the freestanding community to use a language feature that they have traditionally shunned.
-
-[[P0709]] Zero-overhead deterministic exceptions: Throwing values {#related_p0709}
---------------------
-This paper describes an additional form of exception handling that can coexist with today's C++ exceptions.
-This is currently the best hope that C++ has for exceptions where the user can make function-specific performance trade-offs.
-
-If this paper gets accepted, then there will likely be a need for many follow-on papers to parameterize the error handling for many C++ facilities.
-Users would want to be able to provide an allocator to `std::vector` that would make that instantiation use P0709 exceptions.
-Users would want to be able to make coroutine promise types report allocation failures through P0709 exceptions.
-Users may even want a variety of `dynamic_cast` that uses P0709 exceptions.
+"Fixing" freestanding is too large of a task for one person.
+This paper is describing the technical directions that could be taken to make conforming freestanding C++ a useful and widely implemented language.
+The author does not have the time or resources to perform the due diligence testing and implementation for all of these facilities.
+This paper is largely a request for collaborators on freestanding related facilities.
+Please contact ben.craig@gmail.com if you are interested in creating prototype implementations and coauthoring papers on these topics.
 
 [[P0829]] pieces {#p0829_pieces}
 =====================
 The following sections are all smaller pieces of the retired [[P0829]].
 They are listed in roughly priority order.
+All of these pieces have some amount of freestanding implementation experience.
 
 `<cstdlib>`, `<charconv>`, `<cmath>`, `<cinttypes>`, `<cstring>`, `<cwchar>`, and `char_traits` {#c_and_float_facilities}
 ------------------------
@@ -97,11 +44,11 @@ Adding C functions to C++ freestanding has precedent, notably with `abort`, `ate
 This is an issue to bring to the newly formed C/C++ liason study group.
 `<cwchar>` may end up being a casualty to consensus here, as even though it would be a useful facility that fundamentally makes sense in freestanding, it is a costly to port facility (because of assembly) that is rarely used.
 
-[ [diagnostics] ](https://wg21.link/diagnostics), `<algorithm>`, `<numeric>`, `lock_guard`, `unique_lock`, `<span>` {#algorithms_and_friends}
+<a href="https://wg21.link/diagnostics">[diagnostics]</a>, `<algorithm>`, `<numeric>`, `lock_guard`, `unique_lock`, `<span>` {#algorithms_and_friends}
 ------------------------
 The above list of facilities is largely a grab-bag, but many of them are more useful if `memcpy` is made available in the `<cstring>` paper.
 
-Very little in [ [diagnostics] ](https://wg21.link/diagnostics) is usable in freestanding, but the error code definitions in `<cerrno>` and `<system_error>` are fine.
+Very little in <a href="https://wg21.link/diagnostics">[diagnostics]</a> is usable in freestanding, but the error code definitions in `<cerrno>` and `<system_error>` are fine.
 
 The details on specifically what to keep for these headers can be extracted from [[P0829]].
 
@@ -117,7 +64,7 @@ This is needed for cases where users derive from standard types and add overload
 `bitset` is more complicated because of the constructor overload set.
 One of the overloads accepts a `basic_string`, and another accepts `charT *`.
 Passing a `string_view` to `bitset` seems entirely reasonable.
-Given the difficulty in making this work, it may be prudent to _not_ bring `bitset` to freestanding.
+Given the difficulty in making this work, it may be prudent to <i>not</i> bring `bitset` to freestanding.
 It is the author's belief that this would not be a great loss, as `bitset` doesn't actually solve the bit manipulation problems that kernel and embedded developers commonly encounter.
 
 `string_view` requires `char_traits` and `<cstring>`.
@@ -126,15 +73,16 @@ It is the author's belief that this would not be a great loss, as `bitset` doesn
 ------------------------
 [[P0829]] describes which `<random>` facilities are a good fit for freestanding.
 This paper would need to deal with the specification hurdles of `operator<<`.
-`operator<<` is not listed in the synopsis, as it is permitted to be either a hidden friend, or a free function.
+The iostreams `operator<<` overloads for `<random>` types are not listed in the synopsis, as they are permitted to be either hidden friends, or free functions.
+This makes it editorially more difficult to omit.
 
-`<chrono>` / [time] {#chrono_header}
+`<chrono>` / <a href="https://wg21.link/time">[time]</a> {#chrono_header}
 ------------------------
 Time arithmetic with underlying integer types is entirely reasonable on freestanding platforms.
 However, `<chrono>` `time_point`s need an underlying Cpp17Clock.
 Cpp17Clock requires a `now()` function, which requires OS or hardware knowledge that is not appropriate for a freestanding implementation.
 This paper would need to figure out what should be done with the existing types that satisfy the Cpp17Clock requirements.
-Note that the in-flight <a data-lt="P2212" data-link-type=biblio data-biblio-type="informative">Relax Requirements for time_point::clock</a> should be kept in mind when working through the details.
+Note that the in-flight <a data-lt="P2212" data-link-type=biblio data-biblio-type="informative">P2212: Relax Requirements for time_point::clock</a> should be kept in mind when working through the details.
 
 Beyond [[P0829]] {#beyond_p0829}
 =====================
@@ -160,6 +108,8 @@ The paper would need to evaluate semantic changes that could occur when porting 
 
 A `consteval` `std::string` may be part of a solution to excluding `std::bitset` functions that take a `std::string` at runtime.
 
+It may also make sense to split this into multiple papers: one that covers all `constexpr` non-member functions, and another that covers all `constexpr` classes.
+
 Startup and termination control {#startup_termintation}
 --------------------------
 
@@ -172,14 +122,14 @@ In addition, there are often additional or customized actions that need to be pe
 
 C++ already has a way to provide additional or customized actions for `std::terminate`, and that is by changing the terminate handler at runtime.
 The problem with this approach is that runtime is too late.
-You've already linked in a `std::abort` implementation you may not even want to use.
-You may have also linked in an atomics support library in order to do call set_terminate without causing a data race.
+`std::abort` will be odr-used at build time, no matter how early in the runtime process the user switches the termination handler.
+The user may end up linking in an otherwise unused atomics support library for `set_terminate` to use so that it won't cause a data race.
 
 A paper addressing this would make `std::terminate` a replaceable function, similar to `::operator new`.
 Input would be needed from the ABI review group, as it is unclear whether making `std::terminate` replaceable would be an ABI break or not.
 
 A further step could be taken to make `std::terminate` optional on freestanding implementations, similar to how `::operator new` was made optional in [[P2013]].
-This would be controversial, as it would effectively make exceptions, `dynamic_cast`, and other features ([ [except.terminate] ](https://eel.is/c++draft/except.terminate#1) ) optional as well.
+This would be controversial, as it would effectively make exceptions, `dynamic_cast`, and other features (<a href="https://wg21.link/except.terminate#1">[except.terminate]</a>) optional as well.
 Note that there is usage experience for not having `std::terminate` or it's associated features ([[P1105]]).
 
 If `std::terminate` where made a build-time replaceable function, then `get_terminate` and `set_terminate` would no longer need to be freestanding.
@@ -280,7 +230,7 @@ There aren't currently any good, standardized error handling facilities for free
 The following facilities could help make <a data-lt="RenwickLowCost" data-link-type=biblio data-biblio-type="informative">Renwick exceptions</a> or [[P0709]] exceptions more useful on freestanding platforms, while still satisfying the underlying use cases.
 
 ### Destructor call reason {#dtor_call_reason}
-<a data-lt="P0052" data-link-type=biblio data-biblio-type="informative">Generic Scope Guard and RAII Wrapper for the Standard Library</a> proposes `scope_fail` and `scope_success` (among other facilities).
+<a data-lt="P0052" data-link-type=biblio data-biblio-type="informative">P0052: Generic Scope Guard and RAII Wrapper for the Standard Library</a> proposes `scope_fail` and `scope_success` (among other facilities).
 These facilities need to know whether a destructor is being called as part of unwinding, or as part of normal execution.
 The reference implementation relies on `std::uncaught_exceptions`, which typically relies on some form of thread-local storage.
 
@@ -337,7 +287,7 @@ Such a facility could be used to implement <a data-lt="Guillemot" data-link-type
 It may be possible to reuse the current `std::exception_ptr` for this facility, but reuse here shouldn't be considered a necessary design constraint.
 A new type may be able to do deep, stack based copies of exception objects, potentially avoiding using the heap entirely (offer not valid in Itanium ABI jurisdictions).
 
-There is likely a lot of overlap between this suggestion, and <a data-lt="P1066" data-link-type=biblio data-biblio-type="informative">How to catch an `exception_ptr` without even `try`-ing</a>.
+There is likely a lot of overlap between this suggestion, and <a data-lt="P1066" data-link-type=biblio data-biblio-type="informative">P1066: How to catch an `exception_ptr` without even `try`-ing</a>.
 
 ### `noexcept` blocks {#noexcept_blocks}
 One of the ways to combat exception overhead is by accurately marking large numbers of functions as `noexcept`.
@@ -347,9 +297,9 @@ Marking lots of functions as `noexcept` adds a fair amount of syntactic noise th
 
 ```
 noexcept {
-  void f1();
-  void f2();
-  void f3() noexcept(true);
+  void does_not_throw();
+  void also_does_not_throw();
+  void may_throw() noexcept(true);
 }
 ```
 
@@ -427,17 +377,69 @@ Ideally, there would be a portable way to discourage floating point use in these
 This approach would be difficult to get consensus on.
 It would also make it much more difficult to get consistent overload set behavior when moving code between floating point and hosted environments.
 
+Work in progress {#wip}
+=====================
+
+[[P2013]] Freestanding Language: Optional `::operator new` {#p2013}
+-------------------------------------------------------
+P2013R1 is awaiting further EWG review.
+EWG reviewed P2013R0 favorably in the 2020 Prague meeting, and requested wording.
+Wording is present and ready for review in P2013R1.
+
+[[P1642]] Freestanding Library: Easy [utilities], [ranges], and [iterators] {#P1642}
+-------------------------------------------------------
+P1642R4 combines the wording in P1641R3 and the library additions from P1642R3.
+P1642R4 is awaiting further LEWG review.
+
+The non-feature test macro parts of P1641R3 and P1642R3 were reviewed favorably over LEWG telecon.
+LEWG requested that those parts be combined into a single paper, and that LEWG not spend future time discussing the contents of the library additions.
+
+[[P2198]] Freestanding Feature-Test Macros and Implementation-Defined Extensions {#P2198}
+-------------------------------------------------------
+P2198R0 has taken all the feature-test macro parts from P1642R3 and P1641R3, and consolidated them here.
+P2198R0 needs to be reviewed by SG10, as it is doing something more involved than just including a feature test macro.
+
+Related work in progress {#related_wip}
+=====================
+[[P0581]] Standard Library Modules {#related_stl_modules}
+--------------
+The way we partition the standard library into modules has the potential to change how freestanding is advertised and messaged significantly.
+The partitioning could also place new constraints on freestanding.
+
+[[P0323]] `std::expected` {#related_expected}
+----------------
+Error handling is currently the largest sore point in freestanding, and `std::expected` is one proven approach that can address many error handling needs.
+
+<a data-lt="RenwickLowCost" data-link-type=biblio data-biblio-type="informative">Renwick exceptions</a> {#related_renwick}
+-------------------
+This paper describes an implementation method of exceptions that could resolve many long standing implementability and performance issues with exceptions in freestanding environments.
+This is currently the best hope that C++ has for a one-size-fits-most error handling mechanism.
+
+Most of the work in this paper is beyond the authority of WG21.
+The paper asks for ABI changes, and for implementers to make different trade-offs than they have traditionally made.
+The paper asks the freestanding community to use a language feature that they have traditionally shunned.
+
+[[P0709]] Zero-overhead deterministic exceptions: Throwing values {#related_p0709}
+--------------------
+This paper describes an additional form of exception handling that can coexist with today's C++ exceptions.
+This is currently the best hope that C++ has for exceptions where the user can make function-specific performance trade-offs.
+
+If this paper gets accepted, then there will likely be a need for many follow-on papers to parameterize the error handling for many C++ facilities.
+Users would want to be able to provide an allocator to `std::vector` that would make that instantiation use P0709 exceptions.
+Users would want to be able to make coroutine promise types report allocation failures through P0709 exceptions.
+Users may even want a variety of `dynamic_cast` that uses P0709 exceptions.
+
 Applied papers and issues {#papers_and_issues}
 ==========================================
-* [[LWG3148]] <concepts> should be freestanding
-* [[P1855]] Make <compare> freestanding 
+* [[LWG3148]] `<concepts>` should be freestanding
+* [[P1855]] Make `<compare>` freestanding 
 
 Retired papers {#retired}
 ======================
 [[P0829]] Freestanding Proposal {#retired_p0829}
 -------------
 P0829 was too large to be effectively reviewed, so it has been split up.
-P1641, P1642, and P2198 are the current successors to P0829, but more are needed.
+[[P1641]], [[P1642]], and [[P2198]] are the current successors to P0829, but more are needed.
 See [[#p0829_pieces]] for some of the other papers that still need to be authored.
 
 [[P1641]] Freestanding Library: Rewording the Status Quo {#retired_p1641}
@@ -465,6 +467,7 @@ This paper was not received favorably by SG1 in San Diego's 2018 meeting.
 
 Acknowledgments {#ack}
 ======================
+TODO
 
 <pre class=biblio>
 {
