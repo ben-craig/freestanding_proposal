@@ -1,11 +1,11 @@
 <pre class='metadata'>
 Title: Freestanding Roadmap
-Shortname: TODO
+Shortname: D2268
 Revision: 0.0
 Audience: SG14
 Status: D
 Group: WG21
-URL: https://wg21.link/TODO
+URL: https://wg21.link/P2268R0
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/roadmap.bs">github.com/ben-craig/freestanding_proposal/blob/master/roadmap.bs</a>
 Editor: Ben Craig, NI, ben.craig@gmail.com
 Abstract: Describe future, high level freestanding papers
