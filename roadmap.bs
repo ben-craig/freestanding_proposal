@@ -100,7 +100,7 @@ If the entity is marked `// freestanding`, then it would be available at runtime
 This would generally be implemented (and possibly specified) as making the function optionally `consteval` on freestanding implementations.
 The freestanding implementation would either provide a `consteval` version of the facility, or a `constexpr` version if the target can support it.
 
-This paper would need to audit the standard library's constexpr facilities and audit the constexpr papers in flight.
+This paper would need to audit the standard library's `constexpr` facilities and audit the `constexpr` papers in flight.
 The paper would need to resolve complications of split overload sets, if any exist.
 
 The paper would need to evaluate semantic changes that could occur when porting freestanding code to hosted, particularly for classes that are `constexpr` but not freestanding (like `std::vector` and `std::string`).
@@ -190,6 +190,12 @@ Exposing them to programmers would allow for opt-in fixes to current problems.
 Imagine having a link-time array that contains a "priority" value alongside an initialization function.
 The consumer of the array could then sort the array (or a copy of it) by priority, then run the initialization functions.
 This would portably solve some users issues with static initialization ordering by giving users the power to express the desired ordering.
+
+Link-time arrays could also provide a way to call "global constructors" in a dynamic library outside of various operating system locks.
+
+Link-time arrays could give users enough control to manually destroy and recreate an open set of global resources.
+
+This feature should probably be restricted to global arrays.  It may also make sense for an initial version to be restricted to some category of simple types (trivial types? literal types?).
 
 It is unclear to me how this feature could expose heterogenous "arrays" like those needed for thread_local storage initialization.
 Getting the alignment right on individual elements seems particularly challenging.
@@ -417,7 +423,7 @@ This is currently the best hope that C++ has for a one-size-fits-most error hand
 
 Most of the work in this paper is beyond the authority of WG21.
 The paper asks for ABI changes, and for implementers to make different trade-offs than they have traditionally made.
-The paper asks the freestanding community to use a language feature that they have traditionally shunned.
+The paper also asks the freestanding community to use a language feature that they have traditionally shunned.
 
 [[P0709]] Zero-overhead deterministic exceptions: Throwing values {#related_p0709}
 --------------------
@@ -467,7 +473,7 @@ This paper was not received favorably by SG1 in San Diego's 2018 meeting.
 
 Acknowledgments {#ack}
 ======================
-TODO
+Thank you to Brandon Streiff for reviewing this paper and providing additional use cases for link-time arrays.
 
 <pre class=biblio>
 {
