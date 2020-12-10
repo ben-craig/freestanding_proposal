@@ -1,9 +1,9 @@
 <pre class='metadata'>
 Title: Freestanding Roadmap
-Shortname: D2268
-Revision: 0.0
+Shortname: P2268
+Revision: 0
 Audience: SG14
-Status: D
+Status: P
 Group: WG21
 URL: https://wg21.link/P2268R0
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/roadmap.bs">github.com/ben-craig/freestanding_proposal/blob/master/roadmap.bs</a>
