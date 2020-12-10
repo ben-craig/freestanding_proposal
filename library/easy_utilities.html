@@ -415,6 +415,10 @@ The <code>&lt;memory&gt;</code> header depends on facilities in <code>&lt;ranges
 </p><p>
 This paper also updates the editorial techniques for declaring facilities as freestanding. This update will make it easier to mark headers as partially freestanding. This wording change will also make it easier to mark in-flight proposals as freestanding, without causing a major blocking point in the standardization process.
 </p><p>
+The paper also includes a drive-by fix to add <code>_Exit</code> to freestanding.
+<code>quick_exit</code> is already part of C++20's freestanding library, and <code>quick_exit</code> is specified to call <code>_Exit</code> <a href="https://eel.is/c++draft/support.start.term#13.sentence-5">[support.start.term#13]</a>.
+This has been a bug since C++11 (introduced with LWG1264 / UK-172).
+</p><p>
 Changes to the design of feature test macros are discussed in <a href="https://wg21.link/P2198">P2198</a>.  This paper maintains the status quo for feature test macros on freestanding.
 </p>
 <h1>Motivation and Design</h1>
