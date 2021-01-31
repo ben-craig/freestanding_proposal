@@ -483,37 +483,21 @@ Thread-local storage requires extra code in the operating system for support.
 In addition, if one thread uses thread-local storage, that cost is imposed on other threads.
 Note that there are common environments (e.g. the kernels of all major desktop operating systems) that support multiple threads, but do not support arbitrary thread local variables.
 <h2>The heap</h2>
-The heap is a big set of global state.  In addition, heap exhaustion is typically expressed via exception.  Some micro-controller systems don't have a heap.  In kernel environments, there is typically a heap, but there isn't a reasonable choice of <i>which</i> heap to use as the default.  In the Windows kernel, the two best candidates for a default heap are the paged pool (plentiful available memory, but unsafe to use in many contexts), and the non-paged pool (safe to use, but limited capacity).  The C++ implementation in the Windows kernel forces users to implement their own global <code>operator new</code> to make this decision.
+The heap is a big set of global state.  In addition, C++ heap exhaustion is typically expressed via exception.  Some micro-controller systems don't have a heap.  In kernel environments, there is typically a heap, but there isn't a reasonable choice of <i>which</i> heap to use as the default.  In the Windows kernel, the two best candidates for a default heap are the paged pool (plentiful available memory, but unsafe to use in many contexts), and the non-paged pool (safe to use, but limited capacity).  The C++ implementation in the Windows kernel forces users to implement their own global <code>operator new</code> to make this decision.
 <h2>Floating point</h2>
 <p>
 Many micro-controller systems don't have floating point hardware.  Software emulated floating point can drag in large runtimes that are difficult to optimize away.
 </p><p>
 Most operating systems speed up system calls by not saving and restoring floating point state.  That means that kernel uses of floating point operations require extra care to avoid corrupting user state.
+</p><p>
+In C, the dynamic floating-point environment has thread storage duration.
+This drags in the same set of problems that Thread-local storage has.
 </p>
 <h2>Functions requiring global or thread-local storage</h2>
-These functions have been omitted or removed from the freestanding library.  Examples are the locale aware functions and the C random number functions.</li>
-<h2>Parallel algorithms</h2>
-For the <code>&lt;algorithms&gt;</code>, <code>&lt;numeric&gt;</code>, and <code>&lt;memory&gt;</code> headers, we would only be able to support sequential execution of parallel algorithms.  Since this adds little value, the execution policy overloads will be omitted.
-<h2>Partial class inclusion</h2>
 <p>
-Some classes are only partially freestanding.  In the Albuquerque 2017 meeting, there was no consensus on allowing or prohibiting this (SF F N A SA 0 9 3 5 1).
-</p><p>
-In this proposal, I partially include three classes: <code>std::array</code>, <code>std::string_view</code>, and <code>std::optional</code>.  If we were designing these classes from scratch with a freestanding environment in mind, they would have the exact same layout and the exact same interface, with the exception of the excluded methods.  I think it is highly unlikely that the committee would standardize a <code>std::freestanding_array</code> that was the exact same as <code>std::array</code>, just without the <code>at()</code> method.
-</p><p>
-I would like to call out <code>std::variant</code> as well.  While I do include the entire class, I do exclude the <code>get()</code> function.  <code>get()</code> is logically part of the interface.  The same general argument I used for <code>std::array</code>, <code>std::string_view</code>, and <code>std::optional</code> holds for <code>std::variant</code>.
+These functions have been omitted or removed from the freestanding library.  Examples are the locale aware functions and the C random number functions.
 </p>
 <h1>Technical Specifications</h1>
-<h2>Complete headers newly required for freestanding implementations</h2>
-<code><ul>
-<li>&lt;csetjmp&gt;</li>
-<li>&lt;utility&gt;</li>
-<li>&lt;tuple&gt;</li>
-<li>&lt;ratio&gt;</li>
-<li>&lt;compare&gt;</li>
-<li>&lt;span&gt;</li>
-<li>&lt;contract&gt;</li>
-<li>&lt;ranges&gt;</li>
-</ul></code>
 <h2>Partial headers newly required for freestanding implementations</h2>
 Portions of <code>&lt;cstdlib&gt;</code>
 <ul>
@@ -538,37 +522,6 @@ All the error <code>#defines</code> in <code>&lt;cerrno&gt;</code>, but not <cod
 </p><p>
 The <code>errc</code> enum from <code>&lt;system_error&gt;</code>.
 </p><p>
-All of <code>&lt;optional&gt;</code>, except for <code>bad_optional_access</code> and <code>optional::value</code>.  The <code>optional</code> value can be accessed through the unchecked observers, <code>operator*</code> and <code>operator-&gt;</code>.
-</p><p>
-All of <code>&lt;variant&gt;</code>, except for <code>get</code>.  The <code>variant</code> value can be accessed through <code>get_if</code>.
-</p><p>
-All of <code>&lt;bitset&gt;</code> except for operator&lt;&lt;; operator&gt;&gt;; bitset::to_string; the bitset string constructors; and the indexed versions of bitset::set, bitset::reset, and bitset::flip.
-</p><p>
-Portions of <code>&lt;memory&gt;</code>.
-</p>
-<ul>
-<li><code>pointer_traits</code></li>
-<li><code>to_address</code></li>
-<li><code>align</code></li>
-<li><code>allocator_arg_t</code></li>
-<li><code>allocator_arg</code></li>
-<li><code>uses_allocator</code></li>
-<li><code>allocator_traits</code></li>
-<li><a href="https://wg21.link/specialized.algorithms">[specialized.algorithms]</a>, except for the ExecutionPolicy overloads</li>
-<li><code>unique_ptr</code></li>
-<li><code>default_delete</code></li>
-<li><code>uses_allocator_v</code></li>
-</ul>
-<p>
-Most of <code>&lt;functional&gt;</code>.  <b>Omit</b> the following.
-<ul>
-<li><a href="https://wg21.link/func.wrap">[func.wrap]</a>, polymorphic function wrappers (i.e. <code>std::function</code> and friends).</li>
-<li><a href="https://wg21.link/func.search.bm">[func.search.bm]</a>, <code>boyer_moore_searcher</code></li>
-<li><a href="https://wg21.link/func.search.bmh">[func.search.bmh]</a>, <code>boyer_moore_horspool_searcher</code></li>
-</ul>
-</p><p>
-<code>&lt;chrono&gt;</code> durations and duration math.  <b>Omit</b> clocks, civil time, and streaming functions.
-</p><p>
 Portions of <code>&lt;charconv&gt;</code>.
 </p>
 <ul>
@@ -580,20 +533,6 @@ Portions of <code>&lt;charconv&gt;</code>.
 <p>
 The <code>char_traits</code> class from <code>&lt;string&gt;</code>.
 </p><p>
-Most of <code>&lt;string_view&gt;</code>.  These functions will be <b>omitted</b>:
-</p>
-<ul>
-<code><li>operator&lt;&lt;</li>
-<li>basic_string_view::at</li>
-<li>basic_string_view::copy</li>
-<li>basic_string_view::substr</li>
-<li>basic_string_view::compare(size_type pos1, size_type n1, basic_string_view s);
-<li>basic_string_view::compare(size_type pos1, size_type n1, basic_string_view s,
-size_type pos2, size_type n2);
-<li>basic_string_view::compare(size_type pos1, size_type n1, const charT* s);
-<li>basic_string_view::compare(size_type pos1, size_type n1, const charT* s,
-size_type n2);
-</code></ul><p>
 Portions of <code>&lt;cstring&gt;</code>.
 <ul>
 <code><li>memcpy</li>
@@ -638,31 +577,6 @@ Portions of <code>&lt;cwchar&gt;</code>.
 <li>wmemset</li>
 </code></ul>
 <p>
-All of <code>&lt;array&gt;</code> except for <code>array::at</code>.
-</p><p>
-All of <code>&lt;iterator&gt;</code> except for the stream iterators.
-</p><p>
-Most of <code>&lt;algorithm&gt;</code> and <code>&lt;numeric&gt;</code>.  The ExecutionPolicy overloads will not be included.  The following functions will be <b>omitted</b> due to the usage of temporary buffers:
-</p>
-<ul>
-<code><li>stable_sort</li>
-<li>stable_partition</li>
-<li>inplace_merge</li>
-</code></ul>
-<p>
-Portions of <code>&lt;random&gt;</code>.  The following portions will be included:
-</p>
-<ul>
-<code>
-<li>linear_congruential_engine</li>
-<li>mersenne_twister_engine</li>
-<li>subtract_with_carry_engine</li>
-<li>discard_block_engine</li>
-<li>independent_bits_engine</li>
-</code>
-<li>[rand.predef], except for <code>knuth_b</code></li>
-<li><code>uniform_int_distribution</code></li>
-</ul>
 A small portion of <code>&lt;cmath&gt;</code> will be present.
 <ul>
 <code><li>abs(int)</li>
@@ -691,30 +605,15 @@ Many string functions (<code>strtol</code> and family) rely on <code>errno</code
 <code>_Exit</code> is not included as I do not wish to add more termination functions.  I hope to remove most of them in the future.  Program termination requires involvement from the operating system / environment.
 </p><p>
 <code>&lt;cctype&gt;</code> and <code>&lt;cwctype&gt;</code> rely heavily on global locale data.
-</p><p>
-<code>make_unique</code> is not included, although <code>unique_ptr</code> is included.  <code>make_unique</code> has a dependency on heap management functionality, and can throw on heap exhaustion.
-</p><p>
-<code>seed_seq</code> uses the heap.  Users can create their own classes satisfying the seed sequence requirements if they wish to use the Sseq constructors on the engine templates.
-</p><p>
-<code>shuffle_order_engine</code> doesn't have floating point in its interface, but the algorithm in the standard uses math on the real numbers, which is typically translated into code as floating point.  <code>knuth_b</code> is just a convenience typedef on <code>shuffle_order_engine</code>.  <code>shuffle_order_engine</code> can be added if an efficient non-floating point implementation of the algorithm is discovered.
 </p>
 <h2>Potential removals</h2>
 Here are some things that I am currently requiring, but could be convinced to remove.
 <ul><li><code>&lt;cwchar&gt;</code></li></ul>
-The <code>&lt;cwchar&gt;</code> functions are implementable for freestanding environments, but infrequently used for systems programming.  They do not exist in freestanding C11 implementations.
-<ul><li>Insert iterators</li></ul>
-<code>back_insert_iterator</code>, <code>front_insert_iterator</code>, and <code>insert_iterator</code> don't directly allocate memory, but their typical usage with standard containers does allocate memory.  This paper doesn't add any standard containers that can be used with the insert iterators.  It is also unclear how a user would signal an insertion failure.  Regardless, the iterators could be used with a user's (or future standard) <code>fixed_capacity_vector</code>.
-<ul><li><code>visit</code></li></ul>
-<code>visit</code> only throws when the <code>variant</code> is valueless.  If exceptions are disabled, the <code>variant</code> will always have a value.  Since the standard doesn't acknowledge exceptions being disabled, we include the (hopefully) dead <code>bad_variant_access</code> class.
-<ul><li><code>unique_ptr</code></li></ul>
-<code>unique_ptr</code> is generally used for heap management, but is occasionally used as a makeshift RAII object for other resources.  In the Jacksonville 2018 wg21 meeting, there was a strong interest in providing <code>unique_ptr</code>.
-<ul><li><code>default_delete</code></li></ul>
-<code>default_delete</code> looks like it has a dependency on the heap, due to its use of the <code>delete</code> operator.  <code>default_delete</code> only ends up depending on the heap if the templated type would depend on the heap for <code>new</code> and <code>delete</code> though.  A class with a custom, non-throwing <code>operator new</code> and <code>operator delete</code> will work just fine without pulling in the heap machinery.<br/>
-Pulling in <code>default_delete</code> also keeps us from forking the definition of <code>unique_ptr</code>.
-<ul><li>Partial classes</li></ul>
-<code>array</code>, <code>bitset</code>, <code>optional</code>, <code>string_view</code>, and <code>variant</code> all have functions that throw.  These functions aren't critical to the use of the class.  The exceptions that <code>array</code>, <code>bitset</code>, and <code>string_view</code> throw are doubly bad, as those exceptions require <code>std::string</code>.  These headers and classes can be omitted if the committee strongly objects to marking a class partially freestanding.
+The <code>&lt;cwchar&gt;</code> functions are implementable for freestanding environments.
+The Microsoft and EFI ecosystems (EFI was the successor to BIOS and the predecessor to UEFI) use wchar_t extensively.
 
 <h2>Potential additions</h2>
+TODO
 Here are some things that I am not currently requiring, but could be convinced to add.
 <ul><li><code>complex&lt;integer&gt;</code></li></ul>
 I currently omit the <code>complex</code> class entirely, but in theory, the integer version of <code>complex</code> are fine.  I am unsure how many of the associated functions are implementable without floating point access though.  I do not believe that <code>complex</code> for integer types is a widely used class.
