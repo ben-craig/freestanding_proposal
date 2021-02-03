@@ -402,9 +402,69 @@ The C and C++ standard libraries have many generally useful facilities that syst
 By requiring those functions to be present in freestanding implementations, we make it possible to make higher level programs both easier to write, and portable.
 Currently, portable programs are required to either sacrifice portability, or provide look-alike implementations.
 </p>
+
 <h1>Current State</h1>
+<h2>C</h2>
 <p>
+A freestanding C implementation is required to provide the entirety of the following headers:
+<ul>
+<li><code>&lt;float.h&gt;</code></li>
+<li><code>&lt;iso646.h&gt;</code></li>
+<li><code>&lt;limits.h&gt;</code></li>
+<li><code>&lt;stdalign.h&gt;</code></li>
+<li><code>&lt;stdarg.h&gt;</code></li>
+<li><code>&lt;stdbool.h&gt;</code></li>
+<li><code>&lt;stddef.h&gt;</code></li>
+<li><code>&lt;stdint.h&gt;</code></li>
+<li><code>&lt;stdnoreturn.h&gt;</code></li>
+</ul>
+</p><p>
+Some additional features are required if the implementation defines the <code>__STDC_IEC_60559_BFP__</code> (binary floating point) macro or the <code>__STDC_IEC_60559_DFP__</code> (decimal floating point) macro.
+This includes parts of <code>&lt;fenv.h&gt;</code>, <code>&lt;math.h&gt;</code>, and <code>&lt;stdlib.h&gt;</code>.
+</p><p>
+The entire core language is required.
+This includes <code>_Thread_local</code>, which requires operating system interaction on multi-threaded systems.
 </p>
+
+<h2>C++</h2>
+<p>
+A freestanding C++ implementation is required to provide the entirety of the following headers:
+<ul>
+<li><code>&lt;cstddef&gt;</code></li>
+<li><code>&lt;cfloat&gt;</code></li>
+<li><code>&lt;climits&gt;</code></li>
+<li><code>&lt;limits&gt;</code></li>
+<li><code>&lt;version&gt;</code></li>
+<li><code>&lt;cstdint&gt;</code></li>
+<li><code>&lt;new&gt;</code></li>
+<li><code>&lt;typeinfo&gt;</code></li>
+<li><code>&lt;source_location&gt;</code></li>
+<li><code>&lt;exception&gt;</code></li>
+<li><code>&lt;initializer_list&gt;</code></li>
+<li><code>&lt;compare&gt;</code></li>
+<li><code>&lt;coroutine&gt;</code></li>
+<li><code>&lt;cstdarg&gt;</code></li>
+<li><code>&lt;concepts&gt;</code></li>
+<li><code>&lt;type_traits&gt;</code></li>
+<li><code>&lt;bit&gt;</code></li>
+</ul>
+</p><p>
+Almost all of <code>&lt;atomic&gt;</code> is required.
+<code>&lt;cstdlib&gt;</code> must provide <code>abort</code>, <code>atexit</code>, <code>at_quick_exit</code>, <code>exit</code>, and <code>quick_exit</code>.
+</p><p>
+The entire core language is required.
+For C++, this is much more onerous than for C, as the C++ core language includes exceptions, RTTI, thread-safe static initialization, and heap allocations.
+</p><p>
+The in-flight paper P2013 makes it such that the allocating forms of <code>::operator new</code> are no longer required.
+This requirement often meant that the underlying C implementation of a freestanding C++ library needed to have <code>malloc</code> and <code>free</code> implementations.
+</p><p>
+The in-flight paper P1642 adds many C++ specific facilities, but it also adds <code>_Exit</code>.
+The specification for <code>quick_exit</code> specifically calls out <code>_Exit</code>, so this omission is a specification bug.
+</p><p>
+A freestanding C++ implementation is mostly a superset of a freestanding C implementation, even in the "C" parts of C++.
+This means that a freestanding C++ implementation can not generally be built on top of a minimal freestanding C implementation.
+</p>
+
 <h1>Scope</h1>
 <p>
 The current scope of this proposal is limited to the freestanding standard library available to micro-controller, kernel, and GPU development.
@@ -613,14 +673,13 @@ The <code>&lt;cwchar&gt;</code> functions are implementable for freestanding env
 The Microsoft and EFI ecosystems (EFI was the successor to BIOS and the predecessor to UEFI) use wchar_t extensively.
 
 <h2>Potential additions</h2>
-TODO
 Here are some things that I am not currently requiring, but could be convinced to add.
-<ul><li><code>complex&lt;integer&gt;</code></li></ul>
-I currently omit the <code>complex</code> class entirely, but in theory, the integer version of <code>complex</code> are fine.  I am unsure how many of the associated functions are implementable without floating point access though.  I do not believe that <code>complex</code> for integer types is a widely used class.
 <ul><li>Floating point support</li></ul>
 Perhaps we don't worry about library portability in all cases.  Just because kernel modes can't easily use floating point doesn't mean that we should deny floating point to the micro-controller space.  Do note that most of <code>&lt;cmath&gt;</code> has a dependency on <code>errno</code>.
 <ul><li><code>errno</code> and string functions like <code>strtol</code></li></ul>
-While <code>errno</code> is global data, it isn't much global data.  Thread safety is a concern for those platforms that have threading, but don't have thread-local storage.
+While <code>errno</code> is global data, it isn't much global data.
+Thread safety is a concern for those platforms that have threading, but don't have thread-local storage.
+Environments that don't support arbitrary thread local data could special case <code>errno</code>.
 <h1>Feature Test Macros</h1>
 <p>
 A freestanding implementation that provides support for this paper shall define the following feature test macro.
