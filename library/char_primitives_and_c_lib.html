@@ -387,7 +387,7 @@ of an operating system)[...]</blockquote>
 
 <p>
 The main people served by the current C++ freestanding definition are people writing their own hosted C++ standard library to sit atop the compiler author's freestanding implementation (i.e. the STLport use case).
-The C++ freestanding portions contain all the functions and types known to the compiler that can't easily be authored in a cross-compiler manner.
+The C++ freestanding portions contain most of the functions and types known to the compiler that can't easily be authored in a cross-compiler manner.
 </p><p>
 The current set of freestanding libraries provides too little to kernel, micro-controller, and GPU programmers.
 Why should a systems programmer need to rewrite <code>std::from_chars</code> or <code>memcpy()</code>?
@@ -400,10 +400,12 @@ Language features requiring space overhead or OS support will remain intact.
 <p>
 The C and C++ standard libraries have many generally useful facilities that systems programmers could benefit from.
 By requiring those functions to be present in freestanding implementations, we make it possible to make higher level programs both easier to write, and portable.
-Currently, portable programs are required to either sacrifice portability, or provide look-alike implementations.
+Currently, programs that would like to be portable are required to either rely on implementation defined extensions, or provide look-alike implementations.
 </p>
 
 <h1>Current State</h1>
+The requirements on freestanding implementations have diverged over time between C and C++.
+
 <h2>C</h2>
 <p>
 A freestanding C implementation is required to provide the entirety of the following headers:
@@ -455,14 +457,15 @@ Almost all of <code>&lt;atomic&gt;</code> is required.
 The entire core language is required.
 For C++, this is much more onerous than for C, as the C++ core language includes exceptions, RTTI, thread-safe static initialization, and heap allocations.
 </p><p>
-The in-flight paper P2013 makes it such that the allocating forms of <code>::operator new</code> are no longer required.
+The in-flight paper <a href="https://wg21.link/P2013">P2013</a> makes it such that the allocating forms of <code>::operator new</code> are no longer required.
 This requirement often meant that the underlying C implementation of a freestanding C++ library needed to have <code>malloc</code> and <code>free</code> implementations.
 </p><p>
-The in-flight paper P1642 adds many C++ specific facilities, but it also adds <code>_Exit</code>.
+The in-flight paper <a href="https://wg21.link/P1642">P1642</a> adds many C++ specific facilities, but it also adds <code>_Exit</code>.
 The specification for <code>quick_exit</code> specifically calls out <code>_Exit</code>, so this omission is a specification bug.
 </p><p>
 A freestanding C++ implementation is mostly a superset of a freestanding C implementation, even in the "C" parts of C++.
 This means that a freestanding C++ implementation can not generally be built on top of a minimal freestanding C implementation.
+Either the C++ implementation must provide some of the C parts, or the C++ implementation will require a C implementation that provides more than the minimum.
 </p>
 
 <h1>Scope</h1>
@@ -507,7 +510,7 @@ In practice, most C libraries are not minimal freestanding C17 libraries.
 The optimized versions of the <code>&lt;cstring&gt;</code> and <code>&lt;cwchar&gt;</code> functions will often be the same for both hosted and freestanding environments.
 The main way in which a hosted implementation of (for example) <code>memcpy</code> could differ between hosted and freestanding is that some freestanding implementations (e.g. kernel implementations) would not want <code>memcpy</code> to use vector / floating point registers.
 </p><p>
-My expectation is that no new freestanding library will be authored as a result of this paper.
+My expectation is that no new C++ freestanding library will be authored as a result of this paper.
 Instead hosted libraries will be stripped down through some feature toggle mechanism to become freestanding.
 
 
@@ -543,19 +546,26 @@ Thread-local storage requires extra code in the operating system for support.
 In addition, if one thread uses thread-local storage, that cost is imposed on other threads.
 Note that there are common environments (e.g. the kernels of all major desktop operating systems) that support multiple threads, but do not support arbitrary thread local variables.
 <h2>The heap</h2>
+<p>
 The heap is a big set of global state.  In addition, C++ heap exhaustion is typically expressed via exception.  Some micro-controller systems don't have a heap.  In kernel environments, there is typically a heap, but there isn't a reasonable choice of <i>which</i> heap to use as the default.  In the Windows kernel, the two best candidates for a default heap are the paged pool (plentiful available memory, but unsafe to use in many contexts), and the non-paged pool (safe to use, but limited capacity).  The C++ implementation in the Windows kernel forces users to implement their own global <code>operator new</code> to make this decision.
+</p><p>
+<a href="https://wg21.link/P2013">P2013</a> allows freestanding C++ implementations to omit the global allocating <code>::operator new</code> implementations by default.
+</p>
 <h2>Floating point</h2>
 <p>
-Many micro-controller systems don't have floating point hardware.  Software emulated floating point can drag in large runtimes that are difficult to optimize away.
+Many micro-controller systems don't have floating point hardware.
+Software emulated floating point can drag in large runtimes that are difficult to optimize away.
 </p><p>
-Most operating systems speed up system calls by not saving and restoring floating point state.  That means that kernel uses of floating point operations require extra care to avoid corrupting user state.
+Most operating systems speed up system calls by not saving and restoring floating point state.
+That means that kernel uses of floating point operations require extra care to avoid corrupting user state.
 </p><p>
 In C, the dynamic floating-point environment has thread storage duration.
 This drags in the same set of problems that Thread-local storage has.
 </p>
 <h2>Functions requiring global or thread-local storage</h2>
 <p>
-These functions have been omitted or removed from the freestanding library.  Examples are the locale aware functions and the C random number functions.
+These functions are not being added to the freestanding library.
+Examples are the locale aware functions, the C random number functions, and functions relying on <code>errno</code>.
 </p>
 <h1>Technical Specifications</h1>
 <h2>Partial headers newly required for freestanding implementations</h2>
@@ -662,7 +672,9 @@ Many string functions (<code>strtol</code> and family) rely on <code>errno</code
 </p><p>
 <code>assert</code> is not included as it requires a stderror stream.
 </p><p>
-<code>_Exit</code> is not included as I do not wish to add more termination functions.  I hope to remove most of them in the future.  Program termination requires involvement from the operating system / environment.
+<code>_Exit</code> is not included as I do not wish to add more termination functions.
+I hope to remove most of them in the future.
+Program termination requires involvement from the operating system / environment.
 </p><p>
 <code>&lt;cctype&gt;</code> and <code>&lt;cwctype&gt;</code> rely heavily on global locale data.
 </p>
@@ -675,14 +687,19 @@ The Microsoft and EFI ecosystems (EFI was the successor to BIOS and the predeces
 <h2>Potential additions</h2>
 Here are some things that I am not currently requiring, but could be convinced to add.
 <ul><li>Floating point support</li></ul>
-Perhaps we don't worry about library portability in all cases.  Just because kernel modes can't easily use floating point doesn't mean that we should deny floating point to the micro-controller space.  Do note that most of <code>&lt;cmath&gt;</code> has a dependency on <code>errno</code>.
+Perhaps we don't worry about library portability in all cases.
+Just because kernel modes can't easily use floating point doesn't mean that we should deny floating point to the micro-controller space.
+Do note that most of <code>&lt;cmath&gt;</code> has a dependency on <code>errno</code>.
+
 <ul><li><code>errno</code> and string functions like <code>strtol</code></li></ul>
 While <code>errno</code> is global data, it isn't much global data.
 Thread safety is a concern for those platforms that have threading, but don't have thread-local storage.
 Environments that don't support arbitrary thread local data could special case <code>errno</code>.
+
 <h1>Feature Test Macros</h1>
 <p>
 A freestanding implementation that provides support for this paper shall define the following feature test macro.
+TODO: make this mesh with the feature test macro paper, probably via per header macros.
 </p>
 <table border="1">
     <thead><tr>
@@ -705,6 +722,7 @@ The pre-existing feature macros were not provided on freestanding / hosted bound
 </p>
 <h1>Wording</h1>
 <p>
+TODO: REBASE, consolidate with P1642.
 Wording is based off of an intermediate version of Working Draft, Standard for Programming Language C++, from July 26, 2018.
 </p>
 Add a new subclause [freestanding.membership], under [conventions] and after [objects.within.classes]:
@@ -3070,4 +3088,3 @@ CppCon talks on getting C++ support in various unusual environments:
 </p>
 </body>
 </html>
-
