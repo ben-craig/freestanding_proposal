@@ -531,6 +531,8 @@ Regardless, if a function or class is <code>constexpr</code> or <code>noexcept</
 </p><p>
 In the future, it may make sense to allow all <code>constexpr</code> functions into freestanding, so long as they are used in a <code>constexpr</code> context and not invoked at runtime.
 </p>
+<h2>Split overload sets</h2>
+TODO
 <h2>Exceptions</h2>
 <p>
 Exceptions either require external jump tables or extra bookkeeping instructions.  This consumes program storage space.
@@ -698,220 +700,127 @@ Environments that don't support arbitrary thread local data could special case <
 
 <h1>Feature Test Macros</h1>
 <p>
-A freestanding implementation that provides support for this paper shall define the following feature test macro.
-TODO: make this mesh with the feature test macro paper, probably via per header macros.
+A freestanding implementation that provides support for this paper shall define the following feature test macros:
 </p>
 <table border="1">
     <thead><tr>
         <th>Name</th>
-        <th>Value</th>
         <th>Header</th>
+        <th>Notes</th>
     </tr></thead>
     <tbody><tr>
-        <td><code>__cpp_freestanding_library</code></td>
-        <td><var>201803</var></td>
-        <td><code>&lt;version&gt;<code></td>
+        <td><code>__cpp_lib_freestanding_char_traits</code></td>
+        <td><code>&lt;string&gt;</code></td>
+        <td></td>
+    </tr></tbody>
+    <tbody><tr>
+        <td><code>__cpp_lib_freestanding_charconv</code></td>
+        <td><code>&lt;charconv&gt;</code></td>
+        <td></td>
+    </tr></tbody>
+    <tbody><tr>
+        <td><code>__cpp_lib_freestanding_cinttypes</code></td>
+        <td><code>&lt;cinttypes&gt;</code></td>
+        <td></td>
+    </tr></tbody>
+    <tbody><tr>
+        <td><code>__cpp_lib_freestanding_cstdlib</code></td>
+        <td><code>&lt;cstdlib&gt;</code> and <code>&lt;cmath&gt;</code></td>
+        <td>The only freestanding parts of <code>&lt;cmath&gt;</code> are <code>abs</code> overloads that are also covered in <code>&lt;cstdlib&gt;</code></td>
+    </tr></tbody>
+    <tbody><tr>
+        <td><code>__cpp_lib_freestanding_cstring</code></td>
+        <td><code>&lt;cstring&gt;</code></td>
+        <td></td>
+    </tr></tbody>
+    <tbody><tr>
+        <td><code>__cpp_lib_freestanding_cwchar</code></td>
+        <td><code>&lt;cwchar&gt;</code></td>
+        <td></td>
+    </tr></tbody>
+    <tbody><tr>
+        <td><code>__cpp_lib_freestanding_errc</code></td>
+        <td><code>&lt;cerrno&gt;</code> and <code>&lt;system_error&gt;</code></td>
+        <td>Covers <code>errc</code> and <code>&lt;cerrno&gt;</code> #defines</td>
     </tr></tbody>
 </table>
 <p>
-The <code>__cpp_freestanding_library</code> macro is useful for detecting the absence of throwing facilities.  A user could conditionally use a hand-rolled implementation in freestanding mode or the standard implementation in hosted mode.
-</p><p>
-The library feature macros have been partitioned into those that must be present in both freestanding and hosted mode, and those that only need to be present in hosted mode.  If the implementation provides more than the minimal freestanding subset, then the implementation shall also provide the corresponding feature test macros.
-</p><p>
-The pre-existing feature macros were not provided on freestanding / hosted boundaries.  As a result, a choice has to be made about feature test macros that contain both freestanding and non-freestanding code (e.g. <code>__cpp_lib_chrono</code>, <code>__cpp_lib_boyer_moore_searcher</code>, and others).  This revision includes feature test macros in freestanding if any of the feature is included in freestanding.  Users that need to detect the non-freestanding parts will also need to test against <code>__cpp_freestanding_library</code>.
+The <code>above</code> macros are useful for detecting the presence of various facilities.
+The user can provide a hand-rolled replacement on old or non-conforming implementations, while using the toolchain's facilities when available.
+These macros follow the policies proposed in <a href="https://wg21.link/P2198">P2198: Freestanding Feature-Test Macros and Implementation-Defined Extensions</a>.
 </p>
-<h1>Wording</h1>
+<h1>C Wording</h1>
+TODO
+<h1>C++ Wording</h1>
 <p>
-TODO: REBASE, consolidate with P1642.
-Wording is based off of an intermediate version of Working Draft, Standard for Programming Language C++, from July 26, 2018.
+Wording is based off <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/n4878.pdf">WG21 N4878</a> from 2020-12-15.
+This paper also assumes that <a href="https://wg21.link/p1642">P1642</a> and <a href="https://wg21.link/P2198">P2198</a> have been accepted and applied.
 </p>
-Add a new subclause [freestanding.membership], under [conventions] and after [objects.within.classes]:
-<blockquote class="stdins">
-<h4 ><a class='secnum' style='min-width:118pt'>?.?.?.?</a> Freestanding membership <a class='abbr_ref'>[freestanding.membership]</a></h4>
-<div class='para'>
-    <div class='marginalizedparent'><a class='marginalized'>1</a></div>
-    <div class='sentence'>The freestanding implementation has several declarations and macro definitions that shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
-    <div class='sentence'>In the associated header synopsis for such declarations and macro definitions, the items shall be followed with a comment that ends with <span class='textit'>freestanding</span>, as in:</div>
-<pre class='codeblock'>
-#define E2BIG <span class='textit'><span class='texttt'>see below</span></span> <span class='comment'>// <span class='textit'>freestanding</span></span>
-</pre>
-</div>
-<div class='para'>
-    <div class='marginalizedparent'><a class='marginalized'>2</a></div>
-    <div class='sentence'>The freestanding implementation has several headers that shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
-    <div class='sentence'>The synopsis for these headers shall start with a comment that ends with <span class='textit'>freestanding</span>, as in:</div>
-<pre class='codeblock'>
-<span class='comment'>// <span class='textit'>freestanding</span></span>
-namespace std {
-</pre>
-    <div class='sentence'>Individual declarations and macro definitions in such a header shall not be followed with a comment that ends with <span class='textit'>freestanding</span>.</div>
-</div>
-<div class='para'>
-    <div class='marginalizedparent'><a class='marginalized'>3</a></div>
-    <div class='sentence'>Some classes and class templates are required to be partially implemented in a freestanding implementation.</div>
-    <div class='sentence'>Such entities are permitted to be fully implemented in a freestanding implementation.</div>
-    <div class='sentence'>In the associated header synopsis for such declarations, the declarations shall be followed with a comment that ends with <span class='textit'>freestanding, partial</span>, as in:</div>
-<pre class='codeblock'>
-  template&lt;class T&gt;
-    class optional; <span class='comment'>// <span class='textit'>freestanding, partial</span></span>
-</pre>
-    <div class='sentence'>Some member functions in partially implemented entities are not required to be present in a freestanding implementation.</div>
-    <div class='sentence'>In the associated class or class template synopsis for such member functions, the declarations shall be followed by a comment that ends with <span class='textit'>freestanding, omit</span>, as in:</div>
-<pre class='codeblock'>
-    constexpr const T&amp; value() const&amp;; <span class='comment'>// <span class='textit'>freestanding, omit</span></span>
-</pre>
-    <div class='sentence'>All declarations in the partially implemented class or class template that are not followed by a <span class='textit'>freestanding, omit</span> comment shall meet the same requirements as for a hosted implementation unless otherwise specified.</div>
-</div>
-<div class='para'>
-    <div class='marginalizedparent'><a class='marginalized'>4</a></div>
-    <div class='sentence'>Deduction guides for class templates that are implemented (partially or fully) in a freestanding implementation shall be implemented in a freestanding implementation.</div>
-    <div class='sentence'>The containing namespace for each non-namespace declaration that is implemented (partially or fully) in a freestanding implementation shall be implemented in a freestanding implementation.</div>
-</div>
-</blockquote>
+<h2>Changes in <a href="https://wg21.link/compliance">[compliance]</a></h2>
+TODO TODO
+[cstdlib.syn] C standard library <cstdlib>
 
-Rework Table 22 referenced from [compliance]:
-<del>
-<div class='numberedTable'>Table 22 - C++ headers for freestanding implementations<br><table >
-<tr class='rowsep'>
-  <td colspan='2' class='center'><div id='2.sentence-3' class='sentence'><b>Subclause</b></div></td>
-  <td class='left'><div id='2.sentence-4' class='sentence'><b>Header(s)</b></div></td>
+Add new rows to <a href="https://wg21.link/compliance#tab:headers.cpp.fs">[tab:headers.cpp.fs]</a>:</p>
+<table style="border: 1px solid black">
+<thead>
+<tr style="border: 1px solid black">
+<th colspan="2" style="text-align: center">Subclause</th><th style="text-align: center">Header(s)</th>
 </tr>
-<tr class='capsep'>
-  <td class='left'><div id='2.sentence-5' class='sentence'>[support.types]</div></td>
-  <td class='left'><div id='2.sentence-6' class='sentence'>Types</div></td>
-  <td class='left'><div id='2.sentence-7' class='sentence'><span class='texttt'>&lt;cstddef&gt;</span></div></td>
+</thead>
+<tbody>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
 </tr>
-<tr class='rowsep'>
-  <td class='left'><div id='2.sentence-8' class='sentence'>[support.limits]</div></td>
-  <td class='left'><div id='2.sentence-9' class='sentence'>Implementation properties</div></td>
-  <td class='left'><div id='2.sentence-10' class='sentence'><span class='texttt'>&lt;cfloat&gt;</span> <span class='texttt'>&lt;limits&gt;</span> <span class='texttt'>&lt;climits&gt;</span> <span class='texttt'>&lt;version&gt;</span></div></td>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/errno">[errno]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>Error numbers</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;cerrno&gt;</tt></ins></td>
 </tr>
-<tr class='rowsep'>
-  <td class='left'><div id='2.sentence-11' class='sentence'>[cstdint]</div></td>
-  <td class='left'><div id='2.sentence-12' class='sentence'>Integer types</div></td>
-  <td class='left'><div id='2.sentence-13' class='sentence'><span class='texttt'>&lt;cstdint&gt;</span></div></td>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/syserr">[syserr]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>System error support</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;system_error&gt;</tt></ins></td>
 </tr>
-<tr class='rowsep'>
-  <td class='left'><div id='2.sentence-14' class='sentence'>[support.start.term]</div></td>
-  <td class='left'><div id='2.sentence-15' class='sentence'>Start and termination</div></td>
-  <td class='left'><div id='2.sentence-16' class='sentence'><span class='texttt'>&lt;cstdlib&gt;</span></div></td>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/charconv">[charconv]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>Primitive numeric conversions</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;charconv&gt;</tt></ins></td>
 </tr>
-<tr class='rowsep'>
-  <td class='left'><div id='2.sentence-17' class='sentence'>[support.dynamic]</div></td>
-  <td class='left'><div id='2.sentence-18' class='sentence'>Dynamic memory management</div></td>
-  <td class='left'><div id='2.sentence-19' class='sentence'><span class='texttt'>&lt;new&gt;</span></div></td>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/string.classes">[string.classes]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>String classes</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;string&gt;</tt></ins></td>
 </tr>
-<tr class='rowsep'>
-  <td class='left'><div id='2.sentence-20' class='sentence'>[support.rtti]</div></td>
-  <td class='left'><div id='2.sentence-21' class='sentence'>Type identification</div></td>
-  <td class='left'><div id='2.sentence-22' class='sentence'><span class='texttt'>&lt;typeinfo&gt;</span></div></td>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/ratio">[ratio]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>Compile-time rational arithmetic</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;ratio&gt;</tt></ins></td>
 </tr>
-<tr class='rowsep'>
-  <td class='left'><div id='2.sentence-23' class='sentence'>[support.exception]</div></td>
-  <td class='left'><div id='2.sentence-24' class='sentence'>Exception handling</div></td>
-  <td class='left'><div id='2.sentence-25' class='sentence'><span class='texttt'>&lt;exception&gt;</span></div></td>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/c.strings">[c.strings]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>Null-terminated sequence utilities</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;cstring&gt;, &lt;cwchar&gt;</tt></ins></td>
 </tr>
-<tr class='rowsep'>
-  <td class='left'><div id='2.sentence-26' class='sentence'>[support.initlist]</div></td>
-  <td class='left'><div id='2.sentence-27' class='sentence'>Initializer lists</div></td>
-  <td class='left'><div id='2.sentence-28' class='sentence'><span class='texttt'>&lt;initializer_&shy;list&gt;</span></div></td>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/c.math">[c.math]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>Mathematical functions for floating-point types</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;cmath&gt;</tt></ins></td>
 </tr>
-<tr class='rowsep'>
-  <td class='left'><div id='2.sentence-29' class='sentence'>[support.runtime]</div></td>
-  <td class='left'><div id='2.sentence-30' class='sentence'>Other runtime support</div></td>
-  <td class='left'><div id='2.sentence-31' class='sentence'><span class='texttt'>&lt;cstdarg&gt;</span></div></td>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/c.files">[c.files]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>C library files</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;cinttypes&gt;</tt></ins></td>
 </tr>
-<tr class='rowsep'>
-  <td class='left'><div id='2.sentence-29' class='sentence'>[concepts]</div></td>
-  <td class='left'><div id='2.sentence-30' class='sentence'>Concepts library</div></td>
-  <td class='left'><div id='2.sentence-31' class='sentence'><span class='texttt'>&lt;concepts&gt;</span></div></td>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
 </tr>
-<tr class='rowsep'>
-  <td class='left'><div id='2.sentence-32' class='sentence'>[meta]</div></td>
-  <td class='left'><div id='2.sentence-33' class='sentence'>Type traits</div></td>
-  <td class='left'><div id='2.sentence-34' class='sentence'><span class='texttt'>&lt;type_&shy;traits&gt;</span></div></td>
-</tr>
-<tr class='rowsep'>
-  <td class='left'><div id='2.sentence-35' class='sentence'>[bit]</div></td>
-  <td class='left'><div id='2.sentence-36' class='sentence'>Bit manipulation</div></td>
-  <td class='left'><div id='2.sentence-37' class='sentence'><span class='texttt'>&lt;bit&gt;</span></div></td>
-</tr>
-<tr class='rowsep'>
-  <td class='left'><div id='2.sentence-38' class='sentence'>[atomics]</div></td>
-  <td class='left'><div id='2.sentence-39' class='sentence'>Atomics</div></td>
-  <td class='left'><div id='2.sentence-40' class='sentence'><span class='texttt'>&lt;atomic&gt;</span></div></td>
-</tr>
-</table></div></div>
-</del>
-<ins>
-<div class='numberedTable'>Table 21 - C++ headers for freestanding implementations<br><table >
-<tr class='rowsep'>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;algorithm&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;cmath&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;exception&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;ratio&gt;</span></div></td>
-</tr>
-<tr>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;array&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;compare&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;functional&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;span&gt;</span></div></td>
-</tr>
-<tr>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;atomic&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;concepts&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;initializer_list&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;string&gt;</span></div></td>
-</tr>
-<tr>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;bit&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;contract&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;iterator&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;string_view&gt;</span></div></td>
-</tr>
-<tr>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;bitset&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;csetjmp&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;limits&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;system_error&gt;</span></div></td>
-</tr>
-<tr>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;cerrno&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;cstdarg&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;memory&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;tuple&gt;</span></div></td>
-</tr>
-<tr>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;cfloat&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;cstddef&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;new&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;type_traits&gt;</span></div></td>
-</tr>
-<tr>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;charconv&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;cstdint&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;numeric&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;typeinfo&gt;</span></div></td>
-</tr>
-<tr>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;chrono&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;cstdlib&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;optional&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;utility&gt;</span></div></td>
-</tr>
-<tr>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;cinttypes&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;cstring&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;random&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;variant&gt;</span></div></td>
-</tr>
-<tr>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;climits&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;cwchar&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;ranges&gt;</span></div></td>
-    <td class='left'><div class='sentence'><span class='texttt'>&lt;version&gt;</span></div></td>
-</tr>
-</table></div></ins>
+</tbody>
+</table>
+
 Change in [compliance] paragraph 3:
 <blockquote class="std">
 <div class='para'>
