@@ -422,7 +422,7 @@ A freestanding C implementation is required to provide the entirety of the follo
 </ul>
 </p><p>
 Some additional features are required if the implementation defines the <code>__STDC_IEC_60559_BFP__</code> (binary floating point) macro or the <code>__STDC_IEC_60559_DFP__</code> (decimal floating point) macro.
-This includes parts of <code>&lt;fenv.h&gt;</code>, <code>&lt;math.h&gt;</code>, and <code>&lt;stdlib.h&gt;</code>.
+This includes <code>&lt;fenv.h&gt;</code>, <code>&lt;math.h&gt;</code>, and parts of <code>&lt;stdlib.h&gt;</code>.  Such implementations indirectly require locale support, as the <code>&lt;stdlib.h&gt;</code> numeric conversion functions are implemented in terms of <code>isspace</code>.
 </p><p>
 The entire core language is required.
 This includes <code>_Thread_local</code>, which requires operating system interaction on multi-threaded systems.
@@ -451,7 +451,7 @@ A freestanding C++ implementation is required to provide the entirety of the fol
 <li><code>&lt;bit&gt;</code></li>
 </ul>
 </p><p>
-Almost all of <code>&lt;atomic&gt;</code> is required.
+Almost all of <code>&lt;atomic&gt;</code> is required (C does not require <code>&lt;stdatomic.h&gt;</code> in freestanding implementations).
 <code>&lt;cstdlib&gt;</code> must provide <code>abort</code>, <code>atexit</code>, <code>at_quick_exit</code>, <code>exit</code>, and <code>quick_exit</code>.
 </p><p>
 The entire core language is required.
@@ -476,7 +476,10 @@ This paper is currently concerned with the divisions of headers and library func
 </p>
 <h1>Impact on the standards</h1>
 <p>
-In the C standard library, a new editorial strategy will be needed to mark facilities as freestanding.
+In the C standard library, a new editorial strategy will be used to mark facilities as freestanding.
+Prose in the standard will declare various facilities as <i>freestanding library facilities</i>.
+Only the primary definition will be declared this way, so we won't be duplicating this prose multiple times for the same facility (e.g. <code>NULL</code>, <code>size_t</code>, <code>wchar_t</code>, etc...).
+</p><p>
 Prior to this paper, the required contents of the C freestanding library were called out by header, and (conditionally) by clause in the case of <code>&lt;stdlib.h&gt;</code> numeric conversion functions in 7.22.1.
 This editorial strategy is cumbersome for partially required headers.
 </p><p>
@@ -532,7 +535,20 @@ Regardless, if a function or class is <code>constexpr</code> or <code>noexcept</
 In the future, it may make sense to allow all <code>constexpr</code> functions into freestanding, so long as they are used in a <code>constexpr</code> context and not invoked at runtime.
 </p>
 <h2>Split overload sets</h2>
-TODO
+<p>
+In C++, <code>to_chars</code>, <code>from_chars</code>, and <code>abs</code> are overloaded on floating point and integral types.
+This paper is making the integral overloads required in freestanding implementations.
+</p><p>
+It would be undesirable for the behavior of a library or program to silently change when porting it from a freestanding implementation to a hosted implementation though.
+That could easily happen with this overload set if a user called <code>abs(0.5)</code>.
+If the floating point overloads were merely omitted, then <code>abs(0.5)</code> would call one of the integral overloads on a freestanding implementation.
+</p><p>
+To avoid this trap, the floating point overloads will be marked as <i>//freestanding delete</i>.
+Freestanding implementations can either <code>=delete</code> the function, or provide an implementation of the function that meets the hosted requirements.
+This will cause accidental uses of these functions to fail to compile, as <code>=delete</code> functions participate in overload resolution.
+</p><p>
+Note that split overload set problems already exist in the C++ standard.  A translation unit that includes <code>&lt;cinttypes&gt;</code> and calls <code>abs(0.5)</code> may end up resolving the overload to <code>abs(intmax_t)</code>.
+</p>
 <h2>Exceptions</h2>
 <p>
 Exceptions either require external jump tables or extra bookkeeping instructions.  This consumes program storage space.
@@ -606,6 +622,7 @@ Portions of <code>&lt;charconv&gt;</code>.
 The <code>char_traits</code> class from <code>&lt;string&gt;</code>.
 </p><p>
 Portions of <code>&lt;cstring&gt;</code>.
+</p>
 <ul>
 <code><li>memcpy</li>
 <li>memmove</li>
@@ -626,7 +643,11 @@ Portions of <code>&lt;cstring&gt;</code>.
 <li>memset</li>
 <li>strlen</li>
 </code></ul>
+<p>
+On C, include <code>memccpy</code> in <code>&lt;string.h&gt;</code>, in addition to what is mentioned above for <code>&lt;cstring&gt;</code>.
+</p><p>
 Portions of <code>&lt;cwchar&gt;</code>.
+</p>
 <ul>
 <code><li>wcscpy</li>
 <li>wcsncpy</li>
@@ -698,6 +719,11 @@ While <code>errno</code> is global data, it isn't much global data.
 Thread safety is a concern for those platforms that have threading, but don't have thread-local storage.
 Environments that don't support arbitrary thread local data could special case <code>errno</code>.
 
+<ul><li>C <code>&lt;stdatomic.h&gt;</code></li></ul>
+C doesn't currently require <code>&lt;stdatomic.h&gt;</code> in freestanding implementations, but C++ requires <code>std::atomic</code>.
+I don't currently recommend adding <code>&lt;stdatomic.h&gt;</code> to freestanding C implementations, as that would also require dealing with non-lock-free atomics.
+If others feel strongly about unifying this aspect of C and C++ freestanding implementations, then the facilities could be added.
+
 <h1>Feature Test Macros</h1>
 <p>
 A freestanding implementation that provides support for this paper shall define the following feature test macros:
@@ -750,14 +776,229 @@ The user can provide a hand-rolled replacement on old or non-conforming implemen
 These macros follow the policies proposed in <a href="https://wg21.link/P2198">P2198: Freestanding Feature-Test Macros and Implementation-Defined Extensions</a>.
 </p>
 <h1>C Wording</h1>
-TODO
+Wording is based off of WG14's N2596.
+<h2>Change in 4. Conformance</h2>
+Change paragraph 6 as follows:
+<blockquote class="std">
+The two forms of conforming implementation are hosted and freestanding.
+A conforming hosted implementation shall accept any strictly conforming program.
+A conforming freestanding implementation shall accept any strictly conforming program in which the use of the features specified in the library clause (Clause 7) is confined to
+    <del>the contents of the standard headers  <code>&lt;float.h&gt;</code>, <code>&lt;iso646.h&gt;</code>,
+         <code>&lt;limits.h&gt;</code>, <code>&lt;stdalign.h&gt;</code>,
+         <code>&lt;stdarg.h&gt;</code>, <code>&lt;stdbool.h&gt;</code>,
+         <code>&lt;stddef.h&gt;</code>, <code>&lt;stdint.h&gt;</code>,
+        and <code>&lt;stdnoreturn.h&gt;</code>.
+    </del>
+<ins>freestanding library facilities.
+The strictly conforming programs that shall be accepted by a conforming freestanding implementation may include any standard library header that contains freestanding library facilities.</ins>
+A conforming implementation may have extensions (including additional library functions), provided they do not alter the behavior of any strictly conforming program.
+<ins> All identifiers that are reserved when a standard header is included in a hosted implementation are reserved when it is included in a freestanding implementation.<ins>
+</blockquote>
+
+Change paragraph 7 as follows:
+<blockquote class="std">
+The strictly conforming programs that shall be accepted by a conforming freestanding implementation that defines <code>__STDC_IEC_60559_BFP__</code> or <code>__STDC_IEC_60559_DFP__</code> may also use features in
+the contents of the standard headers <code>&lt;fenv.h&gt;</code> and <code>&lt;math.h&gt;</code> and the numeric conversion functions
+(7.22.1) of the standard header <code>&lt;stdlib.h&gt;</code>.
+<del>All identifiers that are reserved when <code>&lt;stdlib.h&gt;</code> is included in a hosted implementation are reserved when it is included in a freestanding implementation.</del>
+</blockquote>
+
+<h2>Change in 7.5 Errors <code>&lt;errno.h&gt;</code></h2>
+Add a sentence to paragraph 2:
+<blockquote class="std">
+[...]or a program defines an identifier with the name <code>errno</code>, the behavior is undefined.
+<ins><code>EDOM</code>, <code>EILSEQ</code>, and <code>ERANGE</code> are freestanding library facilities.</ins>
+</blockquote>
+
+<h2>Change in 7.7 Characteristics of floating types <code>&lt;float.h&gt;</code></h2>
+Add a new paragraph:
+<blockquote class="stdins">
+The macros in <code>&lt;float.h&gt;</code> are freestanding library facilities.
+</blockquote>
+
+<h2>Change in 7.8.2.1 The <code>imaxabs</code> function</h2>
+Add a paragraph to the synopsis:
+<blockquote class="stdins">
+The <code>imaxabs</code> function is a freestanding library facility.
+</blockquote>
+
+<h2>Change in 7.8.2.2 The <code>imaxdiv</code> function</h2>
+Add a paragraph to the synopsis:
+<blockquote class="stdins">
+The <code>imaxdiv</code> function is a freestanding library facility.
+</blockquote>
+
+<h2>Change in 7.9 Alternative spellings <code>&lt;iso646.h&gt;</code></h2>
+Add a new paragraph:
+<blockquote class="stdins">
+The macros in <code>&lt;iso646.h&gt;</code> are freestanding library facilities.
+</blockquote>
+
+<h2>Change in 7.10 Sizes of integer types <code>&lt;limits.h&gt;</code></h2>
+Add a new paragraph:
+<blockquote class="stdins">
+The macros in <code>&lt;limits.h&gt;</code> are freestanding library facilities.
+</blockquote>
+
+<h2>Change in 7.15 Alignment <code>&lt;stdalign.h&gt;</code></h2>
+Add a new paragraph:
+<blockquote class="stdins">
+The macros in <code>&lt;stdalign.h&gt;</code> are freestanding library facilities.
+</blockquote>
+
+<h2>Change in 7.16 Variable arguments <code>&lt;stdarg.h&gt;</code></h2>
+Add a new paragraph:
+<blockquote class="stdins">
+The types and macros in <code>&lt;stdarg.h&gt;</code> are freestanding library facilities.
+</blockquote>
+
+<h2>Change in 7.18 Boolean type and values <code>&lt;stdbool.h&gt;</code></h2>
+Add a new paragraph:
+<blockquote class="stdins">
+The macros in <code>&lt;stdbool.h&gt;</code> are freestanding library facilities.
+</blockquote>
+
+<h2>Change in 7.19 Common definitions <code>&lt;stddef.h&gt;</code></h2>
+Add a new paragraph:
+<blockquote class="stdins">
+The types and macros in <code>&lt;stddef.h&gt;</code> are freestanding library facilities.
+</blockquote>
+
+<h2>Change in 7.20 Integer types <code>&lt;stdint.h&gt;</code></h2>
+Add a new paragraph:
+<blockquote class="stdins">
+The types and macros in <code>&lt;stdint.h&gt;</code> are freestanding library facilities.
+</blockquote>
+
+<h2>Change in 7.22 General utilities <code>&lt;stdlib.h&gt;</code></h2>
+
+Add a sentence to paragraph 3:
+<blockquote class="std">
+[...]which is a structure type that is the type of the value returned by the <code>lldiv</code> function.
+<ins><code>div_t</code>, <code>ldiv_t</code>, and <code>lldiv_t</code> are freestanding library facilities.</ins>
+</blockquote>
+
+<h2>Change in 7.22.5.1 The <code>bsearch</code> function</h2>
+Add a paragraph to the synopsis:
+<blockquote class="stdins">
+The <code>bsearch</code> function is a freestanding library facility.
+</blockquote>
+
+<h2>Change in 7.22.5.2 The <code>qsort</code> function</h2>
+Add a paragraph to the synopsis:
+<blockquote class="stdins">
+The <code>qsort</code> function is a freestanding library facility.
+</blockquote>
+
+<h2>Change in 7.22.6.1 The <code>abs</code>, <code>labs</code>, and <code>llabs</code> functions</h2>
+Add a paragraph to the synopsis:
+<blockquote class="stdins">
+The <code>abs</code>, <code>labs</code>, and <code>llabs</code> functions are freestanding library facilities.
+</blockquote>
+
+<h2>Change in 7.22.6.2 The <code>div</code>, <code>ldiv</code>, and <code>lldiv</code> functions</h2>
+Add a paragraph to the synopsis:
+<blockquote class="stdins">
+The <code>div</code>, <code>ldiv</code>, and <code>lldiv</code> functions are freestanding library facilities.
+</blockquote>
+
+<h2>Change in 7.23 <code>_Noreturn &lt;stdnoreturn.h&gt;</code></h2>
+Add a new paragraph:
+<blockquote class="stdins">
+The macros in <code>&lt;stdnoreturn.h&gt;</code> are freestanding library facilities.
+</blockquote>
+
+<h2>Change in 7.24 String handling <code>&lt;string.h&gt;</code></h2>
+For each of the following synopses...
+<ul>
+  <li>7.24.2.1 The <code>memcpy</code> function</li>
+  <li>7.24.2.2 The <code>memccpy</code> function</li>
+  <li>7.24.2.3 The <code>memmove</code> function</li>
+  <li>7.24.2.4 The <code>strcpy</code> function</li>
+  <li>7.24.2.5 The <code>strncpy</code> function</li>
+  <li>7.24.3.1 The <code>strcat</code> function</li>
+  <li>7.24.3.2 The <code>strncat</code> function</li>
+  <li>7.24.4.1 The <code>memcmp</code> function</li>
+  <li>7.24.4.2 The <code>strcmp</code> function</li>
+  <li>7.24.4.4 The <code>strncmp</code> function</li>
+  <li>7.24.5.1 The <code>memchr</code> function</li>
+  <li>7.24.5.2 The <code>strchr</code> function</li>
+  <li>7.24.5.3 The <code>strcspn</code> function</li>
+  <li>7.24.5.4 The <code>strpbrk</code> function</li>
+  <li>7.24.5.5 The <code>strrchr</code> function</li>
+  <li>7.24.5.6 The <code>strspn</code> function</li>
+  <li>7.24.5.7 The <code>strstr</code> function</li>
+  <li>7.24.6.1 The <code>memset</code> function</li>
+  <li>7.24.6.3 The <code>strlen</code> function</li>
+</ul>
+...add the following new paragraph to the synopsis, with <i>__placeholder__</i> replaced with the corresponding function name:
+<blockquote class="stdins">
+The <code><i>__placeholder__</i></code> function is a freestanding library facility.
+</blockquote>
+
+<h2>Change in 7.29 Extended multibyte and wide character utilities <code>&lt;wchar.h&gt;</code></h2>
+Add a sentence to paragraph 2:
+<blockquote class="std">
+[...] which is declared as an incomplete structure type (the contents are described in 7.27.1).
+<ins><code>mbstate_t</code> and <code>wint_t</code> are freestanding library facilities.</ins>
+</blockquote>
+
+Add a sentence to paragraph 3:
+<blockquote class="std">
+[...] It is also used as a wide character value that does not correspond to any member of the extended character set.
+<ins><code>WEOF</code> is a freestanding library facility.</ins>
+</blockquote>
+
+For each of the following synopses...
+<ul>
+  <li>7.29.4.2.1 The <code>wcscpy</code> function</li>
+  <li>7.29.4.2.2 The <code>wcsncpy</code> function</li>
+  <li>7.29.4.2.3 The <code>wmemcpy</code> function</li>
+  <li>7.29.4.2.4 The <code>wmemmove</code> function</li>
+  <li>7.29.4.3.1 The <code>wcscat</code> function</li>
+  <li>7.29.4.3.2 The <code>wcsncat</code> function</li>
+  <li>7.29.4.4.1 The <code>wcscmp</code> function</li>
+  <li>7.29.4.4.3 The <code>wcsncmp</code> function</li>
+  <li>7.29.4.4.5 The <code>wmemcmp</code> function</li>
+  <li>7.29.4.5.1 The <code>wcschr</code> function</li>
+  <li>7.29.4.5.2 The <code>wcscspn</code> function</li>
+  <li>7.29.4.5.3 The <code>wcspbrk</code> function</li>
+  <li>7.29.4.5.4 The <code>wcsrchr</code> function</li>
+  <li>7.29.4.5.5 The <code>wcsspn</code> function</li>
+  <li>7.29.4.5.6 The <code>wcsstr</code> function</li>
+  <li>7.29.4.5.7 The <code>wcstok</code> function</li>
+  <li>7.29.4.5.8 The <code>wmemchr</code> function</li>
+  <li>7.29.4.6.1 The <code>wcslen</code> function</li>
+  <li>7.29.4.6.2 The <code>wmemset</code> function</li>
+</ul>
+...add the following new paragraph to the synopsis, with <i>__placeholder__</i> replaced with the corresponding function name:
+<blockquote class="stdins">
+The <code><i>__placeholder__</i></code> function is a freestanding library facility.
+</blockquote>
+
+
 <h1>C++ Wording</h1>
 <p>
 Wording is based off <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/n4878.pdf">WG21 N4878</a> from 2020-12-15.
 This paper also assumes that <a href="https://wg21.link/p1642">P1642</a> and <a href="https://wg21.link/P2198">P2198</a> have been accepted and applied.
 </p>
+<h2>Change in <a href="https://wg21.link/conventions">[conventions]</a></h2>
+Add a new paragraph to [freestanding.membership] (added in <a href="https://wg21.link/p1642">P1642</a>).
+
+<blockquote class="stdins">
+<div class='para'>
+    <div class='marginalizedparent'><a class='marginalized'>?</a></div>
+    <div class='sentence'>On a freestanding implementation, a <span class='textit'>freestanding deleted function</span> is a function that has either a deleted definition or a definition meeting the corresponding requirements in a hosted implementation.</div>
+    <div class='sentence'>In the associated header synopsis for such freestanding deleted functions, the items are followed with a comment that includes <span class='textit'>freestanding deleted</span>.</div>
+    <div class='example'>[  <span class='textit'>Example:</span>
+<pre class='codeblock'>
+double abs(double j); <span class='comment'>// <span class='textit'>freestanding deleted</span></span>
+</pre>
+    -<i>end example</i>]</div>
+</div>
+</blockquote>
+
 <h2>Change in <a href="https://wg21.link/compliance">[compliance]</a></h2>
-TODO: need =delete wording for things like abs and charconv<br/>
 Change <a href="https://wg21.link/compliance#tab:headers.cpp.fs">[tab:headers.cpp.fs]</a>:
 <table style="border: 1px solid black">
 <thead>
@@ -846,6 +1087,13 @@ Please append a <span class="comment">// <span class="textit">freestanding</span
   <li><code>div</code></li>
   <li><code>ldiv</code></li>
   <li><code>lldiv</code></li>
+</ul>
+
+Please append a <span class="comment">// <span class="textit">freestanding deleted</span></span> comment to the following entities:
+<ul>
+  <li><code>abs(float)</code></li>
+  <li><code>abs(double)</code></li>
+  <li><code>abs(long double)</code></li>
 </ul>
 
 <h2>Change in <a href="https://wg21.link/version.syn#2">[version.syn]</a></h2>
@@ -960,6 +1208,16 @@ Please append a <span class="comment">// <span class="textit">freestanding</span
   <li><code>from_chars_result</code></li>
   <li><code>to_chars_result to_chars(char* first, char* last, <i>see below</i> value, int base = 10);</code></li>
   <li><code>from_chars_result from_chars(const char* first, const char* last, <i>see below</i>& value, int base = 10);</code></li>
+</ul>
+
+Please append a <span class="comment">// <span class="textit">freestanding deleted</span></span> comment to the following entities:
+<ul>
+  <li><code>to_chars(char* first, char* last, float value)</code></li>
+  <li><code>to_chars(char* first, char* last, double value)</code></li>
+  <li><code>to_chars(char* first, char* last, long double value)</code></li>
+  <li><code>from_chars(const char *first, const char *last, float& value, chars_format fmt = chars_format::general)</code></li>
+  <li><code>from_chars(const char *first, const char *last, double& value, chars_format fmt = chars_format::general)</code></li>
+  <li><code>from_chars(const char *first, const char *last, long double& value, chars_format fmt = chars_format::general)</code></li>
 </ul>
 
 <h2>Change in <a href="https://wg21.link/string.syn">[string.syn]</a></h2>
@@ -1095,6 +1353,13 @@ Please append a <span class="comment">// <span class="textit">freestanding</span
   <li><code>abs(int)</code></li>
   <li><code>abs(long int)</code></li>
   <li><code>abs(long long int)</code></li>
+</ul>
+
+Please append a <span class="comment">// <span class="textit">freestanding deleted</span></span> comment to the following entities:
+<ul>
+  <li><code>abs(float)</code></li>
+  <li><code>abs(double)</code></li>
+  <li><code>abs(long double)</code></li>
 </ul>
 
 <h2>Change in <a href="https://wg21.link/cinttypes.syn">[cinttypes.syn]</a></h2>
