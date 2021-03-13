@@ -358,13 +358,13 @@ span.indented {
 }
 </style>
 
-<title>DXXXXR0.0 TODO: Freestanding Library: Character primitives and the C library</title>
+<title>P2338R0: Freestanding Library: Character primitives and the C library</title>
 <body>
 <h1>Freestanding Library: Character primitives and the C library</h1>
-Document number: DXXXXR0.0 TODO<br/>
-Date: 2019-01-12 TODO<br/>
+Document number: P2338R0<br/>
+Date: 2021-03-13<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
-Audience: SG14, SG22, Library Evolution Working Group
+Audience: SG14 (Low Latency), SG22 (C Liaison), Library Evolution Working Group
 <h1>Abstract</h1>
 Add everything to the shared C and C++ freestanding library that can be implemented without OS calls and space overhead.
 Also add primitive character operations (<code>&lt;charconv&gt;</code> and <code>char_traits</code>) to the C++ freestanding library.
@@ -585,6 +585,17 @@ This drags in the same set of problems that Thread-local storage has.
 These functions are not being added to the freestanding library.
 Examples are the locale aware functions, the C random number functions, and functions relying on <code>errno</code>.
 </p>
+<h1>Experience</h1>
+<p>
+The musl, newlib, and uclibc-ng C libraries are all marketed towards embedded use cases, and are all frequently used in embedded environments.  All of the C facilities that this paper adds to the freestanding requirements are already present in musl, newlib, and uclibc-ng.  This includes memccpy.
+</p><p>
+The Linux kernel uses a custom C library, though that library is more minimal, and in non-standard locations.  The Linux kernel has implementations of <code>bsearch</code> (in <code>&lt;linux/bsearch.h</code>) and all of the <code>&lt;string.h&gt;</code> functions except for <code>memccpy</code>, though the <code>&lt;string.h&gt;</code> functions are in <code>&lt;linux/string.h&gt;</code>.  The <code>&lt;wchar.h&gt;</code>, <code>&lt;inttypes.h&gt;</code>, and most of the <code>&lt;stdlib.h&gt;</code> functions were not present.
+</p><p>
+The Microsoft Windows kernel also has a C implementation that is distinct from the one that ships from Microsoft Visual Studio.  That C implementation contains all of the new freestanding requirements with the exception of <code>imaxabs</code>, <code>imaxdiv</code>, <code>llabs</code>, and <code>lldiv</code>.
+</p><p>
+On the C++ front, I have successfully tested Visual Studio's <code>char_traits</code> implementation with a C++14 era set of libc++ tests, all in the Windows kernel.  The integral <code>&lt;charconv&gt;</code> functions have not been tested, but I do not foresee any issues there.
+</p>
+
 <h1>Technical Specifications</h1>
 <h2>Partial headers newly required for freestanding implementations</h2>
 Portions of <code>&lt;cstdlib&gt;</code>
@@ -1372,8 +1383,5 @@ Please append a <span class="comment">// <span class="textit">freestanding</span
   <li><code>div(intmax_t, intmax_t)</code></li>
 </ul>
 
-<h1>Acknowledgements</h1>
-<p>
-</p>
 </body>
 </html>
