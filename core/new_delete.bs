@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: Freestanding Language: Optional <code>::operator new</code>
 Shortname: D2013
-Revision: 4.0
+Revision: 4.1
 Audience: EWG
 Status: D
 Group: WG21
@@ -268,7 +268,7 @@ This alternative is novel, and does not have implementation or usage experience.
 
 Wording {#wording}
 ====================
-This is based on [the Pre-Prague 2020-01 mailing, N4849](https://wg21.link/n4849).
+This is based on [N4878](https://wg21.link/N4878).
 
 basic.def.odr {#basic_def_odr}
 -------------------------
