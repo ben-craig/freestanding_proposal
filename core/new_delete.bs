@@ -268,7 +268,7 @@ This alternative is novel, and does not have implementation or usage experience.
 
 Wording {#wording}
 ====================
-This is based on [N4878](https://wg21.link/N4878).
+This is based on the [December working draft, N4878](https://wg21.link/N4878).
 
 basic.def.odr {#basic_def_odr}
 -------------------------
