@@ -16,7 +16,7 @@ Revision History {#revision_history}
 ====================================
 R4 {#r4}
 -------
-Core wording revisions.  Rebasing to N4878.
+Rebasing to N4878.  Accounting for shifted numbering in [new.delete] and the moving of [basic.stc.dynamic]/2 to [basic.stc.dynamic.general]/2
 
 TODO: Shortname, revision, status
 
@@ -76,7 +76,7 @@ The replaceable deallocating `::operator delete` functions are still required to
 
 Calling `::operator delete` on a non-null pointer that did not come from `::operator new` is still undefined behavior [new.delete.single](http://eel.is/c++draft/new.delete.single#12) [new.delete.array](http://eel.is/c++draft/new.delete.array#11).  Calling `delete` on an object or base that didn't come from `new` is still undefined behavior [expr.delete](http://eel.is/c++draft/expr.delete#2).  This is what makes a no-op `::operator delete` a valid strategy on implementations without a global `::operator new`.
 
-The replaceable allocation functions will still be implicitly declared at global scope in each translation unit [basic.stc.dynamic](http://eel.is/c++draft/basic.stc.dynamic#2).  Non-ODR-uses of the replaceable allocation functions are still permitted (e.g. inside of uninstantiated templates).  The declarations of `::operator new` in the `<new>` header are still required to be present.  Implementations of the replaceable allocation functions can be performed by linking in an extra translation-unit with the definitions of the functions.  Since this replacement typically happens at link time, ODR-uses of missing replaceable allocation functions usually won't be diagnosable at compile time.
+The replaceable allocation functions will still be implicitly declared at global scope in each translation unit [basic.stc.dynamic.general](http://eel.is/c++draft/basic.stc.dynamic.general#2).  Non-ODR-uses of the replaceable allocation functions are still permitted (e.g. inside of uninstantiated templates).  The declarations of `::operator new` in the `<new>` header are still required to be present.  Implementations of the replaceable allocation functions can be performed by linking in an extra translation-unit with the definitions of the functions.  Since this replacement typically happens at link time, ODR-uses of missing replaceable allocation functions usually won't be diagnosable at compile time.
 
 "`constexpr new`" is still required to work, even when the replaceable allocation functions are not present.  This requires some tweaking of standardese.
 
@@ -330,7 +330,7 @@ new.delete {#alternative_new_delete}
 -------------------------
 [allocating.forms]/1 uses undefined behavior.  Making the program ill-formed would be preferable, but we cannot use ill-formed to diagnose linker errors.  The following is the wording approach to use if we let the ODR violation provide the normative backing for this design.  This results in IF;NDR when no definitions are present.
 <blockquote>
-<p><ins>17.6.2.1  Allocating forms [allocating.forms]</ins></p>
+<p><ins>17.6.3.2  Allocating forms [allocating.forms]</ins></p>
 <p><ins>1 [<i>Note</i>: Odr-use of the allocation functions in this subclause results in a one-definition rule violation unless a definition of the odr-used allocation function has been provided. ([basic.def.odr]). On hosted implementations, the library provides default definitions of these allocation functions ([basic.stc.dynamic]).- <i>end note</i>]
 </blockquote>
 
