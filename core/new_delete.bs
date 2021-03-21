@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: Freestanding Language: Optional <code>::operator new</code>
 Shortname: D2013
-Revision: 3.1
+Revision: 4.0
 Audience: EWG
 Status: D
 Group: WG21
@@ -14,6 +14,12 @@ Markup Shorthands: markdown yes
 
 Revision History {#revision_history}
 ====================================
+R4 {#r4}
+-------
+Core wording revisions.  Rebasing to N4878.
+
+TODO: Shortname, revision, status
+
 R3 {#r3}
 -----
 Added \[EWG Aug 2020 telecon](#ewg_aug_telecon) polling results.
@@ -275,12 +281,12 @@ Modify [basic.def.odr/3.1](https://wg21.link/basic.def.odr#3.1)
 <p>[<i>Note</i>: This covers taking the address of functions (7.3.3, 7.6.2.1), calls to named functions (7.6.1.2), operator overloading (Clause 12), user-defined conversions (11.4.7.2), allocation functions for <i>new-expressions</i> (7.6.2.7), as well as non-default initialization (9.4). A constructor selected to copy or move an object of class type is considered to be named by an expression or conversion even if the call is actually elided by the implementation (11.10.5).— <i>end note</i>]</p>
 </blockquote>
 
-basic.stc.dynamic {#basic_stc_dynamic}
+basic.stc.dynamic.general {#basic_stc_dynamic_general}
 -------------------------
-Modify [basic.stc.dynamic/2](https://wg21.link/basic.stc.dynamic#2)
+Modify [basic.stc.dynamic.general/2](https://wg21.link/basic.stc.dynamic.general#2)
 
 <blockquote>
-<del>The</del><ins>On hosted implementations, the</ins> library provides default definitions for the global allocation and deallocation functions. Some global allocation and deallocation functions are replaceable (17.6.2). <ins>On freestanding implementations, the library provides default definitions for the non-replaceable allocation functions and all the global deallocation functions. It is implementation-defined whether a freestanding implementation's library provides default definitions for the replaceable global allocation functions. Either all or none of the replaceable global allocation functions shall be defined by a freestanding implementation's library.</ins> A C++ program shall provide at most one definition of a replaceable allocation or deallocation function. Any such function definition replaces the default version provided in the library (16.5.4.6). The following allocation and deallocation functions (17.6) are implicitly declared in global scope in each translation unit of a program.
+<del>The</del><ins>On hosted implementations, the</ins> library provides default definitions for the global allocation and deallocation functions. Some global allocation and deallocation functions are replaceable (17.6.3). <ins>On freestanding implementations, the library provides default definitions for the non-replaceable allocation functions and all the global deallocation functions. It is implementation-defined whether a freestanding implementation's library provides default definitions for the replaceable global allocation functions. Either all or none of the replaceable global allocation functions shall be defined by a freestanding implementation's library.</ins> A C++ program shall provide at most one definition of a replaceable allocation or deallocation function. Any such function definition replaces the default version provided in the library (16.4.5.6). The following allocation and deallocation functions (17.6) are implicitly declared in global scope in each translation unit of a program.
 </blockquote>
 
 expr.new {#expr_new}
@@ -302,18 +308,19 @@ new.delete {#new_delete}
 Modify [new.delete](https://wg21.link/new.delete)
 
 <blockquote>
-<p>17.6.2  Storage allocation and deallocation [new.delete]</p>
-<p>1 Except where otherwise specified, the provisions of 6.7.5.4 apply to the library versions of operator new and operator delete. If the value of an alignment argument passed to any of these functions is not a valid alignment value, the behavior is undefined.</p>
-<p><ins>17.6.2.1  Allocating forms [allocating.forms]</ins></p>
+<p>17.6.3  Storage allocation and deallocation [new.delete]</p>
+<p>17.6.3.1  General [new.delete.general]</p>
+<p>1 Except where otherwise specified, the provisions of 6.7.5.5 apply to the library versions of operator new and operator delete. If the value of an alignment argument passed to any of these functions is not a valid alignment value, the behavior is undefined.</p>
+<p><ins>17.6.3.2  Allocating forms [allocating.forms]</ins></p>
 <p><ins>1 Odr-use of the allocation functions in this subclause results in undefined behavior unless a definition of the odr-used allocation function has been provided.
 [<i>Note</i>: On hosted implementations, the library provides default definitions of these allocation functions ([basic.stc.dynamic]).- <i>end note</i>]</ins></p>
-<p><del>17.6.2.1</del><ins>17.6.2.1.1</ins>  Single-object forms [new.delete.single]</p>
+<p><del>17.6.3.2</del><ins>17.6.3.2.1</ins>  Single-object forms [new.delete.single]</p>
 <p><i>No changes</i></p>
-<p><del>17.6.2.2</del><ins>17.6.2.1.2</ins>  Array forms [new.delete.array]</p>
+<p><del>17.6.3.3</del><ins>17.6.3.2.2</ins>  Array forms [new.delete.array]</p>
 <p><i>No changes</i></p>
-<p><del>17.6.2.3</del><ins>17.6.2.2</ins>  Non-allocating forms [new.delete.placement]</p>
+<p><del>17.6.3.4</del><ins>17.6.3.3</ins>  Non-allocating forms [new.delete.placement]</p>
 <p><i>No changes</i></p>
-<p><del>17.6.2.4</del><ins>17.6.2.3</ins> Data races [new.delete.dataraces]</p>
+<p><del>17.6.3.5</del><ins>17.6.3.4</ins> Data races [new.delete.dataraces]</p>
 <p><i>No changes</i></p>
 </blockquote>
 
