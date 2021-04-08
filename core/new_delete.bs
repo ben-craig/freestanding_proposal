@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: Freestanding Language: Optional <code>::operator new</code>
 Shortname: D2013
-Revision: 4.1
+Revision: 4.2
 Audience: EWG
 Status: D
 Group: WG21
@@ -17,6 +17,10 @@ Revision History {#revision_history}
 R4 {#r4}
 -------
 Rebasing to N4878.  Accounting for shifted numbering in [new.delete] and the moving of [basic.stc.dynamic]/2 to [basic.stc.dynamic.general]/2
+
+Using ODR / IFNDR instead of UB for when a missing allocation function is ODR-used.
+
+Constexpr new ODR rules now handled with a new <i>potentially dynamically reachable</i> term of art, instead of via "naming" in [basic.def.odr]/3.1.  Updated note in [allocating.forms] accordingly.
 
 TODO: Shortname, revision, status
 
@@ -64,7 +68,7 @@ What is changing {#the_changes}
 =====================
 On freestanding systems without default heap storage, the presence of the replaceable allocation functions (i.e. allocating `::operator new`, including the `nothrow_t` and `align_val_t` overloads, single and array forms) will be implementation defined.  Implementations shall provide all the replaceable allocation functions, or none of them.  If none of the replaceable allocation functions are provided, then an ODR-use of the functions will typically manifest as a linker error.
 
-As a consequence of the above, coroutines that are relying on the global allocation functions will be ill-formed so long as those global allocation functions are not present.
+As a consequence of the above, runtime coroutines that are relying on the global allocation functions will be ill-formed, no diagnostic required, so long as those global allocation functions are not present.
 
 No other core language features require `::operator new`. [basic.stc.dynamic.allocation](http://eel.is/c++draft/basic.stc.dynamic.allocation#5)
 
@@ -107,7 +111,7 @@ As an example, in the Microsoft Windows kernel environment, there are two leadin
 
 In the Linux kernel environment, `kmalloc` [[kmalloc]] with the `GFP_KERNEL` should be used when allocating memory within the context of a process and outside of a lock, but `GFP_ATOMIC` should be used when allocating memory outside the context of a process, such as inside of an interrupt.  The implementers of the C++ runtime are in no position to know which is the correct flag to use by default.  Using `GFP_KERNEL` when `GFP_ATOMIC` is needed will result in crashes from interrupt code and deadlocks.  Using `GFP_ATOMIC` when `GFP_KERNEL` is appropriate will result in reduced system performance, spurious OOM errors, and premature exhaustion of emergency memory pools.
 
-Freestanding implementations are intended to run without the benefit of an operating system ([basic.def.odr](http://eel.is/c++draft/intro.compliance#7)).  However, the name of the function that supplies dynamic memory is usually an OS-specific detail.  The C++ implementation should not (and may not) know the name of the function to request memory.  The Windows kernel uses `ExAllocatePoolWithTag`.  In the Linux kernel, `kmalloc` is the main function to use.  In FreeBSD, a function named `malloc` is present, but it takes different arguments than the C standard library function of the same name.  FreeRTOS uses `pvPortMalloc`, and THREADX uses `tx_byte_allocate`.  Home-grown OSes will likely have other spellings for memory allocation routines.
+Freestanding implementations are intended to run without the benefit of an operating system ([intro.compliance](http://eel.is/c++draft/intro.compliance#7)).  However, the name of the function that supplies dynamic memory is usually an OS-specific detail.  The C++ implementation should not (and may not) know the name of the function to request memory.  The Windows kernel uses `ExAllocatePoolWithTag`.  In the Linux kernel, `kmalloc` is the main function to use.  In FreeBSD, a function named `malloc` is present, but it takes different arguments than the C standard library function of the same name.  FreeRTOS uses `pvPortMalloc`, and THREADX uses `tx_byte_allocate`.  Home-grown OSes will likely have other spellings for memory allocation routines.
 
 Today's C++ implementations don't provide `::operator new` implementations for all possible targets.  Doing so isn't a plausible goal, especially when the home-grown OSes are taken into account.  This means that users are already forced into choosing between not having `::operator new` support and providing their own implementation.  We should acknowledge and standardize this existing practice, especially since we already have the extension point mechanism in place.
 
@@ -115,7 +119,7 @@ What about allocators? {#allocators}
 -----------------------------
 The C++20 freestanding library does not include allocators.  [[P1642R1]] proposes adding allocator machinery to freestanding, but doesn't add `std::allocator` itself.  In addition, none of the allocating standard containers are in C++20's freestanding library or any current freestanding library proposal that the author is aware of.  From a minimalist freestanding perspective, allocators aren't a solution.
 
-Allocators are still useful in a less-than-minimal freestanding implementation.  In environments with dynamic memory, custom allocators can be written and used with standard containers, assuming that the containers are present in the implementation.  This could be done even if a global `::operator new` is not present.  The author has used `stlport::vector<int, PagedLockedAllocator>` successfully in these environments.
+Allocators are still useful in a less-than-minimal freestanding implementation.  In environments with dynamic memory, custom allocators can be written and used with standard containers, assuming that the containers are present in the implementation.  This could be done even if a global `::operator new` is not present.  The author has used `stlport::vector<int, PageLockedAllocator>` successfully in these environments.
 
 `std::allocator` is implemented in terms of global `::operator new`.  In practice, it would be easy for an implementation to have an implementation of `std::allocator` in a header / module, and have that header still compile just fine, as it wouldn't ODR-use `::operator new` until it was instantiated.  If the user has provided a global `::operator new`, then `std::allocator` would have the same semantics as mandated by the standard.  If the global `::operator new` is not present, then uses of `std::allocator` would fail to link, which would still be conforming behavior on a freestanding implementation.
 
@@ -272,13 +276,18 @@ This is based on the [December working draft, N4878](https://wg21.link/N4878).
 
 basic.def.odr {#basic_def_odr}
 -------------------------
-Modify [basic.def.odr/3.1](https://wg21.link/basic.def.odr#3.1)
+Add a paragraph before [basic.def.odr/10](https://wg21.link/basic.def.odr#10)
 
 <blockquote>
-<p>3.1 - A function is named by an expression or conversion if it is the selected member of an overload set (6.5, 12.4, 12.5) in an overload resolution performed as part of forming that expression or conversion, unless it is <ins>either:</ins></p>
-<p><ins>3.1.1 --</ins> a pure virtual function and either the expression is not an <i>id-expression</i> naming the function with an explicitly qualified name or the expression forms a pointer to member (7.6.2.1)<del>.</del><ins>, or</ins></p>
-<p><ins>3.1.2 -- a call to a replaceable global allocation function during the evaluation of a constant expression.</ins></p>
-<p>[<i>Note</i>: This covers taking the address of functions (7.3.3, 7.6.2.1), calls to named functions (7.6.1.2), operator overloading (Clause 12), user-defined conversions (11.4.7.2), allocation functions for <i>new-expressions</i> (7.6.2.7), as well as non-default initialization (9.4). A constructor selected to copy or move an object of class type is considered to be named by an expression or conversion even if the call is actually elided by the implementation (11.10.5).— <i>end note</i>]</p>
+<p><ins>A declaration is <i>potentially dynamically reachable</i> if it is odr-used by an expression, conversion, or declaration that is potentially dynamically reachable, or if it is odr-used in any other way.
+A full-expression is potentially dynamically reachable if it is potentially evaluated and not manifestly constant evaluated, and either is not contained in the body of an inline function or is contained in the body of a potentially dynamically reachable inline function.
+An expression or conversion is potentially dynamically reachable if it is a subexpression of a potentially dynamically reachable full-expression.</ins>
+</blockquote>
+
+Modify [basic.def.odr/10](https://wg21.link/basic.def.odr#10)
+
+<blockquote>
+<p>Every program shall contain exactly one definition of every non-inline function or variable that is odr-used<ins> and potentially dynamically reachable</ins> in that program outside of a discarded statement; no diagnostic required.
 </blockquote>
 
 basic.stc.dynamic.general {#basic_stc_dynamic_general}
@@ -312,7 +321,7 @@ Modify [new.delete](https://wg21.link/new.delete)
 <p>17.6.3.1  General [new.delete.general]</p>
 <p>1 Except where otherwise specified, the provisions of 6.7.5.5 apply to the library versions of operator new and operator delete. If the value of an alignment argument passed to any of these functions is not a valid alignment value, the behavior is undefined.</p>
 <p><ins>17.6.3.2  Allocating forms [allocating.forms]</ins></p>
-<p><ins>1 Odr-use of the allocation functions in this subclause results in undefined behavior unless a definition of the odr-used allocation function has been provided.
+<p><ins>1 [<i>Note</i>: Odr-use in a potentially dynamically reachable context of an allocation functions in this subclause results in a violation of the one-definition rule unless a definition of that allocation function has been provided ([basic.def.odr]). On hosted implementations, the library provides default definitions of these allocation functions ([basic.stc.dynamic]).- <i>end note</i>]
 [<i>Note</i>: On hosted implementations, the library provides default definitions of these allocation functions ([basic.stc.dynamic]).- <i>end note</i>]</ins></p>
 <p><del>17.6.3.2</del><ins>17.6.3.2.1</ins>  Single-object forms [new.delete.single]</p>
 <p><i>No changes</i></p>
@@ -323,17 +332,6 @@ Modify [new.delete](https://wg21.link/new.delete)
 <p><del>17.6.3.5</del><ins>17.6.3.4</ins> Data races [new.delete.dataraces]</p>
 <p><i>No changes</i></p>
 </blockquote>
-
-Alternative Wording {#alternative_wording}
-====================
-new.delete {#alternative_new_delete}
--------------------------
-[allocating.forms]/1 uses undefined behavior.  Making the program ill-formed would be preferable, but we cannot use ill-formed to diagnose linker errors.  The following is the wording approach to use if we let the ODR violation provide the normative backing for this design.  This results in IF;NDR when no definitions are present.
-<blockquote>
-<p><ins>17.6.3.2  Allocating forms [allocating.forms]</ins></p>
-<p><ins>1 [<i>Note</i>: Odr-use of the allocation functions in this subclause results in a one-definition rule violation unless a definition of the odr-used allocation function has been provided. ([basic.def.odr]). On hosted implementations, the library provides default definitions of these allocation functions ([basic.stc.dynamic]).- <i>end note</i>]
-</blockquote>
-
 
 Acknowledgments {#ack}
 ======================
