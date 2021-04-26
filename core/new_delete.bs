@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: Freestanding Language: Optional <code>::operator new</code>
 Shortname: D2013
-Revision: 4.2
+Revision: 4.4
 Audience: EWG
 Status: D
 Group: WG21
@@ -16,11 +16,9 @@ Revision History {#revision_history}
 ====================================
 R4 {#r4}
 -------
-Rebasing to N4878.  Accounting for shifted numbering in [new.delete] and the moving of [basic.stc.dynamic]/2 to [basic.stc.dynamic.general]/2
+Definitions of the allocation functions must now exist, but they now have implementation defined behavior on freestanding implementations (which encompasses UB) .
 
-Using ODR / IFNDR instead of UB for when a missing allocation function is ODR-used.
-
-Constexpr new ODR rules now handled with a new <i>potentially dynamically reachable</i> term of art, instead of via "naming" in [basic.def.odr]/3.1.  Updated note in [allocating.forms] accordingly.
+Rebasing to N4878.  Accounting for shifted numbering in [new.delete].
 
 TODO: Shortname, revision, status
 
@@ -66,23 +64,23 @@ The proposed solution is different than the one proposed for P1105R1, but the mo
 
 What is changing {#the_changes}
 =====================
-On freestanding systems without default heap storage, the presence of the replaceable allocation functions (i.e. allocating `::operator new`, including the `nothrow_t` and `align_val_t` overloads, single and array forms) will be implementation defined.  Implementations shall provide all the replaceable allocation functions, or none of them.  If none of the replaceable allocation functions are provided, then an ODR-use of the functions will typically manifest as a linker error.
+On freestanding systems without default heap storage, the replaceable allocation functions (i.e. allocating `::operator new`, including the `nothrow_t` and `align_val_t` overloads, single and array forms) will have implementation defined behavior that does not need to do any kind of allocation.  The implementation could return `nullptr`, invoke undefined behavior, or whatever the implementer likes.  If a freestanding implementation provides one replaceable allocation function that meets the hosted requirements, then all the replaceable allocation functions shall meet the requirements.  Hopefully, compiler vendors will warn on heap usage by default in freestanding implementations, and allow the warnings to be disabled for the situations where the user provides their own `::operator new`.
 
-As a consequence of the above, runtime coroutines that are relying on the global allocation functions will be ill-formed, no diagnostic required, so long as those global allocation functions are not present.
+As a consequence of the above, runtime coroutines on freestanding implementations that are relying on the global allocation functions will also have implementation defined behavior, so long as the vendor supplied implementation is being used.
 
 No other core language features require `::operator new`. [basic.stc.dynamic.allocation](http://eel.is/c++draft/basic.stc.dynamic.allocation#5)
 
-`::operator delete` will be implementable as a no-op function on implementations that do not provide a default `::operator new`.
+`::operator delete` will be implementable as a no-op function on implementations that have do-nothing or undefined-behavior `::operator new` implementations.
 
 What is staying the same {#non_changes}
 =======================================
 The replaceable deallocating `::operator delete` functions are still required to be present.  `virtual` destructors ODR-use their associated `operator delete`([basic.def.odr](http://eel.is/c++draft/basic.def.odr#7)), so keeping the global `::operator delete` allows those `virtual` destructors to continue building.  Alternatives to this choice are discussed in [[#design_alternatives]].
 
-Calling `::operator delete` on a non-null pointer that did not come from `::operator new` is still undefined behavior [new.delete.single](http://eel.is/c++draft/new.delete.single#12) [new.delete.array](http://eel.is/c++draft/new.delete.array#11).  Calling `delete` on an object or base that didn't come from `new` is still undefined behavior [expr.delete](http://eel.is/c++draft/expr.delete#2).  This is what makes a no-op `::operator delete` a valid strategy on implementations without a global `::operator new`.
+Calling `::operator delete` on a non-null pointer that did not come from `::operator new` is still undefined behavior [new.delete.single](http://eel.is/c++draft/new.delete.single#12) [new.delete.array](http://eel.is/c++draft/new.delete.array#11).  Calling `delete` on an object or base that didn't come from `new` is still undefined behavior [expr.delete](http://eel.is/c++draft/expr.delete#2).  This is what makes a no-op `::operator delete` a valid strategy for freestanding vendor supplied `::operator new` implementations.
 
-The replaceable allocation functions will still be implicitly declared at global scope in each translation unit [basic.stc.dynamic.general](http://eel.is/c++draft/basic.stc.dynamic.general#2).  Non-ODR-uses of the replaceable allocation functions are still permitted (e.g. inside of uninstantiated templates).  The declarations of `::operator new` in the `<new>` header are still required to be present.  Implementations of the replaceable allocation functions can be performed by linking in an extra translation-unit with the definitions of the functions.  Since this replacement typically happens at link time, ODR-uses of missing replaceable allocation functions usually won't be diagnosable at compile time.
+The replaceable allocation functions will still be implicitly declared at global scope in each translation unit [basic.stc.dynamic.general](http://eel.is/c++draft/basic.stc.dynamic.general#2).  A definition of the replaceable allocation functions must still exist.  Non-ODR-uses of the replaceable allocation functions are still permitted (e.g. inside of uninstantiated templates).  The declarations of `::operator new` in the `<new>` header are still required to be present.  Implementations of the replaceable allocation functions can be performed by linking in an extra translation-unit with the definitions of the functions.
 
-"`constexpr new`" is still required to work, even when the replaceable allocation functions are not present.  This requires some tweaking of standardese.
+"`constexpr new`" is still required to work, even when the vendor supplied replaceable allocation functions have not been replaced.  The calls to `::operator new` are required to be omitted, so any undefined behavior in the `::operator new` implementation will also be skipped.
 
 Non-allocating placement `::operator new` (colloquially "placement new") and `::operator delete` (colloquially "placement delete") are still required to be present in freestanding implementations.
 
@@ -95,9 +93,9 @@ Why? {#why}
 
 No allocations allowed {#ill_formed_as_a_service}
 -------------------------------
-In space constrained and/or real-time environments, there is often no free store.  These environments often cannot tolerate the space overhead for the free store, or the non-determinism from using the free store.  In these environments, it is a desirable property for accidental global `new` usage to cause a build failure.  With this proposal, users could expect a linker error when global `new` is used inappropriately.
+In space constrained and/or real-time environments, there is often no free store.  These environments often cannot tolerate the space overhead for the free store, or the non-determinism from using the free store.  In these environments, it is a desirable property for accidental global `new` usage to generate a diagnostic.  Compilers are capable of generating a diagnostic when they ODR-use a function (e.g. `::operator new`).
 
-FreeRTOS allows for both static and dynamic allocation of OS constructs [[FreeRTOS_StaticVDynamic]].  Static allocation in conjunction with a missing `::operator new` can help avoid overhead and eliminate accidental usage.
+FreeRTOS allows for both static and dynamic allocation of OS constructs [[FreeRTOS_StaticVDynamic]].  Static allocation in conjunction with `::operator new` diagnostics can help avoid overhead and eliminate accidental usage.
 
 THREADX [[THREADX]] does not consider dynamic allocation a core service, and can be built without support for dynamic allocation in order to reduce application size.  THREADX also distinguishes between byte allocation (general purpose) vs. block allocation (no-fragmentation elements of fixed size in a pool).
 
@@ -109,7 +107,7 @@ In some target environments, there is no "right" way to allocate memory.  In ker
 
 As an example, in the Microsoft Windows kernel environment, there are two leading choices about where to get dynamic memory [[MSPools]].  Users can get memory from the non-paged pool, which is a safe, but scarce resource; or users can get memory from the paged pool, which is plentiful, but not accessible in many common kernel operations.  Non-paged pool must be used any time the allocated memory needs to be accessible from an interrupt or from a "high IRQL" context.  The author has had experience with both paged pool and non-paged pool as defaults, with the predictable outcome of crashes with paged pool defaults and OOM with non-paged pool defaults.  The implementer of the C++ toolchain is not in a good position to make this choice for the user.
 
-In the Linux kernel environment, `kmalloc` [[kmalloc]] with the `GFP_KERNEL` should be used when allocating memory within the context of a process and outside of a lock, but `GFP_ATOMIC` should be used when allocating memory outside the context of a process, such as inside of an interrupt.  The implementers of the C++ runtime are in no position to know which is the correct flag to use by default.  Using `GFP_KERNEL` when `GFP_ATOMIC` is needed will result in crashes from interrupt code and deadlocks.  Using `GFP_ATOMIC` when `GFP_KERNEL` is appropriate will result in reduced system performance, spurious OOM errors, and premature exhaustion of emergency memory pools.
+In the Linux kernel environment, `kmalloc` [[kmalloc]] with the `GFP_KERNEL` flag should be used when allocating memory within the context of a process and outside of a lock, but the `GFP_ATOMIC` flag should be used when allocating memory outside the context of a process, such as inside of an interrupt.  The implementers of the C++ runtime are in no position to know which is the correct flag to use by default.  Using `GFP_KERNEL` when `GFP_ATOMIC` is needed will result in crashes from interrupt code and deadlocks.  Using `GFP_ATOMIC` when `GFP_KERNEL` is appropriate will result in reduced system performance, spurious OOM errors, and premature exhaustion of emergency memory pools.
 
 Freestanding implementations are intended to run without the benefit of an operating system ([intro.compliance](http://eel.is/c++draft/intro.compliance#7)).  However, the name of the function that supplies dynamic memory is usually an OS-specific detail.  The C++ implementation should not (and may not) know the name of the function to request memory.  The Windows kernel uses `ExAllocatePoolWithTag`.  In the Linux kernel, `kmalloc` is the main function to use.  In FreeBSD, a function named `malloc` is present, but it takes different arguments than the C standard library function of the same name.  FreeRTOS uses `pvPortMalloc`, and THREADX uses `tx_byte_allocate`.  Home-grown OSes will likely have other spellings for memory allocation routines.
 
@@ -121,9 +119,9 @@ The C++20 freestanding library does not include allocators.  [[P1642R1]] propose
 
 Allocators are still useful in a less-than-minimal freestanding implementation.  In environments with dynamic memory, custom allocators can be written and used with standard containers, assuming that the containers are present in the implementation.  This could be done even if a global `::operator new` is not present.  The author has used `stlport::vector<int, PageLockedAllocator>` successfully in these environments.
 
-`std::allocator` is implemented in terms of global `::operator new`.  In practice, it would be easy for an implementation to have an implementation of `std::allocator` in a header / module, and have that header still compile just fine, as it wouldn't ODR-use `::operator new` until it was instantiated.  If the user has provided a global `::operator new`, then `std::allocator` would have the same semantics as mandated by the standard.  If the global `::operator new` is not present, then uses of `std::allocator` would fail to link, which would still be conforming behavior on a freestanding implementation.
+`std::allocator` is implemented in terms of global `::operator new`.  In practice, it would be easy for an implementation to have an implementation of `std::allocator` in a header / module, and have that header still compile just fine.  If the user has provided a global `::operator new`, then `std::allocator` would have the same semantics as mandated for hosted implementations.  If the global `::operator new` is vendor supplied, then uses of `std::allocator` would invoke implementation defined behavior, and hopefully cause a diagnostic.
 
-Some facilities in the standard library (e.g. `make_unique`) are implemented in terms of `new`, and not an allocator interface.  It is useful to make these facilities error when dynamic memory isn't available, and it is also useful to be able to control which memory pool is used by default.
+Some facilities in the standard library (e.g. `make_unique`) are implemented in terms of `new`, and not an allocator interface.  It is useful to make these facilities generate diagnostics when dynamic memory isn't available, and it is also useful to be able to control which memory pool is used by default.
 
 `virtual` destructors {#virtual_dtors}
 -------------------------------
@@ -137,7 +135,7 @@ This paper attempts to standardize existing practice.  There is not any existing
 
 Feature test macro {#feature_test_macro}
 -------------------------------
-A future revision of \[P2198](https://wg21.link/P2198) will discuss this in more depth, and provide a recommendation.
+\[P2198R1](https://wg21.link/P2198R1) discusses the feature test macro in more depth, and provides a recommendation.
 
 In order to provide this macro, library implementations are going to require knowledge of the target environment.  That knowledge may be via a list of known target platforms that are detected at build time, or by having the builder of the implementation supply that information in a configuration flag.
 
@@ -230,13 +228,13 @@ approves to go to EWG
 Design Alternatives {#design_alternatives}
 ===========
 
-Alternative 0: All-or-nothing allocating `::operator new`, no-op default deallocation functions (Proposed above) {#alternative_nop_dealloc}
+Alternative 0: Implementation defined allocating `::operator new` (Proposed above) {#alternative_impl_def_op_new}
 ----------------------------------------------------
-This option preserves much functionality, without using any novel techniques.  See above for further explanation.
+This option preserves much functionality, without using any novel techniques.  The main disadvantage of this approach compared to existing techniques is that diagnosing the problem requires more work.  See above for further explanation.
 
 Alternative 1: Optional throwing `::operator new`s, no-op default deallocation functions {#alternative_throwing_new}
 ----------------------------------------------------
-Rather than making all the replaceable allocation functions optional, we could make just the throwing `::operator new`s optional (array and single form, with and without `align_val_t` parameters).  The library would still be required to provide the `nothrow_t` overloads.
+Rather than making all the replaceable allocation functions have implementation defined behavior, we could make just the throwing `::operator new`s implementation defined (array and single form, with and without `align_val_t` parameters).  The library would still be required to meet the hosted requirements for `nothrow_t` overloads.
 
 The `nothrow_t` overloads are specified to forward to an appropriate throwing overload.  That implementation would still be fine on a system without dynamic storage available.  This alternative was not selected as it is more difficult to teach, and because the target audience would likely be astonished that the `nothrow_t` overload has a `try`/`catch` in it.
 
@@ -270,47 +268,17 @@ Lack of a default heap should generally be considered a trait of the platform.  
 ### Experience ### {#alt2_experience}
 This alternative is novel, and does not have implementation or usage experience.
 
+Alternative 4: Missing `::operator new`, no-op default deallocation functions (Proposed in R3) {#alternative_nop_dealloc}
+--------------------------------------------------------
+Rather than have the behavior of the replaceable global allocation functions be implementation defined on freestanding implementations, we could instead have their presence be optional.  At runtime, this is easy enough, as we can lean on ODR to do the work (zero definitions is not one definition).  This results in an IF-NDR program, but in practice, you either get a linker error, or you get the "right" behavior, because the calls to `::operator new` were heap-elided.
+
+This approach is substantially more difficult with `constexpr new` though.  Colloquially, users would expect that uses of `::operator new` at compile time would not require a runtime definition of `::operator new`.  However, `constexpr` doesn't work like that.  Implementations are permitted to emit a runtime definition of `constexpr` functions, as well as keep an internal representation for compile time evaluation, even if the function only happens to be used for constant evaluation.  The runtime definition could still cause linker errors, even if nothing is calling the function.
+
+It is possible to rework the ODR rules such that a runtime definition is only emitted if needed.  That is a substantially larger change though, and there was resistance from CWG to make this large of a change to ODR at this time.  This approach should be reconsidered for adoption if more OS-dependent facilities become available at compile in the future (e.g. `constexpr` iostreams).  A lower effort approach is acceptable for now though, since `::operator new` and `::operator delete` are the only such facilities at present.
+
 Wording {#wording}
 ====================
 This is based on the [December working draft, N4878](https://wg21.link/N4878).
-
-basic.def.odr {#basic_def_odr}
--------------------------
-Add a paragraph before [basic.def.odr/10](https://wg21.link/basic.def.odr#10)
-
-<blockquote>
-<p><ins>A declaration is <i>potentially dynamically reachable</i> if it is odr-used by an expression, conversion, or declaration that is potentially dynamically reachable, or if it is odr-used in any other way.
-A full-expression is potentially dynamically reachable if it is potentially evaluated and not manifestly constant evaluated, and either is not contained in the body of an inline function or is contained in the body of a potentially dynamically reachable inline function.
-An expression or conversion is potentially dynamically reachable if it is a subexpression of a potentially dynamically reachable full-expression.</ins>
-</blockquote>
-
-Modify [basic.def.odr/10](https://wg21.link/basic.def.odr#10)
-
-<blockquote>
-<p>Every program shall contain exactly one definition of every non-inline function or variable that is odr-used<ins> and potentially dynamically reachable</ins> in that program outside of a discarded statement; no diagnostic required.
-</blockquote>
-
-basic.stc.dynamic.general {#basic_stc_dynamic_general}
--------------------------
-Modify [basic.stc.dynamic.general/2](https://wg21.link/basic.stc.dynamic.general#2)
-
-<blockquote>
-<del>The</del><ins>On hosted implementations, the</ins> library provides default definitions for the global allocation and deallocation functions. Some global allocation and deallocation functions are replaceable (17.6.3). <ins>On freestanding implementations, the library provides default definitions for the non-replaceable allocation functions and all the global deallocation functions. It is implementation-defined whether a freestanding implementation's library provides default definitions for the replaceable global allocation functions. Either all or none of the replaceable global allocation functions shall be defined by a freestanding implementation's library.</ins> A C++ program shall provide at most one definition of a replaceable allocation or deallocation function. Any such function definition replaces the default version provided in the library (16.4.5.6). The following allocation and deallocation functions (17.6) are implicitly declared in global scope in each translation unit of a program.
-</blockquote>
-
-expr.new {#expr_new}
--------------------------
-Modify [expr.new/10](https://wg21.link/expr.new#10)
-<blockquote>
-A new-expression may obtain storage for the object by calling an allocation function ([basic.stc.dynamic.allocation]).
-If the new-expression terminates by throwing an exception, it may release storage by calling a deallocation function.
-If the allocated type is a non-array type, the allocation function's name is operator new and the deallocation function's name is operator delete.
-If the allocated type is an array type, the allocation function's name is operator new[] and the deallocation function's name is operator delete[].
-[Note: <del>An</del><ins>A hosted</ins> implementation is required to provide default definitions for the global allocation functions ([basic.stc.dynamic], [new.delete.single], [new.delete.array]).
-A C++ program can provide alternative definitions of these functions ([replacement.functions]) and/or class-specific versions ([class.free]).
-The set of allocation and deallocation functions that may be called by a new-expression may include functions that do not perform allocation or deallocation; for example, see [new.delete.placement].
-— end note]
-</blockquote>
 
 new.delete {#new_delete}
 -------------------------
@@ -321,8 +289,12 @@ Modify [new.delete](https://wg21.link/new.delete)
 <p>17.6.3.1  General [new.delete.general]</p>
 <p>1 Except where otherwise specified, the provisions of 6.7.5.5 apply to the library versions of operator new and operator delete. If the value of an alignment argument passed to any of these functions is not a valid alignment value, the behavior is undefined.</p>
 <p><ins>17.6.3.2  Allocating forms [allocating.forms]</ins></p>
-<p><ins>1 [<i>Note</i>: Odr-use in a potentially dynamically reachable context of an allocation functions in this subclause results in a violation of the one-definition rule unless a definition of that allocation function has been provided ([basic.def.odr]). On hosted implementations, the library provides default definitions of these allocation functions ([basic.stc.dynamic]).- <i>end note</i>]
-[<i>Note</i>: On hosted implementations, the library provides default definitions of these allocation functions ([basic.stc.dynamic]).- <i>end note</i>]</ins></p>
+<p><ins>1
+The behavior of the implementation provided replaceable global allocation functions is implementation defined on freestanding implementations, and need not satisfy the required behaviors described below.
+[<i>Note</i>: A freestanding implementation could provide replaceable global allocation functions that cause undefined behavior.- <i>end note</i>]
+Either all or none of a freestanding implementation's replaceable global allocation functions shall meet the requirements of a hosted implementation.
+[<i>Note</i>: The behavior of the implementation provided replaceable global allocation functions during constant evaluation is irrelevant, as those calls are omitted ([expr.new]).- <i>end note</i>]
+</ins></p>
 <p><del>17.6.3.2</del><ins>17.6.3.2.1</ins>  Single-object forms [new.delete.single]</p>
 <p><i>No changes</i></p>
 <p><del>17.6.3.3</del><ins>17.6.3.2.2</ins>  Array forms [new.delete.array]</p>
