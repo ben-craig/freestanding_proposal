@@ -289,10 +289,10 @@ Modify [new.delete](https://wg21.link/new.delete)
 <p>17.6.3.1  General [new.delete.general]</p>
 <p>1 Except where otherwise specified, the provisions of 6.7.5.5 apply to the library versions of operator new and operator delete. If the value of an alignment argument passed to any of these functions is not a valid alignment value, the behavior is undefined.</p>
 <p><ins>2
-On freestanding implementations, it is implementation defined whether the behavior of the implementation-provided replaceable global allocation functions satisfy the required behaviors described in [new.delete.single] and [new.delete.array].
-[<i>Note</i>: A freestanding implementation can provide replaceable global allocation functions that cause undefined behavior.- <i>end note</i>]
-If any of the implementation-provided replaceable global allocation functions meet the requirements of a hosted implementation, they all should.
-[<i>Note</i>: The behavior of the implementation-provided replaceable global allocation functions during constant evaluation is irrelevant, as those calls are omitted ([expr.new]).- <i>end note</i>]
+On freestanding implementations, it is implementation defined whether the behavior of the implementation-provided replaceable global allocation functions satisfy the required behaviors described in [new.delete.single] and [new.delete.array].<p>
+<ins>[<i>Note</i>: A freestanding implementation can provide replaceable global allocation functions that cause undefined behavior.
+During constant evaluation, the behavior of the implementation-provided replaceable global allocation functions is irrelevant, as those calls are omitted ([expr.new]).- <i>end note</i>]<p>
+<ins><i>Recommended practice:</i> If any of the implementation-provided replaceable global allocation functions meet the requirements of a hosted implementation, they all should.
 </ins></p>
 </blockquote>
 
