@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: Freestanding Language: Optional <code>::operator new</code>
 Shortname: D2013
-Revision: 4.4
+Revision: 4.5
 Audience: EWG
 Status: D
 Group: WG21
@@ -16,7 +16,7 @@ Revision History {#revision_history}
 ====================================
 R4 {#r4}
 -------
-Definitions of the allocation functions must now exist, but they now have implementation defined behavior on freestanding implementations (which encompasses UB) .
+Definitions of the allocation functions must now exist, but they now have implementation defined behavior on freestanding implementations (which encompasses UB).
 
 Rebasing to N4878.  Accounting for shifted numbering in [new.delete].
 
@@ -288,21 +288,12 @@ Modify [new.delete](https://wg21.link/new.delete)
 <p>17.6.3  Storage allocation and deallocation [new.delete]</p>
 <p>17.6.3.1  General [new.delete.general]</p>
 <p>1 Except where otherwise specified, the provisions of 6.7.5.5 apply to the library versions of operator new and operator delete. If the value of an alignment argument passed to any of these functions is not a valid alignment value, the behavior is undefined.</p>
-<p><ins>17.6.3.2  Allocating forms [allocating.forms]</ins></p>
-<p><ins>1
-The behavior of the implementation provided replaceable global allocation functions is implementation defined on freestanding implementations, and need not satisfy the required behaviors described below.
-[<i>Note</i>: A freestanding implementation could provide replaceable global allocation functions that cause undefined behavior.- <i>end note</i>]
-Either all or none of a freestanding implementation's replaceable global allocation functions shall meet the requirements of a hosted implementation.
-[<i>Note</i>: The behavior of the implementation provided replaceable global allocation functions during constant evaluation is irrelevant, as those calls are omitted ([expr.new]).- <i>end note</i>]
+<p><ins>2
+On freestanding implementations, it is implementation defined whether the behavior of the implementation-provided replaceable global allocation functions satisfy the required behaviors described in [new.delete.single] and [new.delete.array].
+[<i>Note</i>: A freestanding implementation can provide replaceable global allocation functions that cause undefined behavior.- <i>end note</i>]
+If any of the implementation-provided replaceable global allocation functions meet the requirements of a hosted implementation, they all should.
+[<i>Note</i>: The behavior of the implementation-provided replaceable global allocation functions during constant evaluation is irrelevant, as those calls are omitted ([expr.new]).- <i>end note</i>]
 </ins></p>
-<p><del>17.6.3.2</del><ins>17.6.3.2.1</ins>  Single-object forms [new.delete.single]</p>
-<p><i>No changes</i></p>
-<p><del>17.6.3.3</del><ins>17.6.3.2.2</ins>  Array forms [new.delete.array]</p>
-<p><i>No changes</i></p>
-<p><del>17.6.3.4</del><ins>17.6.3.3</ins>  Non-allocating forms [new.delete.placement]</p>
-<p><i>No changes</i></p>
-<p><del>17.6.3.5</del><ins>17.6.3.4</ins> Data races [new.delete.dataraces]</p>
-<p><i>No changes</i></p>
 </blockquote>
 
 Acknowledgments {#ack}
