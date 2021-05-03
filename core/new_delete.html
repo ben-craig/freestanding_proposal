@@ -2,7 +2,7 @@
 <html lang="en"><head>
   <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-  <title>D2013R3.0: Freestanding Language: Optional &lt;code&gt;::operator new&lt;/code&gt;</title>
+  <title>D2013R4.5: Freestanding Language: Optional &lt;code&gt;::operator new&lt;/code&gt;</title>
 <style data-fill-with="stylesheet">/******************************************************************************
  *                   Style sheet for the W3C specifications                   *
  *
@@ -26,6 +26,7 @@
  *   - .figure and .caption (HTML4) and figure and figcaption (HTML5)
  *     -> .sidefigure for right-floated figures
  *   - ins/del
+ *     -> ins/del.c### for candidate and proposed changes (amendments)
  *
  * Code
  *   - pre and code
@@ -34,9 +35,12 @@
  *   - .note       for informative notes             (div, p, span, aside, details)
  *   - .example    for informative examples          (div, p, pre, span)
  *   - .issue      for issues                        (div, p, span)
- *   - .assertion  for assertions                    (div, p, span)
  *   - .advisement for loud normative statements     (div, p, strong)
  *   - .annoying-warning for spec obsoletion notices (div, aside, details)
+ *   - .correction for "candidate corrections"       (div, aside, details, section)
+ *   - .addition   for "candidate additions"         (div, aside, details, section)
+ *   - .correction.proposed for "proposed corrections" (div, aside, details, section)
+ *   - .addition.proposed   for "proposed additions"   (div, aside, details, section)
  *
  * Definition Boxes
  *   - pre.def   for WebIDL definitions
@@ -57,6 +61,8 @@
  *   - .head for the header
  *   - .copyright for the copyright
  *
+ * Outdated warning for old specs
+ *
  * Miscellaneous
  *   - .overlarge for things that should be as wide as possible, even if
  *     that overflows the body text area. This can be used on an item or
@@ -64,22 +70,28 @@
  *     Note that this styling basically doesn't help at all when printing,
  *     since A4 paper isn't much wider than the max-width here.
  *     It's better to design things to fit into a narrower measure if possible.
+ *
  *   - js-added ToC jump links (see fixup.js)
  *
  ******************************************************************************/
 
+/* color variables included separately for reliability */
+
 /******************************************************************************/
-/*                                   Body                                     */
+/*                                    Body                                    */
 /******************************************************************************/
+
+	html {
+	}
 
 	body {
 		counter-reset: example figure issue;
 
 		/* Layout */
-		max-width: 50em;               /* limit line length to 50em for readability   */
-		margin: 0 auto;                /* center text within page                     */
+		max-width: 50em;			  /* limit line length to 50em for readability   */
+		margin: 0 auto;				/* center text within page                    */
 		padding: 1.6em 1.5em 2em 50px; /* assume 16px font size for downlevel clients */
-		padding: 1.6em 1.5em 2em calc(26px + 1.5em); /* leave space for status flag     */
+		padding: 1.6em 1.5em 2em calc(26px + 1.5em); /* leave space for status flag    */
 
 		/* Typography */
 		line-height: 1.5;
@@ -90,9 +102,10 @@
 		overflow-wrap: break-word;
 		hyphens: auto;
 
-		/* Colors */
 		color: black;
+		color: var(--text);
 		background: white top left fixed no-repeat;
+		background: var(--bg) top left fixed no-repeat;
 		background-size: 25px auto;
 	}
 
@@ -103,7 +116,7 @@
 
 /** Header ********************************************************************/
 
-	div.head { margin-bottom: 1em }
+	div.head { margin-bottom: 1em; }
 	div.head hr { border-style: solid; }
 
 	div.head h1 {
@@ -124,10 +137,13 @@
 	.head img[src*="logos/W3C"] {
 		display: block;
 		border: solid #1a5e9a;
+		border: solid var(--logo-bg);
 		border-width: .65rem .7rem .6rem;
 		border-radius: .4rem;
 		background: #1a5e9a;
+		background: var(--logo-bg);
 		color: white;
+		color: var(--logo-text);
 		font-weight: bold;
 	}
 
@@ -138,7 +154,9 @@
 
 	.head a:active > img[src*="logos/W3C"] {
 		background: #c00;
+		background: var(--logo-active-bg);
 		border-color: #c00;
+		border-color: var(--logo-active-bg);
 	}
 
 	/* see also additional rules in Link Styling section */
@@ -146,7 +164,7 @@
 /** Copyright *****************************************************************/
 
 	p.copyright,
-	p.copyright small { font-size: small }
+	p.copyright small { font-size: small; }
 
 /** Back to Top / ToC Toggle **************************************************/
 
@@ -158,14 +176,13 @@
 	@media not print {
 		#toc-nav {
 			position: fixed;
-			z-index: 2;
+			z-index: 3;
 			bottom: 0; left: 0;
 			margin: 0;
 			min-width: 1.33em;
 			border-top-right-radius: 2rem;
 			box-shadow: 0 0 2px;
 			font-size: 1.5em;
-			color: black;
 		}
 		#toc-nav > a {
 			display: block;
@@ -175,23 +192,32 @@
 			padding: .1em 0.3em;
 			margin: 0;
 
-			background: white;
 			box-shadow: 0 0 2px;
 			border: none;
 			border-top-right-radius: 1.33em;
+
+			color: #707070;
+			color: var(--tocnav-normal-text);
 			background: white;
+			background: var(--tocnav-normal-bg);
 		}
+		#toc-nav > a:hover,
+		#toc-nav > a:focus {
+			color: black;
+			color: var(--tocnav-hover-text);
+			background: #f8f8f8;
+			background: var(--tocnav-hover-bg);
+		}
+		#toc-nav > a:active {
+			color: #c00;
+			color: var(--tocnav-active-text);
+			background: white;
+			background: var(--tocnav-active-bg);
+		}
+
 		#toc-nav > #toc-jump {
 			padding-bottom: 2em;
 			margin-bottom: -1.9em;
-		}
-
-		#toc-nav > a:hover,
-		#toc-nav > a:focus {
-			background: #f8f8f8;
-		}
-		#toc-nav > a:not(:hover):not(:focus) {
-			color: #707070;
 		}
 
 		/* statusbar gets in the way on keyboard focus; remove once browsers fix */
@@ -205,26 +231,6 @@
 		}
 		#toc-nav > a > span + span {
 			padding-right: 0.2em;
-		}
-
-		#toc-toggle-inline {
-			vertical-align: 0.05em;
-			font-size: 80%;
-			color: gray;
-			color: hsla(203,20%,40%,.7);
-			border-style: none;
-			background: transparent;
-			position: relative;
-		}
-		#toc-toggle-inline:hover:not(:active),
-		#toc-toggle-inline:focus:not(:active) {
-			text-shadow: 1px 1px silver;
-			top: -1px;
-			left: -1px;
-		}
-
-		#toc-nav :active {
-			color: #C00;
 		}
 	}
 
@@ -243,10 +249,14 @@
 			padding: 0 1em;
 			padding-left: 42px;
 			padding-left: calc(1em + 26px);
+			color: black;
+			color: var(--tocsidebar-text);
 			background: inherit;
 			background-color: #f7f8f9;
+			background-color: var(--tocsidebar-bg);
 			z-index: 1;
 			box-shadow: -.1em 0 .25em rgba(0,0,0,.1) inset;
+			box-shadow: -.1em 0 .25em var(--tocsidebar-shadow) inset;
 		}
 		body.toc-sidebar #toc h2 {
 			margin-top: .8rem;
@@ -256,6 +266,7 @@
 			font-weight: bold;
 			color: gray;
 			color: hsla(203,20%,40%,.7);
+			color: var(--tocsidebar-heading-text);
 		}
 		body.toc-sidebar #toc-jump:not(:focus) {
 			width: 0;
@@ -283,10 +294,14 @@
 			padding: 0 1em;
 			padding-left: 42px;
 			padding-left: calc(1em + 26px);
+			color: black;
+			color: var(--tocsidebar-text);
 			background: inherit;
 			background-color: #f7f8f9;
+			background-color: var(--tocsidebar-bg);
 			z-index: 1;
 			box-shadow: -.1em 0 .25em rgba(0,0,0,.1) inset;
+			box-shadow: -.1em 0 .25em var(--tocsidebar-shadow) inset;
 		}
 		body:not(.toc-inline) #toc h2 {
 			margin-top: .8rem;
@@ -296,6 +311,7 @@
 			font-weight: bold;
 			color: gray;
 			color: hsla(203,20%,40%,.7);
+			color: var(--tocsidebar-heading-text);
 		}
 
 		body:not(.toc-inline) {
@@ -327,9 +343,9 @@
 		page-break-after: avoid;
 		page-break-inside: avoid;
 		font: 100% sans-serif;   /* Reset all font styling to clear out UA styles */
-		font-family: inherit;    /* Inherit the font family. */
-		line-height: 1.2;        /* Keep wrapped headings compact */
-		hyphens: manual;         /* Hyphenated headings look weird */
+		font-family: inherit;	/* Inherit the font family. */
+		line-height: 1.2;		/* Keep wrapped headings compact */
+		hyphens: manual;		/* Hyphenated headings look weird */
 	}
 
 	h2, h3, h4, h5, h6 {
@@ -338,7 +354,7 @@
 
 	h1, h2, h3 {
 		color: #005A9C;
-		background: transparent;
+		color: var(--heading-text);
 	}
 
 	h1 { font-size: 170%; }
@@ -352,8 +368,8 @@
 /** Subheadings ***************************************************************/
 
 	h1 + h2,
-	#subtitle {
-		/* #subtitle is a subtitle in an H2 under the H1 */
+	#profile-and-date {
+		/* #profile-and-date is a subtitle in an H2 under the H1 */
 		margin-top: 0;
 	}
 	h2 + h3,
@@ -365,11 +381,13 @@
 
 /** Section divider ***********************************************************/
 
-	:not(.head) > hr {
+	:not(.head) > :not(.head) + hr {
 		font-size: 1.5em;
 		text-align: center;
 		margin: 1em auto;
 		height: auto;
+		color: black;
+		color: var(--hr-text);
 		border: transparent solid 0;
 		background: transparent;
 	}
@@ -411,48 +429,51 @@
 	/* Style for algorithms */
 	ol.algorithm ol:not(.algorithm),
 	.algorithm > ol ol:not(.algorithm) {
-	 border-left: 0.5em solid #DEF;
+	border-left: 0.5em solid #DEF;
+	border-left: 0.5em solid var(--algo-border);
 	}
 
 	/* Put nice boxes around each algorithm. */
 	[data-algorithm]:not(.heading) {
-	  padding: .5em;
-	  border: thin solid #ddd; border-radius: .5em;
-	  margin: .5em calc(-0.5em - 1px);
+	 padding: .5em;
+	 border: thin solid #ddd;
+	 border: thin solid var(--algo-border);
+	 border-radius: .5em;
+	 margin: .5em calc(-0.5em - 1px);
 	}
 	[data-algorithm]:not(.heading) > :first-child {
-	  margin-top: 0;
+	 margin-top: 0;
 	}
 	[data-algorithm]:not(.heading) > :last-child {
-	  margin-bottom: 0;
+	 margin-bottom: 0;
 	}
 
 	/* Style for switch/case <dl>s */
 	dl.switch > dd > ol.only,
 	dl.switch > dd > .only > ol {
-	 margin-left: 0;
+	margin-left: 0;
 	}
 	dl.switch > dd > ol.algorithm,
 	dl.switch > dd > .algorithm > ol {
-	 margin-left: -2em;
+	margin-left: -2em;
 	}
 	dl.switch {
-	 padding-left: 2em;
+	padding-left: 2em;
 	}
 	dl.switch > dt {
-	 text-indent: -1.5em;
-	 margin-top: 1em;
+	text-indent: -1.5em;
+	margin-top: 1em;
 	}
 	dl.switch > dt + dt {
-	 margin-top: 0;
+	margin-top: 0;
 	}
 	dl.switch > dt::before {
-	 content: '\21AA';
-	 padding: 0 0.5em 0 0;
-	 display: inline-block;
-	 width: 1em;
-	 text-align: right;
-	 line-height: 0.5em;
+	content: '\21AA';
+	padding: 0 0.5em 0 0;
+	display: inline-block;
+	width: 1em;
+	text-align: right;
+	line-height: 0.5em;
 	}
 
 /** Terminology Markup ********************************************************/
@@ -470,7 +491,7 @@
 		font-style: normal;
 	}
 	dt dfn code, code.idl {
-		font-size: medium;
+		font-size: inherit;
 	}
 	dfn var {
 		font-style: normal;
@@ -478,8 +499,39 @@
 
 /** Change Marking ************************************************************/
 
-	del { color: red;  text-decoration: line-through; }
-	ins { color: #080; text-decoration: underline;    }
+	del {
+		color: #aa0000;
+		color: var(--del-text);
+		background: transparent;
+		background: var(--del-bg);
+		text-decoration: line-through;
+	}
+	ins {
+		color: #006100;
+		color: var(--ins-text);
+		background: transparent;
+		background: var(--ins-bg);
+		text-decoration: underline;
+	}
+
+	/* for amendments (candidate/proposed changes) */
+
+	.amendment ins, .correction ins, .addition ins,
+	ins[class^=c] {
+		text-decoration-style: dotted;
+	}
+	.amendment del, .correction del, .addition del,
+	del[class^=c] {
+		text-decoration-style: dotted;
+	}
+	.amendment.proposed ins, .correction.proposed ins, .addition.proposed ins,
+	ins[class^=c].proposed {
+		text-decoration-style: double;
+	}
+	.amendment.proposed del, .correction.proposed del, .addition.proposed del,
+	del[class^=c].proposed {
+		text-decoration-style: double;
+	}
 
 /** Miscellaneous improvements to inline formatting ***************************/
 
@@ -497,9 +549,14 @@
 	pre, code, samp {
 		font-family: Menlo, Consolas, "DejaVu Sans Mono", Monaco, monospace;
 		font-size: .9em;
-		page-break-inside: avoid;
 		hyphens: none;
 		text-transform: none;
+		text-align: left;
+		text-align: start;
+		font-variant: normal;
+		orphans: 3;
+		widows: 3;
+		page-break-before: avoid;
 	}
 	pre code,
 	code code {
@@ -514,7 +571,7 @@
 
 /** Inline Code fragments *****************************************************/
 
-  /* Do something nice. */
+	/* Do something nice. */
 
 /******************************************************************************/
 /*                                    Links                                   */
@@ -525,27 +582,29 @@
 	/* We hyperlink a lot, so make it less intrusive */
 	a[href] {
 		color: #034575;
-		text-decoration: none;
-		border-bottom: 1px solid #707070;
-		/* Need a bit of extending for it to look okay */
-		padding: 0 1px 0;
-		margin: 0 -1px 0;
+		color: var(--a-normal-text);
+		text-decoration: underline #707070;
+		text-decoration: underline var(--a-normal-underline);
+		text-decoration-skip-ink: none;
 	}
 	a:visited {
-		border-bottom-color: #BBB;
+		color: #034575;
+		color: var(--a-visited-text);
+		text-decoration-color: #bbb;
+		text-decoration-color: var(--a-visited-underline);
 	}
 
-	/* Use distinguishing colors when user is interacting with the link */
+	/* Indicate interaction with the link */
 	a[href]:focus,
 	a[href]:hover {
-		background: #f8f8f8;
-		background: rgba(75%, 75%, 75%, .25);
-		border-bottom-width: 3px;
-		margin-bottom: -2px;
+		text-decoration-thickness: 2px;
+		text-decoratin
 	}
 	a[href]:active {
-		color: #C00;
-		border-color: #C00;
+		color: #c00;
+		color: var(--a-active-text);
+		text-decoration-color: #c00;
+		text-decoration-color: var(--a-active-underline);
 	}
 
 	/* Backout above styling for W3C logo */
@@ -564,8 +623,13 @@
 		border-style: none;
 	}
 
+	img, svg {
+		/* Intentionally not color-scheme aware. */
+		background: white;
+	}
+
 	/* For autogen numbers, add
-	   .caption::before, figcaption::before { content: "Figure " counter(figure) ". "; }
+	  .caption::before, figcaption::before { content: "Figure " counter(figure) ". "; }
 	*/
 
 	figure, .figure, .sidefigure {
@@ -573,10 +637,11 @@
 		text-align: center;
 		margin: 2.5em 0;
 	}
-	.figure img,    .sidefigure img,    figure img,
+	.figure img,	.sidefigure img,	figure img,
 	.figure object, .sidefigure object, figure object {
 		max-width: 100%;
 		margin: auto;
+		height: auto;
 	}
 	.figure pre, .sidefigure pre, figure pre {
 		text-align: left;
@@ -590,7 +655,7 @@
 		.sidefigure {
 			float: right;
 			width: 50%;
-			margin: 0 0 0.5em 0.5em
+			margin: 0 0 0.5em 0.5em;
 		}
 	}
 	.caption, figcaption, caption {
@@ -605,13 +670,15 @@
 	}
 
 	/* DL list is indented 2em, but figure inside it is not */
-	dd > .figure, dd > figure { margin-left: -2em }
+	dd > .figure, dd > figure { margin-left: -2em; }
 
 /******************************************************************************/
 /*                             Colored Boxes                                  */
 /******************************************************************************/
 
-	.issue, .note, .example, .assertion, .advisement, blockquote {
+	.issue, .note, .example, .assertion, .advisement, blockquote,
+	.amendment, .correction, .addition {
+		margin: 1em auto;
 		padding: .5em;
 		border: .5em;
 		border-left-style: solid;
@@ -622,88 +689,117 @@
 		border-right-style: solid;
 	}
 
-	.issue,
-	.note,
-	.example,
-	.advisement,
-	.assertion,
-	blockquote {
-		margin: 1em auto;
-	}
+	blockquote > :first-child,
 	.note  > p:first-child,
 	.issue > p:first-child,
-	blockquote > :first-child {
+	.amendment > p:first-child,
+	.correction > p:first-child,
+	.addition > p:first-child {
 		margin-top: 0;
 	}
-	blockquote > :last-child {
+	blockquote > :last-child,
+	.note  > p:last-child,
+	.issue > p:last-child,
+	.amendment > p:last-child,
+	.correction > p:last-child,
+	.addition > p:last-child {
 		margin-bottom: 0;
+	}
+
+
+	.issue::before, .issue > .marker,
+	.example::before, .example > .marker,
+	.note::before, .note > .marker,
+	details.note > summary > .marker,
+	.amendment::before, .amendment > .marker,
+	details.amendment > summary > .marker,
+	.addition::before, .addition > .marker,
+	addition.amendment > summary > .marker,
+	.correction::before, .correction > .marker,
+	correction.amendment > summary > .marker
+	{
+		text-transform: uppercase;
+		padding-right: 1em;
+	}
+
+	.example::before, .example > .marker {
+		display: block;
+		padding-right: 0em;
 	}
 
 /** Blockquotes ***************************************************************/
 
 	blockquote {
 		border-color: silver;
+		border-color: var(--blockquote-border);
+		background: transparent;
+		background: var(--blockquote-bg);
+		color: currentcolor;
+		color: var(--blockquote-text);
 	}
 
 /** Open issue ****************************************************************/
 
 	.issue {
-		border-color: #E05252;
-		background: #FBE9E9;
+		border-color: #e05252;
+		border-color: var(--issue-border);
+		background: #fbe9e9;
+		background: var(--issue-bg);
+		color: black;
+		color: var(--issue-text);
 		counter-increment: issue;
 		overflow: auto;
 	}
 	.issue::before, .issue > .marker {
-		text-transform: uppercase;
-		color: #AE1E1E;
-		padding-right: 1em;
-		text-transform: uppercase;
+		color: #831616;
+		color: var(--issueheading-text);
 	}
 	/* Add .issue::before { content: "Issue " counter(issue) " "; } for autogen numbers,
-	   or use class="marker" to mark up the issue number in source. */
+	  or use class="marker" to mark up the issue number in source. */
 
 /** Example *******************************************************************/
 
 	.example {
-		border-color: #E0CB52;
-		background: #FCFAEE;
+		border-color: #e0cb52;
+		border-color: var(--example-border);
+		background: #fcfaee;
+		background: var(--example-bg);
+		color: black;
+		color: var(--example-text);
 		counter-increment: example;
 		overflow: auto;
 		clear: both;
 	}
 	.example::before, .example > .marker {
-		text-transform: uppercase;
-		color: #827017;
-		min-width: 7.5em;
-		display: block;
+		color: #574b0f;
+		color: var(--exampleheading-text);
 	}
 	/* Add .example::before { content: "Example " counter(example) " "; } for autogen numbers,
-	   or use class="marker" to mark up the example number in source. */
+	  or use class="marker" to mark up the example number in source. */
 
 /** Non-normative Note ********************************************************/
 
 	.note {
-		border-color: #52E052;
-		background: #E9FBE9;
+		border-color: #52e052;
+		border-color: var(--note-border);
+		background: #e9fbe9;
+		background: var(--note-bg);
+		color: black;
+		color: var(--note-text);
 		overflow: auto;
 	}
 
 	.note::before, .note > .marker,
-	details.note > summary::before,
-	details.note > summary > .marker {
-		text-transform: uppercase;
-		display: block;
-		color: hsl(120, 70%, 30%);
-	}
-	/* Add .note::before { content: "Note"; } for autogen label,
-	   or use class="marker" to mark up the label in source. */
-
 	details.note > summary {
-		display: block;
 		color: hsl(120, 70%, 30%);
+		color: var(--noteheading-text);
 	}
+	/* Add .note::before { content: "Note "; } for autogen label,
+	  or use class="marker" to mark up the label in source. */
+
 	details.note[open] > summary {
 		border-bottom: 1px silver solid;
+		border-bottom: 1px var(--notesummary-underline) solid;
 	}
 
 /** Assertion Box *************************************************************/
@@ -711,7 +807,11 @@
 
 	.assertion {
 		border-color: #AAA;
+		border-color: var(--assertion-border);
 		background: #EEE;
+		background: var(--assertion-bg);
+		color: black;
+		color: var(--assertion-text);
 	}
 
 /** Advisement Box ************************************************************/
@@ -719,15 +819,52 @@
 
 	.advisement {
 		border-color: orange;
+		border-color: var(--advisement-border);
 		border-style: none solid;
-		background: #FFEECC;
+		background: #fec;
+		background: var(--advisement-bg);
+		color: black;
+		color: var(--advisement-text);
 	}
 	strong.advisement {
 		display: block;
 		text-align: center;
 	}
-	.advisement > .marker {
-		color: #B35F00;
+	.advisement::before, .advisement > .marker {
+		color: #b35f00;
+		color: var(--advisementheading-text);
+	}
+
+/** Amendment Box *************************************************************/
+
+	.amendment, .correction, .addition {
+		border-color: #330099;
+		border-color: var(--amendment-border);
+		background: #F5F0FF;
+		background: var(--amendment-bg);
+		color: black;
+		color: var(--amendment-text);
+	}
+	.amendment.proposed, .correction.proposed, .addition.proposed {
+		border-style: solid;
+		border-block-width: 0.25em;
+	}
+	.amendment::before, .amendment > .marker,
+	details.amendment > summary::before, details.amendment > summary > .marker,
+	.correction::before, .correction > .marker,
+	details.correction > summary::before, details.correction > summary > .marker,
+	.addition::before, .addition > .marker,
+	details.addition > summary::before, details.addition > summary > .marker {
+		color: #220066;
+		color: var(--amendmentheading-text);
+	}
+	.amendment.proposed::before, .amendment.proposed > .marker,
+	details.amendment.proposed > summary::before, details.amendment.proposed > summary > .marker,
+	.correction.proposed::before, .correction.proposed > .marker,
+	details.correction.proposed > summary::before, details.correction.proposed > summary > .marker,
+	.addition.proposed::before, .addition.proposed > .marker,
+	details.addition.proposed > summary::before, details.addition.proposed > summary > .marker {
+		font-weight: bold;
 	}
 
 /** Spec Obsoletion Notice ****************************************************/
@@ -743,13 +880,16 @@
 	.annoying-warning:not(details),
 	details.annoying-warning:not([open]) > summary,
 	details.annoying-warning[open] {
-		background: #fdd;
-		color: red;
-		font-weight: bold;
+		background: hsla(40,100%,50%,0.95);
+		background: var(--warning-bg);
+		color: black;
+		color: var(--warning-text);
 		padding: .75em 1em;
-		border: thick red;
-		border-style: solid;
-		border-radius: 1em;
+		border: red;
+		border: var(--warning-border);
+		border-style: solid none;
+		box-shadow: 0 2px 8px black;
+		text-align: center;
 	}
 	.annoying-warning :last-child {
 		margin-bottom: 0;
@@ -758,9 +898,9 @@
 @media not print {
 	details.annoying-warning[open] {
 		position: fixed;
-		left: 1em;
-		right: 1em;
-		bottom: 1em;
+		left: 0;
+		right: 0;
+		bottom: 2em;
 		z-index: 1000;
 	}
 }
@@ -773,9 +913,13 @@
 
 	.def {
 		padding: .5em 1em;
-		background: #DEF;
+		background: #def;
+		background: var(--def-bg);
 		margin: 1.2em 0;
-		border-left: 0.5em solid #8CCBF2;
+		border-left: 0.5em solid #8ccbf2;
+		border-left: 0.5em solid var(--def-border);
+		color: black;
+		color: var(--def-text);
 	}
 
 /******************************************************************************/
@@ -800,6 +944,7 @@
 		padding: 0.5em;
 		vertical-align: baseline;
 		border-bottom: 1px solid #bbd7e9;
+		border-bottom: 1px solid var(--defrow-border);
 	}
 
 	table.def > tbody > tr:last-child th,
@@ -820,10 +965,10 @@
 	}
 
 	/* A footnote at the bottom of a def table */
-	table.def           td.footnote {
+	table.def td.footnote {
 		padding-top: 0.6em;
 	}
-	table.def           td.footnote::before {
+	table.def td.footnote::before {
 		content: " ";
 		display: block;
 		height: 0.6em;
@@ -833,15 +978,15 @@
 
 /** Data tables (and properly marked-up index tables) *************************/
 	/*
-		 <table class="data"> highlights structural relationships in a table
-		 when correct markup is used (e.g. thead/tbody, th vs. td, scope attribute)
+		<table class="data"> highlights structural relationships in a table
+		when correct markup is used (e.g. thead/tbody, th vs. td, scope attribute)
 
-		 Use class="complex data" for particularly complicated tables --
-		 (This will draw more lines: busier, but clearer.)
+		Use class="complex data" for particularly complicated tables --
+		(This will draw more lines: busier, but clearer.)
 
-		 Use class="long" on table cells with paragraph-like contents
-		 (This will adjust text alignment accordingly.)
-		 Alternately use class="longlastcol" on tables, to have the last column assume "long".
+		Use class="long" on table cells with paragraph-like contents
+		(This will adjust text alignment accordingly.)
+		Alternately use class="longlastcol" on tables, to have the last column assume "long".
 	*/
 
 	table {
@@ -868,6 +1013,7 @@
 		padding: 0.5em 1em;
 		border-width: 1px;
 		border-color: silver;
+		border-color: var(--datacell-border);
 		border-top-style: solid;
 	}
 
@@ -892,6 +1038,7 @@
 	table.index tbody th:first-child  {
 		border-right: 2px solid;
 		border-top: 1px solid silver;
+		border-top: 1px solid var(--datacell-border);
 		padding-right: 1em;
 	}
 
@@ -903,13 +1050,14 @@
 	table.complex.data th,
 	table.complex.data td {
 		border: 1px solid silver;
+		border: 1px solid var(--datacell-border);
 		text-align: center;
 	}
 
 	table.data.longlastcol td:last-child,
 	table.data td.long {
-	 vertical-align: baseline;
-	 text-align: left;
+		vertical-align: baseline;
+		text-align: left;
 	}
 
 	table.data img {
@@ -962,17 +1110,30 @@ Possible extra rowspan handling
 
 	.toc a {
 		/* More spacing; use padding to make it part of the click target. */
-		padding-top: 0.1rem;
+		padding: 0.1rem 1px 0;
 		/* Larger, more consistently-sized click target */
 		display: block;
+		/* Switch to using border-bottom for underlines */
+		text-decoration: none;
+		border-bottom: 1px solid;
 		/* Reverse color scheme */
 		color: black;
-		border-color: #3980B5;
-		border-bottom-width: 3px !important;
-		margin-bottom: 0px !important;
+		color: var(--toclink-text);
+		border-color: #3980b5;
+		border-color: var(--toclink-underline);
 	}
 	.toc a:visited {
+		color: black;
+		color: var(--toclink-visited-text);
 		border-color: #054572;
+		border-color: var(--toclink-visited-underline);
+	}
+	.toc a:focus,
+	.toc a:hover {
+		background: rgba(75%, 75%, 75%, .25);
+		background: var(--a-hover-bg);
+		border-bottom-width: 3px;
+		margin-bottom: -2px;
 	}
 	.toc a:not(:focus):not(:hover) {
 		/* Allow colors to cascade through from link styling */
@@ -984,22 +1145,22 @@ Possible extra rowspan handling
 		/* because generated content isn't search/selectable and markers can't do multilevel yet */
 		margin:  0;
 		padding: 0;
-		line-height: 1.1rem; /* consistent spacing */
+	}
+	.toc {
+		line-height: 1.1em;
 	}
 
 	/* ToC not indented until third level, but font style & margins show hierarchy */
-	.toc > li             { font-weight: bold;   }
-	.toc > li li          { font-weight: normal; }
-	.toc > li li li       { font-size:   95%;    }
-	.toc > li li li li    { font-size:   90%;    }
-	.toc > li li li li .secno { font-size: 85%; }
-	.toc > li li li li li { font-size:   85%;    }
-	.toc > li li li li li .secno { font-size: 100%; }
+	.toc > li			{ font-weight: bold;   }
+	.toc > li li		 { font-weight: normal; }
+	.toc > li li li	  { font-size:   95%;	}
+	.toc > li li li li	{ font-size:   90%;	}
+	.toc > li li li li li { font-size:   85%;	}
 
 	/* @supports not (display:grid) { */
-		.toc > li             { margin: 1.5rem 0;    }
-		.toc > li li          { margin: 0.3rem 0;    }
-		.toc > li li li       { margin-left: 2rem;   }
+		.toc > li			{ margin: 1.5rem 0;	}
+		.toc > li li		 { margin: 0.3rem 0;	}
+		.toc > li li li	  { margin-left: 2rem;   }
 
 		/* Section numbers in a column of their own */
 		.toc .secno {
@@ -1007,26 +1168,37 @@ Possible extra rowspan handling
 			width: 4rem;
 			white-space: nowrap;
 		}
+		.toc > li li li li .secno { font-size: 85%; }
+		.toc > li li li li li .secno { font-size: 100%; }
 
 		.toc li {
 			clear: both;
 		}
 
-		:not(li) > .toc              { margin-left:  5rem; }
-		.toc .secno                  { margin-left: -5rem; }
-		.toc > li li li .secno       { margin-left: -7rem; }
-		.toc > li li li li .secno    { margin-left: -9rem; }
+		:not(li) > .toc			 { margin-left:  5rem; }
+		.toc .secno				 { margin-left: -5rem; }
+		.toc > li li li .secno	  { margin-left: -7rem; }
+		.toc > li li li li .secno	{ margin-left: -9rem; }
 		.toc > li li li li li .secno { margin-left: -11rem; }
 
 		/* Tighten up indentation in narrow ToCs */
 		@media (max-width: 30em) {
-			:not(li) > .toc              { margin-left:  4rem; }
-			.toc .secno                  { margin-left: -4rem; }
-			.toc > li li li              { margin-left:  1rem; }
-			.toc > li li li .secno       { margin-left: -5rem; }
-			.toc > li li li li .secno    { margin-left: -6rem; }
+			:not(li) > .toc			 { margin-left:  4rem; }
+			.toc .secno				 { margin-left: -4rem; }
+			.toc > li li li			 { margin-left:  1rem; }
+			.toc > li li li .secno	  { margin-left: -5rem; }
+			.toc > li li li li .secno	{ margin-left: -6rem; }
 			.toc > li li li li li .secno { margin-left: -7rem; }
 		}
+		/* Loosen it on wide screens */
+		@media screen and (min-width: 78em) {
+			body:not(.toc-inline) :not(li) > .toc			 { margin-left:  4rem; }
+			body:not(.toc-inline) .toc .secno				 { margin-left: -4rem; }
+			body:not(.toc-inline) .toc > li li li			 { margin-left:  1rem; }
+			body:not(.toc-inline) .toc > li li li .secno	  { margin-left: -5rem; }
+			body:not(.toc-inline) .toc > li li li li .secno	{ margin-left: -6rem; }
+			body:not(.toc-inline) .toc > li li li li li .secno { margin-left: -7rem; }
+	}
 	/* } */
 
 	@supports (display:grid) and (display:contents) {
@@ -1055,7 +1227,7 @@ Possible extra rowspan handling
 		}
 		#toc > .toc > li > a > span {
 			/* The spans of the top-level list,
-			   comprising the first items of each top-level section. */
+			  comprising the first items of each top-level section. */
 			margin-top: 1.1rem;
 		}
 		#toc#toc .secno { /* Ugh, need more specificity to override base.css */
@@ -1068,9 +1240,12 @@ Possible extra rowspan handling
 			width: auto;
 			margin-right: 1rem;
 		}
-		#toc .content:hover {
+		#toc .content:hover,
+		#toc .content:focus {
 			background: rgba(75%, 75%, 75%, .25);
+			background: var(--a-hover-bg);
 			border-bottom: 3px solid #054572;
+			border-bottom: 3px solid var(--toclink-underline);
 			margin-bottom: -3px;
 		}
 		#toc li li li .content {
@@ -1085,22 +1260,23 @@ Possible extra rowspan handling
 /** Index *********************************************************************/
 
 	/* Index Lists: Layout */
-	ul.index       { margin-left: 0; columns: 15em; text-indent: 1em hanging; }
-	ul.index li    { margin-left: 0; list-style: none; break-inside: avoid; }
-	ul.index li li { margin-left: 1em }
-	ul.index dl    { margin-top: 0; }
-	ul.index dt    { margin: .2em 0 .2em 20px;}
-	ul.index dd    { margin: .2em 0 .2em 40px;}
+	ul.index	  { margin-left: 0; columns: 15em; text-indent: 1em hanging; }
+	ul.index li	{ margin-left: 0; list-style: none; break-inside: avoid; }
+	ul.index li li { margin-left: 1em; }
+	ul.index dl	{ margin-top: 0; }
+	ul.index dt	{ margin: .2em 0 .2em 20px;}
+	ul.index dd	{ margin: .2em 0 .2em 40px;}
 	/* Index Lists: Typography */
 	ul.index ul,
 	ul.index dl { font-size: smaller; }
 	@media not print {
-		ul.index li span {
+		ul.index li span:not(.dfn-paneled) {
 			white-space: nowrap;
 			color: transparent; }
 		ul.index li a:hover + span,
 		ul.index li a:focus + span {
 			color: #707070;
+			color: var(--indexinfo-text);
 		}
 	}
 
@@ -1122,13 +1298,101 @@ Possible extra rowspan handling
 
 	table.index tr:hover td:not([rowspan]),
 	table.index tr:hover th:not([rowspan]) {
+		color: black;
+		color: var(--indextable-hover-text);
 		background: #f7f8f9;
+		background: var(--indextable-hover-bg);
 	}
 
 	/* The link in the first column in the property table (formerly a TD) */
 	table.index th:first-child a {
 		font-weight: bold;
 	}
+
+/** Outdated warning **********************************************************/
+
+.outdated-spec {
+	color: black;
+	color: var(--outdatedspec-text);
+	background-color: rgba(0,0,0,0.5);
+	background-color: var(--outdatedspec-bg);
+}
+
+.outdated-warning {
+	position: fixed;
+	bottom: 50%;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	width: 50%;
+	background: maroon;
+	background: var(--outdated-bg);
+	color: white;
+	color: var(--outdated-text);
+	border-radius: 1em;
+	box-shadow: 0 0 1em red;
+	box-shadow: 0 0 1em var(--outdated-shadow);
+	padding: 2em;
+	text-align: center;
+	z-index: 2;
+}
+
+.outdated-warning a {
+	color: currentcolor;
+	background: transparent;
+}
+
+.edited-rec-warning {
+	background: darkorange;
+	background: var(--editedrec-bg);
+	box-shadow: 0 0 1em;
+}
+
+.outdated-warning button {
+	color: var(--outdated-text);
+	border-radius: 1em;
+	box-shadow: 0 0 1em red;
+	box-shadow: 0 0 1em var(--outdated-shadow);
+	padding: 2em;
+	text-align: center;
+	z-index: 2;
+}
+
+.outdated-warning a {
+	color: currentcolor;
+	background: transparent;
+}
+
+.edited-rec-warning {
+	background: darkorange;
+	background: var(--editedrec-bg);
+	box-shadow: 0 0 1em;
+}
+
+.outdated-warning button {
+	position: absolute;
+	top: 0;
+	right:0;
+	margin: 0;
+	border: 0;
+	padding: 0.25em 0.5em;
+	background: transparent;
+	color: white;
+	color: var(--outdated-text);
+	font:1em sans-serif;
+	text-align:center;
+}
+
+.outdated-warning span {
+	display: block;
+}
+
+.outdated-collapsed {
+	bottom: 0;
+	border-radius: 0;
+	width: 100%;
+	padding: 0;
+}
 
 /******************************************************************************/
 /*                                    Print                                   */
@@ -1143,17 +1407,20 @@ Possible extra rowspan handling
 		body {
 			font-family: serif;
 		}
+
+		.outdated-warning {
+			position: absolute;
+			border-style: solid;
+			border-color: red;
+		}
+
+		.outdated-warning input {
+			display: none;
+		}
 	}
 	@page {
 		margin: 1.5cm 1.1cm;
 	}
-
-/******************************************************************************/
-/*                                    Legacy                                  */
-/******************************************************************************/
-
-	/* This rule is inherited from past style sheets. No idea what it's for. */
-	.hide { display: none }
 
 
 
@@ -1168,13 +1435,13 @@ Possible extra rowspan handling
 		margin-right: auto;
 	}
 	.overlarge {
-		/* Magic to create good table positioning:
-		   "content column" is 50ems wide at max; less on smaller screens.
-		   Extra space (after ToC + content) is empty on the right.
+		/* Magic to create good item positioning:
+		  "content column" is 50ems wide at max; less on smaller screens.
+		  Extra space (after ToC + content) is empty on the right.
 
-		   1. When table < content column, centers table in column.
-		   2. When content < table < available, left-aligns.
-		   3. When table > available, fills available + scroll bar.
+		  1. When item < content column, centers item in column.
+		  2. When content < item < available, left-aligns.
+		  3. When item > available, fills available + scroll bar.
 		*/
 		display: grid;
 		grid-template-columns: minmax(0, 50em);
@@ -1209,13 +1476,13 @@ Possible extra rowspan handling
 		.overlarge {
 			overflow-x: auto;
 			/* See Lea Verou's explanation background-attachment:
-			 * http://lea.verou.me/2012/04/background-attachment-local/
-			 *
+			* http://lea.verou.me/2012/04/background-attachment-local/
+			*
 			background: top left  / 4em 100% linear-gradient(to right,  #ffffff, rgba(255, 255, 255, 0)) local,
-			            top right / 4em 100% linear-gradient(to left, #ffffff, rgba(255, 255, 255, 0)) local,
-			            top left  / 1em 100% linear-gradient(to right,  #c3c3c5, rgba(195, 195, 197, 0)) scroll,
-			            top right / 1em 100% linear-gradient(to left, #c3c3c5, rgba(195, 195, 197, 0)) scroll,
-			            white;
+						top right / 4em 100% linear-gradient(to left, #ffffff, rgba(255, 255, 255, 0)) local,
+						top left  / 1em 100% linear-gradient(to right,  #c3c3c5, rgba(195, 195, 197, 0)) scroll,
+						top right / 1em 100% linear-gradient(to left, #c3c3c5, rgba(195, 195, 197, 0)) scroll,
+						white;
 			background-repeat: no-repeat;
 			*/
 		}
@@ -1294,13 +1561,13 @@ Possible extra rowspan handling
     blockquote c-[vi] { color: inherit; } /* Name.Variable.Instance */
     blockquote c-[il] { color: inherit; } /* Literal.Number.Integer.Long */
   </style>
-  <meta content="Bikeshed version 5f7b0e20, updated Tue Aug 18 15:46:28 2020 -0700" name="generator">
-  <link href="https://wg21.link/P2013R2" rel="canonical">
+  <meta content="Bikeshed version c6f50773a, updated Fri Apr 16 16:45:47 2021 -0700" name="generator">
+  <link href="https://wg21.link/P2013R3" rel="canonical">
   <link href="https://isocpp.org/favicon.ico" rel="icon">
 <style>/* style-autolinks */
 
 .css.css, .property.property, .descriptor.descriptor {
-    color: #005a9c;
+    color: var(--a-normal-text);
     font-size: inherit;
     font-family: inherit;
 }
@@ -1359,6 +1626,115 @@ pre .property::before, pre .property::after {
 [data-link-type=biblio] {
     white-space: pre;
 }</style>
+<style>/* style-colors */
+
+/* Any --*-text not paired with a --*-bg is assumed to have a transparent bg */
+:root {
+    color-scheme: light dark;
+
+    --text: black;
+    --bg: white;
+
+    --unofficial-watermark: url(https://www.w3.org/StyleSheets/TR/2016/logos/UD-watermark);
+
+    --logo-bg: #1a5e9a;
+    --logo-active-bg: #c00;
+    --logo-text: white;
+
+    --tocnav-normal-text: #707070;
+    --tocnav-normal-bg: var(--bg);
+    --tocnav-hover-text: var(--tocnav-normal-text);
+    --tocnav-hover-bg: #f8f8f8;
+    --tocnav-active-text: #c00;
+    --tocnav-active-bg: var(--tocnav-normal-bg);
+
+    --tocsidebar-text: var(--text);
+    --tocsidebar-bg: #f7f8f9;
+    --tocsidebar-shadow: rgba(0,0,0,.1);
+    --tocsidebar-heading-text: hsla(203,20%,40%,.7);
+
+    --toclink-text: var(--text);
+    --toclink-underline: #3980b5;
+    --toclink-visited-text: var(--toclink-text);
+    --toclink-visited-underline: #054572;
+
+    --heading-text: #005a9c;
+
+    --hr-text: var(--text);
+
+    --algo-border: #def;
+
+    --del-text: red;
+    --del-bg: transparent;
+    --ins-text: #080;
+    --ins-bg: transparent;
+
+    --a-normal-text: #034575;
+    --a-normal-underline: #bbb;
+    --a-visited-text: var(--a-normal-text);
+    --a-visited-underline: #707070;
+    --a-hover-bg: rgba(75%, 75%, 75%, .25);
+    --a-active-text: #c00;
+    --a-active-underline: #c00;
+
+    --blockquote-border: silver;
+    --blockquote-bg: transparent;
+    --blockquote-text: currentcolor;
+
+    --issue-border: #e05252;
+    --issue-bg: #fbe9e9;
+    --issue-text: var(--text);
+    --issueheading-text: #831616;
+
+    --example-border: #e0cb52;
+    --example-bg: #fcfaee;
+    --example-text: var(--text);
+    --exampleheading-text: #574b0f;
+
+    --note-border: #52e052;
+    --note-bg: #e9fbe9;
+    --note-text: var(--text);
+    --noteheading-text: hsl(120, 70%, 30%);
+    --notesummary-underline: silver;
+
+    --assertion-border: #aaa;
+    --assertion-bg: #eee;
+    --assertion-text: black;
+
+    --advisement-border: orange;
+    --advisement-bg: #fec;
+    --advisement-text: var(--text);
+    --advisementheading-text: #b35f00;
+
+    --warning-border: red;
+    --warning-bg: hsla(40,100%,50%,0.95);
+    --warning-text: var(--text);
+
+    --amendment-border: #330099;
+    --amendment-bg: #F5F0FF;
+    --amendment-text: var(--text);
+    --amendmentheading-text: #220066;
+
+    --def-border: #8ccbf2;
+    --def-bg: #def;
+    --def-text: var(--text);
+    --defrow-border: #bbd7e9;
+
+    --datacell-border: silver;
+
+    --indexinfo-text: #707070;
+
+    --indextable-hover-text: black;
+    --indextable-hover-bg: #f7f8f9;
+
+    --outdatedspec-bg: rgba(0, 0, 0, .5);
+    --outdatedspec-text: black;
+    --outdated-bg: maroon;
+    --outdated-text: white;
+    --outdated-shadow: red;
+
+    --editedrec-bg: darkorange;
+}</style>
 <style>/* style-counters */
 
 body {
@@ -1400,6 +1776,11 @@ figcaption:not(.no-marker)::before {
 }</style>
 <style>/* style-selflinks */
 
+:root {
+    --selflink-text: white;
+    --selflink-bg: gray;
+    --selflink-hover-text: black;
+}
 .heading, .issue, .note, .example, li, dt {
     position: relative;
 }
@@ -1429,8 +1810,8 @@ dfn > a.self-link {
     opacity: 0;
     width: 1.5em;
     height: 1.5em;
-    background: gray;
-    color: white;
+    background: var(--selflink-bg);
+    color: var(--selflink-text);
     font-style: normal;
     transition: opacity .2s, background-color .2s, color .2s;
 }
@@ -1438,17 +1819,19 @@ dfn:hover > a.self-link {
     opacity: 1;
 }
 dfn > a.self-link:hover {
-    color: black;
+    color: var(--selflink-hover-text);
 }
 
 a.self-link::before            { content: "¶"; }
 .heading > a.self-link::before { content: "§"; }
-dfn > a.self-link::before      { content: "#"; }</style>
+dfn > a.self-link::before      { content: "#"; }
+</style>
 <style>/* style-syntax-highlighting */
 
-.highlight:not(.idl) { background: hsl(24, 20%, 95%); }
 code.highlight { padding: .1em; border-radius: .3em; }
 pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em 0; overflow: auto; border-radius: 0; }
+
+.highlight:not(.idl) { background: rgba(0, 0, 0, .03); }
 c-[a] { color: #990055 } /* Keyword.Declaration */
 c-[b] { color: #990055 } /* Keyword.Type */
 c-[c] { color: #708090 } /* Comment */
@@ -1502,20 +1885,203 @@ c-[vg] { color: #0077aa } /* Name.Variable.Global */
 c-[vi] { color: #0077aa } /* Name.Variable.Instance */
 c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
 </style>
+<style>/* style-darkmode */
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text: #ddd;
+        --bg: black;
+
+        --unofficial-watermark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cg fill='%23100808' transform='translate(200 200) rotate(-45) translate(-200 -200)' stroke='%23100808' stroke-width='3'%3E%3Ctext x='50%25' y='220' style='font: bold 70px sans-serif; text-anchor: middle; letter-spacing: 6px;'%3EUNOFFICIAL%3C/text%3E%3Ctext x='50%25' y='305' style='font: bold 70px sans-serif; text-anchor: middle; letter-spacing: 6px;'%3EDRAFT%3C/text%3E%3C/g%3E%3C/svg%3E");
+
+        --logo-bg: #1a5e9a;
+        --logo-active-bg: #c00;
+        --logo-text: white;
+
+        --tocnav-normal-text: #999;
+        --tocnav-normal-bg: var(--bg);
+        --tocnav-hover-text: var(--tocnav-normal-text);
+        --tocnav-hover-bg: #080808;
+        --tocnav-active-text: #f44;
+        --tocnav-active-bg: var(--tocnav-normal-bg);
+
+        --tocsidebar-text: var(--text);
+        --tocsidebar-bg: #080808;
+        --tocsidebar-shadow: rgba(255,255,255,.1);
+        --tocsidebar-heading-text: hsla(203,20%,40%,.7);
+
+        --toclink-text: var(--text);
+        --toclink-underline: #6af;
+        --toclink-visited-text: var(--toclink-text);
+        --toclink-visited-underline: #054572;
+
+        --heading-text: #8af;
+
+        --hr-text: var(--text);
+
+        --algo-border: #456;
+
+        --del-text: #f44;
+        --del-bg: transparent;
+        --ins-text: #4a4;
+        --ins-bg: transparent;
+
+        --a-normal-text: #6af;
+        --a-normal-underline: #555;
+        --a-visited-text: var(--a-normal-text);
+        --a-visited-underline: var(--a-normal-underline);
+        --a-hover-bg: rgba(25%, 25%, 25%, .2);
+        --a-active-text: #f44;
+        --a-active-underline: var(--a-active-text);
+
+        --borderedblock-bg: rgba(255, 255, 255, .05);
+
+        --blockquote-border: silver;
+        --blockquote-bg: var(--borderedblock-bg);
+        --blockquote-text: currentcolor;
+
+        --issue-border: #e05252;
+        --issue-bg: var(--borderedblock-bg);
+        --issue-text: var(--text);
+        --issueheading-text: hsl(0deg, 70%, 70%);
+
+        --example-border: hsl(50deg, 90%, 60%);
+        --example-bg: var(--borderedblock-bg);
+        --example-text: var(--text);
+        --exampleheading-text: hsl(50deg, 70%, 70%);
+
+        --note-border: hsl(120deg, 100%, 35%);
+        --note-bg: var(--borderedblock-bg);
+        --note-text: var(--text);
+        --noteheading-text: hsl(120, 70%, 70%);
+        --notesummary-underline: silver;
+
+        --assertion-border: #444;
+        --assertion-bg: var(--borderedblock-bg);
+        --assertion-text: var(--text);
+
+        --advisement-border: orange;
+        --advisement-bg: #222218;
+        --advisement-text: var(--text);
+        --advisementheading-text: #f84;
+
+        --warning-border: red;
+        --warning-bg: hsla(40,100%,20%,0.95);
+        --warning-text: var(--text);
+
+        --amendment-border: #330099;
+        --amendment-bg: #080010;
+        --amendment-text: var(--text);
+        --amendmentheading-text: #cc00ff;
+
+        --def-border: #8ccbf2;
+        --def-bg: #080818;
+        --def-text: var(--text);
+        --defrow-border: #136;
+
+        --datacell-border: silver;
+
+        --indexinfo-text: #aaa;
+
+        --indextable-hover-text: var(--text);
+        --indextable-hover-bg: #181818;
+
+        --outdatedspec-bg: rgba(255, 255, 255, .5);
+        --outdatedspec-text: black;
+        --outdated-bg: maroon;
+        --outdated-text: white;
+        --outdated-shadow: red;
+
+        --editedrec-bg: darkorange;
+    }
+    /* In case a transparent-bg image doesn't expect to be on a dark bg,
+       which is quite common in practice... */
+    img { background: white; }
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --selflink-text: black;
+        --selflink-bg: silver;
+        --selflink-hover-text: white;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .highlight:not(.idl) { background: rgba(255, 255, 255, .05); }
+
+    c-[a] { color: #d33682 } /* Keyword.Declaration */
+    c-[b] { color: #d33682 } /* Keyword.Type */
+    c-[c] { color: #2aa198 } /* Comment */
+    c-[d] { color: #2aa198 } /* Comment.Multiline */
+    c-[e] { color: #268bd2 } /* Name.Attribute */
+    c-[f] { color: #b58900 } /* Name.Tag */
+    c-[g] { color: #cb4b16 } /* Name.Variable */
+    c-[k] { color: #d33682 } /* Keyword */
+    c-[l] { color: #657b83 } /* Literal */
+    c-[m] { color: #657b83 } /* Literal.Number */
+    c-[n] { color: #268bd2 } /* Name */
+    c-[o] { color: #657b83 } /* Operator */
+    c-[p] { color: #657b83 } /* Punctuation */
+    c-[s] { color: #6c71c4 } /* Literal.String */
+    c-[t] { color: #6c71c4 } /* Literal.String.Single */
+    c-[u] { color: #6c71c4 } /* Literal.String.Double */
+    c-[ch] { color: #2aa198 } /* Comment.Hashbang */
+    c-[cp] { color: #2aa198 } /* Comment.Preproc */
+    c-[cpf] { color: #2aa198 } /* Comment.PreprocFile */
+    c-[c1] { color: #2aa198 } /* Comment.Single */
+    c-[cs] { color: #2aa198 } /* Comment.Special */
+    c-[kc] { color: #d33682 } /* Keyword.Constant */
+    c-[kn] { color: #d33682 } /* Keyword.Namespace */
+    c-[kp] { color: #d33682 } /* Keyword.Pseudo */
+    c-[kr] { color: #d33682 } /* Keyword.Reserved */
+    c-[ld] { color: #657b83 } /* Literal.Date */
+    c-[nc] { color: #268bd2 } /* Name.Class */
+    c-[no] { color: #268bd2 } /* Name.Constant */
+    c-[nd] { color: #268bd2 } /* Name.Decorator */
+    c-[ni] { color: #268bd2 } /* Name.Entity */
+    c-[ne] { color: #268bd2 } /* Name.Exception */
+    c-[nf] { color: #268bd2 } /* Name.Function */
+    c-[nl] { color: #268bd2 } /* Name.Label */
+    c-[nn] { color: #268bd2 } /* Name.Namespace */
+    c-[py] { color: #268bd2 } /* Name.Property */
+    c-[ow] { color: #657b83 } /* Operator.Word */
+    c-[mb] { color: #657b83 } /* Literal.Number.Bin */
+    c-[mf] { color: #657b83 } /* Literal.Number.Float */
+    c-[mh] { color: #657b83 } /* Literal.Number.Hex */
+    c-[mi] { color: #657b83 } /* Literal.Number.Integer */
+    c-[mo] { color: #657b83 } /* Literal.Number.Oct */
+    c-[sa] { color: #6c71c4 } /* Literal.String.Affix */
+    c-[sb] { color: #6c71c4 } /* Literal.String.Backtick */
+    c-[sc] { color: #6c71c4 } /* Literal.String.Char */
+    c-[dl] { color: #6c71c4 } /* Literal.String.Delimiter */
+    c-[sd] { color: #6c71c4 } /* Literal.String.Doc */
+    c-[se] { color: #6c71c4 } /* Literal.String.Escape */
+    c-[sh] { color: #6c71c4 } /* Literal.String.Heredoc */
+    c-[si] { color: #6c71c4 } /* Literal.String.Interpol */
+    c-[sx] { color: #6c71c4 } /* Literal.String.Other */
+    c-[sr] { color: #6c71c4 } /* Literal.String.Regex */
+    c-[ss] { color: #6c71c4 } /* Literal.String.Symbol */
+    c-[fm] { color: #268bd2 } /* Name.Function.Magic */
+    c-[vc] { color: #cb4b16 } /* Name.Variable.Class */
+    c-[vg] { color: #cb4b16 } /* Name.Variable.Global */
+    c-[vi] { color: #cb4b16 } /* Name.Variable.Instance */
+    c-[vm] { color: #cb4b16 } /* Name.Variable.Magic */
+    c-[il] { color: #657b83 } /* Literal.Number.Integer.Long */
+}
+</style>
  </head><body class="h-entry toc-sidebar"><p id="toc-nav"><a id="toc-jump" href="#toc"><span aria-hidden="true">↑</span> <span>Jump to Table of Contents</span></a><a id="toc-toggle" href="#toc"><span aria-hidden="true">←</span> <span>Collapse Sidebar</span></a></p>
   <div class="head">
    <p data-fill-with="logo"></p>
-   <h1 class="p-name no-ref" id="title">D2013R3.0<br>Freestanding Language: Optional <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code></h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2020-08-23">2020-08-23</time></span></h2>
+   <h1 class="p-name no-ref" id="title">D2013R4.5<br>Freestanding Language: Optional <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code></h1>
+   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2021-05-03">2021-05-03</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
-     </dt><dd><a class="u-url" href="https://wg21.link/P2013R2">https://wg21.link/P2013R2</a>
-     </dd><dt>Author:
-     </dt><dd>
-      </dd><dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:ben.craig@gmail.com">Ben Craig</a> (<span class="p-org org">National Instruments</span>)
+     </dt><dd><a class="u-url" href="https://wg21.link/P2013R3">https://wg21.link/P2013R3</a>
+     </dd><dt class="editor">Author:
+     </dt><dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:ben.craig@gmail.com">Ben Craig</a> (<span class="p-org org">NI</span>)
      </dd><dt>Audience:
-     </dt><dd>SG14, EWG, LEWG
+     </dt><dd>EWG
      </dd><dt>Project:
      </dt><dd>ISO/IEC JTC1/SC22/WG21 14882: Programming Language — C++
      </dd><dt>Source:
@@ -1535,10 +2101,11 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     <li>
      <a href="#revision_history"><span class="secno">1</span> <span class="content">Revision History</span></a>
      <ol class="toc">
-      <li><a href="#r3"><span class="secno">1.1</span> <span class="content">R3</span></a>
-      </li><li><a href="#r2"><span class="secno">1.2</span> <span class="content">R2</span></a>
-      </li><li><a href="#r1"><span class="secno">1.3</span> <span class="content">R1</span></a>
-      </li><li><a href="#r0"><span class="secno">1.4</span> <span class="content">R0</span></a>
+      <li><a href="#r4"><span class="secno">1.1</span> <span class="content">R4</span></a>
+      </li><li><a href="#r3"><span class="secno">1.2</span> <span class="content">R3</span></a>
+      </li><li><a href="#r2"><span class="secno">1.3</span> <span class="content">R2</span></a>
+      </li><li><a href="#r1"><span class="secno">1.4</span> <span class="content">R1</span></a>
+      </li><li><a href="#r0"><span class="secno">1.5</span> <span class="content">R0</span></a>
      </li></ol>
     </li><li><a href="#the_changes"><span class="secno">2</span> <span class="content">What is changing</span></a>
     </li><li><a href="#non_changes"><span class="secno">3</span> <span class="content">What is staying the same</span></a>
@@ -1550,21 +2117,22 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
       </li><li><a href="#allocators"><span class="secno">4.3</span> <span class="content">What about allocators?</span></a>
       </li><li><a href="#virtual_dtors"><span class="secno">4.4</span> <span class="content"><code class="highlight"><c- k="">virtual</c-></code> destructors</span></a>
       </li><li><a href="#why_not_fix"><span class="secno">4.5</span> <span class="content">Why not fix <code class="highlight"><c- k="">virtual</c-></code> destructors, instead of keeping a no-op <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code>?</span></a>
-      </li><li><a href="#no_macro"><span class="secno">4.6</span> <span class="content">No feature test macro</span></a>
+      </li><li><a href="#feature_test_macro"><span class="secno">4.6</span> <span class="content">Feature test macro</span></a>
       </li><li><a href="#abuses"><span class="secno">4.7</span> <span class="content">Likely misuses and abuses</span></a>
      </li></ol>
     </li><li><a href="#experience"><span class="secno">5</span> <span class="content">Experience</span></a>
     </li><li>
      <a href="#polling"><span class="secno">6</span> <span class="content">Polling history</span></a>
      <ol class="toc">
-      <li><a href="#ewg_prague"><span class="secno">6.1</span> <span class="content">Feb 14, 2020, EWG, Prague</span></a>
-      </li><li><a href="#ewgi_prague"><span class="secno">6.2</span> <span class="content">Feb 12, 2020, EWGI, Prague</span></a>
-      </li><li><a href="#sg14_jan_2020"><span class="secno">6.3</span> <span class="content">Jan 8, 2020 SG14 Telecon</span></a>
+      <li><a href="#ewg_aug_telecon"><span class="secno">6.1</span> <span class="content">Aug 19, 2020, EWG, Telecon</span></a>
+      </li><li><a href="#ewg_prague"><span class="secno">6.2</span> <span class="content">Feb 14, 2020, EWG, Prague</span></a>
+      </li><li><a href="#ewgi_prague"><span class="secno">6.3</span> <span class="content">Feb 12, 2020, EWGI, Prague</span></a>
+      </li><li><a href="#sg14_jan_2020"><span class="secno">6.4</span> <span class="content">Jan 8, 2020 SG14 Telecon</span></a>
      </li></ol>
     </li><li>
      <a href="#design_alternatives"><span class="secno">7</span> <span class="content">Design Alternatives</span></a>
      <ol class="toc">
-      <li><a href="#alternative_nop_dealloc"><span class="secno">7.1</span> <span class="content">Alternative 0: All-or-nothing allocating <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>, no-op default deallocation functions (Proposed above)</span></a>
+      <li><a href="#alternative_impl_def_op_new"><span class="secno">7.1</span> <span class="content">Alternative 0: Implementation defined allocating <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> (Proposed above)</span></a>
       </li><li><a href="#alternative_throwing_new"><span class="secno">7.2</span> <span class="content">Alternative 1: Optional throwing <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>s, no-op default deallocation functions</span></a>
       </li><li>
        <a href="#alternative_no_dealloc"><span class="secno">7.3</span> <span class="content">Alternative 2: No deallocation functions</span></a>
@@ -1578,21 +2146,14 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
         </li><li><a href="#alt2_abi"><span class="secno">7.4.2</span> <span class="content">ABI impact</span></a>
         </li><li><a href="#alt2_experience"><span class="secno">7.4.3</span> <span class="content">Experience</span></a>
        </li></ol>
+      </li><li><a href="#alternative_nop_dealloc"><span class="secno">7.5</span> <span class="content">Alternative 4: Missing <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>, no-op default deallocation functions (Proposed in R3)</span></a>
      </li></ol>
     </li><li>
      <a href="#wording"><span class="secno">8</span> <span class="content">Wording</span></a>
      <ol class="toc">
-      <li><a href="#basic_def_odr"><span class="secno">8.1</span> <span class="content">basic.def.odr</span></a>
-      </li><li><a href="#basic_stc_dynamic"><span class="secno">8.2</span> <span class="content">basic.stc.dynamic</span></a>
-      </li><li><a href="#expr_new"><span class="secno">8.3</span> <span class="content">expr.new</span></a>
-      </li><li><a href="#new_delete"><span class="secno">8.4</span> <span class="content">new.delete</span></a>
+      <li><a href="#new_delete"><span class="secno">8.1</span> <span class="content">new.delete</span></a>
      </li></ol>
-    </li><li>
-     <a href="#alternative_wording"><span class="secno">9</span> <span class="content">Alternative Wording</span></a>
-     <ol class="toc">
-      <li><a href="#alternative_new_delete"><span class="secno">9.1</span> <span class="content">new.delete</span></a>
-     </li></ol>
-    </li><li><a href="#ack"><span class="secno">10</span> <span class="content">Acknowledgments</span></a>
+    </li><li><a href="#ack"><span class="secno">9</span> <span class="content">Acknowledgments</span></a>
     </li><li>
      <a href="#references"><span class="secno"></span> <span class="content">References</span></a>
      <ol class="toc">
@@ -1602,56 +2163,68 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   </nav>
   <main>
    <h2 class="heading settled" data-level="1" id="revision_history"><span class="secno">1. </span><span class="content">Revision History</span><a class="self-link" href="#revision_history"></a></h2>
-   <h3 class="heading settled" data-level="1.1" id="r3"><span class="secno">1.1. </span><span class="content">R3</span><a class="self-link" href="#r3"></a></h3>
-    In the design, an ODR-use without a definition no longer requires 
+   <h3 class="heading settled" data-level="1.1" id="r4"><span class="secno">1.1. </span><span class="content">R4</span><a class="self-link" href="#r4"></a></h3>
+    Definitions of the allocation functions must now exist, but they now
+ have implementation defined behavior on freestanding implementations 
+(which encompasses UB). 
+   <p>Rebasing to N4878.  Accounting for shifted numbering in [new.delete].</p>
+   <p>TODO: Shortname, revision, status</p>
+   <h3 class="heading settled" data-level="1.2" id="r3"><span class="secno">1.2. </span><span class="content">R3</span><a class="self-link" href="#r3"></a></h3>
+    Added <a href="#ewg_aug_telecon">EWG Aug 2020 telecon</a> polling results. 
+   <p>In the design, an ODR-use without a definition no longer requires 
 ill-formedness.  The intent is still the same, in that it typically 
-results in a linker error. 
+results in a linker error.</p>
    <p>Updated grammar and ill-formedness of wording.</p>
    <p>Found an additional note in <a href="https://wg21.link/expr.new#10">expr.new/10</a> that needed adjustment.</p>
-   <h3 class="heading settled" data-level="1.2" id="r2"><span class="secno">1.2. </span><span class="content">R2</span><a class="self-link" href="#r2"></a></h3>
+   <p>Deferred <a href="#feature_test_macro">feature test macro</a> decision to a future revision of <a href="https://wg21.link/P2198">P2198</a>.</p>
+   <h3 class="heading settled" data-level="1.3" id="r2"><span class="secno">1.3. </span><span class="content">R2</span><a class="self-link" href="#r2"></a></h3>
     Making the status of "placement" new more obvious ("placement" new is still required). 
    <p>Added words in the design to indicate that the declarations in <code class="highlight"><c- o="">&lt;</c-><c- k="">new</c-><c- o="">&gt;</c-></code> are not changing.</p>
    <p>Mentioning that pointer safety remains unchanged.</p>
-   <h3 class="heading settled" data-level="1.3" id="r1"><span class="secno">1.3. </span><span class="content">R1</span><a class="self-link" href="#r1"></a></h3>
+   <h3 class="heading settled" data-level="1.4" id="r1"><span class="secno">1.4. </span><span class="content">R1</span><a class="self-link" href="#r1"></a></h3>
     Added polling results from Prague <a href="#ewgi_prague">EWGI</a> and <a href="#ewg_prague">EWG</a>. 
-   <p>Added discussion on <a href="#no_macro">feature test macro</a>.</p>
+   <p>Added discussion on <a href="#feature_test_macro">feature test macro</a>.</p>
    <p>Added discussion on <a href="#why_not_fix">not fixing virtual destructors</a>.</p>
    <p>Declaring that <code class="highlight"><c- k="">constexpr</c-> <c- k="">new</c-></code> must continue to work.</p>
    <p>Added <a href="#wording">wording</a>.</p>
    <p>Wording includes <a href="#new_delete">changes to library clauses</a>, so added LEWG to the audience.</p>
-   <h3 class="heading settled" data-level="1.4" id="r0"><span class="secno">1.4. </span><span class="content">R0</span><a class="self-link" href="#r0"></a></h3>
+   <h3 class="heading settled" data-level="1.5" id="r0"><span class="secno">1.5. </span><span class="content">R0</span><a class="self-link" href="#r0"></a></h3>
     R0 of this paper was extracted from <a data-link-type="biblio" href="#biblio-p1105r1">[P1105R1]</a>. 
    <p>The proposed solution is different than the one proposed for 
 P1105R1, but the motivation is the same.  The solution from P1105R1 is 
 still listed as a design alternative.</p>
    <h2 class="heading settled" data-level="2" id="the_changes"><span class="secno">2. </span><span class="content">What is changing</span><a class="self-link" href="#the_changes"></a></h2>
-    On freestanding systems without default heap storage, the presence of the replaceable allocation functions (i.e. allocating <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>, including the <code class="highlight"><c- n="">nothrow_t</c-></code> and <code class="highlight"><c- n="">align_val_t</c-></code>
- overloads, single and array forms) will be implementation defined.  
-Implementations shall provide all the replaceable allocation functions, 
-or none of them.  If none of the replaceable allocation functions are 
-provided, then an ODR-use of the functions will typically manifest as a 
-linker error. 
-   <p>As a consequence of the above, coroutines that are relying on the 
-global allocation functions will be ill-formed so long as those global 
-allocation functions are not present.</p>
+    On freestanding systems without default heap storage, the replaceable allocation functions (i.e. allocating <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>, including the <code class="highlight"><c- n="">nothrow_t</c-></code> and <code class="highlight"><c- n="">align_val_t</c-></code>
+ overloads, single and array forms) will have implementation defined 
+behavior that does not need to do any kind of allocation.  The 
+implementation could return <code class="highlight"><c- k="">nullptr</c-></code>,
+ invoke undefined behavior, or whatever the implementer likes.  If a 
+freestanding implementation provides one replaceable allocation function
+ that meets the hosted requirements, then all the replaceable allocation
+ functions shall meet the requirements.  Hopefully, compiler vendors 
+will warn on heap usage by default in freestanding implementations, and 
+allow the warnings to be disabled for the situations where the user 
+provides their own <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>. 
+   <p>As a consequence of the above, runtime coroutines on freestanding 
+implementations that are relying on the global allocation functions will
+ also have implementation defined behavior, so long as the vendor 
+supplied implementation is being used.</p>
    <p>No other core language features require <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>. <a href="http://eel.is/c++draft/basic.stc.dynamic.allocation#5">basic.stc.dynamic.allocation</a></p>
-   <p><code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> will be implementable as a no-op function on implementations that do not provide a default <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>.</p>
+   <p><code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> will be implementable as a no-op function on implementations that have do-nothing or undefined-behavior <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> implementations.</p>
    <h2 class="heading settled" data-level="3" id="non_changes"><span class="secno">3. </span><span class="content">What is staying the same</span><a class="self-link" href="#non_changes"></a></h2>
     The replaceable deallocating <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> functions are still required to be present. <code class="highlight"><c- k="">virtual</c-></code> destructors ODR-use their associated <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code>(<a href="http://eel.is/c++draft/basic.def.odr#7">basic.def.odr</a>), so keeping the global <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> allows those <code class="highlight"><c- k="">virtual</c-></code> destructors to continue building.  Alternatives to this choice are discussed in <a href="#design_alternatives">§ 7 Design Alternatives</a>. 
-   <p>Calling <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> on a non-null pointer that did not come from <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> is still undefined behavior <a href="http://eel.is/c++draft/new.delete.single#12">new.delete.single</a> <a href="http://eel.is/c++draft/new.delete.array#11">new.delete.array</a>.  Calling <code class="highlight"><c- k="">delete</c-></code> on an object or base that didn’t come from <code class="highlight"><c- k="">new</c-></code> is still undefined behavior <a href="http://eel.is/c++draft/expr.delete#2">expr.delete</a>.  This is what makes a no-op <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> a valid strategy on implementations without a global <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>.</p>
-   <p>The replaceable allocation functions will still be implicitly declared at global scope in each translation unit <a href="http://eel.is/c++draft/basic.stc.dynamic#2">basic.stc.dynamic</a>.
+   <p>Calling <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> on a non-null pointer that did not come from <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> is still undefined behavior <a href="http://eel.is/c++draft/new.delete.single#12">new.delete.single</a> <a href="http://eel.is/c++draft/new.delete.array#11">new.delete.array</a>.  Calling <code class="highlight"><c- k="">delete</c-></code> on an object or base that didn’t come from <code class="highlight"><c- k="">new</c-></code> is still undefined behavior <a href="http://eel.is/c++draft/expr.delete#2">expr.delete</a>.  This is what makes a no-op <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> a valid strategy for freestanding vendor supplied <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> implementations.</p>
+   <p>The replaceable allocation functions will still be implicitly declared at global scope in each translation unit <a href="http://eel.is/c++draft/basic.stc.dynamic.general#2">basic.stc.dynamic.general</a>.
+  A definition of the replaceable allocation functions must still exist.
   Non-ODR-uses of the replaceable allocation functions are still 
 permitted (e.g. inside of uninstantiated templates).  The declarations 
 of <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> in the <code class="highlight"><c- o="">&lt;</c-><c- k="">new</c-><c- o="">&gt;</c-></code>
  header are still required to be present.  Implementations of the 
 replaceable allocation functions can be performed by linking in an extra
- translation-unit with the definitions of the functions.  Since this 
-replacement typically happens at link time, ODR-uses of missing 
-replaceable allocation functions usually won’t be diagnosable at compile
- time.</p>
+ translation-unit with the definitions of the functions.</p>
    <p>"<code class="highlight"><c- k="">constexpr</c-> <c- k="">new</c-></code>"
- is still required to work, even when the replaceable allocation 
-functions are not present.  This requires some tweaking of standardese.</p>
+ is still required to work, even when the vendor supplied replaceable 
+allocation functions have not been replaced.  The calls to <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> are required to be omitted, so any undefined behavior in the <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> implementation will also be skipped.</p>
    <p>Non-allocating placement <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> (colloquially "placement new") and <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> (colloquially "placement delete") are still required to be present in freestanding implementations.</p>
    <p>Core language concepts of pointer safety remain unchanged.  Note that the pointer safety library facilities <a href="https://eel.is/c++draft/util.dynamic.safety">util.dynamic.safety</a>
  are not required to be present in freestanding implementations, and the
@@ -1670,8 +2243,8 @@ promise-specific allocators are used.  The storage for exception objects
 no free store.  These environments often cannot tolerate the space 
 overhead for the free store, or the non-determinism from using the free 
 store.  In these environments, it is a desirable property for accidental
- global <code class="highlight"><c- k="">new</c-></code> usage to cause a build failure.  With this proposal, users could expect a linker error when global <code class="highlight"><c- k="">new</c-></code> is used inappropriately. 
-   <p>FreeRTOS allows for both static and dynamic allocation of OS constructs <a data-link-type="biblio" href="#biblio-freertos_staticvdynamic">[FreeRTOS_StaticVDynamic]</a>.  Static allocation in conjunction with a missing <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> can help avoid overhead and eliminate accidental usage.</p>
+ global <code class="highlight"><c- k="">new</c-></code> usage to generate a diagnostic.  Compilers are capable of generating a diagnostic when they ODR-use a function (e.g. <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>). 
+   <p>FreeRTOS allows for both static and dynamic allocation of OS constructs <a data-link-type="biblio" href="#biblio-freertos_staticvdynamic">[FreeRTOS_StaticVDynamic]</a>.  Static allocation in conjunction with <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> diagnostics can help avoid overhead and eliminate accidental usage.</p>
    <p>THREADX <a data-link-type="biblio" href="#biblio-threadx">[THREADX]</a>
  does not consider dynamic allocation a core service, and can be built 
 without support for dynamic allocation in order to reduce application 
@@ -1695,14 +2268,14 @@ has had experience with both paged pool and non-paged pool as defaults,
 with the predictable outcome of crashes with paged pool defaults and OOM
  with non-paged pool defaults.  The implementer of the C++ toolchain is 
 not in a good position to make this choice for the user.</p>
-   <p>In the Linux kernel environment, <code class="highlight"><c- n="">kmalloc</c-></code> <a data-link-type="biblio" href="#biblio-kmalloc">[kmalloc]</a> with the <code class="highlight"><c- n="">GFP_KERNEL</c-></code> should be used when allocating memory within the context of a process and outside of a lock, but <code class="highlight"><c- n="">GFP_ATOMIC</c-></code>
- should be used when allocating memory outside the context of a process,
- such as inside of an interrupt.  The implementers of the C++ runtime 
-are in no position to know which is the correct flag to use by default. 
- Using <code class="highlight"><c- n="">GFP_KERNEL</c-></code> when <code class="highlight"><c- n="">GFP_ATOMIC</c-></code> is needed will result in crashes from interrupt code and deadlocks.  Using <code class="highlight"><c- n="">GFP_ATOMIC</c-></code> when <code class="highlight"><c- n="">GFP_KERNEL</c-></code>
+   <p>In the Linux kernel environment, <code class="highlight"><c- n="">kmalloc</c-></code> <a data-link-type="biblio" href="#biblio-kmalloc">[kmalloc]</a> with the <code class="highlight"><c- n="">GFP_KERNEL</c-></code> flag should be used when allocating memory within the context of a process and outside of a lock, but the <code class="highlight"><c- n="">GFP_ATOMIC</c-></code>
+ flag should be used when allocating memory outside the context of a 
+process, such as inside of an interrupt.  The implementers of the C++ 
+runtime are in no position to know which is the correct flag to use by 
+default.  Using <code class="highlight"><c- n="">GFP_KERNEL</c-></code> when <code class="highlight"><c- n="">GFP_ATOMIC</c-></code> is needed will result in crashes from interrupt code and deadlocks.  Using <code class="highlight"><c- n="">GFP_ATOMIC</c-></code> when <code class="highlight"><c- n="">GFP_KERNEL</c-></code>
  is appropriate will result in reduced system performance, spurious OOM 
 errors, and premature exhaustion of emergency memory pools.</p>
-   <p>Freestanding implementations are intended to run without the benefit of an operating system (<a href="http://eel.is/c++draft/intro.compliance#7">basic.def.odr</a>).
+   <p>Freestanding implementations are intended to run without the benefit of an operating system (<a href="http://eel.is/c++draft/intro.compliance#7">intro.compliance</a>).
   However, the name of the function that supplies dynamic memory is 
 usually an OS-specific detail.  The C++ implementation should not (and 
 may not) know the name of the function to request memory.  The Windows 
@@ -1724,12 +2297,12 @@ perspective, allocators aren’t a solution.
 implementation.  In environments with dynamic memory, custom allocators 
 can be written and used with standard containers, assuming that the 
 containers are present in the implementation.  This could be done even 
-if a global <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> is not present.  The author has used <code class="highlight"><c- n="">stlport</c-><c- o="">::</c-><c- n="">vector</c-><c- o="">&lt;</c-><c- b="">int</c-><c- p="">,</c-> <c- n="">PagedLockedAllocator</c-><c- o="">&gt;</c-></code> successfully in these environments.</p>
-   <p><code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">allocator</c-></code> is implemented in terms of global <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>.  In practice, it would be easy for an implementation to have an implementation of <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">allocator</c-></code> in a header / module, and have that header still compile just fine, as it wouldn’t ODR-use <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> until it was instantiated.  If the user has provided a global <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>, then <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">allocator</c-></code> would have the same semantics as mandated by the standard.  If the global <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> is not present, then uses of <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">allocator</c-></code> would fail to link, which would still be conforming behavior on a freestanding implementation.</p>
+if a global <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> is not present.  The author has used <code class="highlight"><c- n="">stlport</c-><c- o="">::</c-><c- n="">vector</c-><c- o="">&lt;</c-><c- b="">int</c-><c- p="">,</c-> <c- n="">PageLockedAllocator</c-><c- o="">&gt;</c-></code> successfully in these environments.</p>
+   <p><code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">allocator</c-></code> is implemented in terms of global <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>.  In practice, it would be easy for an implementation to have an implementation of <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">allocator</c-></code> in a header / module, and have that header still compile just fine.  If the user has provided a global <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>, then <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">allocator</c-></code> would have the same semantics as mandated for hosted implementations.  If the global <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> is vendor supplied, then uses of <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">allocator</c-></code> would invoke implementation defined behavior, and hopefully cause a diagnostic.</p>
    <p>Some facilities in the standard library (e.g. <code class="highlight"><c- n="">make_unique</c-></code>) are implemented in terms of <code class="highlight"><c- k="">new</c-></code>,
  and not an allocator interface.  It is useful to make these facilities 
-error when dynamic memory isn’t available, and it is also useful to be 
-able to control which memory pool is used by default.</p>
+generate diagnostics when dynamic memory isn’t available, and it is also
+ useful to be able to control which memory pool is used by default.</p>
    <h3 class="heading settled" data-level="4.4" id="virtual_dtors"><span class="secno">4.4. </span><span class="content"><code class="highlight"><c- k="">virtual</c-></code> destructors</span><a class="self-link" href="#virtual_dtors"></a></h3>
     A no-op <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> is still provided in order to satisfy <code class="highlight"><c- k="">virtual</c-></code> destructors. <code class="highlight"><c- k="">virtual</c-></code> destructors ODR-use their associated <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code>(<a href="http://eel.is/c++draft/basic.def.odr#7">basic.def.odr</a>).  This approach has the disadvantage that there is a small, one-time overhead for the first <code class="highlight"><c- k="">virtual</c-></code> destructor in a program, even if there are no usages of <code class="highlight"><c- k="">new</c-></code> or <code class="highlight"><c- k="">delete</c-></code>.  The overhead is small though, and you only pay for the overhead if you use <code class="highlight"><c- k="">virtual</c-></code> destructors. 
    <p>Ideally, if neither <code class="highlight"><c- k="">new</c-></code> nor <code class="highlight"><c- k="">delete</c-></code> is ever called, we wouldn’t need an <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code>.  This proposal still requires some <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code> to exist, though that <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code> can be a no-op.</p>
@@ -1738,21 +2311,36 @@ able to control which memory pool is used by default.</p>
  destructors.  It will be no more difficult to fix it in the future than
  it would be today.  A motivated author could attempt to fix the problem
  in a future paper. 
-   <h3 class="heading settled" data-level="4.6" id="no_macro"><span class="secno">4.6. </span><span class="content">No feature test macro</span><a class="self-link" href="#no_macro"></a></h3>
-    A feature test macro would be awkward to implement, and would 
-encourage code that is more prone to ODR issues than other feature test 
-macros. 
-   <p>In most toolchains, feature test macros can be exposed directly by
- the compiler (usually for core language features) and by the library 
-(for library features).  The presence or absence of <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>
- is dictated by the runtime though.  In some implementations, neither 
-the compiler nor the library headers necessarily know detailed 
-information about the runtime.  This hurdle is not intractable, but it 
-is a hurdle nonetheless.</p>
-   <p>The most likely usage of such a feature test macro is to conditionally define a custom <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>
+   <h3 class="heading settled" data-level="4.6" id="feature_test_macro"><span class="secno">4.6. </span><span class="content">Feature test macro</span><a class="self-link" href="#feature_test_macro"></a></h3>
+    <a href="https://wg21.link/P2198R1">P2198R1</a> discusses the feature test macro in more depth, and provides a recommendation. 
+   <p>In order to provide this macro, library implementations are going 
+to require knowledge of the target environment.  That knowledge may be 
+via a list of known target platforms that are detected at build time, or
+ by having the builder of the implementation supply that information in a
+ configuration flag.</p>
+   <p>The most likely usage of a feature test macro for this feature is to conditionally define a custom <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>
  iff the implementation did not provide one by default.  This is 
 dangerous territory, as it encourages libraries to provide the 
 one-and-only <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> definition.  If two such libraries do this, then there is an ODR issue.</p>
+   <p>Another likely usage is to fall back to an implementation that does not use the heap at all.</p>
+<pre class="highlight"><c- cp="">#if defined(__cpp_lib_no_default_operator_new) &amp;&amp; __cpp_lib_no_default_operator_new &gt;= 20200913</c->
+  <c- k="">using</c-> <c- n="">my_container</c-> <c- o="">=</c-> <c- n="">fixed_capacity_vector</c-><c- p="">;</c->
+<c- cp="">#else</c->
+  <c- k="">using</c-> <c- n="">my_container</c-> <c- o="">=</c-> <c- n="">my_vector</c-><c- p="">;</c->
+<c- cp="">#endif</c->
+</pre>
+   <p>This is an imprecise check.  Even though there is no default 
+operator new, there may be a user provided operator new that works fine.</p>
+   <p>If this feature test macro were provided in the positive (<code class="highlight"><c- n="">__cpp_lib_has_default_operator_new</c-></code>), it wouldn’t be useful for a very long time.</p>
+<pre class="highlight"><c- cp="">#if defined(__cpp_lib_has_default_operator_new) &amp;&amp; __cpp_lib_has_default_operator_new &gt;= 20200913</c->
+  <c- k="">using</c-> <c- n="">my_container</c-> <c- o="">=</c-> <c- n="">my_vector</c-><c- p="">;</c->
+<c- cp="">#else</c->
+  <c- c1="">// spuriously triggers for C++20 and earlier code</c->
+  <c- k="">using</c-> <c- n="">my_container</c-> <c- o="">=</c-> <c- n="">fixed_capacity_vector</c-><c- p="">;</c->
+<c- cp="">#endif</c->
+</pre>
+   <p>If this feature test macro were provided in the negative (<code class="highlight"><c- n="">__cpp_lib_no_default_operator_new</c-></code>), it would be the only feature test macro that wouldn’t be required to be defined in a conforming implementation.</p>
+   <p>All these considerations are deserving of dedicated SG10 discussion with <a href="https://wg21.link/P2198">P2198</a>, and should not hold up the progress of this paper.</p>
    <h3 class="heading settled" data-level="4.7" id="abuses"><span class="secno">4.7. </span><span class="content">Likely misuses and abuses</span><a class="self-link" href="#abuses"></a></h3>
     Users are likely to provide overloads of <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> that do not follow the requirements set forth in <a href="http://eel.is/c++draft/new.delete">new.delete</a>, particularly the requirements around throwing <code class="highlight"><c- n="">bad_alloc</c-></code>.
   Ignoring this requirement will still result in undefined behavior, 
@@ -1769,11 +2357,17 @@ intentionally omitted.  A no-op <code class="highlight"><c- o="">::</c-><c- k=""
  this micro-controller environment.  Some shared code involved classes 
 with <code class="highlight"><c- k="">virtual</c-></code> destructors. 
    <h2 class="heading settled" data-level="6" id="polling"><span class="secno">6. </span><span class="content">Polling history</span><a class="self-link" href="#polling"></a></h2>
-   <h3 class="heading settled" data-level="6.1" id="ewg_prague"><span class="secno">6.1. </span><span class="content">Feb 14, 2020, EWG, Prague</span><a class="self-link" href="#ewg_prague"></a></h3>
+   <h3 class="heading settled" data-level="6.1" id="ewg_aug_telecon"><span class="secno">6.1. </span><span class="content">Aug 19, 2020, EWG, Telecon</span><a class="self-link" href="#ewg_aug_telecon"></a></h3>
+    After updating wording for “either/of”, mandates, and talking to 
+SG10 about the feature test macro, P2013 is tentatively ready to be 
+forwarded to CWG. Walter volunteers to check that this is done. 
+   <p>SF/F/N/A/SA</p>
+   <p>2/16/1/0/0</p>
+   <h3 class="heading settled" data-level="6.2" id="ewg_prague"><span class="secno">6.2. </span><span class="content">Feb 14, 2020, EWG, Prague</span><a class="self-link" href="#ewg_prague"></a></h3>
     We are interested in freestanding having an optional operator new, please come back with wording 
    <p>SF/F/N/A/SA</p>
    <p>8/10/7/0/0</p>
-   <h3 class="heading settled" data-level="6.2" id="ewgi_prague"><span class="secno">6.2. </span><span class="content">Feb 12, 2020, EWGI, Prague</span><a class="self-link" href="#ewgi_prague"></a></h3>
+   <h3 class="heading settled" data-level="6.3" id="ewgi_prague"><span class="secno">6.3. </span><span class="content">Feb 12, 2020, EWGI, Prague</span><a class="self-link" href="#ewgi_prague"></a></h3>
     Given the time constraints of the committee, should we spend additional committee effort on P2013? 
    <p>SF/F/N/A/SA</p>
    <p>7/6/1/0/0</p>
@@ -1783,16 +2377,20 @@ with <code class="highlight"><c- k="">virtual</c-></code> destructors.
    <p>Do we believe that P2013 is sufficiently developed to be seen by EWG?</p>
    <p>SF/F/N/A/SA</p>
    <p>5/8/0/0/0</p>
-   <h3 class="heading settled" data-level="6.3" id="sg14_jan_2020"><span class="secno">6.3. </span><span class="content">Jan 8, 2020 SG14 Telecon</span><a class="self-link" href="#sg14_jan_2020"></a></h3>
+   <h3 class="heading settled" data-level="6.4" id="sg14_jan_2020"><span class="secno">6.4. </span><span class="content">Jan 8, 2020 SG14 Telecon</span><a class="self-link" href="#sg14_jan_2020"></a></h3>
     Forward P2013 as is with the minor editing quotes 
    <p>SF/F/N/A/SA</p>
    <p>9/10/0/0/0</p>
    <p>approves to go to EWG</p>
    <h2 class="heading settled" data-level="7" id="design_alternatives"><span class="secno">7. </span><span class="content">Design Alternatives</span><a class="self-link" href="#design_alternatives"></a></h2>
-   <h3 class="heading settled" data-level="7.1" id="alternative_nop_dealloc"><span class="secno">7.1. </span><span class="content">Alternative 0: All-or-nothing allocating <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>, no-op default deallocation functions (Proposed above)</span><a class="self-link" href="#alternative_nop_dealloc"></a></h3>
-    This option preserves much functionality, without using any novel techniques.  See above for further explanation. 
+   <h3 class="heading settled" data-level="7.1" id="alternative_impl_def_op_new"><span class="secno">7.1. </span><span class="content">Alternative 0: Implementation defined allocating <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> (Proposed above)</span><a class="self-link" href="#alternative_impl_def_op_new"></a></h3>
+    This option preserves much functionality, without using any novel 
+techniques.  The main disadvantage of this approach compared to existing
+ techniques is that diagnosing the problem requires more work.  See 
+above for further explanation. 
    <h3 class="heading settled" data-level="7.2" id="alternative_throwing_new"><span class="secno">7.2. </span><span class="content">Alternative 1: Optional throwing <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>s, no-op default deallocation functions</span><a class="self-link" href="#alternative_throwing_new"></a></h3>
-    Rather than making all the replaceable allocation functions optional, we could make just the throwing <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>s optional (array and single form, with and without <code class="highlight"><c- n="">align_val_t</c-></code> parameters).  The library would still be required to provide the <code class="highlight"><c- n="">nothrow_t</c-></code> overloads. 
+    Rather than making all the replaceable allocation functions have 
+implementation defined behavior, we could make just the throwing <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>s implementation defined (array and single form, with and without <code class="highlight"><c- n="">align_val_t</c-></code> parameters).  The library would still be required to meet the hosted requirements for <code class="highlight"><c- n="">nothrow_t</c-></code> overloads. 
    <p>The <code class="highlight"><c- n="">nothrow_t</c-></code> 
 overloads are specified to forward to an appropriate throwing overload. 
  That implementation would still be fine on a system without dynamic 
@@ -1839,145 +2437,52 @@ the platform.  Mixing this configuration shouldn’t be a common
 occurrence.</p>
    <h4 class="heading settled" data-level="7.4.3" id="alt2_experience"><span class="secno">7.4.3. </span><span class="content">Experience</span><a class="self-link" href="#alt2_experience"></a></h4>
     This alternative is novel, and does not have implementation or usage experience. 
+   <h3 class="heading settled" data-level="7.5" id="alternative_nop_dealloc"><span class="secno">7.5. </span><span class="content">Alternative 4: Missing <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>, no-op default deallocation functions (Proposed in R3)</span><a class="self-link" href="#alternative_nop_dealloc"></a></h3>
+    Rather than have the behavior of the replaceable global allocation 
+functions be implementation defined on freestanding implementations, we 
+could instead have their presence be optional.  At runtime, this is easy
+ enough, as we can lean on ODR to do the work (zero definitions is not 
+one definition).  This results in an IF-NDR program, but in practice, 
+you either get a linker error, or you get the "right" behavior, because 
+the calls to <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> were heap-elided. 
+   <p>This approach is substantially more difficult with <code class="highlight"><c- k="">constexpr</c-> <c- k="">new</c-></code> though.  Colloquially, users would expect that uses of <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> at compile time would not require a runtime definition of <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>.  However, <code class="highlight"><c- k="">constexpr</c-></code> doesn’t work like that.  Implementations are permitted to emit a runtime definition of <code class="highlight"><c- k="">constexpr</c-></code>
+ functions, as well as keep an internal representation for compile time 
+evaluation, even if the function only happens to be used for constant 
+evaluation.  The runtime definition could still cause linker errors, 
+even if nothing is calling the function.</p>
+   <p>It is possible to rework the ODR rules such that a runtime 
+definition is only emitted if needed.  That is a substantially larger 
+change though, and there was resistance from CWG to make this large of a
+ change to ODR at this time.  This approach should be reconsidered for 
+adoption if more OS-dependent facilities become available at compile in 
+the future (e.g. <code class="highlight"><c- k="">constexpr</c-></code> iostreams).  A lower effort approach is acceptable for now though, since <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> and <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> are the only such facilities at present.</p>
    <h2 class="heading settled" data-level="8" id="wording"><span class="secno">8. </span><span class="content">Wording</span><a class="self-link" href="#wording"></a></h2>
-    This is based on <a href="https://wg21.link/n4849">the Pre-Prague 2020-01 mailing, N4849</a>. 
-   <h3 class="heading settled" data-level="8.1" id="basic_def_odr"><span class="secno">8.1. </span><span class="content">basic.def.odr</span><a class="self-link" href="#basic_def_odr"></a></h3>
-    Modify <a href="https://wg21.link/basic.def.odr#3.1">basic.def.odr/3.1</a> 
-   <blockquote>
-    <p>
-     3.1 - A function is named by an expression or conversion if it is 
-the selected member of an overload set (6.5, 12.4, 12.5) in an overload 
-resolution performed as part of forming that expression or conversion, 
-unless it is 
-     <ins>either:</ins>
-    </p>
-    <p>
-     <ins>3.1.1 --</ins>
-      a pure virtual function and either the expression is not an <i>id-expression</i> naming the function with an explicitly qualified name or the expression forms a pointer to member (7.6.2.1)
-     <del>.</del>
-     <ins>, or</ins>
-    </p>
-    <p>
-     <ins>3.1.2 -- a call to a replaceable global allocation function during the evaluation of a constant expression.</ins>
-    </p>
-    <p>[<i>Note</i>: This covers taking the address of functions (7.3.3,
- 7.6.2.1), calls to named functions (7.6.1.2), operator overloading 
-(Clause 12), user-defined conversions (11.4.7.2), allocation functions 
-for <i>new-expressions</i> (7.6.2.7), as well as non-default 
-initialization (9.4). A constructor selected to copy or move an object 
-of class type is considered to be named by an expression or conversion 
-even if the call is actually elided by the implementation (11.10.5).— <i>end note</i>]</p>
-   </blockquote>
-   <h3 class="heading settled" data-level="8.2" id="basic_stc_dynamic"><span class="secno">8.2. </span><span class="content">basic.stc.dynamic</span><a class="self-link" href="#basic_stc_dynamic"></a></h3>
-    Modify <a href="https://wg21.link/basic.stc.dynamic#2">basic.stc.dynamic/2</a> 
-   <blockquote>
-    <del>The</del>
-    <ins>On hosted implementations, the</ins>
-     library provides default definitions for the global allocation and 
-deallocation functions. Some global allocation and deallocation 
-functions are replaceable (17.6.2). 
-    <ins>On freestanding implementations, the library provides default 
-definitions for the non-replaceable allocation functions and all the 
-global deallocation functions. It is implementation-defined whether a 
-freestanding implementation’s library provides default definitions for 
-the replaceable global allocation functions. Either all or none of the 
-replaceable global allocation functions shall be defined by a 
-freestanding implementation’s library.</ins>
-     A C++ program shall provide at most one definition of a replaceable
- allocation or deallocation function. Any such function definition 
-replaces the default version provided in the library (16.5.4.6). The 
-following allocation and deallocation functions (17.6) are implicitly 
-declared in global scope in each translation unit of a program. 
-   </blockquote>
-   <h3 class="heading settled" data-level="8.3" id="expr_new"><span class="secno">8.3. </span><span class="content">expr.new</span><a class="self-link" href="#expr_new"></a></h3>
-    Modify <a href="https://wg21.link/expr.new#10">expr.new/10</a> 
-   <blockquote>
-     A new-expression may obtain storage for the object by calling an 
-allocation function ([basic.stc.dynamic.allocation]).
-If the new-expression terminates by throwing an exception, it may 
-release storage by calling a deallocation function.
-If the allocated type is a non-array type, the allocation function’s 
-name is operator new and the deallocation function’s name is operator 
-delete.
-If the allocated type is an array type, the allocation function’s name 
-is operator new[] and the deallocation function’s name is operator 
-delete[].
-[Note: 
-    <del>An</del>
-    <ins>A hosted</ins>
-     implementation is required to provide default definitions for the 
-global allocation functions ([basic.stc.dynamic], [new.delete.single], 
-[new.delete.array]).
-A C++ program can provide alternative definitions of these functions 
-([replacement.functions]) and/or class-specific versions ([class.free]).
-The set of allocation and deallocation functions that may be called by a
- new-expression may include functions that do not perform allocation or 
-deallocation; for example, see [new.delete.placement].
-— end note] 
-   </blockquote>
-   <h3 class="heading settled" data-level="8.4" id="new_delete"><span class="secno">8.4. </span><span class="content">new.delete</span><a class="self-link" href="#new_delete"></a></h3>
+    This is based on the <a href="https://wg21.link/N4878">December working draft, N4878</a>. 
+   <h3 class="heading settled" data-level="8.1" id="new_delete"><span class="secno">8.1. </span><span class="content">new.delete</span><a class="self-link" href="#new_delete"></a></h3>
     Modify <a href="https://wg21.link/new.delete">new.delete</a> 
    <blockquote>
-    <p>17.6.2  Storage allocation and deallocation [new.delete]</p>
-    <p>1 Except where otherwise specified, the provisions of 6.7.5.4 
+    <p>17.6.3  Storage allocation and deallocation [new.delete]</p>
+    <p>17.6.3.1  General [new.delete.general]</p>
+    <p>1 Except where otherwise specified, the provisions of 6.7.5.5 
 apply to the library versions of operator new and operator delete. If 
 the value of an alignment argument passed to any of these functions is 
 not a valid alignment value, the behavior is undefined.</p>
     <p>
-     <ins>17.6.2.1  Allocating forms [allocating.forms]</ins>
-    </p>
-    <p>
-     <ins>1 Odr-use of the allocation functions in this subclause 
-results in undefined behavior unless a definition of the odr-used 
-allocation function has been provided.
-[<i>Note</i>: On hosted implementations, the library provides default definitions of these allocation functions ([basic.stc.dynamic]).- <i>end note</i>]</ins>
-    </p>
-    <p>
-     <del>17.6.2.1</del>
-     <ins>17.6.2.1.1</ins>
-      Single-object forms [new.delete.single]
-    </p>
-    <p><i>No changes</i></p>
-    <p>
-     <del>17.6.2.2</del>
-     <ins>17.6.2.1.2</ins>
-      Array forms [new.delete.array]
-    </p>
-    <p><i>No changes</i></p>
-    <p>
-     <del>17.6.2.3</del>
-     <ins>17.6.2.2</ins>
-      Non-allocating forms [new.delete.placement]
-    </p>
-    <p><i>No changes</i></p>
-    <p>
-     <del>17.6.2.4</del>
-     <ins>17.6.2.3</ins>
-      Data races [new.delete.dataraces]
-    </p>
-    <p><i>No changes</i></p>
-   </blockquote>
-   <h2 class="heading settled" data-level="9" id="alternative_wording"><span class="secno">9. </span><span class="content">Alternative Wording</span><a class="self-link" href="#alternative_wording"></a></h2>
-   <h3 class="heading settled" data-level="9.1" id="alternative_new_delete"><span class="secno">9.1. </span><span class="content">new.delete</span><a class="self-link" href="#alternative_new_delete"></a></h3>
-    [allocating.forms]/1 uses undefined behavior.  Making the program 
-ill-formed would be preferable, but we cannot use ill-formed to diagnose
- linker errors.  The following is the wording approach to use if we let 
-the ODR violation provide the normative backing for this design.  This 
-results in IF;NDR when no definitions are present. 
-   <blockquote>
-    <p>
-     <ins>17.6.2.1  Allocating forms [allocating.forms]</ins>
-    </p>
-    <p>
-     <ins>1 [<i>Note</i>: Odr-use of the allocation functions in this 
-subclause results in a one-definition rule violation unless a definition
- of the odr-used allocation function has been provided. 
-([basic.def.odr]). On hosted implementations, the library provides 
-default definitions of these allocation functions 
-([basic.stc.dynamic]).- <i>end note</i>] </ins>
+     <ins>2
+On freestanding implementations, it is implementation defined whether 
+the behavior of the implementation-provided replaceable global 
+allocation functions satisfy the required behaviors described in 
+[new.delete.single] and [new.delete.array].
+[<i>Note</i>: A freestanding implementation can provide replaceable global allocation functions that cause undefined behavior.- <i>end note</i>]
+If any of the implementation-provided replaceable global allocation 
+functions meet the requirements of a hosted implementation, they all 
+should.
+[<i>Note</i>: The behavior of the implementation-provided replaceable 
+global allocation functions during constant evaluation is irrelevant, as
+ those calls are omitted ([expr.new]).- <i>end note</i>] </ins>
     </p>
    </blockquote>
-   <h2 class="heading settled" data-level="10" id="ack"><span class="secno">10. </span><span class="content">Acknowledgments</span><a class="self-link" href="#ack"></a></h2>
+   <h2 class="heading settled" data-level="9" id="ack"><span class="secno">9. </span><span class="content">Acknowledgments</span><a class="self-link" href="#ack"></a></h2>
     Thank you to the many reviewers of this paper:
 Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred 
 Bratterud, Phil Hindman, Arthur O’Dwyer, Laurin-Luis Lehning, JF 
