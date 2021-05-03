@@ -1,11 +1,11 @@
 <pre class='metadata'>
 Title: Freestanding Language: Optional <code>::operator new</code>
-Shortname: D2013
-Revision: 4.5
+Shortname: P2013
+Revision: 4
 Audience: EWG
-Status: D
+Status: P
 Group: WG21
-URL: https://wg21.link/P2013R3
+URL: https://wg21.link/P2013R4
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
 Editor: Ben Craig, NI, ben.craig@gmail.com
 Abstract: In freestanding implementations, standardize existing practices and make the default allocating <code>::operator new</code>s optional.
@@ -19,8 +19,6 @@ R4 {#r4}
 Definitions of the allocation functions must now exist, but they now have implementation defined behavior on freestanding implementations (which encompasses UB).
 
 Rebasing to N4878.  Accounting for shifted numbering in [new.delete].
-
-TODO: Shortname, revision, status
 
 R3 {#r3}
 -----
