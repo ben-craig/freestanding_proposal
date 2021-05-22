@@ -358,14 +358,18 @@ span.indented {
 }
 </style>
 
-<title>P1642R5: Freestanding Library: Easy [utilities], [ranges], and [iterators]</title>
+<title>D1642R6.0 TODO: Freestanding Library: Easy [utilities], [ranges], and [iterators]</title>
 <body>
 <h1>Freestanding Library: Easy [utilities], [ranges], and [iterators]</h1>
-Document number: P1642R5<br/>
-Date: 2020-12-10<br/>
+Document number: D1642R6.0 TODO<br/>
+Date: 2020-12-10 TODO<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: Library Evolution Working Group
 <h1>Change history</h1>
+<h3> R6 </h3>
+<ul>
+  <li>Adding the accidentally omitted <code>addressof</code>.  Earlier versions of the paper included it, and it was lost due to shifts in this paper's wording, and the relocation of <code>addressof</code> out of <a href="https://wg21.link/specialized.algorithms">[specialized.algorithms]</a></li>
+</ul>
 <h3> R5 </h3>
 <ul>
   <li>Rebasing to N4868</li>
@@ -718,6 +722,7 @@ Please append a <span class="comment">// <span class="textit">freestanding</span
   <li><code>make_obj_using_allocator</code></li>
   <li><code>uninitialized_construct_using_allocator</code></li>
   <li><code>allocator_traits</code></li>
+  <li><code>addressof</code></li>
   <li><code>default_delete</code></li>
   <li><code>unique_ptr</code></li>
   <li><code>unique_ptr</code> overload of <code>swap</code></li>
