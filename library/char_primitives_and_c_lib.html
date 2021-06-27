@@ -358,16 +358,23 @@ span.indented {
 }
 </style>
 
-<title>P2338R0: Freestanding Library: Character primitives and the C library</title>
+<title>D2338R1.0: TODO: Freestanding Library: Character primitives and the C library</title>
 <body>
 <h1>Freestanding Library: Character primitives and the C library</h1>
-Document number: P2338R0<br/>
-Date: 2021-03-13<br/>
+Document number: D2338R1.0 TODO<br/>
+Date: 2021-06-27 TODO<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: SG14 (Low Latency), SG22 (C Liaison), Library Evolution Working Group
 <h1>Abstract</h1>
 Add everything to the shared C and C++ freestanding library that can be implemented without OS calls and space overhead.
 Also add primitive character operations (<code>&lt;charconv&gt;</code> and <code>char_traits</code>) to the C++ freestanding library.
+<h1>Change history</h1>
+<h3> R1 </h3>
+<ul>
+  <li>Commenting on POSIX error handling</li>
+  <li>Removing <code>&lt;cinttypes&gt;</code>, as WG14 is deprecating <code>intmax_t</code></li>
+  <li>Adding SDCC state of implementation<li>
+</ul>
 <h1>Introduction</h1>
 <p>
 The current definition of the freestanding implementation is not very useful.
@@ -578,20 +585,33 @@ Most operating systems speed up system calls by not saving and restoring floatin
 That means that kernel uses of floating point operations require extra care to avoid corrupting user state.
 </p><p>
 In C, the dynamic floating-point environment has thread storage duration.
-This drags in the same set of problems that Thread-local storage has.
+This drags in the same set of problems that thread-local storage has.
 </p>
 <h2>Functions requiring global or thread-local storage</h2>
 <p>
 These functions are not being added to the freestanding library.
 Examples are the locale aware functions, the C random number functions, and functions relying on <code>errno</code>.
+POSIX does not require the use of <code>errno</code> in any of the functions proposed for addition.
 </p>
 <h1>Experience</h1>
 <p>
-The musl, newlib, and uclibc-ng C libraries are all marketed towards embedded use cases, and are all frequently used in embedded environments.  All of the C facilities that this paper adds to the freestanding requirements are already present in musl, newlib, and uclibc-ng.  This includes memccpy.
+The musl, newlib, and uclibc-ng C libraries are all marketed towards embedded use cases, and are all frequently used in embedded environments.
+All of the C facilities that this paper adds to the freestanding requirements are already present in musl, newlib, and uclibc-ng.
+This includes memccpy.
 </p><p>
-The Linux kernel uses a custom C library, though that library is more minimal, and in non-standard locations.  The Linux kernel has implementations of <code>bsearch</code> (in <code>&lt;linux/bsearch.h</code>) and all of the <code>&lt;string.h&gt;</code> functions except for <code>memccpy</code>, though the <code>&lt;string.h&gt;</code> functions are in <code>&lt;linux/string.h&gt;</code>.  The <code>&lt;wchar.h&gt;</code>, <code>&lt;inttypes.h&gt;</code>, and most of the <code>&lt;stdlib.h&gt;</code> functions were not present.
+SDCC includes all of the proposed <code>&lt;string.h&gt;</code> functions.
+It includes <code>bsearch</code>, <code>qsort</code>, <code>abs</code>, and <code>labs</code> from <code>&lt;stdlib.h&gt;</code>.
+SDCC also includes a few functions and types from <code>&lt;wchar.h&gt;</code> (<code>wcscmp</code>, <code>wcslen</code>, <code>mbstate_t</code>, and <code>wint_t</code>).
 </p><p>
-The Microsoft Windows kernel also has a C implementation that is distinct from the one that ships from Microsoft Visual Studio.  That C implementation contains all of the new freestanding requirements with the exception of <code>imaxabs</code>, <code>imaxdiv</code>, <code>llabs</code>, and <code>lldiv</code>.
+SDCC omits the various <code>div</code> function and <code>div_t</code> types.
+<code>llabs</code> is not currently implemented.
+The remainder of <code>&lt;wchar.h&gt;</code> is not provided.
+</p><p>
+The Linux kernel uses a custom C library, though that library is more minimal, and in non-standard locations.
+The Linux kernel has implementations of <code>bsearch</code> (in <code>&lt;linux/bsearch.h</code>) and all of the <code>&lt;string.h&gt;</code> functions except for <code>memccpy</code>, though the <code>&lt;string.h&gt;</code> functions are in <code>&lt;linux/string.h&gt;</code>.
+The <code>&lt;wchar.h&gt;</code> functions and most of the <code>&lt;stdlib.h&gt;</code> functions were not present.
+</p><p>
+The Microsoft Windows kernel also has a C implementation that is distinct from the one that ships from Microsoft Visual Studio.  That C implementation contains all of the new freestanding requirements with the exception of <code>llabs</code> and <code>lldiv</code>.
 </p><p>
 On the C++ front, I have successfully tested Visual Studio's <code>char_traits</code> implementation with a C++14 era set of libc++ tests, all in the Windows kernel.  The integral <code>&lt;charconv&gt;</code> functions have not been tested, but I do not foresee any issues there.
 </p>
@@ -687,16 +707,10 @@ A small portion of <code>&lt;cmath&gt;</code> will be present.
 <li>abs(long int)</li>
 <li>abs(long long int)</li>
 </code></ul>
-A portion of <code>&lt;cinttypes&gt;</code> will be present.
-<ul>
-<code><li>imaxabs</li>
-<li>imaxdiv</li>
-<li>abs(intmax_t)</li>
-<li>div(intmax_t, intmax_t)</li>
-</code></ul>
+
 <h2>Notable omissions</h2>
 <p>
-<code>errno</code> is not included as it is global state.  In addition, errno is best implemented as a thread-local variable.
+<code>errno</code> is not included as it is global state.  In addition, <code>errno</code> is best implemented as a thread-local variable.
 </p><p>
 <code>error_code</code>, <code>error_condition</code>, and <code>error_category</code> all have <code>string</code> in the interface.
 </p><p>
@@ -712,11 +726,21 @@ Program termination requires involvement from the operating system / environment
 </p><p>
 <code>&lt;cctype&gt;</code> and <code>&lt;cwctype&gt;</code> rely heavily on global locale data.
 </p>
+The <code>abs</code>, <code>div</code>, <code>imaxabs</code>, and <code>imaxdiv</code> overloads in <code>&lt;cinttypes&gt;</code> aren't included, as WG14 is deprecating <code>intmax_t</code>.
+In addition, these functions are rarely used, and of low general utility.
+
+
 <h2>Potential removals</h2>
 Here are some things that I am currently requiring, but could be convinced to remove.
 <ul><li><code>&lt;cwchar&gt;</code></li></ul>
 The <code>&lt;cwchar&gt;</code> functions are implementable for freestanding environments.
 The Microsoft and EFI ecosystems (EFI was the successor to BIOS and the predecessor to UEFI) use wchar_t extensively.
+
+<ul><li><code>long long</code> versions of functions</li></ul>
+Some existing implementations do not currently include the <code>long long</code> versions of functions, like <code>llabs</code> and <code>lldiv</code>.
+These are not critical to the proposal.
+They are fine in freestanding philosophically though.
+<code>long long</code> is permitted to be the same size as <code>long</code> in the C and C++ standards.
 
 <h2>Potential additions</h2>
 Here are some things that I am not currently requiring, but could be convinced to add.
@@ -825,18 +849,6 @@ Add a sentence to paragraph 2:
 Add a new paragraph:
 <blockquote class="stdins">
 The macros in <code>&lt;float.h&gt;</code> are freestanding library facilities.
-</blockquote>
-
-<h2>Change in 7.8.2.1 The <code>imaxabs</code> function</h2>
-Add a paragraph to the synopsis:
-<blockquote class="stdins">
-The <code>imaxabs</code> function is a freestanding library facility.
-</blockquote>
-
-<h2>Change in 7.8.2.2 The <code>imaxdiv</code> function</h2>
-Add a paragraph to the synopsis:
-<blockquote class="stdins">
-The <code>imaxdiv</code> function is a freestanding library facility.
 </blockquote>
 
 <h2>Change in 7.9 Alternative spellings <code>&lt;iso646.h&gt;</code></h2>
@@ -1373,15 +1385,11 @@ Please append a <span class="comment">// <span class="textit">freestanding delet
   <li><code>abs(long double)</code></li>
 </ul>
 
-<h2>Change in <a href="https://wg21.link/cinttypes.syn">[cinttypes.syn]</a></h2>
-Instructions to the editor:<br>
-Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following entities:
-<ul>
-  <li><code>imaxabs</code></li>
-  <li><code>imaxdiv</code></li>
-  <li><code>abs(intmax_t)</code></li>
-  <li><code>div(intmax_t, intmax_t)</code></li>
-</ul>
+<h1>Acknowledgements</h1>
+<p>
+Thanks to Philipp Krause for his feedback on this paper.
+</p>
+
 
 </body>
 </html>
