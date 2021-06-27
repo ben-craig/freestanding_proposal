@@ -374,6 +374,7 @@ Also add primitive character operations (<code>&lt;charconv&gt;</code> and <code
   <li>Commenting on POSIX error handling</li>
   <li>Removing <code>&lt;cinttypes&gt;</code>, as WG14 is deprecating <code>intmax_t</code></li>
   <li>Adding SDCC state of implementation<li>
+  <li>Discussing design alternative of optional features<li>
 </ul>
 <h1>Introduction</h1>
 <p>
@@ -540,6 +541,22 @@ We also cannot just take the list of everything that is conditionally <code>noex
 Regardless, if a function or class is <code>constexpr</code> or <code>noexcept</code>, and it doesn't involve floating point, then that function or class is a strong candidate to be put into freestanding mode.
 </p><p>
 In the future, it may make sense to allow all <code>constexpr</code> functions into freestanding, so long as they are used in a <code>constexpr</code> context and not invoked at runtime.
+</p>
+<h2>Alternative: Make the additions optional features in freestanding</h2>
+<p>
+Rather than the proposed approach, we could instead have all the new features be optional features in freestanding.
+A feature test macro could advertise the presence or absence of these features.
+</p><p>
+This approach is unlikely to succeed in C++.
+C++ has two major kinds of implementations (freestanding and hosted), and very few optional features.
+C++ has struggled to maintain a coherent freestanding implementation, and adding additional build modes is more likely to make things worse, rather than better.
+</p><p>
+On the other hand, C uses optional features much more frequently.
+A <code>__STDC_HAS_MINIMAL_FREESTANDING_LIBRARY</code> macro advertising the feature is more likely to have success in the C working group.
+Still, if there are no objections to adding the new features directly to freestanding, then that will reduce the number of dialects in the wild.
+The optional feature approach in C is viable, but it is only an alternative for the case that the direct freestanding approach cannot gain consensus.
+</p><p>
+Also note that freestanding C++ will generally depend on this more featureful freestanding C, whether it is part of the core freestanding requirements, or guarded by a feature test macro.
 </p>
 <h2>Split overload sets</h2>
 <p>
