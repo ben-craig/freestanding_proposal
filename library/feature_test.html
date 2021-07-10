@@ -358,14 +358,19 @@ span.indented {
 }
 </style>
 
-<title>P2198R1: Freestanding Feature-Test Macros and Implementation-Defined Extensions</title>
+<title>P2198R2: Freestanding Feature-Test Macros and Implementation-Defined Extensions</title>
 <body>
 <h1>Freestanding Feature-Test Macros and Implementation-Defined Extensions</h1>
-Document number: P2198R1<br/>
-Date: 2020-10-04<br/>
+Document number: P2198R2<br/>
+Date: 2021-07-10<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: Library Evolution Working Group
 <h1>Change history</h1>
+<h3> R2 </h3>
+<ul>
+  <li>Corrected policy recommendations to match examples and wording for <code>::operator new</code> example.</li>
+  <li>Updated wording tying feature test macro to <code>::operator new</code> behavior.</li>
+</ul>
 <h3> R1 </h3>
 <ul>
   <li>Indicating which working draft the wording was based on.</li>
@@ -568,7 +573,7 @@ This paper patches up many of the historical problems with freestanding and feat
   <li>If a paper contains some facilities that are freestanding, and some that are hosted, then the paper needs at least two feature test macros.  <code>__cpp_lib_foo</code> will cover the full paper in the hosted case, and <code>__cpp_lib_freestanding_foo</code> will cover the freestanding portions.</li>
   <li>If a paper adds facilities to the hosted implementation and has a feature-test macro, and a later paper adds the entirety of the paper to freestanding, then bump the version of the original feature-test macro.</li>
   <li>If a paper adds facilities to the hosted implementation and has a feature-test macro, and a later paper adds a portion of the paper to freestanding, then add a new freestanding macro for the feature, of the form <code>__cpp_lib_freestanding_foo</code>.</li>
-  <li>If a paper changes a freestanding facility from required to optional, then add an "absence" feature-test macro of the form <code>__cpp_lib_freestanding_no_foo</code>.</li>
+  <li>If a paper changes a freestanding facility from required to optional, then add a "presence" feature-test macro of the form <code>__cpp_lib_freestanding_foo</code>.  Define the macro to 0 when the feature is not present, and add normative wording tying the feature to the feature test macro.</li>
 </ul>
 
 <h2>Examples</h2>
@@ -978,7 +983,7 @@ Please make the following changes to <a href="https://wg21.link/version.syn#2">[
 <blockquote class="stdins">
 <div class="para">
     <div class="marginalizedparent"><a class="marginalized">3</a></div>
-    <div class="sentence">The macro <code>__cpp_lib_freestanding_operator_new</code> shall be defined to the integer literal <code><i>new-val</i></code> if the library provides default definitions for the replaceable global allocation functions, and to the integer literal <code>0</code> otherwise. ([basic.stc.dynamic]).</div>
+    <div class="sentence">The macro <code>__cpp_lib_freestanding_operator_new</code> shall be defined to the integer literal <code><i>new-val</i></code> if the library provides definitions for all of the replaceable global allocation functions that meet the requirements of a hosted implementation, and to the integer literal <code>0</code> otherwise. ([basic.stc.dynamic]).</div>
 </div>
 </blockquote>
 
