@@ -373,8 +373,9 @@ Also add primitive character operations (<code>&lt;charconv&gt;</code> and <code
 <ul>
   <li>Commenting on POSIX error handling</li>
   <li>Removing <code>&lt;cinttypes&gt;</code>, as WG14 is deprecating <code>intmax_t</code></li>
-  <li>Adding SDCC state of implementation<li>
-  <li>Discussing design alternative of optional features<li>
+  <li>Adding SDCC state of implementation</li>
+  <li>Discussing design alternative of optional features</li>
+  <li>Further discussing <code>wchar_t</code> functions</li>
 </ul>
 <h1>Introduction</h1>
 <p>
@@ -751,7 +752,17 @@ In addition, these functions are rarely used, and of low general utility.
 Here are some things that I am currently requiring, but could be convinced to remove.
 <ul><li><code>&lt;cwchar&gt;</code></li></ul>
 The <code>&lt;cwchar&gt;</code> functions are implementable for freestanding environments.
-The Microsoft and EFI ecosystems (EFI was the successor to BIOS and the predecessor to UEFI) use wchar_t extensively.
+The Microsoft and EFI ecosystems (EFI was the successor to BIOS and the predecessor to UEFI) use <code>wchar_t</code> extensively.
+<code>std::char_traits&lt;wchar_t&gt;</code> is usually implemented in terms of the <code>&lt;cwchar&gt;</code> functions.
+<p>
+Most ecosystems don't use <code>wchar_t</code> much though.
+UTF8's success is reducing the need for <code>wchar_t</code>.
+This would be implementation burden with little customer demand.
+Some linking tools also have trouble discarding unused functions, and mitigating that problem would be further implementer burden with little payoff.
+</p><p>
+A possible alternative to removal is to make <code>&lt;wchar.h&gt;</code> optional, guarded with a feature test macro like <code>__STDC_HAS_WCHAR_H_FREESTANDING_LIBRARY</code>.
+C++ would require that feature to be available.
+</p>
 
 <ul><li><code>long long</code> versions of functions</li></ul>
 Some existing implementations do not currently include the <code>long long</code> versions of functions, like <code>llabs</code> and <code>lldiv</code>.
@@ -1404,7 +1415,7 @@ Please append a <span class="comment">// <span class="textit">freestanding delet
 
 <h1>Acknowledgements</h1>
 <p>
-Thanks to Philipp Krause for his feedback on this paper.
+Thanks to Philipp Krause and Rajan Bhakta for their feedback on this paper.
 </p>
 
 
