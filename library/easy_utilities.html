@@ -358,18 +358,18 @@ span.indented {
 }
 </style>
 
-<title>D1642R7 [TODO] Freestanding Library: Easy [utilities], [ranges], and [iterators]</title>
+<title>P1642R7 Freestanding Library: Easy [utilities], [ranges], and [iterators]</title>
 <body>
 <h1>Freestanding Library: Easy [utilities], [ranges], and [iterators]</h1>
-Document number: D1642R7 [TODO] <br/>
-Date: 2021-05-30 [TODO] <br/>
+Document number: P1642R7<br/>
+Date: 2021-09-26 <br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: Library Evolution Working Group
 <h1>Change history</h1>
 <h3> R7 </h3>
 <ul>
-  <li>[TODO] Fixed wording to keep <code>&lt;atomic&gt;</code> freestanding</li>
-  <li>[TODO] Mentioned reflector discussion around addition of <code>std::unreachable</code></li>
+  <li>Fixed wording to keep <code>&lt;atomic&gt;</code> freestanding</li>
+  <li>Mentioned reflector discussion around addition of <code>std::unreachable</code></li>
 </ul>
 <h3> R6 </h3>
 <ul>
@@ -516,7 +516,7 @@ I have run a 2018 era of libc++'s test suite against the Microsoft Visual Studio
 <p>
 This paper was last discussed in LEWG in December 2020, and forwarded to LWG in March 2021.  The paper touches a lot of headers, and the standard is a moving target.
 </p><p>
-<a href=https://wg21.link/P0627>P0627: Function to mark unreachable code</a> is likely to make it into the standard at a similar time as this paper.  P0627 would add <code>std::unreachable</code> to <code>&lt;utility&gt;</code>.  Since this paper adds the entirety of <code>&lt;utility&gt;</code> to freestanding, that constitutes a design change.  A thread was started on the reflector asking if there was any opposition to adding <code>std::unreachable</code> to freestanding.  There were three +1 votes, and no opposition (the author of this paper did not vote).
+<a href=https://wg21.link/P0627>P0627: Function to mark unreachable code</a> is likely to make it into the standard at a similar time as this paper.  P0627 would add <code>std::unreachable</code> to <code>&lt;utility&gt;</code>.  Since this paper adds the entirety of <code>&lt;utility&gt;</code> to freestanding, that constitutes a design change.  A thread was started on the reflector asking if there was any opposition to adding <code>std::unreachable</code> to freestanding.  There were five votes in favor of putting <code>std::unreachable</code> in freestanding, and no opposition (the author of this paper did not vote).
 </p>
 <h1>Editorial alternatives</h1>
 <p>
