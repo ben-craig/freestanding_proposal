@@ -358,17 +358,24 @@ span.indented {
 }
 </style>
 
-<title>P2338R1: Freestanding Library: Character primitives and the C library</title>
+<title>D2338R2.0 TODO: Freestanding Library: Character primitives and the C library</title>
 <body>
 <h1>Freestanding Library: Character primitives and the C library</h1>
-Document number: P2338R1<br/>
-Date: 2021-07-10<br/>
+Document number: D2338R2.0 TODO<br/>
+Date: 2021-07-10 TODO<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
-Audience: SG14 (Low Latency), SG22 (C Liaison), Library Evolution Working Group
+Audience: SG22 (C Liaison), Library Evolution Working Group
 <h1>Abstract</h1>
 Add everything to the shared C and C++ freestanding library that can be implemented without OS calls and space overhead.
 Also add primitive character operations (<code>&lt;charconv&gt;</code> and <code>char_traits</code>) to the C++ freestanding library.
 <h1>Change history</h1>
+<h3> R2 </h3>
+<ul>
+  <li>Rebase onto WG14's N2731 working draft</li>
+  <li>Made <code>&lt;wchar.h&gt;</code> functions optional in freestanding C implementations</li>
+  <li>Added <code>strtok</code> to C++ freestanding implementations, because C already did it</li>
+  <li>Discussed C's Annex K</li>
+</ul>
 <h3> R1 </h3>
 <ul>
   <li>Commenting on POSIX error handling</li>
@@ -430,6 +437,8 @@ A freestanding C implementation is required to provide the entirety of the follo
 <li><code>&lt;stdnoreturn.h&gt;</code></li>
 </ul>
 </p><p>
+Most of <code>&lt;string.h&gt;</code> is required (<code>strdup</code>, <code>strndup</code>, <code>strcoll</code>, <code>strxfrm</code>, and <code>strerror</code> are excluded).  This includes <code>strtok</code>, which requires global data.
+</p><p>
 Some additional features are required if the implementation defines the <code>__STDC_IEC_60559_BFP__</code> (binary floating point) macro or the <code>__STDC_IEC_60559_DFP__</code> (decimal floating point) macro.
 This includes <code>&lt;fenv.h&gt;</code>, <code>&lt;math.h&gt;</code>, and parts of <code>&lt;stdlib.h&gt;</code>.  Such implementations indirectly require locale support, as the <code>&lt;stdlib.h&gt;</code> numeric conversion functions are implemented in terms of <code>isspace</code>.
 </p><p>
@@ -466,7 +475,7 @@ Almost all of <code>&lt;atomic&gt;</code> is required (C does not require <code>
 The entire core language is required.
 For C++, this is much more onerous than for C, as the C++ core language includes exceptions, RTTI, thread-safe static initialization, and heap allocations.
 </p><p>
-The in-flight paper <a href="https://wg21.link/P2013">P2013</a> makes it such that the allocating forms of <code>::operator new</code> are no longer required.
+The in-flight paper <a href="https://wg21.link/P2013R4">P2013R4</a> makes it such that the allocating forms of <code>::operator new</code> are allowed to do nothing.
 This requirement often meant that the underlying C implementation of a freestanding C++ library needed to have <code>malloc</code> and <code>free</code> implementations.
 </p><p>
 The in-flight paper <a href="https://wg21.link/P1642">P1642</a> adds many C++ specific facilities, but it also adds <code>_Exit</code>.
@@ -485,12 +494,7 @@ This paper is currently concerned with the divisions of headers and library func
 </p>
 <h1>Impact on the standards</h1>
 <p>
-In the C standard library, a new editorial strategy will be used to mark facilities as freestanding.
-Prose in the standard will declare various facilities as <i>freestanding library facilities</i>.
-Only the primary definition will be declared this way, so we won't be duplicating this prose multiple times for the same facility (e.g. <code>NULL</code>, <code>size_t</code>, <code>wchar_t</code>, etc...).
-</p><p>
-Prior to this paper, the required contents of the C freestanding library were called out by header, and (conditionally) by clause in the case of <code>&lt;stdlib.h&gt;</code> numeric conversion functions in 7.22.1.
-This editorial strategy is cumbersome for partially required headers.
+In the C standard library, a new paragraph with bullets (and sub-bullets!) will be added that enumerates the full contents of the freestanding C library in prose.  Prior to this paper, the required contents of the C freestanding library were spread over two paragraphs, with somewhat broken wording in the case of <code>&lt;string.h&gt;</code>.
 </p><p>
 In the C++ standard library, the editorial strategy described in WG21 <a href="https://wg21.link/p1642">P1642</a> will be used to annotate which facilities are required in freestanding implementations.
 </p>
@@ -543,6 +547,17 @@ Regardless, if a function or class is <code>constexpr</code> or <code>noexcept</
 </p><p>
 In the future, it may make sense to allow all <code>constexpr</code> functions into freestanding, so long as they are used in a <code>constexpr</code> context and not invoked at runtime.
 </p>
+<h2>Optional C <code>&lt;wchar.h&gt;</code>, required C++ <code>&lt;cwchar&gt;</code></h2>
+<p>
+In C++, there are many wchar_t function overloads and specializations of templates, and many of them rely on the functions in <code>&lt;cwchar&gt;</code>.  In addition, the C++ specification generally avoids making features optional.
+</p><p>
+The C committee pushed back on requiring <code>&lt;wchar.h&gt;</code> on freestanding implementations.  The main reasons cited were lack of utility, and unclear semantics of <code>wchar_t</code> in the wild.
+</p><p>
+This paper makes freestanding C implementations define the <code>__STDC_WCHAR_H_FREESTANDING_LIBRARY__</code> macro to a non-zero value if <code>&lt;wchar.h&gt;</code> meets the listed requirements.  <code>__STDC_WCHAR_H_FREESTANDING_LIBRARY__</code> will be defined to 0 otherwise.  This allows users to differentiate between old implementations that <i>might</i> otherwise be conforming, and new implementations that are definitely conforming (or not).
+</p><p>
+In the long term, C++ implementations will be able to detect whether the C implementation provides the necessary functions to implement wchar_t overloads and specializations via the <code>__STDC_WCHAR_H_FREESTANDING_LIBRARY__</code> feature test macro.
+</p>
+
 <h2>Alternative: Make the additions optional features in freestanding</h2>
 <p>
 Rather than the proposed approach, we could instead have all the new features be optional features in freestanding.
@@ -553,12 +568,15 @@ C++ has two major kinds of implementations (freestanding and hosted), and very f
 C++ has struggled to maintain a coherent freestanding implementation, and adding additional build modes is more likely to make things worse, rather than better.
 </p><p>
 On the other hand, C uses optional features much more frequently.
-A <code>__STDC_HAS_MINIMAL_FREESTANDING_LIBRARY</code> macro advertising the feature is more likely to have success in the C working group.
+A <code>__STDC_MINIMAL_FREESTANDING_LIBRARY__</code> macro advertising the feature is more likely to have success in the C working group.
 Still, if there are no objections to adding the new features directly to freestanding, then that will reduce the number of dialects in the wild.
 The optional feature approach in C is viable, but it is only an alternative for the case that the direct freestanding approach cannot gain consensus.
 </p><p>
 Also note that freestanding C++ will generally depend on this more featureful freestanding C, whether it is part of the core freestanding requirements, or guarded by a feature test macro.
 </p>
+<h2>Alternative: No <code>wchar_t</code></h2>
+libc++ has recently implemented a <code>_LIBCPP_HAS_NO_WIDE_CHARACTERS</code> build-time feature toggle that removes all utilities and specializations involving <code>wchar_t</code> from the library.
+This will likely satisfy most non-Windows freestanding users, but it does not align well with the idea of freestanding being the maximum subset of hosted C++ that doesn't require globals or system calls.
 <h2>Split overload sets</h2>
 <p>
 In C++, <code>to_chars</code>, <code>from_chars</code>, and <code>abs</code> are overloaded on floating point and integral types.
@@ -592,7 +610,7 @@ Note that there are common environments (e.g. the kernels of all major desktop o
 <p>
 The heap is a big set of global state.  In addition, C++ heap exhaustion is typically expressed via exception.  Some micro-controller systems don't have a heap.  In kernel environments, there is typically a heap, but there isn't a reasonable choice of <i>which</i> heap to use as the default.  In the Windows kernel, the two best candidates for a default heap are the paged pool (plentiful available memory, but unsafe to use in many contexts), and the non-paged pool (safe to use, but limited capacity).  The C++ implementation in the Windows kernel forces users to implement their own global <code>operator new</code> to make this decision.
 </p><p>
-<a href="https://wg21.link/P2013">P2013</a> allows freestanding C++ implementations to omit the global allocating <code>::operator new</code> implementations by default.
+<a href="https://wg21.link/P2013R4">P2013R4</a> allows freestanding C++ implementations to provide an empty global allocating <code>::operator new</code> implementations by default.
 </p>
 <h2>Floating point</h2>
 <p>
@@ -607,15 +625,20 @@ This drags in the same set of problems that thread-local storage has.
 </p>
 <h2>Functions requiring global or thread-local storage</h2>
 <p>
-These functions are not being added to the freestanding library.
+These functions are (mostly) not being added to the freestanding library.
 Examples are the locale aware functions, the C random number functions, and functions relying on <code>errno</code>.
 POSIX does not require the use of <code>errno</code> in any of the functions proposed for addition.
+</p><p>
+<code>strtok</code> is being added to C++ because C has already added it.
+In addition, the quantity of global state here is small, and should be straightforward to optimize away when <code>strtok</code> is not used.
+</p><p>
+All of C's Annex K (the bounds-checking functions) rely on global storage for the runtime-constraint handler.
 </p>
 <h1>Experience</h1>
 <p>
 The musl, newlib, and uclibc-ng C libraries are all marketed towards embedded use cases, and are all frequently used in embedded environments.
 All of the C facilities that this paper adds to the freestanding requirements are already present in musl, newlib, and uclibc-ng.
-This includes memccpy.
+This includes memccpy and the <code>&lt;wchar.h&gt;</code> facilities.
 </p><p>
 SDCC includes all of the proposed <code>&lt;string.h&gt;</code> functions.
 It includes <code>bsearch</code>, <code>qsort</code>, <code>abs</code>, and <code>labs</code> from <code>&lt;stdlib.h&gt;</code>.
@@ -695,7 +718,7 @@ Portions of <code>&lt;cstring&gt;</code>.
 <p>
 On C, include <code>memccpy</code> in <code>&lt;string.h&gt;</code>, in addition to what is mentioned above for <code>&lt;cstring&gt;</code>.
 </p><p>
-Portions of <code>&lt;cwchar&gt;</code>.
+Portions of <code>&lt;cwchar&gt;</code>.  For C, these functions are only provided if <code>__STDC_WCHAR_H_FREESTANDING_LIBRARY__</code> is defined to 1 by the implementation (i.e. these functions are optional in freestanding C).
 </p>
 <ul>
 <code><li>wcscpy</li>
@@ -734,7 +757,8 @@ A small portion of <code>&lt;cmath&gt;</code> will be present.
 </p><p>
 Many string functions (<code>strtol</code> and family) rely on <code>errno</code>.
 </p><p>
-<code>strtok</code> and <code>rand</code> aren't required to use thread-local storage, but good implementations do.  I don't want to encourage bad implementations.
+<code>rand</code> isn't required to use thread-local storage, but good implementations do.  I don't want to encourage bad implementations.
+(Prior revisions also excluded <code>strtok</code> on this basis, but wg14 has since added <code>strtok</code> to C freestanding).
 </p><p>
 <code>assert</code> is not included as it requires a stderror stream.
 </p><p>
@@ -759,9 +783,6 @@ Most ecosystems don't use <code>wchar_t</code> much though.
 UTF8's success is reducing the need for <code>wchar_t</code>.
 This would be implementation burden with little customer demand.
 Some linking tools also have trouble discarding unused functions, and mitigating that problem would be further implementer burden with little payoff.
-</p><p>
-A possible alternative to removal is to make <code>&lt;wchar.h&gt;</code> optional, guarded with a feature test macro like <code>__STDC_HAS_WCHAR_H_FREESTANDING_LIBRARY</code>.
-C++ would require that feature to be available.
 </p>
 
 <ul><li><code>long long</code> versions of functions</li></ul>
@@ -787,9 +808,9 @@ C doesn't currently require <code>&lt;stdatomic.h&gt;</code> in freestanding imp
 I don't currently recommend adding <code>&lt;stdatomic.h&gt;</code> to freestanding C implementations, as that would also require dealing with non-lock-free atomics.
 If others feel strongly about unifying this aspect of C and C++ freestanding implementations, then the facilities could be added.
 
-<h1>Feature Test Macros</h1>
+<h1>C++ Feature Test Macros</h1>
 <p>
-A freestanding implementation that provides support for this paper shall define the following feature test macros:
+A freestanding C++ implementation that provides support for this paper shall define the following feature test macros:
 </p>
 <table border="1">
     <thead><tr>
@@ -839,194 +860,90 @@ The user can provide a hand-rolled replacement on old or non-conforming implemen
 These macros follow the policies proposed in <a href="https://wg21.link/P2198">P2198: Freestanding Feature-Test Macros and Implementation-Defined Extensions</a>.
 </p>
 <h1>C Wording</h1>
-Wording is based off of WG14's N2596.
+Wording is based off of WG14's N2731.
 <h2>Change in 4. Conformance</h2>
+
+Insert the following paragraph prior to paragraph 6:
+<blockquote class="stdins">
+
+The <i>freestanding library facilities</i> are as follows:
+<span class='indented'>
+    -- The contents of the standard headers
+        <code>&lt;float.h&gt;</code>,
+        <code>&lt;iso646.h&gt;</code>,
+        <code>&lt;limits.h&gt;</code>,
+        <code>&lt;stdalign.h&gt;</code>,
+        <code>&lt;stdarg.h&gt;</code>,
+        <code>&lt;stdbool.h&gt;</code>,
+        <code>&lt;stddef.h&gt;</code>,
+        <code>&lt;stdint.h&gt;</code>,
+        and <code>&lt;stdnoreturn.h&gt;</code>.
+    <br/>-- The following facilities from the <code>&lt;errno.h&gt;</code> standard header: <code><b>EDOM</b></code>, <code><b>EILSEQ</b></code>, and <code><b>ERANGE</b></code>.
+
+    <br/>-- The contents of the standard headers <code>&lt;fenv.h&gt;</code> and <code>&lt;math.h&gt;</code>, if the implementation defines <code><b>__STDC_IEC_60559_BFP__</b></code> or <code><b>__STDC_IEC_60559_DFP__</b></code>.
+    <br/>-- The following facilities from the standard header <code>&lt;stdlib.h&gt;</code>:
+
+    <ul>
+        <li>
+            <code><b>bsearch</b></code>, <code><b>qsort</b></code>,
+            <code><b>abs</b></code>, <code><b>labs</b></code>, <code><b>llabs</b></code>,
+            <code><b>div</b></code>, <code><b>div_t</b></code>,
+            <code><b>ldiv</b></code>, <code><b>ldiv_t</b></code>,
+            <code><b>lldiv</b></code>, and <code><b>lldiv_t</b></code>
+        </li>
+        <li>The numeric conversion functions (7.22.1) if the implementation defines <code><b>__STDC_IEC_60559_BFP__</b></code> or <code><b>__STDC_IEC_60559_DFP__</b></code>.</li>
+    </ul>
+
+    -- The contents of the <code>&lt;string.h&gt;</code> standard header, except the following functions: <code><b>strdup</b></code>, <code><b>strndup</b></code>, <code><b>strcoll</b></code>, <code><b>strxfrm</b></code>, <code><b>strerror</b></code>.
+
+    <br/>-- The following facilities from the <code>&lt;wchar.h&gt;</code> standard header, if the implementation defines <code><b>__STDC_WCHAR_H_FREESTANDING_LIBRARY__</b></code> to a non-zero value:
+        <code><b>mbstate_t</b></code>, <code><b>wint_t</b></code>, <code><b>WEOF</b></code>,
+        <code><b>wcscpy</b></code> <code><b>wcsncpy</b></code>, <code><b>wmemcpy</b></code>, <code><b>wmemmove</b></code>,
+        <code><b>wcscat</b></code>, <code><b>wcsncat</b></code>,
+        <code><b>wcscmp</b></code>, <code><b>wcsncmp</b></code>, <code><b>wmemcmp</b></code>,
+        <code><b>wcschr</b></code>, <code><b>wcscspn</b></code>, <code><b>wcspbrk</b></code>, <code><b>wcsrchr</b></code>, <code><b>wcsspn</b></code>, <code><b>wcsstr</b></code>, <code><b>wcstok</b></code>, <code><b>wmemchr</b></code>,
+        <code><b>wcslen</b></code>, and <code><b>wmemset</b></code>.
+</span>
+</blockquote>
+
 Change paragraph 6 as follows:
 <blockquote class="std">
-The two forms of conforming implementation are hosted and freestanding.
-A conforming hosted implementation shall accept any strictly conforming program.
-A conforming freestanding implementation shall accept any strictly conforming program in which the use of the features specified in the library clause (Clause 7) is confined to
+The two forms of <i>conforming implementation</i> are hosted and freestanding.
+A <i>conforming hosted implementation</i> shall accept any strictly conforming program.
+A <i>conforming freestanding implementation</i> shall accept any strictly conforming program in which the use of the features specified in the library clause (Clause 7) is confined to
     <del>the contents of the standard headers  <code>&lt;float.h&gt;</code>, <code>&lt;iso646.h&gt;</code>,
          <code>&lt;limits.h&gt;</code>, <code>&lt;stdalign.h&gt;</code>,
          <code>&lt;stdarg.h&gt;</code>, <code>&lt;stdbool.h&gt;</code>,
          <code>&lt;stddef.h&gt;</code>, <code>&lt;stdint.h&gt;</code>,
         and <code>&lt;stdnoreturn.h&gt;</code>.
     </del>
-<ins>freestanding library facilities.
-The strictly conforming programs that shall be accepted by a conforming freestanding implementation may include any standard library header that contains freestanding library facilities.</ins>
+<ins>
+    freestanding library facilities.
+    The strictly conforming programs that shall be accepted by a conforming freestanding implementation may include any standard library header that contains freestanding library facilities.
+</ins>
+<del>
+    Additionally, a <i>conforming freestanding implementation</i> shall accept any strictly conforming program in which the use of the features specified in the header <code>&lt;string.h&gt;</code>, except the following functions:
+    <code><b>strdup</b></code>, <code><b>strndup</b></code>, <code><b>strcoll</b></code>, <code><b>strxfrm</b></code>, <code><b>strerror</b></code>.
+</del>
 A conforming implementation may have extensions (including additional library functions), provided they do not alter the behavior of any strictly conforming program.
 <ins> All identifiers that are reserved when a standard header is included in a hosted implementation are reserved when it is included in a freestanding implementation.<ins>
 </blockquote>
 
-Change paragraph 7 as follows:
-<blockquote class="std">
-The strictly conforming programs that shall be accepted by a conforming freestanding implementation that defines <code>__STDC_IEC_60559_BFP__</code> or <code>__STDC_IEC_60559_DFP__</code> may also use features in
+Delete paragraph 7.
+<blockquote class="stddel">
+The strictly conforming programs that shall be accepted by a conforming freestanding implementation that defines <code><b>__STDC_IEC_60559_BFP__</b></code> or <code><b>__STDC_IEC_60559_DFP__</b></code> may also use features in
 the contents of the standard headers <code>&lt;fenv.h&gt;</code> and <code>&lt;math.h&gt;</code> and the numeric conversion functions
 (7.22.1) of the standard header <code>&lt;stdlib.h&gt;</code>.
-<del>All identifiers that are reserved when <code>&lt;stdlib.h&gt;</code> is included in a hosted implementation are reserved when it is included in a freestanding implementation.</del>
+All identifiers that are reserved when <code>&lt;stdlib.h&gt;</code> is included in a hosted implementation are reserved when it is included in a freestanding implementation.
 </blockquote>
 
-<h2>Change in 7.5 Errors <code>&lt;errno.h&gt;</code></h2>
-Add a sentence to paragraph 2:
-<blockquote class="std">
-[...]or a program defines an identifier with the name <code>errno</code>, the behavior is undefined.
-<ins><code>EDOM</code>, <code>EILSEQ</code>, and <code>ERANGE</code> are freestanding library facilities.</ins>
-</blockquote>
-
-<h2>Change in 7.7 Characteristics of floating types <code>&lt;float.h&gt;</code></h2>
-Add a new paragraph:
+<h2>Change in 6.10.8.3 Conditional feature macros</h2>
+Add the following item to the list in paragraph 1:
 <blockquote class="stdins">
-The macros in <code>&lt;float.h&gt;</code> are freestanding library facilities.
+<span class='indented'>
+<code><b>__STDC_WCHAR_H_FREESTANDING_LIBRARY__</b></code> The integer constant yyyymmL, or the constant 0, intended to indicate support for freestanding functions in <code>&lt;wchar.h&gt;</code>.
+</span>
 </blockquote>
-
-<h2>Change in 7.9 Alternative spellings <code>&lt;iso646.h&gt;</code></h2>
-Add a new paragraph:
-<blockquote class="stdins">
-The macros in <code>&lt;iso646.h&gt;</code> are freestanding library facilities.
-</blockquote>
-
-<h2>Change in 7.10 Sizes of integer types <code>&lt;limits.h&gt;</code></h2>
-Add a new paragraph:
-<blockquote class="stdins">
-The macros in <code>&lt;limits.h&gt;</code> are freestanding library facilities.
-</blockquote>
-
-<h2>Change in 7.15 Alignment <code>&lt;stdalign.h&gt;</code></h2>
-Add a new paragraph:
-<blockquote class="stdins">
-The macros in <code>&lt;stdalign.h&gt;</code> are freestanding library facilities.
-</blockquote>
-
-<h2>Change in 7.16 Variable arguments <code>&lt;stdarg.h&gt;</code></h2>
-Add a new paragraph:
-<blockquote class="stdins">
-The types and macros in <code>&lt;stdarg.h&gt;</code> are freestanding library facilities.
-</blockquote>
-
-<h2>Change in 7.18 Boolean type and values <code>&lt;stdbool.h&gt;</code></h2>
-Add a new paragraph:
-<blockquote class="stdins">
-The macros in <code>&lt;stdbool.h&gt;</code> are freestanding library facilities.
-</blockquote>
-
-<h2>Change in 7.19 Common definitions <code>&lt;stddef.h&gt;</code></h2>
-Add a new paragraph:
-<blockquote class="stdins">
-The types and macros in <code>&lt;stddef.h&gt;</code> are freestanding library facilities.
-</blockquote>
-
-<h2>Change in 7.20 Integer types <code>&lt;stdint.h&gt;</code></h2>
-Add a new paragraph:
-<blockquote class="stdins">
-The types and macros in <code>&lt;stdint.h&gt;</code> are freestanding library facilities.
-</blockquote>
-
-<h2>Change in 7.22 General utilities <code>&lt;stdlib.h&gt;</code></h2>
-
-Add a sentence to paragraph 3:
-<blockquote class="std">
-[...]which is a structure type that is the type of the value returned by the <code>lldiv</code> function.
-<ins><code>div_t</code>, <code>ldiv_t</code>, and <code>lldiv_t</code> are freestanding library facilities.</ins>
-</blockquote>
-
-<h2>Change in 7.22.5.1 The <code>bsearch</code> function</h2>
-Add a paragraph to the synopsis:
-<blockquote class="stdins">
-The <code>bsearch</code> function is a freestanding library facility.
-</blockquote>
-
-<h2>Change in 7.22.5.2 The <code>qsort</code> function</h2>
-Add a paragraph to the synopsis:
-<blockquote class="stdins">
-The <code>qsort</code> function is a freestanding library facility.
-</blockquote>
-
-<h2>Change in 7.22.6.1 The <code>abs</code>, <code>labs</code>, and <code>llabs</code> functions</h2>
-Add a paragraph to the synopsis:
-<blockquote class="stdins">
-The <code>abs</code>, <code>labs</code>, and <code>llabs</code> functions are freestanding library facilities.
-</blockquote>
-
-<h2>Change in 7.22.6.2 The <code>div</code>, <code>ldiv</code>, and <code>lldiv</code> functions</h2>
-Add a paragraph to the synopsis:
-<blockquote class="stdins">
-The <code>div</code>, <code>ldiv</code>, and <code>lldiv</code> functions are freestanding library facilities.
-</blockquote>
-
-<h2>Change in 7.23 <code>_Noreturn &lt;stdnoreturn.h&gt;</code></h2>
-Add a new paragraph:
-<blockquote class="stdins">
-The macros in <code>&lt;stdnoreturn.h&gt;</code> are freestanding library facilities.
-</blockquote>
-
-<h2>Change in 7.24 String handling <code>&lt;string.h&gt;</code></h2>
-For each of the following synopses...
-<ul>
-  <li>7.24.2.1 The <code>memcpy</code> function</li>
-  <li>7.24.2.2 The <code>memccpy</code> function</li>
-  <li>7.24.2.3 The <code>memmove</code> function</li>
-  <li>7.24.2.4 The <code>strcpy</code> function</li>
-  <li>7.24.2.5 The <code>strncpy</code> function</li>
-  <li>7.24.3.1 The <code>strcat</code> function</li>
-  <li>7.24.3.2 The <code>strncat</code> function</li>
-  <li>7.24.4.1 The <code>memcmp</code> function</li>
-  <li>7.24.4.2 The <code>strcmp</code> function</li>
-  <li>7.24.4.4 The <code>strncmp</code> function</li>
-  <li>7.24.5.1 The <code>memchr</code> function</li>
-  <li>7.24.5.2 The <code>strchr</code> function</li>
-  <li>7.24.5.3 The <code>strcspn</code> function</li>
-  <li>7.24.5.4 The <code>strpbrk</code> function</li>
-  <li>7.24.5.5 The <code>strrchr</code> function</li>
-  <li>7.24.5.6 The <code>strspn</code> function</li>
-  <li>7.24.5.7 The <code>strstr</code> function</li>
-  <li>7.24.6.1 The <code>memset</code> function</li>
-  <li>7.24.6.3 The <code>strlen</code> function</li>
-</ul>
-...add the following new paragraph to the synopsis, with <i>__placeholder__</i> replaced with the corresponding function name:
-<blockquote class="stdins">
-The <code><i>__placeholder__</i></code> function is a freestanding library facility.
-</blockquote>
-
-<h2>Change in 7.29 Extended multibyte and wide character utilities <code>&lt;wchar.h&gt;</code></h2>
-Add a sentence to paragraph 2:
-<blockquote class="std">
-[...] which is declared as an incomplete structure type (the contents are described in 7.27.1).
-<ins><code>mbstate_t</code> and <code>wint_t</code> are freestanding library facilities.</ins>
-</blockquote>
-
-Add a sentence to paragraph 3:
-<blockquote class="std">
-[...] It is also used as a wide character value that does not correspond to any member of the extended character set.
-<ins><code>WEOF</code> is a freestanding library facility.</ins>
-</blockquote>
-
-For each of the following synopses...
-<ul>
-  <li>7.29.4.2.1 The <code>wcscpy</code> function</li>
-  <li>7.29.4.2.2 The <code>wcsncpy</code> function</li>
-  <li>7.29.4.2.3 The <code>wmemcpy</code> function</li>
-  <li>7.29.4.2.4 The <code>wmemmove</code> function</li>
-  <li>7.29.4.3.1 The <code>wcscat</code> function</li>
-  <li>7.29.4.3.2 The <code>wcsncat</code> function</li>
-  <li>7.29.4.4.1 The <code>wcscmp</code> function</li>
-  <li>7.29.4.4.3 The <code>wcsncmp</code> function</li>
-  <li>7.29.4.4.5 The <code>wmemcmp</code> function</li>
-  <li>7.29.4.5.1 The <code>wcschr</code> function</li>
-  <li>7.29.4.5.2 The <code>wcscspn</code> function</li>
-  <li>7.29.4.5.3 The <code>wcspbrk</code> function</li>
-  <li>7.29.4.5.4 The <code>wcsrchr</code> function</li>
-  <li>7.29.4.5.5 The <code>wcsspn</code> function</li>
-  <li>7.29.4.5.6 The <code>wcsstr</code> function</li>
-  <li>7.29.4.5.7 The <code>wcstok</code> function</li>
-  <li>7.29.4.5.8 The <code>wmemchr</code> function</li>
-  <li>7.29.4.6.1 The <code>wcslen</code> function</li>
-  <li>7.29.4.6.2 The <code>wmemset</code> function</li>
-</ul>
-...add the following new paragraph to the synopsis, with <i>__placeholder__</i> replaced with the corresponding function name:
-<blockquote class="stdins">
-The <code><i>__placeholder__</i></code> function is a freestanding library facility.
-</blockquote>
-
 
 <h1>C++ Wording</h1>
 <p>
@@ -1303,6 +1220,7 @@ Please append a <span class="comment">// <span class="textit">freestanding</span
   <li><code>strrchr</code></li>
   <li><code>strspn</code></li>
   <li><code>strstr</code></li>
+  <li><code>strtok</code></li>
   <li><code>memset</code></li>
   <li><code>strlen</code></li>
   <li><code>NULL</code></li>
@@ -1312,7 +1230,6 @@ The following entities should <b>NOT</b> have freestanding comments appended to 
 <ul>
   <li><code>strcoll</code></li>
   <li><code>strxfrm</code></li>
-  <li><code>strtok</code></li>
   <li><code>strerror</code></li>
 </ul>
 
