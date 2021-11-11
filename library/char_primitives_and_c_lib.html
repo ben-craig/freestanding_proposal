@@ -358,11 +358,11 @@ span.indented {
 }
 </style>
 
-<title>D2338R2.0 TODO: Freestanding Library: Character primitives and the C library</title>
+<title>P2338R2: Freestanding Library: Character primitives and the C library</title>
 <body>
 <h1>Freestanding Library: Character primitives and the C library</h1>
-Document number: D2338R2.0 TODO<br/>
-Date: 2021-07-10 TODO<br/>
+Document number: P2338R2<br/>
+Date: 2021-11-11<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: SG22 (C Liaison), Library Evolution Working Group
 <h1>Abstract</h1>
@@ -375,6 +375,8 @@ Also add primitive character operations (<code>&lt;charconv&gt;</code> and <code
   <li>Made <code>&lt;wchar.h&gt;</code> functions optional in freestanding C implementations</li>
   <li>Added <code>strtok</code> to C++ freestanding implementations, because C already did it</li>
   <li>Discussed C's Annex K</li>
+  <li>Removing erroneous mention of <code>&lt;ratio&gt;</code> from [compliance] wording</li>
+  <li>Finishing <code>&lt;cinttypes&gt;</code> removal in the C++ wording</li>
 </ul>
 <h3> R1 </h3>
 <ul>
@@ -829,11 +831,6 @@ A freestanding C++ implementation that provides support for this paper shall def
         <td></td>
     </tr></tbody>
     <tbody><tr>
-        <td><code>__cpp_lib_freestanding_cinttypes</code></td>
-        <td><code>&lt;cinttypes&gt;</code></td>
-        <td></td>
-    </tr></tbody>
-    <tbody><tr>
         <td><code>__cpp_lib_freestanding_cstdlib</code></td>
         <td><code>&lt;cstdlib&gt;</code> and <code>&lt;cmath&gt;</code></td>
         <td>The only freestanding parts of <code>&lt;cmath&gt;</code> are <code>abs</code> overloads that are also covered in <code>&lt;cstdlib&gt;</code></td>
@@ -1011,11 +1008,6 @@ Change <a href="https://wg21.link/compliance#tab:headers.cpp.fs">[tab:headers.cp
 <td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;string&gt;</tt></ins></td>
 </tr>
 <tr style="border: 1px solid black">
-<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/ratio">[ratio]</a></ins></td>
-<td style="padding: 0ex 1ex 0ex 1ex"><ins>Compile-time rational arithmetic</ins></td>
-<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;ratio&gt;</tt></ins></td>
-</tr>
-<tr style="border: 1px solid black">
 <td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/c.strings">[c.strings]</a></ins></td>
 <td style="padding: 0ex 1ex 0ex 1ex"><ins>Null-terminated sequence utilities</ins></td>
 <td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;cstring&gt;, &lt;cwchar&gt;</tt></ins></td>
@@ -1024,11 +1016,6 @@ Change <a href="https://wg21.link/compliance#tab:headers.cpp.fs">[tab:headers.cp
 <td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/c.math">[c.math]</a></ins></td>
 <td style="padding: 0ex 1ex 0ex 1ex"><ins>Mathematical functions for floating-point types</ins></td>
 <td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;cmath&gt;</tt></ins></td>
-</tr>
-<tr style="border: 1px solid black">
-<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/c.files">[c.files]</a></ins></td>
-<td style="padding: 0ex 1ex 0ex 1ex"><ins>C library files</ins></td>
-<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;cinttypes&gt;</tt></ins></td>
 </tr>
 <tr style="border: 1px solid black">
 <td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
@@ -1072,7 +1059,6 @@ Please add the following feature test macros to <a href="https://wg21.link/versi
 <pre class='codeblock'>
 #define __cpp_lib_freestanding_char_traits  <i>new-val</i> // freestanding, also in &lt;string&gt;
 #define __cpp_lib_freestanding_charconv     <i>new-val</i> // freestanding, also in &lt;charconv&gt;
-#define __cpp_lib_freestanding_cinttypes    <i>new-val</i> // freestanding, also in &lt;cinttypes&gt;
 #define __cpp_lib_freestanding_cstdlib      <i>new-val</i> // freestanding, also in &lt;cstdlib&gt;, &lt;cmath&gt;
 #define __cpp_lib_freestanding_cstring      <i>new-val</i> // freestanding, also in &lt;cstring&gt;
 #define __cpp_lib_freestanding_cwchar       <i>new-val</i> // freestanding, also in &lt;cwchar&gt;
