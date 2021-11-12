@@ -358,14 +358,27 @@ span.indented {
 }
 </style>
 
-<title>P2198R2: Freestanding Feature-Test Macros and Implementation-Defined Extensions</title>
+<title>TODO D2198R3: Freestanding Feature-Test Macros and Implementation-Defined Extensions</title>
 <body>
 <h1>Freestanding Feature-Test Macros and Implementation-Defined Extensions</h1>
-Document number: P2198R2<br/>
-Date: 2021-07-10<br/>
+Document number: TODO D2198R3<br/>
+Date: TODO 2021-07-10<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: Library Evolution Working Group
 <h1>Change history</h1>
+<h3> R3 </h3>
+<ul>
+  <li>Rebase to N4901</li>
+  <li>Only bumping the versions of C++20 (and older) feature test macros</li>
+  <li>Marking the following new feature test macros as freestanding:
+    <code>__cpp_lib_byteswap</code>,
+    <code>__cpp_lib_constexpr_typeinfo</code>,
+    <code>__cpp_lib_invoke_r</code>,
+    <code>__cpp_lib_is_scoped_enum</code>,
+    <code>__cpp_lib_ranges_zip</code>, and
+    <code>__cpp_lib_to_underlying</code>
+  </li>
+</ul>
 <h3> R2 </h3>
 <ul>
   <li>Corrected policy recommendations to match examples and wording for <code>::operator new</code> example.</li>
@@ -389,7 +402,7 @@ Audience: Library Evolution Working Group
 Users of freestanding implementations would like to be able to detect which library facilities are available for use.
 With the C++20 feature-test macros, all the feature-test macros are required to be defined in both freestanding and hosted implementations, even when the associated hosted facilities are not available.
 This paper will make the presence of feature-test macros for hosted facilities implementation-defined.
-This paper will also bump the version number on all library feature-test macros, so that extensions can be detected.
+This paper will also bump the version number on all C++20 and earlier library feature-test macros, so that extensions can be detected.
 </p><p>
 This paper also clarifies that freestanding implementations need not stop at the bare minimum support for freestanding.
 Freestanding implementations may provide additional facilities from the standard library, so long as those facilities meet the associated hosted requirements.
@@ -414,7 +427,7 @@ Freestanding implementations may make the use of any non-freestanding, namespace
 Users will be able to rely on the freestanding portions of the standard library.
 The freestanding portions have portable semantics, and are required to be present.
 Users may then decide to rely on implementation-defined additions.
-WG21 will be able to add hosted entities to the freestanding subset without little fear of breaking implementation-defined additions, because the implementation-defined additions needed to meet the hosted requirements.
+WG21 will be able to add hosted entities to the freestanding subset without fear of breaking implementation-defined additions, because the implementation-defined additions needed to meet the hosted requirements.
 </p>
 <h2>Detecting once-required features</h2>
 <p>
@@ -423,7 +436,7 @@ Users may want to detect this in their code so that they can fall-back to a fixe
 Some users may also want to (ab)use such a feature-test macro so that they can provide an <code>::operator new</code> implementation when one is not provided by the standard library.
 </p><p>
 This paper recommends a macro to detect the presence of <code>::operator new</code> definitions: <code>__cpp_lib_freestanding_operator_new</code>.
-Unlike other feature-test macros, this macro will be required to be set to <code>0</code> on freestanding implementations that do not provide <code>::operator new</code> definitions.
+Unlike other feature-test macros, this macro will be required to be set to <code>0</code> on freestanding implementations that do not provide useful <code>::operator new</code> definitions.
 This will allow users to detect whether the library is an old standard library or a new standard library as well.
 </p><p>
 Unlike other feature-test macros, this macro will need normative wording to tie the feature-test macro to the feature that it is describing.
@@ -437,7 +450,9 @@ This isn't just a theoretical problem.
 <a href="https://godbolt.org/z/73YpRJ">Existing implementations</a> are already deploying <code>&lt;version&gt;</code> headers that report support for <code>std::filesystem</code> facilities, <code>std::chrono</code> facilities, and many others, even though those feature-test macros indicate support for features that require the support of an operating system.
 </p><p>
 In order for users of freestanding implementations to be able to detect extensions of freestanding, the users need a way of distinguishing the C++20 macro requirements from an accurate expression of extension.
-This paper will bump all library macro versions, so that users can distinguish between these cases.
+This paper will bump all library macro versions for C++20 (and earlier), so that users can distinguish between these cases.
+Features added during the C++23 cycle will retain their current number, at least so long as this paper makes it into C++23.
+If this paper slips to C++26 or later, then all prior C++ version macros will need to be bumped.
 </p>
 <h2>Freestanding feature-test macros</h2>
 The following macros are now required to be present in freestanding implementations.
@@ -461,12 +476,14 @@ The corresponding facilities were either required to be present in C++20, or are
   <li><code>__cpp_lib_bool_constant</code></li>
   <li><code>__cpp_lib_bounded_array_traits</code></li>
   <li><code>__cpp_lib_byte</code></li>
+  <li><ins><code>__cpp_lib_byteswap</code></ins></li>
   <li><code>__cpp_lib_char8_t</code></li>
   <li><code>__cpp_lib_concepts</code></li>
   <li><code>__cpp_lib_constexpr_functional</code></li>
   <li><code>__cpp_lib_constexpr_iterator</code></li>
   <li><code>__cpp_lib_constexpr_memory</code></li>
   <li><code>__cpp_lib_constexpr_tuple</code></li>
+  <li><ins><code>__cpp_lib_constexpr_typeinfo</code></ins></li>
   <li><code>__cpp_lib_constexpr_utility</code></li>
   <li><code>__cpp_lib_destroying_delete</code></li>
   <li><code>__cpp_lib_endian</code></li>
@@ -477,6 +494,7 @@ The corresponding facilities were either required to be present in C++20, or are
   <li><code>__cpp_lib_integer_sequence</code></li>
   <li><code>__cpp_lib_integral_constant_callable</code></li>
   <li><code>__cpp_lib_invoke</code></li>
+  <li><ins><code>__cpp_lib_invoke_r</code></ins></li>
   <li><code>__cpp_lib_is_aggregate</code></li>
   <li><code>__cpp_lib_is_constant_evaluated</code></li>
   <li><code>__cpp_lib_is_final</code></li>
@@ -485,6 +503,7 @@ The corresponding facilities were either required to be present in C++20, or are
   <li><code>__cpp_lib_is_nothrow_convertible</code></li>
   <li><code>__cpp_lib_is_null_pointer</code></li>
   <li><code>__cpp_lib_is_pointer_interconvertible</code></li>
+  <li><ins><code>__cpp_lib_is_scoped_enum</code></ins></li>
   <li><code>__cpp_lib_is_swappable</code></li>
   <li><code>__cpp_lib_launder</code></li>
   <li><code>__cpp_lib_logical_traits</code></li>
@@ -493,12 +512,14 @@ The corresponding facilities were either required to be present in C++20, or are
   <li><code>__cpp_lib_nonmember_container_access</code></li>
   <li><code>__cpp_lib_not_fn</code></li>
   <li><code>__cpp_lib_null_iterators</code></li>
+  <li><ins><code>__cpp_lib_ranges_zip</code></ins></li>
   <li><code>__cpp_lib_remove_cvref</code></li>
   <li><code>__cpp_lib_result_of_sfinae</code></li>
   <li><code>__cpp_lib_source_location</code></li>
   <li><code>__cpp_lib_ssize</code></li>
   <li><code>__cpp_lib_three_way_comparison</code></li>
   <li><code>__cpp_lib_to_address</code></li>
+  <li><ins><code>__cpp_lib_to_underlying</code>
   <li><code>__cpp_lib_transformation_trait_aliases</code></li>
   <li><code>__cpp_lib_transparent_operators</code></li>
   <li><code>__cpp_lib_tuple_element_t</code></li>
@@ -603,7 +624,7 @@ The following feature detection examples should ...
 #if __STDC_HOSTED__ && defined(__cpp_lib_ssize) && __cpp_lib_ssize &gt;= 201902L
 // hosted success path
 #elif defined(__cpp_lib_ssize) && __cpp_lib_ssize &gt;= 202007L
-// freestanding path
+// freestanding success path
 #else
 // fallback path
 #endif
@@ -612,10 +633,10 @@ The following feature detection examples should ...
 <h3>Detect C++20 (or older) feature that is now partially required in freestanding</h3>
 <i>Is the non-parallel version of <code>uninitialized_default_construct</code> available?</i>
 <pre class='codeblock'>
-#if defined(__cpp_lib_raw_memory_algorithms) && __cpp_lib_raw_memory_algorithms &gt;= 201606L
-// hosted success path and freestanding extension path
+#if __STDC_HOSTED__ && defined(__cpp_lib_raw_memory_algorithms) && __cpp_lib_raw_memory_algorithms &gt;= 201606L
+// hosted success path
 #elif defined(__cpp_lib_freestanding_memory) && __cpp_lib_freestanding_memory &gt;= 202007L
-// freestanding path
+// freestanding success path
 #else
 // fallback path
 #endif
@@ -807,7 +828,7 @@ Setting the macro to <code>0</code> when the feature is not present is critical 
 
 <h1>Wording</h1>
 <p>
-The following wording is relative to N4861, and assumes that P1642 and P2013 have been applied.
+The following wording is relative to N4901, and assumes that P1642 and P2013 have been applied.
 </p>
 <h2>Additions to <a href="https://wg21.link/compliance">[compliance]</a></h2>
 <p>
@@ -833,13 +854,17 @@ Please make the following changes to <a href="https://wg21.link/version.syn#2">[
 <div class="para"><div class="marginalizedparent"><a class="marginalized">2</a></div>
 <pre class='codeblock'>
 #define __cpp_lib_addressof_constexpr               <del>201603L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;memory&gt;
+#define __cpp_lib_allocate_at_least                 202106L // also in &lt;memory&gt;
 #define __cpp_lib_allocator_traits_is_always_equal  <del>201411L</del><ins><i>new-val</i></ins>
   // <ins>freestanding, </ins>also in &lt;memory&gt;, &lt;scoped-allocator&gt;, &lt;string&gt;, &lt;deque&gt;, &lt;forward-list&gt;, &lt;list&gt;, &lt;vector&gt;,
   // &lt;map&gt;, &lt;set&gt;, &lt;unordered-map&gt;, &lt;unordered-set&gt;
+#define __cpp_lib_adaptor_iterator_pair_constructor 202106L // also in &lt;stack&gt;, &lt;queue&gt;
 #define __cpp_lib_any                               <del>201606L</del><ins><i>new-val</i></ins> // also in &lt;any&gt;
 #define __cpp_lib_apply                             <del>201603L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;tuple&gt;
 #define __cpp_lib_array_constexpr                   <del>201811L</del><ins><i>new-val</i></ins> // also in &lt;iterator&gt;, &lt;array&gt;
 #define __cpp_lib_as_const                          <del>201510L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;utility&gt;
+#define __cpp_lib_associative_heterogeneous_erasure 202110L
+  // also in &lt;map&gt;, &lt;set&gt;, &lt;unordered_map&gt;, &lt;unordered_set&gt;
 #define __cpp_lib_assume_aligned                    <del>201811L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;memory&gt;
 #define __cpp_lib_atomic_flag_test                  <del>201907L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;atomic&gt;
 #define __cpp_lib_atomic_float                      <del>201711L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;atomic&gt;
@@ -857,6 +882,7 @@ Please make the following changes to <a href="https://wg21.link/version.syn#2">[
 #define __cpp_lib_bounded_array_traits              <del>201902L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
 #define __cpp_lib_boyer_moore_searcher              <del>201603L</del><ins><i>new-val</i></ins> // also in &lt;functional&gt;
 #define __cpp_lib_byte                              <del>201603L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;cstddef&gt;
+#define __cpp_lib_byteswap                          202110L // <ins>freestanding, </ins>also in &lt;bit&gt;
 #define __cpp_lib_char8_t                           <del>201907L</del><ins><i>new-val</i></ins>
   // <ins>freestanding, </ins>also in &lt;atomic&gt;, &lt;filesystem&gt;, &lt;istream&gt;, &lt;limits&gt;, &lt;locale&gt;, &lt;ostream&gt;, &lt;string&gt;, &lt;string-view&gt;
 #define __cpp_lib_chrono                            <del>201907L</del><ins><i>new-val</i></ins> // also in &lt;chrono&gt;
@@ -874,6 +900,7 @@ Please make the following changes to <a href="https://wg21.link/version.syn#2">[
 #define __cpp_lib_constexpr_string                  <del>201907L</del><ins><i>new-val</i></ins> // also in &lt;string&gt;
 #define __cpp_lib_constexpr_string_view             <del>201811L</del><ins><i>new-val</i></ins> // also in &lt;string-view&gt;
 #define __cpp_lib_constexpr_tuple                   <del>201811L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;tuple&gt;
+#define __cpp_lib_constexpr_typeinfo                202106L // <ins>freestanding, </ins>also in &lt;typeinfo&gt;
 #define __cpp_lib_constexpr_utility                 <del>201811L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;utility&gt;
 #define __cpp_lib_constexpr_vector                  <del>201907L</del><ins><i>new-val</i></ins> // also in &lt;vector&gt;
 #define __cpp_lib_coroutine                         <del>201902L</del><ins><i>new-val</i></ins> // also in &lt;coroutine&gt;
@@ -886,7 +913,7 @@ Please make the following changes to <a href="https://wg21.link/version.syn#2">[
 #define __cpp_lib_exchange_function                 <del>201304L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;utility&gt;
 #define __cpp_lib_execution                         <del>201902L</del><ins><i>new-val</i></ins> // also in &lt;execution&gt;
 #define __cpp_lib_filesystem                        <del>201703L</del><ins><i>new-val</i></ins> // also in &lt;filesystem&gt;
-#define __cpp_lib_format                            <del>201907L</del><ins><i>new-val</i></ins> // also in &lt;format&gt;
+#define __cpp_lib_format                            202110L // also in &lt;format&gt;
 <ins>#define __cpp_lib_freestanding_functional           <i>new-val</i> // freestanding, also in &lt;functional&gt;
 #define __cpp_lib_freestanding_iterator             <i>new-val</i> // freestanding, also in &lt;iterator&gt;
 #define __cpp_lib_freestanding_memory               <i>new-val</i> // freestanding, also in &lt;memory&gt;
@@ -910,6 +937,7 @@ Please make the following changes to <a href="https://wg21.link/version.syn#2">[
 #define __cpp_lib_integral_constant_callable        <del>201304L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
 #define __cpp_lib_interpolate                       <del>201902L</del><ins><i>new-val</i></ins> // also in &lt;cmath&gt;, &lt;numeric&gt;
 #define __cpp_lib_invoke                            <del>201411L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;functional&gt;
+#define __cpp_lib_invoke_r                          202106L // <ins>freestanding, </ins>also in &lt;functional&gt;
 #define __cpp_lib_is_aggregate                      <del>201703L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
 #define __cpp_lib_is_constant_evaluated             <del>201811L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
 #define __cpp_lib_is_final                          <del>201402L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
@@ -918,6 +946,7 @@ Please make the following changes to <a href="https://wg21.link/version.syn#2">[
 #define __cpp_lib_is_nothrow_convertible            <del>201806L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
 #define __cpp_lib_is_null_pointer                   <del>201309L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
 #define __cpp_lib_is_pointer_interconvertible       <del>201907L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
+#define __cpp_lib_is_scoped_enum                    202011L // <ins>freestanding, </ins>also in &lt;type_traits&gt;
 #define __cpp_lib_is_swappable                      <del>201603L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
 #define __cpp_lib_jthread                           <del>201911L</del><ins><i>new-val</i></ins> // also in &lt;stop-token&gt;, &lt;thread&gt;
 #define __cpp_lib_latch                             <del>201907L</del><ins><i>new-val</i></ins> // also in &lt;latch&gt;
@@ -931,6 +960,8 @@ Please make the following changes to <a href="https://wg21.link/version.syn#2">[
 #define __cpp_lib_math_constants                    <del>201907L</del><ins><i>new-val</i></ins> // also in &lt;numbers&gt;
 #define __cpp_lib_math_special_functions            <del>201603L</del><ins><i>new-val</i></ins> // also in &lt;cmath&gt;
 #define __cpp_lib_memory_resource                   <del>201603L</del><ins><i>new-val</i></ins> // also in &lt;memory-resource&gt;
+#define __cpp_lib_monadic_optional                  202110L // also in &lt;optional&gt;
+#define __cpp_lib_move_only_function                202110L // also in &lt;functional&gt;
 #define __cpp_lib_node_extract                      <del>201606L</del><ins><i>new-val</i></ins>
   // also in &lt;map&gt;, &lt;set&gt;, &lt;unordered-map&gt;, &lt;unordered-set&gt;
 #define __cpp_lib_nonmember_container_access        <del>201411L</del><ins><i>new-val</i></ins>
@@ -938,12 +969,15 @@ Please make the following changes to <a href="https://wg21.link/version.syn#2">[
   // &lt;unordered-map&gt;, &lt;unordered-set&gt;, &lt;vector&gt;
 #define __cpp_lib_not_fn                            <del>201603L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;functional&gt;
 #define __cpp_lib_null_iterators                    <del>201304L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;iterator&gt;
-#define __cpp_lib_optional                          <del>201606L</del><ins><i>new-val</i></ins> // also in &lt;optional&gt;
+#define __cpp_lib_optional                          202106L // also in &lt;optional&gt;
+#define __cpp_lib_out_ptr                           202106L // also in &lt;memory&gt;
 #define __cpp_lib_parallel_algorithm                <del>201603L</del><ins><i>new-val</i></ins> // also in &lt;algorithm&gt;, &lt;numeric&gt;
 #define __cpp_lib_polymorphic_allocator             <del>201902L</del><ins><i>new-val</i></ins> // also in &lt;memory&gt;
 #define __cpp_lib_quoted_string_io                  <del>201304L</del><ins><i>new-val</i></ins> // also in &lt;iomanip&gt;
-#define __cpp_lib_ranges                            <del>201911L</del><ins><i>new-val</i></ins>
+#define __cpp_lib_ranges                            202110L
   // also in &lt;algorithm&gt;, &lt;functional&gt;, &lt;iterator&gt;, &lt;memory&gt;, &lt;ranges&gt;
+#define __cpp_lib_ranges_starts_ends_with           202106L // also in &lt;algorithm&gt;
+#define __cpp_lib_ranges_zip                        202110L // <ins>freestanding, </ins>also in &lt;ranges&gt;, &lt;tuple&gt;, &lt;utility&gt;
 #define __cpp_lib_raw_memory_algorithms             <del>201606L</del><ins><i>new-val</i></ins> // also in &lt;memory&gt;
 #define __cpp_lib_remove_cvref                      <del>201711L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
 #define __cpp_lib_result_of_sfinae                  <del>201210L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;functional&gt;, &lt;type-traits&gt;
@@ -959,8 +993,13 @@ Please make the following changes to <a href="https://wg21.link/version.syn#2">[
 #define __cpp_lib_smart_ptr_for_overwrite           <del>202002L</del><ins><i>new-val</i></ins> // also in &lt;memory&gt;
 #define __cpp_lib_source_location                   <del>201907L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;source-location&gt;
 #define __cpp_lib_span                              <del>202002L</del><ins><i>new-val</i></ins> // also in &lt;span&gt;
+#define __cpp_lib_spanstream                        202106L // also in &lt;spanstream&gt;
 #define __cpp_lib_ssize                             <del>201902L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;iterator&gt;
+#define __cpp_lib_stacktrace                        202011L // also in &lt;stacktrace&gt;
 #define __cpp_lib_starts_ends_with                  <del>201711L</del><ins><i>new-val</i></ins> // also in &lt;string&gt;, &lt;string-view&gt;
+#define __cpp_lib_stdatomic_h                       202011L // also in &lt;stdatomic.h&gt;
+#define __cpp_lib_string_contains                   202011L // also in &lt;string&gt;, &lt;string_view&gt;
+#define __cpp_lib_string_resize_and_overwrite       202110L // also in &lt;string&gt;
 #define __cpp_lib_string_udls                       <del>201304L</del><ins><i>new-val</i></ins> // also in &lt;string&gt;
 #define __cpp_lib_string_view                       <del>201803L</del><ins><i>new-val</i></ins> // also in &lt;string&gt;, &lt;string-view&gt;
 #define __cpp_lib_syncbuf                           <del>201803L</del><ins><i>new-val</i></ins> // also in &lt;syncstream&gt;
@@ -968,6 +1007,7 @@ Please make the following changes to <a href="https://wg21.link/version.syn#2">[
 #define __cpp_lib_to_address                        <del>201711L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;memory&gt;
 #define __cpp_lib_to_array                          <del>201907L</del><ins><i>new-val</i></ins> // also in &lt;array&gt;
 #define __cpp_lib_to_chars                          <del>201611L</del><ins><i>new-val</i></ins> // also in &lt;charconv&gt;
+#define __cpp_lib_to_underlying                     202102L // <ins>freestanding, </ins>also in &lt;utility&gt;
 #define __cpp_lib_transformation_trait_aliases      <del>201304L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
 #define __cpp_lib_transparent_operators             <del>201510L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;memory&gt;, &lt;functional&gt;
 #define __cpp_lib_tuple_element_t                   <del>201402L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;tuple&gt;
@@ -977,13 +1017,13 @@ Please make the following changes to <a href="https://wg21.link/version.syn#2">[
 #define __cpp_lib_uncaught_exceptions               <del>201411L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;exception&gt;
 #define __cpp_lib_unordered_map_try_emplace         <del>201411L</del><ins><i>new-val</i></ins> // also in &lt;unordered-map&gt;
 #define __cpp_lib_unwrap_ref                        <del>201811L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
-#define __cpp_lib_variant                           <del>201606L</del><ins><i>new-val</i></ins> // also in &lt;variant&gt;
+#define __cpp_lib_variant                           202102L // also in &lt;variant&gt;
 #define __cpp_lib_void_t                            <del>201411L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;type-traits&gt;
 </pre></div></blockquote>
 <blockquote class="stdins">
 <div class="para">
     <div class="marginalizedparent"><a class="marginalized">3</a></div>
-    <div class="sentence">The macro <code>__cpp_lib_freestanding_operator_new</code> shall be defined to the integer literal <code><i>new-val</i></code> if the library provides definitions for all of the replaceable global allocation functions that meet the requirements of a hosted implementation, and to the integer literal <code>0</code> otherwise. ([basic.stc.dynamic]).</div>
+    <div class="sentence">The macro <code>__cpp_lib_freestanding_operator_new</code> is defined to the integer literal <code><i>new-val</i></code> if all of the library provided replaceable global allocation functions meet the requirements of a hosted implementation, and to the integer literal <code>0</code> otherwise. ([basic.stc.dynamic]).</div>
 </div>
 </blockquote>
 
