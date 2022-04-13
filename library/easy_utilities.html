@@ -358,14 +358,50 @@ span.indented {
 }
 </style>
 
-<title>P1642R7 Freestanding Library: Easy [utilities], [ranges], and [iterators]</title>
+<title>TODO: D1642R8 Freestanding Library: Easy [utilities], [ranges], and [iterators]</title>
 <body>
 <h1>Freestanding Library: Easy [utilities], [ranges], and [iterators]</h1>
-Document number: P1642R7<br/>
-Date: 2021-09-26 <br/>
+Document number: TODO D1642R8<br/>
+Date: TODO 2021-09-26 <br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: Library Evolution Working Group
 <h1>Change history</h1>
+<h3> R8 </h3>
+<ul>
+  <li>Not adding
+    <code>move_only_function</code>,
+    <code>out_ptr</code>,
+  </li>
+  <li>Adding 
+    <code>invoke_r</code>,
+    <code>zip</code>,
+    <code>zip_transform</code>,
+    <code>adjacent</code>,
+    <code>adjacent_transform</code>,
+    <code>to_underlying</code>,
+    <code>unreachable</code>,
+    <code>views::chunk_by</code>,
+    <code>views::chunk</code>,
+    <code>views::slide</code>,
+    <code>views::join_with</code>,
+    <code>ranges::to</code>, and
+    pipe support for range adaptors.
+  </li>
+  <li>Pre-emptively addressing merge conflicts from the following papers:
+    <ul>
+      <li><a href="http://wg21.link/P2374">P2374 views::cartesian_product</a></li>
+      <li><a href="http://wg21.link/P2494">P2494 Relaxing Range Adaptors To Allow For Move Only Types</a></li>
+      <li><a href="http://wg21.link/P1899">P1899 views::stride</a></li>
+      <li><a href="http://wg21.link/P2474">P2474 views::repeat</a></li>
+      <li><a href="http://wg21.link/P2446">P2446 views::all_move</a></li>
+      <li><a href="http://wg21.link/P2278">P2278 cbegin should always return a constant iterator</a></li>
+      <li><a href="http://wg21.link/P2445">P2445 forward_like</a></li>
+      <li><a href="http://wg21.link/P2165">P2165 Compatibility Between tuple, pair, And tuple-Like Objects</a></li>
+      <li><a href="http://wg21.link/P0792">P0792 function_ref: a non-owning reference to a Callable</a></li>
+      <li><a href="http://wg21.link/P0549">P0549 Adjuncts to std::hash</a></li>
+    </ul>
+  </li>
+</ul>
 <h3> R7 </h3>
 <ul>
   <li>Fixed wording to keep <code>&lt;atomic&gt;</code> freestanding</li>
@@ -474,6 +510,7 @@ The following functions and classes rely on dynamic memory allocation and except
   <li><code>shared_ptr</code></li>
   <li><code>weak_ptr</code></li>
   <li><code>function</code></li>
+  <li><code>move_only_function</code></li>
   <li><code>boyer_moore_searcher</code></li>
   <li><code>boyer_moore_horspool_searcher</code></li>
 </ul>
@@ -490,6 +527,11 @@ The following classes rely on iostreams facilities.  iostreams facilities use dy
 </ul>
 <p>
 The ExecutionPolicy overloads of algorithms are of minimal utility on systems that do not support C++ threads.
+</p><p>
+<code>out_ptr</code> is fine to add to freestanding in principle.
+However, it was added to the working draft after this paper series was forwarded to LWG.
+The wording was able to tolerate <code>out_ptr</code>'s addition without a change in design, so this paper won't add it.
+I encourage a future paper to add this facility to freestanding, once P1642 lands.
 </p>
 <h1>Feature test macros</h1>
 <p>
@@ -516,8 +558,74 @@ I have run a 2018 era of libc++'s test suite against the Microsoft Visual Studio
 <p>
 This paper was last discussed in LEWG in December 2020, and forwarded to LWG in March 2021.  The paper touches a lot of headers, and the standard is a moving target.
 </p><p>
-<a href=https://wg21.link/P0627>P0627: Function to mark unreachable code</a> is likely to make it into the standard at a similar time as this paper.  P0627 would add <code>std::unreachable</code> to <code>&lt;utility&gt;</code>.  Since this paper adds the entirety of <code>&lt;utility&gt;</code> to freestanding, that constitutes a design change.  A thread was started on the reflector asking if there was any opposition to adding <code>std::unreachable</code> to freestanding.  There were five votes in favor of putting <code>std::unreachable</code> in freestanding, and no opposition (the author of this paper did not vote).
+<a href=https://wg21.link/P0228>P0228: move_only_function (was any_invocable)</a> was adopted in October 2021.
+It adds <code>move_only_function</code> to <code>&lt;functional&gt;</code>.
+Prior revisions of this paper added all of <code>&lt;functional&gt;</code> to freestanding, with a small list of entities to not include.
+That would inappropriately add <code>move_only_function</code> to freestanding.
+This revision of the paper is excluding <code>move_only_function</code>.
+This issue was raised in a November 2021 reflector discussion, and it received five votes in favor, with no opposition (the author of this paper did not vote).
+</p><p>
+<a href=https://wg21.link/P2136R3>P2136R3: invoke_r</a> was adopted in June 2021.</a>
+It adds <code>invoke_r</code> to <code>&lt;functional&gt;</code>.
+<code>invoke_r</code> is just as suitable for freestanding as <code>invoke</code> is.
+This revision will include <code>invoke_r</code> implicitly in the wording.
+This issue was raised in a November 2021 reflector discussion, and it received five votes in favor, with no opposition (the author of this paper did not vote).
+</p><p>
+<a href=https://wg21.link/P2321R2>P2321R2: zip</a> was adopted in October 2021.</a>
+It adds <code>zip</code>, <code>zip_transform</code>, <code>adjacent</code>, <code>adjacent_transform</code>, and closely related entities to <code>&lt;ranges&gt;</code>.
+This revision will include the above facilities implicitly in the wording.
+This issue was raised in a November 2021 reflector discussion, and it received five votes in favor, with no opposition (the author of this paper did not vote).
+</p><p>
+<a href=https://wg21.link/P1682R3>P1682R3: std::to_underlying</a> was adopted in February 2021.</a>
+It adds <code>to_underlying</code> to <code>&lt;utility&gt;</code>.
+This revision will include <code>to_underlying</code> implicitly in the wording.
+This issue was raised in a November 2021 reflector discussion, and it received five votes in favor, with no opposition (the author of this paper did not vote).
+</p><p>
+<a href=https://wg21.link/P0627R6>P0627R6: Function to mark unreachable code</a> was adopted in February 2022.
+It adds <code>std::unreachable</code> to <code>&lt;utility&gt;</code>.
+This revision will include <code>to_underlying</code> implicitly in the wording.
+This issue was raised in a September 2021 reflector discussion, and it received five votes in favor, with no opposition (the author of this paper did not vote).
+</p><p>
+The following papers all add facilities to <code>&lt;ranges&gt;</code>.
+All were adopted in February 2022.
+This revision will include those facilities implicitly in the wording.
+<ul>
+  <li><a href=https://wg21.link/P1206R7>P1206R7 ranges::to</a></li>
+  <li><a href=https://wg21.link/P2387R3>P2387R3 Pipe support for user-defined range adaptors</a></li>
+  <li><a href=https://wg21.link/P2441R2>P2441R2 views::join_with</a></li>
+  <li><a href=https://wg21.link/P2442R1>P2442R1 Windowing range adaptors: views::chunk and views::slide</a></li>
+  <li><a href=https://wg21.link/P2443R1>P2443R1 views::chunk_by</a></li>
+</ul>
+P2387R3 also adds <code>bind_back</code> to <code>&lt;functional&gt;</code>.
+This issue was raised in an April 2022 reflector discussion, and it received six votes in favor, with no opposition (the author of this paper did not vote).
 </p>
+<h1>Potential Post-LEWG merge conflicts</h1>
+The following papers are all in the LWG queue as of 2022-04-09:
+<ul>
+  <li><a href="http://wg21.link/P2374">P2374 views::cartesian_product</a></li>
+  <li><a href="http://wg21.link/P2494">P2494 Relaxing Range Adaptors To Allow For Move Only Types</a></li>
+  <li><a href="http://wg21.link/P1899">P1899 views::stride</a></li>
+  <li><a href="http://wg21.link/P2474">P2474 views::repeat</a></li>
+  <li><a href="http://wg21.link/P2446">P2446 views::all_move</a></li>
+  <li><a href="http://wg21.link/P2445">P2445 forward_like</a></li>
+  <li><a href="http://wg21.link/P0792">P0792 function_ref: a non-owning reference to a Callable</a></li>
+  <li><a href="http://wg21.link/P0549">P0549 Adjuncts to std::hash</a></li>
+</ul>
+The above papers add facilities to <code>&lt;ranges&gt;</code>, <code>&lt;utility&gt;</code>, and <code>&lt;functional&gt;</code>.
+The wording in this revision will include those facilities implicitly.
+</p><p>
+The following papers are also in the LWG queue as of 2022-04-09:
+<ul>
+  <li><a href="http://wg21.link/P2278">P2278 cbegin should always return a constant iterator</a></li>
+  <li><a href="http://wg21.link/P2165">P2165 Compatibility Between tuple, pair, And tuple-Like Objects</a></li>
+</ul>
+P2278 adds facilities to <code>&lt;span&gt;</code>, <code>&lt;iterator&gt;</code>, and <code>&lt;ranges&gt;</code>.
+<code>&lt;span&gt;</code> is out of scope for this paper, but the <code>&lt;iterator&gt;</code>, and <code>&lt;ranges&gt;</code> facilities will be handled by this paper's wording implicitly.
+</p><p>
+P2165 adds facilities to <code>&lt;tuple&gt;</code> and <code>&lt;memory&gt;</code>.  These facilities will be handled by this paper's wording implicitly.  The <code>&lt;memory&gt;</code> change is adding an overload of a template function that was already marked for inclusion.
+</p><p>
+This post-LEWG merge conflicts were raised as an issue in an April 2022 reflector discussion, and it received six votes in favor of allowing these papers into freestanding with the existing wording, with no opposition (the author of this paper did not vote).
+
 <h1>Editorial alternatives</h1>
 <p>
 This paper uses an opt-in editorial syntax like the following:
@@ -794,6 +902,10 @@ Note: the following portions of <code>&lt;memory&gt;</code> are <b>omitted</b>. 
   <li><code>shared_ptr</code> specialization of <code>hash</code></li>
   <li><code>shared_ptr</code> specialization of <code>atomic</code></li>
   <li><code>weak_ptr</code> specialization of <code>atomic</code></li>
+  <li><code>out_ptr</code></li>
+  <li><code>inout_ptr</code></li>
+  <li><code>out_ptr_t</code></li>
+  <li><code>inout_ptr_t </code></li>
 </ul>
 
 <h2>Change in <a href="https://wg21.link/functional.syn">[functional.syn]</a></h2>
@@ -804,6 +916,7 @@ Please append a <span class="comment">// <span class="textit">freestanding</span
   <li><code>function</code></li>
   <li><code>function</code> overloads of <code>swap</code></li>
   <li><code>function</code> overloads of <code>operator==</code></li>
+  <li><code>move_only_function</code></li>
   <li><code>boyer_moore_searcher</code></li>
   <li><code>boyer_moore_horspool_searcher</code></li>
 </ul>
