@@ -358,14 +358,20 @@ span.indented {
 }
 </style>
 
-<title>D1642R9.0 TODO: Freestanding Library: Easy [utilities], [ranges], and [iterators]</title>
+<title>D1642R10.0 TODO: Freestanding Library: Easy [utilities], [ranges], and [iterators]</title>
 <body>
 <h1>Freestanding Library: Easy [utilities], [ranges], and [iterators]</h1>
-Document number: D1642R9.0 TODO<br/>
-Date: 2022-05-13 TODO<br/>
+Document number: D1642R10.0 TODO<br/>
+Date: 2022-06-17 TODO<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
-Audience: Library Evolution Working Group
+Audience: Library Working Group, Core Working Group
 <h1>Change history</h1>
+<h3> R10 </h3>
+<ul>
+  <li>Removed <code>&lt;algorithm&gt;</code>.</li>
+  <li>Added blanket wording to add the target of all freestanding aliases, which handles <code>in_out_result</code></li>
+  <li>Added drafting notes mentioning a list of papers awaiting plenary that were all considered with this paper.</li>
+</ul>
 <h3> R9 </h3>
 <ul>
   <li>General wording cleanup</li>
@@ -726,6 +732,10 @@ namespace std {
     <div class='marginalizedparent'><a class='marginalized'>7</a></div>
     <div class='sentence'>Friends of freestanding entities are freestanding entities.</div>
 </div>
+<div class='para'>
+    <div class='marginalizedparent'><a class='marginalized'>8</a></div>
+    <div class='sentence'>Entities denoted by freestanding entity <i>typedef-names</i> and freestanding entity alias templates are freestanding entities.</div>
+</div>
 </blockquote>
 Wording involving comment placement is inspired by <a href="https://wg21.link/expos.only.func#1">[expos.only.func]#1</a>.
 
@@ -780,11 +790,6 @@ Add new rows to <a href="https://wg21.link/compliance#tab:headers.cpp.fs">Table 
 <td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;ranges&gt;</tt></ins></td>
 </tr>
 <tr style="border: 1px solid black">
-<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/algorithms">[algorithms]</a></ins></td>
-<td style="padding: 0ex 1ex 0ex 1ex"><ins>Algorithms library</ins></td>
-<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;algorithm&gt;</tt></ins></td>
-</tr>
-<tr style="border: 1px solid black">
 <td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
 <td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
 <td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
@@ -834,7 +839,11 @@ Add a new paragraph to [compliance]:
 
 
 <h2>Full headers</h2>
-Instructions to the editor:<br>
+<h3>Drafting note:</h3>
+<a href="https://wg21.link/p2445R1">P2445R1: <code>std::forward_like</code></a> will be voted on in plenary at the same meeting as this paper.
+P2445R1 adds facilities to <code>&lt;utility&gt;</code>.
+LWG has reviewed those changes in the context of this paper, and approves of those contents being made freestanding.
+<h3>Instructions to the editor:</h3>
 Please insert a <span class="comment">// <span class="textit">all freestanding</span></span> comment at the beginning of the following synopses.  These headers are entirely freestanding.
 <ul>
 <li><a href="https://wg21.link/cstddef.syn">[cstddef.syn]</a></li>
@@ -982,7 +991,11 @@ Add a new paragraph to [func.bind.place]:
 </blockquote>
 
 <h2>Change in <a href="https://wg21.link/iterator.synopsis">[iterator.synopsis]</a></h2>
-Instructions to the editor:<br>
+<h3>Drafting note:</h3>
+<a href="https://wg21.link/p2278R3">P2278R3: <code>cbegin</code> should always return a constant iterator</a> will be voted on in plenary at the same meeting as this paper.
+P2278R3 adds facilities to <code>&lt;iterator&gt;</code>.
+LWG has reviewed those changes in the context of this paper, and approves of those contents being made freestanding.
+<h3>Instructions to the editor:</h3>
 Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to every entity in <code>&lt;iterator&gt;</code> <b>except</b> for the following entities:
 <ul>
   <li><code>istream_iterator</code> and associated comparison operators</li>
@@ -992,20 +1005,17 @@ Please append a <span class="comment">// <span class="textit">freestanding</span
 </ul>
 
 <h2>Change in <a href="https://wg21.link/ranges.syn">[ranges.syn]</a></h2>
-Instructions to the editor:<br>
+<h3>Drafting note:</h3>
+<a href="https://wg21.link/p2278R3">P2278R3: <code>cbegin</code> should always return a constant iterator</a> and <a href="https://wg21.link/P2446R2">P2446R2: <code>views::as_rvalue</code></a>will be voted on in plenary at the same meeting as this paper.
+Those papers add facilities to <code>&lt;ranges&gt;</code>.
+LWG has reviewed those changes in the context of this paper, and approves of those contents being made freestanding.
+<h3>Instructions to the editor:</h3>
 Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to every entity in <code>&lt;ranges&gt;</code> <b>except</b> for the following entities:
 <ul>
   <li><code>basic_istream_view</code></li>
   <li><code>istream_view</code></li>
   <li><code>wistream_view</code></li>
   <li><code>views::istream</code></li>
-</ul>
-
-<h2>Change in <a href="https://wg21.link/algorithm.syn">[algorithm.syn]</a></h2>
-Instructions to the editor:<br>
-Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following entity:
-<ul>
-  <li><code>in_out_result</code></li>
 </ul>
 
 <h2>Change in <a href="https://wg21.link/atomics.syn">[atomics.syn]</a></h2>
