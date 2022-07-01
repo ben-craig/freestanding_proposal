@@ -358,7 +358,7 @@ span.indented {
 }
 </style>
 
-<title>D1642R11.0 TODO: Freestanding Library: Easy [utilities], [ranges], and [iterators]</title>
+<title>D1642R11.1 TODO: Freestanding Library: Easy [utilities], [ranges], and [iterators]</title>
 <body>
 <h1>Freestanding Library: Easy [utilities], [ranges], and [iterators]</h1>
 Document number: D1642R11 TODO<br/>
@@ -680,16 +680,30 @@ The following wording is relative to N4910.
 </p>
 <h2>Change in <a href="https://wg21.link/intro.compliance.general">[intro.compliance.general]</a></h2>
 Change in <a href="https://wg21.link/intro.compliance.general#7">[intro.compliance.general] paragraph 7</a>:
+
+
+
 <blockquote class="std">
 <div class="para">
 <div class="marginalizedparent"><a class="marginalized">7</a></div>
+
+
+
+
+
 <div class="sentence">Two kinds of implementations are defined: a <i>hosted implementation</i> and a <i>freestanding implementation</i>.</div>
 
 <div class="sentence"><del>For a hosted implementation, this document defines the set of available libraries.</del></div>
 
 <div class="sentence">A freestanding implementation is one in which execution may take place without the benefit of an operating system
-<del>, and has an implementation-defined set of libraries that includes certain language-support libraries</del>
-<ins>. A hosted implementation supports all the facilities described in this document, while a freestanding implementation supports the entire C++ language described in clauses 5 through 15 and a subset of the facilities described in the library clauses</ins> (<a href="https://wg21.link/compliance">[compliance]</a>).</div>
+<del>, and has an implementation-defined set of libraries that includes certain language-support libraries  ([compliance])</del>. 
+<ins>A hosted implementation supports all the facilities described in this document, while a freestanding implementation supports the entire C++ language described in clauses 5 through 15 and a subset of the facilities as described in the library clauses; see <a href="https://wg21.link/compliance">[compliance]</a>.</ins></div>
+
+
+
+
+
+
 
 </div>
 </div>
