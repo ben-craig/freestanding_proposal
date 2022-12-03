@@ -358,14 +358,29 @@ span.indented {
 }
 </style>
 
-<title>P2198R5: Freestanding Feature-Test Macros and Implementation-Defined Extensions</title>
+<title>D2198R6: TODO Freestanding Feature-Test Macros and Implementation-Defined Extensions</title>
 <body>
 <h1>Freestanding Feature-Test Macros and Implementation-Defined Extensions</h1>
-Document number: P2198R5<br/>
-Date: 2022-04-13<br/>
+Document number: D2198R6 TODO<br/>
+Date: 2022-04-13 TODO<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: Library Evolution Working Group
 <h1>Change history</h1>
+<h3> R6 </h3>
+<ul>
+  <li>Rebase to N4917</li>
+  <li>Marking the following new feature test macros as freestanding:
+    <code>__cpp_lib_forward_like</code>,
+    <code>__cpp_lib_modules</code>,
+    <code>__cpp_lib_move_iterator_concept</code>,
+    <code>__cpp_lib_ranges_as_const</code>,
+    <code>__cpp_lib_ranges_as_rvalue</code>,
+    <code>__cpp_lib_ranges_cartesian_product</code>,
+    <code>__cpp_lib_ranges_repeat</code>,
+    <code>__cpp_lib_ranges_stride</code>,
+    <code>__cpp_lib_start_lifetime_as</code>,
+  </li>
+</ul>
 <h3> R5 </h3>
 <ul>
   <li>Preemptively deal with in-flight LWG papers</li>
@@ -489,7 +504,8 @@ The green feature-test macros are the ones added since the paper was forwarded f
   <li><code>__cpp_lib_atomic_ref</code></li>
   <li><code>__cpp_lib_atomic_value_initialization</code></li>
   <li><code>__cpp_lib_atomic_wait</code></li>
-  <li><ins><code>__cpp_lib_bind_front</code></ins></li>
+  <li><ins><code>__cpp_lib_bind_back</code></ins></li>
+  <li><code>__cpp_lib_bind_front</code></li>
   <li><code>__cpp_lib_bit_cast</code></li>
   <li><code>__cpp_lib_bitops</code></li>
   <li><code>__cpp_lib_bool_constant</code></li>
@@ -507,6 +523,7 @@ The green feature-test macros are the ones added since the paper was forwarded f
   <li><code>__cpp_lib_destroying_delete</code></li>
   <li><code>__cpp_lib_endian</code></li>
   <li><code>__cpp_lib_exchange_function</code></li>
+  <li><ins><code>__cpp_lib_forward_like</code></ins></li>
   <li><code>__cpp_lib_hardware_interference_size</code></li>
   <li><code>__cpp_lib_has_unique_object_representations</code></li>
   <li><code>__cpp_lib_int_pow2</code></li>
@@ -528,13 +545,20 @@ The green feature-test macros are the ones added since the paper was forwarded f
   <li><code>__cpp_lib_logical_traits</code></li>
   <li><code>__cpp_lib_make_from_tuple</code></li>
   <li><code>__cpp_lib_make_reverse_iterator</code></li>
+  <li><ins><code>__cpp_lib_modules</code></ins></li>
+  <li><ins><code>__cpp_lib_move_iterator_concept</code></ins></li>
   <li><code>__cpp_lib_nonmember_container_access</code></li>
   <li><code>__cpp_lib_not_fn</code></li>
   <li><code>__cpp_lib_null_iterators</code></li>
+  <li><ins><code>__cpp_lib_ranges_as_const</code></ins></li>
+  <li><ins><code>__cpp_lib_ranges_as_rvalue</code></ins></li>
+  <li><ins><code>__cpp_lib_ranges_cartesian_product</code></ins></li>
   <li><ins><code>__cpp_lib_ranges_chunk</code></ins></li>
   <li><ins><code>__cpp_lib_ranges_chunk_by</code></ins></li>
   <li><ins><code>__cpp_lib_ranges_join_with</code></ins></li>
+  <li><ins><code>__cpp_lib_ranges_repeat</code></ins></li>
   <li><ins><code>__cpp_lib_ranges_slide</code></ins></li>
+  <li><ins><code>__cpp_lib_ranges_stride</code></ins></li>
   <li><ins><code>__cpp_lib_ranges_to_container</code></ins></li>
   <li><ins><code>__cpp_lib_ranges_zip</code></ins></li>
   <li><ins><code>__cpp_lib_reference_from_temporary</code></ins></li>
@@ -542,6 +566,7 @@ The green feature-test macros are the ones added since the paper was forwarded f
   <li><code>__cpp_lib_result_of_sfinae</code></li>
   <li><code>__cpp_lib_source_location</code></li>
   <li><code>__cpp_lib_ssize</code></li>
+  <li><ins><code>__cpp_lib_start_lifetime_as</code></ins></li>
   <li><code>__cpp_lib_three_way_comparison</code></li>
   <li><code>__cpp_lib_to_address</code></li>
   <li><ins><code>__cpp_lib_to_underlying</code>
@@ -556,6 +581,40 @@ The green feature-test macros are the ones added since the paper was forwarded f
   <li><code>__cpp_lib_unwrap_ref</code></li>
   <li><code>__cpp_lib_void_t</code></li>
 </ul>
+
+<h2>Post LEWG additions</h2>
+
+These papers with freestanding facilities were approved after this paper left LEWG.
+This paper was included after a September 2021 reflector discussion, and it received five votes in favor, with no opposition (the author of this paper did not vote).
+<ul>
+  <li><a href="https://wg21.link/P0627R6">P0627R6: Function to mark unreachable code</a></li>
+</ul>
+
+These papers were included after a November 2021 reflector discussion, and they received five votes in favor, with no opposition (the author of this paper did not vote).
+<ul>
+  <li><a href=https://wg21.link/P2136R3>P2136R3: invoke_r</a></li>
+  <li><a href=https://wg21.link/P2321R2>P2321R2: zip</a></li>
+  <li><a href=https://wg21.link/P1682R3>P1682R3: std::to_underlying</a></li>
+</ul>
+
+These papers were included after an April 2022 reflector discussion, and they received six votes in favor, with no opposition (the author of this paper did not vote).
+
+<ul>
+  <li><a href="https://wg21.link/P1206R7">P1206R7 ranges::to</a></li>
+  <li><a href="https://wg21.link/P1899">P1899 views::stride</a></li>
+  <li><a href="https://wg21.link/P2165">P2165 Compatibility Between tuple, pair, And tuple-Like Objects</a></li>
+  <li><a href="https://wg21.link/P2278">P2278 cbegin should always return a constant iterator</a></li>
+  <li><a href="https://wg21.link/P2374">P2374 views::cartesian_product</a></li>
+  <li><a href="https://wg21.link/P2387R3">P2387R3 Pipe support for user-defined range adaptors</a></li>
+  <li><a href="https://wg21.link/P2441R2">P2441R2 views::join_with</a></li>
+  <li><a href="https://wg21.link/P2442R1">P2442R1 Windowing range adaptors: views::chunk and views::slide</a></li>
+  <li><a href="https://wg21.link/P2443R1">P2443R1 views::chunk_by</a></li>
+  <li><a href="https://wg21.link/P2445">P2445 forward_like</a></li>
+  <li><a href="https://wg21.link/P2446">P2446 views::all_move</a></li>
+  <li><a href="https://wg21.link/P2474">P2474 views::repeat</a></li>
+  <li><a href="https://wg21.link/P2494">P2494 Relaxing Range Adaptors To Allow For Move Only Types</a></li>
+</ul>
+
 <h2>New feature-test macros</h2>
 <p>
 Users of freestanding implementations will want to know whether including a formerly hosted-only header will work or not.
@@ -868,20 +927,20 @@ Setting the macro to <code>0</code> when the feature is not present is critical 
 
 <h1>Wording</h1>
 <p>
-The following wording is relative to N4901, and assumes that P1642 and P2013 have been applied.
+The following wording is relative to N4917, and assumes that P2013 have been applied.
 </p>
 <h2>Additions to <a href="https://wg21.link/compliance">[compliance]</a></h2>
 <p>
 Please append the following paragraphs to <a href="https://wg21.link/compliance">[compliance]</a>.
 <blockquote class="stdins">
 <div class="para">
-    <div class="marginalizedparent"><a class="marginalized">4</a></div>
+    <div class="marginalizedparent"><a class="marginalized">5</a></div>
     <div class="sentence">The <i>hosted library facilities</i> are the set of facilities described in this document that are required for hosted implementations, but not required for freestanding implementations.</div>
     <div class="sentence">A freestanding implementation provides a (possibly empty) implementation-defined subset of the hosted library facilities.</div>
-    <div class="sentence">Unless otherwise specified, the requirements on each macro and namespace scoped entity provided in this way shall be the same as the corresponding requirements in a hosted implementation.</div>
+    <div class="sentence">Unless otherwise specified, the requirements on each declaration, entity, <i>typedef-name</i>, and macro provided in this way shall be the same as the corresponding requirements for a hosted implementation, except that not all of the members of the namespaces are required to be present.</div>
 </div>
 <div class="para">
-    <div class="marginalizedparent"><a class="marginalized">5</a></div>
+    <div class="marginalizedparent"><a class="marginalized">6</a></div>
     <div class="sentence">A freestanding implementation provides <a href="https://eel.is/c++draft/dcl.fct.def.delete#def:deleted_definition">deleted definition</a>s for a (possibly empty) implementation-defined subset of the namespace scoped functions and function templates from the hosted library facilities.</div>
     <div class="note">[ <span class="textit">Note</span><span class="textit">:</span> An implementation may provide a deleted definition so that overload resolution does not silently change when migrating a library from a freestanding implementation to a hosted implementation. -<i>end note</i>]</div>
 </div>
@@ -901,6 +960,7 @@ Add "<ins><code>freestanding ,</code></ins>" to the beginning of each comment in
   <li><code>__cpp_lib_atomic_ref</code></li>
   <li><code>__cpp_lib_atomic_value_initialization</code></li>
   <li><code>__cpp_lib_atomic_wait</code></li>
+  <li><code>__cpp_lib_bind_back</code></li>
   <li><code>__cpp_lib_bind_front</code></li>
   <li><code>__cpp_lib_bit_cast</code></li>
   <li><code>__cpp_lib_bitops</code></li>
@@ -919,6 +979,7 @@ Add "<ins><code>freestanding ,</code></ins>" to the beginning of each comment in
   <li><code>__cpp_lib_destroying_delete</code></li>
   <li><code>__cpp_lib_endian</code></li>
   <li><code>__cpp_lib_exchange_function</code></li>
+  <li><code>__cpp_lib_forward_like</code></li>
   <li><code>__cpp_lib_hardware_interference_size</code></li>
   <li><code>__cpp_lib_has_unique_object_representations</code></li>
   <li><code>__cpp_lib_int_pow2</code></li>
@@ -940,13 +1001,19 @@ Add "<ins><code>freestanding ,</code></ins>" to the beginning of each comment in
   <li><code>__cpp_lib_logical_traits</code></li>
   <li><code>__cpp_lib_make_from_tuple</code></li>
   <li><code>__cpp_lib_make_reverse_iterator</code></li>
+  <li><code>__cpp_lib_move_iterator_concept</code></li>
   <li><code>__cpp_lib_nonmember_container_access</code></li>
   <li><code>__cpp_lib_not_fn</code></li>
   <li><code>__cpp_lib_null_iterators</code></li>
+  <li><code>__cpp_lib_ranges_as_const</code></li>
+  <li><code>__cpp_lib_ranges_as_rvalue</code></li>
+  <li><code>__cpp_lib_ranges_cartesian_product</code></li>
   <li><code>__cpp_lib_ranges_chunk</code></li>
   <li><code>__cpp_lib_ranges_chunk_by</code></li>
   <li><code>__cpp_lib_ranges_join_with</code></li>
+  <li><code>__cpp_lib_ranges_repeat</code></li>
   <li><code>__cpp_lib_ranges_slide</code></li>
+  <li><code>__cpp_lib_ranges_stride</code></li>
   <li><code>__cpp_lib_ranges_to_container</code></li>
   <li><code>__cpp_lib_ranges_zip</code></li>
   <li><code>__cpp_lib_reference_from_temporary</code></li>
@@ -954,6 +1021,7 @@ Add "<ins><code>freestanding ,</code></ins>" to the beginning of each comment in
   <li><code>__cpp_lib_result_of_sfinae</code></li>
   <li><code>__cpp_lib_source_location</code></li>
   <li><code>__cpp_lib_ssize</code></li>
+  <li><code>__cpp_lib_start_lifetime_as</code></li>
   <li><code>__cpp_lib_three_way_comparison</code></li>
   <li><code>__cpp_lib_to_address</code></li>
   <li><code>__cpp_lib_to_underlying</code>
@@ -975,20 +1043,9 @@ The changes should look similar to this:
 #define __cpp_lib_addressof_constexpr               201603L // <ins>freestanding, </ins>also in &lt;memory&gt;
 </pre></div></blockquote>
 
-Should any of the following papers be approved before this one, then their respective feature test macros should also be marked freestanding.
-This issue was raised in an April 2022 reflector discussion, and it received six votes in favor, with no opposition (the author of this paper did not vote).
-
+Add a "<ins><code>// freestanding</code></ins>" comment after the following macro definition in <a href="https://wg21.link/version.syn#2">[version.syn]</a>:
 <ul>
-  <li><a href="http://wg21.link/P2374">P2374 views::cartesian_product</a></li>
-  <li><a href="http://wg21.link/P2494">P2494 Relaxing Range Adaptors To Allow For Move Only Types</a></li>
-  <li><a href="http://wg21.link/P1899">P1899 views::stride</a></li>
-  <li><a href="http://wg21.link/P2474">P2474 views::repeat</a></li>
-  <li><a href="http://wg21.link/P2446">P2446 views::all_move</a></li>
-  <li><a href="http://wg21.link/P2278">P2278 cbegin should always return a constant iterator</a></li>
-  <li><a href="http://wg21.link/P2445">P2445 forward_like</a></li>
-  <li><a href="http://wg21.link/P2165">P2165 Compatibility Between tuple, pair, And tuple-Like Objects</a></li>
-  <li><a href="http://wg21.link/P0792">P0792 function_ref: a non-owning reference to a Callable</a></li>
-  <li><a href="http://wg21.link/P0549">P0549 Adjuncts to std::hash</a></li>
+  <li><code>__cpp_lib_modules</code></li>
 </ul>
 
 Please add the following macros to <a href="https://wg21.link/version.syn#2">[version.syn]/2</a>.  Use the current year-based constant instead of "<i>new-val</i>".
