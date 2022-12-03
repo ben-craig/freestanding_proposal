@@ -358,17 +358,25 @@ span.indented {
 }
 </style>
 
-<title>P2338R2: Freestanding Library: Character primitives and the C library</title>
+<title>TODO D2338R3.0: Freestanding Library: Character primitives and the C library</title>
 <body>
 <h1>Freestanding Library: Character primitives and the C library</h1>
-Document number: P2338R2<br/>
-Date: 2021-11-11<br/>
+Document number: TODO D2338R3.0<br/>
+Date: TODO 2021-11-11<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
-Audience: SG22 (C Liaison), Library Evolution Working Group
+Audience: Library Working Group
 <h1>Abstract</h1>
 Add everything to the shared C and C++ freestanding library that can be implemented without OS calls and space overhead.
 Also add primitive character operations (<code>&lt;charconv&gt;</code> and <code>char_traits</code>) to the C++ freestanding library.
 <h1>Change history</h1>
+<h3> R3 </h3>
+<ul>
+  <li>Rebase onto WG21's N4917 working draft, plus LWG3753 resolution.</li>
+  <li>Modified C++ [freestanding.item] wording additions substantially.</li>
+  <li>Modified discussion of P1642 to put it in the past tense, as it has been accepted into C++23.</li>
+  <li>Changed editorial comment from "freestanding deleted" to "freestanding-deleted".</li>
+  <li>Instructions to C++ editor now refers to "items" instead of "entities", as "entities" is a term of art.</li>
+</ul>
 <h3> R2 </h3>
 <ul>
   <li>Rebase onto WG14's N2731 working draft</li>
@@ -480,7 +488,7 @@ For C++, this is much more onerous than for C, as the C++ core language includes
 The in-flight paper <a href="https://wg21.link/P2013R4">P2013R4</a> makes it such that the allocating forms of <code>::operator new</code> are allowed to do nothing.
 This requirement often meant that the underlying C implementation of a freestanding C++ library needed to have <code>malloc</code> and <code>free</code> implementations.
 </p><p>
-The in-flight paper <a href="https://wg21.link/P1642">P1642</a> adds many C++ specific facilities, but it also adds <code>_Exit</code>.
+<a href="https://wg21.link/P1642">P1642</a> added many C++ specific facilities, but it also adds <code>_Exit</code>.
 The specification for <code>quick_exit</code> specifically calls out <code>_Exit</code>, so this omission is a specification bug.
 </p><p>
 A freestanding C++ implementation is mostly a superset of a freestanding C implementation, even in the "C" parts of C++.
@@ -944,20 +952,22 @@ Add the following item to the list in paragraph 1:
 
 <h1>C++ Wording</h1>
 <p>
-Wording is based off <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/n4878.pdf">WG21 N4878</a> from 2020-12-15.
-This paper also assumes that <a href="https://wg21.link/p1642">P1642</a> and <a href="https://wg21.link/P2198">P2198</a> have been accepted and applied.
+Wording is based off <a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/n4917.pdf">WG21 N4917</a> from 2022-09.
+This paper also assumes that <a href="https://cplusplus.github.io/LWG/issue3753">LWG3753</a> and <a href="https://wg21.link/P2198">P2198</a> have been accepted and applied.
 </p>
 <h2>Change in <a href="https://wg21.link/conventions">[conventions]</a></h2>
-Add a new paragraph to [freestanding.membership] (added in <a href="https://wg21.link/p1642">P1642</a>).
+
+Add a new paragraph to <a href="https://wg21.link/freestanding.item">[freestanding.item]</a>.
 
 <blockquote class="stdins">
 <div class='para'>
     <div class='marginalizedparent'><a class='marginalized'>?</a></div>
-    <div class='sentence'>On a freestanding implementation, a <span class='textit'>freestanding deleted function</span> is a function that has either a deleted definition or a definition meeting the corresponding requirements in a hosted implementation.</div>
-    <div class='sentence'>In the associated header synopsis for such freestanding deleted functions, the items are followed with a comment that includes <span class='textit'>freestanding deleted</span>.</div>
+    <div class='marginalizedparent'><a class='marginalized'>?</a></div>
+    <div class='sentence'>Function declarations followed by a comment that include <span class='textit'>freestanding-deleted</span> are <span class='textit'>freestanding deleted functions</span>.</div>
+    <div class='sentence'>On freestanding implementations, it is implementation defined whether each function definition introduced by a freestanding deleted function is a freestanding item or a deleted function (<a href="https://wg21.lin/dcl.fct.def.delete">[dcl.fct.def.delete]</a>).</div>
     <div class='example'>[  <span class='textit'>Example:</span>
 <pre class='codeblock'>
-double abs(double j); <span class='comment'>// <span class='textit'>freestanding deleted</span></span>
+double abs(double j); <span class='comment'>// <span class='textit'>freestanding-deleted</span></span>
 </pre>
     -<i>end example</i>]</div>
 </div>
@@ -1027,7 +1037,7 @@ Change <a href="https://wg21.link/compliance#tab:headers.cpp.fs">[tab:headers.cp
 
 <h2>Change in <a href="https://wg21.link/cstdlib.syn">[cstdlib.syn]</a></h2>
 Instructions to the editor:<br>
-Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following entities:
+Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following items:
 <ul>
   <li><code>div_t</code></li>
   <li><code>ldiv_t</code></li>
@@ -1044,7 +1054,7 @@ Please append a <span class="comment">// <span class="textit">freestanding</span
   <li><code>lldiv</code></li>
 </ul>
 
-Please append a <span class="comment">// <span class="textit">freestanding deleted</span></span> comment to the following entities:
+Please append a <span class="comment">// <span class="textit">freestanding-deleted</span></span> comment to the following items:
 <ul>
   <li><code>abs(float)</code></li>
   <li><code>abs(double)</code></li>
@@ -1068,7 +1078,7 @@ Please add the following feature test macros to <a href="https://wg21.link/versi
 
 <h2>Change in <a href="https://wg21.link/cerrno.syn">[cerrno.syn]</a></h2>
 Instructions to the editor:<br>
-Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following entities:
+Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following items:
 <ul>
   <li><code>E2BIG</code></li>
   <li><code>EACCES</code></li>
@@ -1152,11 +1162,11 @@ Please append a <span class="comment">// <span class="textit">freestanding</span
 
 <h2>Change in <a href="https://wg21.link/system_error.syn">[system_error.syn]</a></h2>
 Instructions to the editor:<br>
-Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the <code>errc</code> entity.
+Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the <code>errc</code> item.
 
 <h2>Change in <a href="https://wg21.link/charconv.syn">[charconv.syn]</a></h2>
 Instructions to the editor:<br>
-Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following entities:
+Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following items:
 <ul>
   <li><code>to_chars_result</code></li>
   <li><code>from_chars_result</code></li>
@@ -1164,7 +1174,7 @@ Please append a <span class="comment">// <span class="textit">freestanding</span
   <li><code>from_chars_result from_chars(const char* first, const char* last, <i>see below</i>& value, int base = 10);</code></li>
 </ul>
 
-Please append a <span class="comment">// <span class="textit">freestanding deleted</span></span> comment to the following entities:
+Please append a <span class="comment">// <span class="textit">freestanding-deleted</span></span> comment to the following items:
 <ul>
   <li><code>to_chars(char* first, char* last, float value)</code></li>
   <li><code>to_chars(char* first, char* last, double value)</code></li>
@@ -1176,7 +1186,7 @@ Please append a <span class="comment">// <span class="textit">freestanding delet
 
 <h2>Change in <a href="https://wg21.link/string.syn">[string.syn]</a></h2>
 Instructions to the editor:<br>
-Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following entities:
+Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following items:
 <ul>
   <li><code>template&lt;class charT&gt; struct char_traits</code></li>
   <li><code>template&lt;&gt; struct char_traits&lt;char&gt;</code></li>
@@ -1188,7 +1198,7 @@ Please append a <span class="comment">// <span class="textit">freestanding</span
 
 <h2>Change in <a href="https://wg21.link/cstring.syn">[cstring.syn]</a></h2>
 Instructions to the editor:<br>
-Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following entities:
+Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following items:
 <ul>
   <li><code>memcpy</code></li>
   <li><code>memmove</code></li>
@@ -1212,7 +1222,7 @@ Please append a <span class="comment">// <span class="textit">freestanding</span
   <li><code>NULL</code></li>
 </ul>
 
-The following entities should <b>NOT</b> have freestanding comments appended to them:
+The following items should <b>NOT</b> have freestanding comments appended to them:
 <ul>
   <li><code>strcoll</code></li>
   <li><code>strxfrm</code></li>
@@ -1221,7 +1231,7 @@ The following entities should <b>NOT</b> have freestanding comments appended to 
 
 <h2>Change in <a href="https://wg21.link/cwchar.syn">[cwchar.syn]</a></h2>
 Instructions to the editor:<br>
-Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following entities:
+Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following items:
 <ul>
   <li><code>size_t</code></li>
   <li><code>mbstate_t</code></li>
@@ -1254,7 +1264,7 @@ Please append a <span class="comment">// <span class="textit">freestanding</span
 </ul>
 
 
-The following entities should <b>NOT</b> have freestanding comments appended to them:
+The following items should <b>NOT</b> have freestanding comments appended to them:
 <ul>
   <li><code>struct tm</code></li>
   <li><code>fwprintf</code></li>
@@ -1301,7 +1311,7 @@ The following entities should <b>NOT</b> have freestanding comments appended to 
 
 <h2>Change in <a href="https://wg21.link/cmath.syn">[cmath.syn]</a></h2>
 Instructions to the editor:<br>
-Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following entities:
+Please append a <span class="comment">// <span class="textit">freestanding</span></span> comment to the following items:
 
 <ul>
   <li><code>abs(int)</code></li>
@@ -1309,7 +1319,7 @@ Please append a <span class="comment">// <span class="textit">freestanding</span
   <li><code>abs(long long int)</code></li>
 </ul>
 
-Please append a <span class="comment">// <span class="textit">freestanding deleted</span></span> comment to the following entities:
+Please append a <span class="comment">// <span class="textit">freestanding-deleted</span></span> comment to the following items:
 <ul>
   <li><code>abs(float)</code></li>
   <li><code>abs(double)</code></li>
