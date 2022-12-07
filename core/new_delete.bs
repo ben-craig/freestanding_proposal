@@ -2,7 +2,7 @@
 Title: Freestanding Language: Optional <code>::operator new</code>
 Shortname: P2013
 Revision: 5
-Audience: EWG
+Audience: LWG
 Status: P
 Group: WG21
 URL: https://wg21.link/P2013R5
