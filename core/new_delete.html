@@ -1,8 +1,8 @@
-<!DOCTYPE html>
-<html lang="en"><head>
-  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+<!doctype html><html lang="en">
+ <head>
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-  <title>D2013R4.5: Freestanding Language: Optional &lt;code&gt;::operator new&lt;/code&gt;</title>
+  <title>D2013R4: Freestanding Language: Optional &lt;code>::operator new&lt;/code></title>
 <style data-fill-with="stylesheet">/******************************************************************************
  *                   Style sheet for the W3C specifications                   *
  *
@@ -12,7 +12,7 @@
  *   - .toc for the Table of Contents (<ol class="toc">)
  *     + <span class="secno"> for the section numbers
  *   - #toc for the Table of Contents (<nav id="toc">)
- *   - ul.index for Indices (<a href="#ref">term</a><span>, in §N.M</span>)
+ *   - ul.index for Indices (<a href="#ref">term</a><span>, in § N.M</span>)
  *   - table.index for Index Tables (e.g. for properties or elements)
  *
  * Structural Markup
@@ -598,7 +598,6 @@
 	a[href]:focus,
 	a[href]:hover {
 		text-decoration-thickness: 2px;
-		text-decoratin
 	}
 	a[href]:active {
 		color: #c00;
@@ -1270,7 +1269,7 @@ Possible extra rowspan handling
 	ul.index ul,
 	ul.index dl { font-size: smaller; }
 	@media not print {
-		ul.index li span:not(.dfn-paneled) {
+		ul.index li a + span {
 			white-space: nowrap;
 			color: transparent; }
 		ul.index li a:hover + span,
@@ -1488,7 +1487,7 @@ Possible extra rowspan handling
 		}
 	}
 </style>
-<style type="text/css">
+<style>
     table, th, td {
       border: 1px solid black;
       border-collapse: collapse;
@@ -1561,8 +1560,8 @@ Possible extra rowspan handling
     blockquote c-[vi] { color: inherit; } /* Name.Variable.Instance */
     blockquote c-[il] { color: inherit; } /* Literal.Number.Integer.Long */
   </style>
-  <meta content="Bikeshed version c6f50773a, updated Fri Apr 16 16:45:47 2021 -0700" name="generator">
-  <link href="https://wg21.link/P2013R3" rel="canonical">
+  <meta content="Bikeshed version 63e66730b, updated Tue Oct 25 12:35:05 2022 -0700" name="generator">
+  <link href="https://wg21.link/P2013R4" rel="canonical">
   <link href="https://isocpp.org/favicon.ico" rel="icon">
 <style>/* style-autolinks */
 
@@ -1764,6 +1763,16 @@ figcaption {
 figcaption:not(.no-marker)::before {
     content: "Figure " counter(figure) " ";
 }</style>
+<style>/* style-issues */
+
+a[href].issue-return {
+    float: right;
+    float: inline-end;
+    color: var(--issueheading-text);
+    font-weight: bold;
+    text-decoration: none;
+}
+</style>
 <style>/* style-md-lists */
 
 /* This is a weird hack for me not yet following the commonmark spec
@@ -1800,6 +1809,14 @@ a.self-link:hover {
 }
 .heading > a.self-link {
     font-size: 83%;
+}
+.example > a.self-link,
+.note > a.self-link,
+.issue > a.self-link {
+    /* These blocks are overflow:auto, so positioning outside
+       doesn't work. */
+    left: auto;
+    right: 0;
 }
 li > a.self-link {
     left: calc(-1 * (3.5rem - 26px) - 2em);
@@ -2069,31 +2086,31 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     c-[il] { color: #657b83 } /* Literal.Number.Integer.Long */
 }
 </style>
- </head><body class="h-entry toc-sidebar"><p id="toc-nav"><a id="toc-jump" href="#toc"><span aria-hidden="true">↑</span> <span>Jump to Table of Contents</span></a><a id="toc-toggle" href="#toc"><span aria-hidden="true">←</span> <span>Collapse Sidebar</span></a></p>
+ <body class="h-entry">
   <div class="head">
    <p data-fill-with="logo"></p>
-   <h1 class="p-name no-ref" id="title">D2013R4.5<br>Freestanding Language: Optional <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code></h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2021-05-03">2021-05-03</time></span></h2>
+   <h1 class="p-name no-ref" id="title">D2013R4<br>Freestanding Language: Optional <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code></h1>
+   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2022-12-07">2022-12-07</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
-     </dt><dd><a class="u-url" href="https://wg21.link/P2013R3">https://wg21.link/P2013R3</a>
-     </dd><dt class="editor">Author:
-     </dt><dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:ben.craig@gmail.com">Ben Craig</a> (<span class="p-org org">NI</span>)
-     </dd><dt>Audience:
-     </dt><dd>EWG
-     </dd><dt>Project:
-     </dt><dd>ISO/IEC JTC1/SC22/WG21 14882: Programming Language — C++
-     </dd><dt>Source:
-     </dt><dd><a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
-    </dd></dl>
+     <dd><a class="u-url" href="https://wg21.link/P2013R4">https://wg21.link/P2013R4</a>
+     <dt class="editor">Author:
+     <dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:ben.craig@gmail.com">Ben Craig</a> (<span class="p-org org">NI</span>)
+     <dt>Audience:
+     <dd>EWG
+     <dt>Project:
+     <dd>ISO/IEC JTC1/SC22/WG21 14882: Programming Language — C++
+     <dt>Source:
+     <dd><a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
+    </dl>
    </div>
    <div data-fill-with="warning"></div>
    <hr title="Separator for header">
   </div>
   <div class="p-summary" data-fill-with="abstract">
    <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
-   <p>In freestanding implementations, standardize existing practices and make the default allocating <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>s optional.</p>
+   <p>In freestanding implementations, standardize existing practices and make the default allocating <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code>s optional.</p>
   </div>
   <nav data-fill-with="table-of-contents" id="toc">
    <h2 class="no-num no-toc no-ref" id="contents">Table of Contents</h2>
@@ -2102,265 +2119,154 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      <a href="#revision_history"><span class="secno">1</span> <span class="content">Revision History</span></a>
      <ol class="toc">
       <li><a href="#r4"><span class="secno">1.1</span> <span class="content">R4</span></a>
-      </li><li><a href="#r3"><span class="secno">1.2</span> <span class="content">R3</span></a>
-      </li><li><a href="#r2"><span class="secno">1.3</span> <span class="content">R2</span></a>
-      </li><li><a href="#r1"><span class="secno">1.4</span> <span class="content">R1</span></a>
-      </li><li><a href="#r0"><span class="secno">1.5</span> <span class="content">R0</span></a>
-     </li></ol>
-    </li><li><a href="#the_changes"><span class="secno">2</span> <span class="content">What is changing</span></a>
-    </li><li><a href="#non_changes"><span class="secno">3</span> <span class="content">What is staying the same</span></a>
-    </li><li>
+      <li><a href="#r3"><span class="secno">1.2</span> <span class="content">R3</span></a>
+      <li><a href="#r2"><span class="secno">1.3</span> <span class="content">R2</span></a>
+      <li><a href="#r1"><span class="secno">1.4</span> <span class="content">R1</span></a>
+      <li><a href="#r0"><span class="secno">1.5</span> <span class="content">R0</span></a>
+     </ol>
+    <li><a href="#the_changes"><span class="secno">2</span> <span class="content">What is changing</span></a>
+    <li><a href="#non_changes"><span class="secno">3</span> <span class="content">What is staying the same</span></a>
+    <li>
      <a href="#why"><span class="secno">4</span> <span class="content">Why?</span></a>
      <ol class="toc">
       <li><a href="#ill_formed_as_a_service"><span class="secno">4.1</span> <span class="content">No allocations allowed</span></a>
-      </li><li><a href="#no_right_way"><span class="secno">4.2</span> <span class="content">No right way to allocate memory</span></a>
-      </li><li><a href="#allocators"><span class="secno">4.3</span> <span class="content">What about allocators?</span></a>
-      </li><li><a href="#virtual_dtors"><span class="secno">4.4</span> <span class="content"><code class="highlight"><c- k="">virtual</c-></code> destructors</span></a>
-      </li><li><a href="#why_not_fix"><span class="secno">4.5</span> <span class="content">Why not fix <code class="highlight"><c- k="">virtual</c-></code> destructors, instead of keeping a no-op <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code>?</span></a>
-      </li><li><a href="#feature_test_macro"><span class="secno">4.6</span> <span class="content">Feature test macro</span></a>
-      </li><li><a href="#abuses"><span class="secno">4.7</span> <span class="content">Likely misuses and abuses</span></a>
-     </li></ol>
-    </li><li><a href="#experience"><span class="secno">5</span> <span class="content">Experience</span></a>
-    </li><li>
+      <li><a href="#no_right_way"><span class="secno">4.2</span> <span class="content">No right way to allocate memory</span></a>
+      <li><a href="#allocators"><span class="secno">4.3</span> <span class="content">What about allocators?</span></a>
+      <li><a href="#virtual_dtors"><span class="secno">4.4</span> <span class="content"><code class="highlight"><c- k>virtual</c-></code> destructors</span></a>
+      <li><a href="#why_not_fix"><span class="secno">4.5</span> <span class="content">Why not fix <code class="highlight"><c- k>virtual</c-></code> destructors, instead of keeping a no-op <code class="highlight"><c- k>operator</c-> <c- k>delete</c-></code>?</span></a>
+      <li><a href="#feature_test_macro"><span class="secno">4.6</span> <span class="content">Feature test macro</span></a>
+      <li><a href="#abuses"><span class="secno">4.7</span> <span class="content">Likely misuses and abuses</span></a>
+     </ol>
+    <li><a href="#experience"><span class="secno">5</span> <span class="content">Experience</span></a>
+    <li>
      <a href="#polling"><span class="secno">6</span> <span class="content">Polling history</span></a>
      <ol class="toc">
       <li><a href="#ewg_aug_telecon"><span class="secno">6.1</span> <span class="content">Aug 19, 2020, EWG, Telecon</span></a>
-      </li><li><a href="#ewg_prague"><span class="secno">6.2</span> <span class="content">Feb 14, 2020, EWG, Prague</span></a>
-      </li><li><a href="#ewgi_prague"><span class="secno">6.3</span> <span class="content">Feb 12, 2020, EWGI, Prague</span></a>
-      </li><li><a href="#sg14_jan_2020"><span class="secno">6.4</span> <span class="content">Jan 8, 2020 SG14 Telecon</span></a>
-     </li></ol>
-    </li><li>
+      <li><a href="#ewg_prague"><span class="secno">6.2</span> <span class="content">Feb 14, 2020, EWG, Prague</span></a>
+      <li><a href="#ewgi_prague"><span class="secno">6.3</span> <span class="content">Feb 12, 2020, EWGI, Prague</span></a>
+      <li><a href="#sg14_jan_2020"><span class="secno">6.4</span> <span class="content">Jan 8, 2020 SG14 Telecon</span></a>
+     </ol>
+    <li>
      <a href="#design_alternatives"><span class="secno">7</span> <span class="content">Design Alternatives</span></a>
      <ol class="toc">
-      <li><a href="#alternative_impl_def_op_new"><span class="secno">7.1</span> <span class="content">Alternative 0: Implementation defined allocating <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> (Proposed above)</span></a>
-      </li><li><a href="#alternative_throwing_new"><span class="secno">7.2</span> <span class="content">Alternative 1: Optional throwing <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>s, no-op default deallocation functions</span></a>
-      </li><li>
+      <li><a href="#alternative_impl_def_op_new"><span class="secno">7.1</span> <span class="content">Alternative 0: Implementation defined allocating <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> (Proposed above)</span></a>
+      <li><a href="#alternative_throwing_new"><span class="secno">7.2</span> <span class="content">Alternative 1: Optional throwing <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code>s, no-op default deallocation functions</span></a>
+      <li>
        <a href="#alternative_no_dealloc"><span class="secno">7.3</span> <span class="content">Alternative 2: No deallocation functions</span></a>
        <ol class="toc">
         <li><a href="#alt1_experience"><span class="secno">7.3.1</span> <span class="content">Experience</span></a>
-       </li></ol>
-      </li><li>
+       </ol>
+      <li>
        <a href="#alternative_new_odr"><span class="secno">7.4</span> <span class="content">Alternative 3: No deallocation functions and new ODR-used rules for virtual destructors</span></a>
        <ol class="toc">
         <li><a href="#alt2_how"><span class="secno">7.4.1</span> <span class="content">How could this virtual destructor ODR-use change be implemented?</span></a>
-        </li><li><a href="#alt2_abi"><span class="secno">7.4.2</span> <span class="content">ABI impact</span></a>
-        </li><li><a href="#alt2_experience"><span class="secno">7.4.3</span> <span class="content">Experience</span></a>
-       </li></ol>
-      </li><li><a href="#alternative_nop_dealloc"><span class="secno">7.5</span> <span class="content">Alternative 4: Missing <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>, no-op default deallocation functions (Proposed in R3)</span></a>
-     </li></ol>
-    </li><li>
+        <li><a href="#alt2_abi"><span class="secno">7.4.2</span> <span class="content">ABI impact</span></a>
+        <li><a href="#alt2_experience"><span class="secno">7.4.3</span> <span class="content">Experience</span></a>
+       </ol>
+      <li><a href="#alternative_nop_dealloc"><span class="secno">7.5</span> <span class="content">Alternative 4: Missing <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code>, no-op default deallocation functions (Proposed in R3)</span></a>
+     </ol>
+    <li>
      <a href="#wording"><span class="secno">8</span> <span class="content">Wording</span></a>
      <ol class="toc">
       <li><a href="#new_delete"><span class="secno">8.1</span> <span class="content">new.delete</span></a>
-     </li></ol>
-    </li><li><a href="#ack"><span class="secno">9</span> <span class="content">Acknowledgments</span></a>
-    </li><li>
+     </ol>
+    <li><a href="#ack"><span class="secno">9</span> <span class="content">Acknowledgments</span></a>
+    <li>
      <a href="#references"><span class="secno"></span> <span class="content">References</span></a>
      <ol class="toc">
       <li><a href="#informative"><span class="secno"></span> <span class="content">Informative References</span></a>
-     </li></ol>
-   </li></ol>
+     </ol>
+   </ol>
   </nav>
   <main>
    <h2 class="heading settled" data-level="1" id="revision_history"><span class="secno">1. </span><span class="content">Revision History</span><a class="self-link" href="#revision_history"></a></h2>
    <h3 class="heading settled" data-level="1.1" id="r4"><span class="secno">1.1. </span><span class="content">R4</span><a class="self-link" href="#r4"></a></h3>
-    Definitions of the allocation functions must now exist, but they now
- have implementation defined behavior on freestanding implementations 
-(which encompasses UB). 
+    Definitions of the allocation functions must now exist, but they now have implementation defined behavior on freestanding implementations (which encompasses UB). 
    <p>Rebasing to N4878.  Accounting for shifted numbering in [new.delete].</p>
-   <p>TODO: Shortname, revision, status</p>
    <h3 class="heading settled" data-level="1.2" id="r3"><span class="secno">1.2. </span><span class="content">R3</span><a class="self-link" href="#r3"></a></h3>
     Added <a href="#ewg_aug_telecon">EWG Aug 2020 telecon</a> polling results. 
-   <p>In the design, an ODR-use without a definition no longer requires 
-ill-formedness.  The intent is still the same, in that it typically 
-results in a linker error.</p>
+   <p>In the design, an ODR-use without a definition no longer requires ill-formedness.  The intent is still the same, in that it typically results in a linker error.</p>
    <p>Updated grammar and ill-formedness of wording.</p>
    <p>Found an additional note in <a href="https://wg21.link/expr.new#10">expr.new/10</a> that needed adjustment.</p>
    <p>Deferred <a href="#feature_test_macro">feature test macro</a> decision to a future revision of <a href="https://wg21.link/P2198">P2198</a>.</p>
    <h3 class="heading settled" data-level="1.3" id="r2"><span class="secno">1.3. </span><span class="content">R2</span><a class="self-link" href="#r2"></a></h3>
     Making the status of "placement" new more obvious ("placement" new is still required). 
-   <p>Added words in the design to indicate that the declarations in <code class="highlight"><c- o="">&lt;</c-><c- k="">new</c-><c- o="">&gt;</c-></code> are not changing.</p>
+   <p>Added words in the design to indicate that the declarations in <code class="highlight"><c- o>&lt;</c-><c- k>new</c-><c- o>></c-></code> are not changing.</p>
    <p>Mentioning that pointer safety remains unchanged.</p>
    <h3 class="heading settled" data-level="1.4" id="r1"><span class="secno">1.4. </span><span class="content">R1</span><a class="self-link" href="#r1"></a></h3>
     Added polling results from Prague <a href="#ewgi_prague">EWGI</a> and <a href="#ewg_prague">EWG</a>. 
    <p>Added discussion on <a href="#feature_test_macro">feature test macro</a>.</p>
    <p>Added discussion on <a href="#why_not_fix">not fixing virtual destructors</a>.</p>
-   <p>Declaring that <code class="highlight"><c- k="">constexpr</c-> <c- k="">new</c-></code> must continue to work.</p>
+   <p>Declaring that <code class="highlight"><c- k>constexpr</c-> <c- k>new</c-></code> must continue to work.</p>
    <p>Added <a href="#wording">wording</a>.</p>
    <p>Wording includes <a href="#new_delete">changes to library clauses</a>, so added LEWG to the audience.</p>
    <h3 class="heading settled" data-level="1.5" id="r0"><span class="secno">1.5. </span><span class="content">R0</span><a class="self-link" href="#r0"></a></h3>
     R0 of this paper was extracted from <a data-link-type="biblio" href="#biblio-p1105r1">[P1105R1]</a>. 
-   <p>The proposed solution is different than the one proposed for 
-P1105R1, but the motivation is the same.  The solution from P1105R1 is 
-still listed as a design alternative.</p>
+   <p>The proposed solution is different than the one proposed for P1105R1, but the motivation is the same.  The solution from P1105R1 is still listed as a design alternative.</p>
    <h2 class="heading settled" data-level="2" id="the_changes"><span class="secno">2. </span><span class="content">What is changing</span><a class="self-link" href="#the_changes"></a></h2>
-    On freestanding systems without default heap storage, the replaceable allocation functions (i.e. allocating <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>, including the <code class="highlight"><c- n="">nothrow_t</c-></code> and <code class="highlight"><c- n="">align_val_t</c-></code>
- overloads, single and array forms) will have implementation defined 
-behavior that does not need to do any kind of allocation.  The 
-implementation could return <code class="highlight"><c- k="">nullptr</c-></code>,
- invoke undefined behavior, or whatever the implementer likes.  If a 
-freestanding implementation provides one replaceable allocation function
- that meets the hosted requirements, then all the replaceable allocation
- functions shall meet the requirements.  Hopefully, compiler vendors 
-will warn on heap usage by default in freestanding implementations, and 
-allow the warnings to be disabled for the situations where the user 
-provides their own <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>. 
-   <p>As a consequence of the above, runtime coroutines on freestanding 
-implementations that are relying on the global allocation functions will
- also have implementation defined behavior, so long as the vendor 
-supplied implementation is being used.</p>
-   <p>No other core language features require <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>. <a href="http://eel.is/c++draft/basic.stc.dynamic.allocation#5">basic.stc.dynamic.allocation</a></p>
-   <p><code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> will be implementable as a no-op function on implementations that have do-nothing or undefined-behavior <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> implementations.</p>
+    On freestanding systems without default heap storage, the replaceable allocation functions (i.e. allocating <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code>, including the <code class="highlight"><c- n>nothrow_t</c-></code> and <code class="highlight"><c- n>align_val_t</c-></code> overloads, single and array forms) will have implementation defined behavior that does not need to do any kind of allocation.  The implementation could return <code class="highlight"><c- k>nullptr</c-></code>, invoke undefined behavior, or whatever the implementer likes.  If a freestanding implementation provides one replaceable allocation function that meets the hosted requirements, then all the replaceable allocation functions shall meet the requirements.  Hopefully, compiler vendors will warn on heap usage by default in freestanding implementations, and allow the warnings to be disabled for the situations where the user provides their own <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code>. 
+   <p>As a consequence of the above, runtime coroutines on freestanding implementations that are relying on the global allocation functions will also have implementation defined behavior, so long as the vendor supplied implementation is being used.</p>
+   <p>No other core language features require <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code>. <a href="http://eel.is/c++draft/basic.stc.dynamic.allocation#5">basic.stc.dynamic.allocation</a></p>
+   <p><code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>delete</c-></code> will be implementable as a no-op function on implementations that have do-nothing or undefined-behavior <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> implementations.</p>
    <h2 class="heading settled" data-level="3" id="non_changes"><span class="secno">3. </span><span class="content">What is staying the same</span><a class="self-link" href="#non_changes"></a></h2>
-    The replaceable deallocating <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> functions are still required to be present. <code class="highlight"><c- k="">virtual</c-></code> destructors ODR-use their associated <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code>(<a href="http://eel.is/c++draft/basic.def.odr#7">basic.def.odr</a>), so keeping the global <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> allows those <code class="highlight"><c- k="">virtual</c-></code> destructors to continue building.  Alternatives to this choice are discussed in <a href="#design_alternatives">§ 7 Design Alternatives</a>. 
-   <p>Calling <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> on a non-null pointer that did not come from <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> is still undefined behavior <a href="http://eel.is/c++draft/new.delete.single#12">new.delete.single</a> <a href="http://eel.is/c++draft/new.delete.array#11">new.delete.array</a>.  Calling <code class="highlight"><c- k="">delete</c-></code> on an object or base that didn’t come from <code class="highlight"><c- k="">new</c-></code> is still undefined behavior <a href="http://eel.is/c++draft/expr.delete#2">expr.delete</a>.  This is what makes a no-op <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> a valid strategy for freestanding vendor supplied <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> implementations.</p>
-   <p>The replaceable allocation functions will still be implicitly declared at global scope in each translation unit <a href="http://eel.is/c++draft/basic.stc.dynamic.general#2">basic.stc.dynamic.general</a>.
-  A definition of the replaceable allocation functions must still exist.
-  Non-ODR-uses of the replaceable allocation functions are still 
-permitted (e.g. inside of uninstantiated templates).  The declarations 
-of <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> in the <code class="highlight"><c- o="">&lt;</c-><c- k="">new</c-><c- o="">&gt;</c-></code>
- header are still required to be present.  Implementations of the 
-replaceable allocation functions can be performed by linking in an extra
- translation-unit with the definitions of the functions.</p>
-   <p>"<code class="highlight"><c- k="">constexpr</c-> <c- k="">new</c-></code>"
- is still required to work, even when the vendor supplied replaceable 
-allocation functions have not been replaced.  The calls to <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> are required to be omitted, so any undefined behavior in the <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> implementation will also be skipped.</p>
-   <p>Non-allocating placement <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> (colloquially "placement new") and <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> (colloquially "placement delete") are still required to be present in freestanding implementations.</p>
-   <p>Core language concepts of pointer safety remain unchanged.  Note that the pointer safety library facilities <a href="https://eel.is/c++draft/util.dynamic.safety">util.dynamic.safety</a>
- are not required to be present in freestanding implementations, and the
- author is not aware of any papers to make the pointer safety library 
-facilities required in freestanding implementations.</p>
-   <p>Hosted implementations are unchanged.  Users of freestanding 
-implementations can still provide implementations of the replaceable 
-allocation and deallocation functions.  The behavior of <code class="highlight"><c- k="">virtual</c-></code> destructors is unchanged.  The behavior of class specific <code class="highlight"><c- k="">operator</c-> <c- k="">new</c-></code> and <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code> overloads is unchanged.  The requirements on user-provided <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> and <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code>
- overloads remains the same, particularly those requirements involving 
-error behaviors.  Coroutines will behave the same so long as 
-promise-specific allocators are used.  The storage for exception objects
- will remain unspecified.</p>
+    The replaceable deallocating <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>delete</c-></code> functions are still required to be present. <code class="highlight"><c- k>virtual</c-></code> destructors ODR-use their associated <code class="highlight"><c- k>operator</c-> <c- k>delete</c-></code>(<a href="http://eel.is/c++draft/basic.def.odr#7">basic.def.odr</a>), so keeping the global <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>delete</c-></code> allows those <code class="highlight"><c- k>virtual</c-></code> destructors to continue building.  Alternatives to this choice are discussed in <a href="#design_alternatives">§ 7 Design Alternatives</a>. 
+   <p>Calling <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>delete</c-></code> on a non-null pointer that did not come from <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> is still undefined behavior <a href="http://eel.is/c++draft/new.delete.single#12">new.delete.single</a> <a href="http://eel.is/c++draft/new.delete.array#11">new.delete.array</a>.  Calling <code class="highlight"><c- k>delete</c-></code> on an object or base that didn’t come from <code class="highlight"><c- k>new</c-></code> is still undefined behavior <a href="http://eel.is/c++draft/expr.delete#2">expr.delete</a>.  This is what makes a no-op <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>delete</c-></code> a valid strategy for freestanding vendor supplied <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> implementations.</p>
+   <p>The replaceable allocation functions will still be implicitly declared at global scope in each translation unit <a href="http://eel.is/c++draft/basic.stc.dynamic.general#2">basic.stc.dynamic.general</a>.  A definition of the replaceable allocation functions must still exist.  Non-ODR-uses of the replaceable allocation functions are still permitted (e.g. inside of uninstantiated templates).  The declarations of <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> in the <code class="highlight"><c- o>&lt;</c-><c- k>new</c-><c- o>></c-></code> header are still required to be present.  Implementations of the replaceable allocation functions can be performed by linking in an extra translation-unit with the definitions of the functions.</p>
+   <p>"<code class="highlight"><c- k>constexpr</c-> <c- k>new</c-></code>" is still required to work, even when the vendor supplied replaceable allocation functions have not been replaced.  The calls to <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> are required to be omitted, so any undefined behavior in the <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> implementation will also be skipped.</p>
+   <p>Non-allocating placement <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> (colloquially "placement new") and <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>delete</c-></code> (colloquially "placement delete") are still required to be present in freestanding implementations.</p>
+   <p>Core language concepts of pointer safety remain unchanged.  Note that the pointer safety library facilities <a href="https://eel.is/c++draft/util.dynamic.safety">util.dynamic.safety</a> are not required to be present in freestanding implementations, and the author is not aware of any papers to make the pointer safety library facilities required in freestanding implementations.</p>
+   <p>Hosted implementations are unchanged.  Users of freestanding implementations can still provide implementations of the replaceable allocation and deallocation functions.  The behavior of <code class="highlight"><c- k>virtual</c-></code> destructors is unchanged.  The behavior of class specific <code class="highlight"><c- k>operator</c-> <c- k>new</c-></code> and <code class="highlight"><c- k>operator</c-> <c- k>delete</c-></code> overloads is unchanged.  The requirements on user-provided <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> and <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>delete</c-></code> overloads remains the same, particularly those requirements involving error behaviors.  Coroutines will behave the same so long as promise-specific allocators are used.  The storage for exception objects will remain unspecified.</p>
    <h2 class="heading settled" data-level="4" id="why"><span class="secno">4. </span><span class="content">Why?</span><a class="self-link" href="#why"></a></h2>
    <h3 class="heading settled" data-level="4.1" id="ill_formed_as_a_service"><span class="secno">4.1. </span><span class="content">No allocations allowed</span><a class="self-link" href="#ill_formed_as_a_service"></a></h3>
-    In space constrained and/or real-time environments, there is often 
-no free store.  These environments often cannot tolerate the space 
-overhead for the free store, or the non-determinism from using the free 
-store.  In these environments, it is a desirable property for accidental
- global <code class="highlight"><c- k="">new</c-></code> usage to generate a diagnostic.  Compilers are capable of generating a diagnostic when they ODR-use a function (e.g. <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>). 
-   <p>FreeRTOS allows for both static and dynamic allocation of OS constructs <a data-link-type="biblio" href="#biblio-freertos_staticvdynamic">[FreeRTOS_StaticVDynamic]</a>.  Static allocation in conjunction with <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> diagnostics can help avoid overhead and eliminate accidental usage.</p>
-   <p>THREADX <a data-link-type="biblio" href="#biblio-threadx">[THREADX]</a>
- does not consider dynamic allocation a core service, and can be built 
-without support for dynamic allocation in order to reduce application 
-size.  THREADX also distinguishes between byte allocation (general 
-purpose) vs. block allocation (no-fragmentation elements of fixed size 
-in a pool).</p>
-   <p>Also, by allowing a no-op <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> implementation, these space constrained applications can save code-size.  No code needs to be present for <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> synchronization, free block coalescing, or free block searching.</p>
+    In space constrained and/or real-time environments, there is often no free store.  These environments often cannot tolerate the space overhead for the free store, or the non-determinism from using the free store.  In these environments, it is a desirable property for accidental global <code class="highlight"><c- k>new</c-></code> usage to generate a diagnostic.  Compilers are capable of generating a diagnostic when they ODR-use a function (e.g. <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code>). 
+   <p>FreeRTOS allows for both static and dynamic allocation of OS constructs <a data-link-type="biblio" href="#biblio-freertos_staticvdynamic">[FreeRTOS_StaticVDynamic]</a>.  Static allocation in conjunction with <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> diagnostics can help avoid overhead and eliminate accidental usage.</p>
+   <p>THREADX <a data-link-type="biblio" href="#biblio-threadx">[THREADX]</a> does not consider dynamic allocation a core service, and can be built without support for dynamic allocation in order to reduce application size.  THREADX also distinguishes between byte allocation (general purpose) vs. block allocation (no-fragmentation elements of fixed size in a pool).</p>
+   <p>Also, by allowing a no-op <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>delete</c-></code> implementation, these space constrained applications can save code-size.  No code needs to be present for <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>delete</c-></code> synchronization, free block coalescing, or free block searching.</p>
    <h3 class="heading settled" data-level="4.2" id="no_right_way"><span class="secno">4.2. </span><span class="content">No right way to allocate memory</span><a class="self-link" href="#no_right_way"></a></h3>
-    In some target environments, there is no "right" way to allocate 
-memory.  In kernel and embedded domains, the implementer of the C++ 
-toolchain doesn’t always know the "right" way to allocate memory on the 
-target environment.  This makes it difficult to provide an 
-implementation for <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>.  The implementer cannot even rely on the presence of <code class="highlight"><c- n="">malloc</c-></code>, as it runs into the same fundamental problems. 
-   <p>As an example, in the Microsoft Windows kernel environment, there are two leading choices about where to get dynamic memory <a data-link-type="biblio" href="#biblio-mspools">[MSPools]</a>.
-  Users can get memory from the non-paged pool, which is a safe, but 
-scarce resource; or users can get memory from the paged pool, which is 
-plentiful, but not accessible in many common kernel operations.  
-Non-paged pool must be used any time the allocated memory needs to be 
-accessible from an interrupt or from a "high IRQL" context.  The author 
-has had experience with both paged pool and non-paged pool as defaults, 
-with the predictable outcome of crashes with paged pool defaults and OOM
- with non-paged pool defaults.  The implementer of the C++ toolchain is 
-not in a good position to make this choice for the user.</p>
-   <p>In the Linux kernel environment, <code class="highlight"><c- n="">kmalloc</c-></code> <a data-link-type="biblio" href="#biblio-kmalloc">[kmalloc]</a> with the <code class="highlight"><c- n="">GFP_KERNEL</c-></code> flag should be used when allocating memory within the context of a process and outside of a lock, but the <code class="highlight"><c- n="">GFP_ATOMIC</c-></code>
- flag should be used when allocating memory outside the context of a 
-process, such as inside of an interrupt.  The implementers of the C++ 
-runtime are in no position to know which is the correct flag to use by 
-default.  Using <code class="highlight"><c- n="">GFP_KERNEL</c-></code> when <code class="highlight"><c- n="">GFP_ATOMIC</c-></code> is needed will result in crashes from interrupt code and deadlocks.  Using <code class="highlight"><c- n="">GFP_ATOMIC</c-></code> when <code class="highlight"><c- n="">GFP_KERNEL</c-></code>
- is appropriate will result in reduced system performance, spurious OOM 
-errors, and premature exhaustion of emergency memory pools.</p>
-   <p>Freestanding implementations are intended to run without the benefit of an operating system (<a href="http://eel.is/c++draft/intro.compliance#7">intro.compliance</a>).
-  However, the name of the function that supplies dynamic memory is 
-usually an OS-specific detail.  The C++ implementation should not (and 
-may not) know the name of the function to request memory.  The Windows 
-kernel uses <code class="highlight"><c- n="">ExAllocatePoolWithTag</c-></code>.  In the Linux kernel, <code class="highlight"><c- n="">kmalloc</c-></code> is the main function to use.  In FreeBSD, a function named <code class="highlight"><c- n="">malloc</c-></code> is present, but it takes different arguments than the C standard library function of the same name.  FreeRTOS uses <code class="highlight"><c- n="">pvPortMalloc</c-></code>, and THREADX uses <code class="highlight"><c- n="">tx_byte_allocate</c-></code>.  Home-grown OSes will likely have other spellings for memory allocation routines.</p>
-   <p>Today’s C++ implementations don’t provide <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>
- implementations for all possible targets.  Doing so isn’t a plausible 
-goal, especially when the home-grown OSes are taken into account.  This 
-means that users are already forced into choosing between not having <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>
- support and providing their own implementation.  We should acknowledge 
-and standardize this existing practice, especially since we already have
- the extension point mechanism in place.</p>
+    In some target environments, there is no "right" way to allocate memory.  In kernel and embedded domains, the implementer of the C++ toolchain doesn’t always know the "right" way to allocate memory on the target environment.  This makes it difficult to provide an implementation for <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code>.  The implementer cannot even rely on the presence of <code class="highlight"><c- n>malloc</c-></code>, as it runs into the same fundamental problems. 
+   <p>As an example, in the Microsoft Windows kernel environment, there are two leading choices about where to get dynamic memory <a data-link-type="biblio" href="#biblio-mspools">[MSPools]</a>.  Users can get memory from the non-paged pool, which is a safe, but scarce resource; or users can get memory from the paged pool, which is plentiful, but not accessible in many common kernel operations.  Non-paged pool must be used any time the allocated memory needs to be accessible from an interrupt or from a "high IRQL" context.  The author has had experience with both paged pool and non-paged pool as defaults, with the predictable outcome of crashes with paged pool defaults and OOM with non-paged pool defaults.  The implementer of the C++ toolchain is not in a good position to make this choice for the user.</p>
+   <p>In the Linux kernel environment, <code class="highlight"><c- n>kmalloc</c-></code> <a data-link-type="biblio" href="#biblio-kmalloc">[kmalloc]</a> with the <code class="highlight"><c- n>GFP_KERNEL</c-></code> flag should be used when allocating memory within the context of a process and outside of a lock, but the <code class="highlight"><c- n>GFP_ATOMIC</c-></code> flag should be used when allocating memory outside the context of a process, such as inside of an interrupt.  The implementers of the C++ runtime are in no position to know which is the correct flag to use by default.  Using <code class="highlight"><c- n>GFP_KERNEL</c-></code> when <code class="highlight"><c- n>GFP_ATOMIC</c-></code> is needed will result in crashes from interrupt code and deadlocks.  Using <code class="highlight"><c- n>GFP_ATOMIC</c-></code> when <code class="highlight"><c- n>GFP_KERNEL</c-></code> is appropriate will result in reduced system performance, spurious OOM errors, and premature exhaustion of emergency memory pools.</p>
+   <p>Freestanding implementations are intended to run without the benefit of an operating system (<a href="http://eel.is/c++draft/intro.compliance#7">intro.compliance</a>).  However, the name of the function that supplies dynamic memory is usually an OS-specific detail.  The C++ implementation should not (and may not) know the name of the function to request memory.  The Windows kernel uses <code class="highlight"><c- n>ExAllocatePoolWithTag</c-></code>.  In the Linux kernel, <code class="highlight"><c- n>kmalloc</c-></code> is the main function to use.  In FreeBSD, a function named <code class="highlight"><c- n>malloc</c-></code> is present, but it takes different arguments than the C standard library function of the same name.  FreeRTOS uses <code class="highlight"><c- n>pvPortMalloc</c-></code>, and THREADX uses <code class="highlight"><c- n>tx_byte_allocate</c-></code>.  Home-grown OSes will likely have other spellings for memory allocation routines.</p>
+   <p>Today’s C++ implementations don’t provide <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> implementations for all possible targets.  Doing so isn’t a plausible goal, especially when the home-grown OSes are taken into account.  This means that users are already forced into choosing between not having <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> support and providing their own implementation.  We should acknowledge and standardize this existing practice, especially since we already have the extension point mechanism in place.</p>
    <h3 class="heading settled" data-level="4.3" id="allocators"><span class="secno">4.3. </span><span class="content">What about allocators?</span><a class="self-link" href="#allocators"></a></h3>
-    The C++20 freestanding library does not include allocators. <a data-link-type="biblio" href="#biblio-p1642r1">[P1642R1]</a> proposes adding allocator machinery to freestanding, but doesn’t add <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">allocator</c-></code>
- itself.  In addition, none of the allocating standard containers are in
- C++20’s freestanding library or any current freestanding library 
-proposal that the author is aware of.  From a minimalist freestanding 
-perspective, allocators aren’t a solution. 
-   <p>Allocators are still useful in a less-than-minimal freestanding 
-implementation.  In environments with dynamic memory, custom allocators 
-can be written and used with standard containers, assuming that the 
-containers are present in the implementation.  This could be done even 
-if a global <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> is not present.  The author has used <code class="highlight"><c- n="">stlport</c-><c- o="">::</c-><c- n="">vector</c-><c- o="">&lt;</c-><c- b="">int</c-><c- p="">,</c-> <c- n="">PageLockedAllocator</c-><c- o="">&gt;</c-></code> successfully in these environments.</p>
-   <p><code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">allocator</c-></code> is implemented in terms of global <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>.  In practice, it would be easy for an implementation to have an implementation of <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">allocator</c-></code> in a header / module, and have that header still compile just fine.  If the user has provided a global <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>, then <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">allocator</c-></code> would have the same semantics as mandated for hosted implementations.  If the global <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> is vendor supplied, then uses of <code class="highlight"><c- n="">std</c-><c- o="">::</c-><c- n="">allocator</c-></code> would invoke implementation defined behavior, and hopefully cause a diagnostic.</p>
-   <p>Some facilities in the standard library (e.g. <code class="highlight"><c- n="">make_unique</c-></code>) are implemented in terms of <code class="highlight"><c- k="">new</c-></code>,
- and not an allocator interface.  It is useful to make these facilities 
-generate diagnostics when dynamic memory isn’t available, and it is also
- useful to be able to control which memory pool is used by default.</p>
-   <h3 class="heading settled" data-level="4.4" id="virtual_dtors"><span class="secno">4.4. </span><span class="content"><code class="highlight"><c- k="">virtual</c-></code> destructors</span><a class="self-link" href="#virtual_dtors"></a></h3>
-    A no-op <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> is still provided in order to satisfy <code class="highlight"><c- k="">virtual</c-></code> destructors. <code class="highlight"><c- k="">virtual</c-></code> destructors ODR-use their associated <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code>(<a href="http://eel.is/c++draft/basic.def.odr#7">basic.def.odr</a>).  This approach has the disadvantage that there is a small, one-time overhead for the first <code class="highlight"><c- k="">virtual</c-></code> destructor in a program, even if there are no usages of <code class="highlight"><c- k="">new</c-></code> or <code class="highlight"><c- k="">delete</c-></code>.  The overhead is small though, and you only pay for the overhead if you use <code class="highlight"><c- k="">virtual</c-></code> destructors. 
-   <p>Ideally, if neither <code class="highlight"><c- k="">new</c-></code> nor <code class="highlight"><c- k="">delete</c-></code> is ever called, we wouldn’t need an <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code>.  This proposal still requires some <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code> to exist, though that <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code> can be a no-op.</p>
-   <h3 class="heading settled" data-level="4.5" id="why_not_fix"><span class="secno">4.5. </span><span class="content">Why not fix <code class="highlight"><c- k="">virtual</c-></code> destructors, instead of keeping a no-op <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code>?</span><a class="self-link" href="#why_not_fix"></a></h3>
-    This paper attempts to standardize existing practice.  There is not any existing practice for "fixed" <code class="highlight"><c- k="">virtual</c-> <c- n="">destructors</c-></code>.  Note that this paper isn’t changing any requirements on <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code> or <code class="highlight"><c- k="">virtual</c-></code>
- destructors.  It will be no more difficult to fix it in the future than
- it would be today.  A motivated author could attempt to fix the problem
- in a future paper. 
+    The C++20 freestanding library does not include allocators. <a data-link-type="biblio" href="#biblio-p1642r1">[P1642R1]</a> proposes adding allocator machinery to freestanding, but doesn’t add <code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>allocator</c-></code> itself.  In addition, none of the allocating standard containers are in C++20’s freestanding library or any current freestanding library proposal that the author is aware of.  From a minimalist freestanding perspective, allocators aren’t a solution. 
+   <p>Allocators are still useful in a less-than-minimal freestanding implementation.  In environments with dynamic memory, custom allocators can be written and used with standard containers, assuming that the containers are present in the implementation.  This could be done even if a global <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> is not present.  The author has used <code class="highlight"><c- n>stlport</c-><c- o>::</c-><c- n>vector</c-><c- o>&lt;</c-><c- b>int</c-><c- p>,</c-> <c- n>PageLockedAllocator</c-><c- o>></c-></code> successfully in these environments.</p>
+   <p><code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>allocator</c-></code> is implemented in terms of global <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code>.  In practice, it would be easy for an implementation to have an implementation of <code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>allocator</c-></code> in a header / module, and have that header still compile just fine.  If the user has provided a global <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code>, then <code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>allocator</c-></code> would have the same semantics as mandated for hosted implementations.  If the global <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> is vendor supplied, then uses of <code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>allocator</c-></code> would invoke implementation defined behavior, and hopefully cause a diagnostic.</p>
+   <p>Some facilities in the standard library (e.g. <code class="highlight"><c- n>make_unique</c-></code>) are implemented in terms of <code class="highlight"><c- k>new</c-></code>, and not an allocator interface.  It is useful to make these facilities generate diagnostics when dynamic memory isn’t available, and it is also useful to be able to control which memory pool is used by default.</p>
+   <h3 class="heading settled" data-level="4.4" id="virtual_dtors"><span class="secno">4.4. </span><span class="content"><code class="highlight"><c- k>virtual</c-></code> destructors</span><a class="self-link" href="#virtual_dtors"></a></h3>
+    A no-op <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>delete</c-></code> is still provided in order to satisfy <code class="highlight"><c- k>virtual</c-></code> destructors. <code class="highlight"><c- k>virtual</c-></code> destructors ODR-use their associated <code class="highlight"><c- k>operator</c-> <c- k>delete</c-></code>(<a href="http://eel.is/c++draft/basic.def.odr#7">basic.def.odr</a>).  This approach has the disadvantage that there is a small, one-time overhead for the first <code class="highlight"><c- k>virtual</c-></code> destructor in a program, even if there are no usages of <code class="highlight"><c- k>new</c-></code> or <code class="highlight"><c- k>delete</c-></code>.  The overhead is small though, and you only pay for the overhead if you use <code class="highlight"><c- k>virtual</c-></code> destructors. 
+   <p>Ideally, if neither <code class="highlight"><c- k>new</c-></code> nor <code class="highlight"><c- k>delete</c-></code> is ever called, we wouldn’t need an <code class="highlight"><c- k>operator</c-> <c- k>delete</c-></code>.  This proposal still requires some <code class="highlight"><c- k>operator</c-> <c- k>delete</c-></code> to exist, though that <code class="highlight"><c- k>operator</c-> <c- k>delete</c-></code> can be a no-op.</p>
+   <h3 class="heading settled" data-level="4.5" id="why_not_fix"><span class="secno">4.5. </span><span class="content">Why not fix <code class="highlight"><c- k>virtual</c-></code> destructors, instead of keeping a no-op <code class="highlight"><c- k>operator</c-> <c- k>delete</c-></code>?</span><a class="self-link" href="#why_not_fix"></a></h3>
+    This paper attempts to standardize existing practice.  There is not any existing practice for "fixed" <code class="highlight"><c- k>virtual</c-> <c- n>destructors</c-></code>.  Note that this paper isn’t changing any requirements on <code class="highlight"><c- k>operator</c-> <c- k>delete</c-></code> or <code class="highlight"><c- k>virtual</c-></code> destructors.  It will be no more difficult to fix it in the future than it would be today.  A motivated author could attempt to fix the problem in a future paper. 
    <h3 class="heading settled" data-level="4.6" id="feature_test_macro"><span class="secno">4.6. </span><span class="content">Feature test macro</span><a class="self-link" href="#feature_test_macro"></a></h3>
     <a href="https://wg21.link/P2198R1">P2198R1</a> discusses the feature test macro in more depth, and provides a recommendation. 
-   <p>In order to provide this macro, library implementations are going 
-to require knowledge of the target environment.  That knowledge may be 
-via a list of known target platforms that are detected at build time, or
- by having the builder of the implementation supply that information in a
- configuration flag.</p>
-   <p>The most likely usage of a feature test macro for this feature is to conditionally define a custom <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>
- iff the implementation did not provide one by default.  This is 
-dangerous territory, as it encourages libraries to provide the 
-one-and-only <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> definition.  If two such libraries do this, then there is an ODR issue.</p>
+   <p>In order to provide this macro, library implementations are going to require knowledge of the target environment.  That knowledge may be via a list of known target platforms that are detected at build time, or by having the builder of the implementation supply that information in a configuration flag.</p>
+   <p>The most likely usage of a feature test macro for this feature is to conditionally define a custom <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> iff the implementation did not provide one by default.  This is dangerous territory, as it encourages libraries to provide the one-and-only <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> definition.  If two such libraries do this, then there is an ODR issue.</p>
    <p>Another likely usage is to fall back to an implementation that does not use the heap at all.</p>
-<pre class="highlight"><c- cp="">#if defined(__cpp_lib_no_default_operator_new) &amp;&amp; __cpp_lib_no_default_operator_new &gt;= 20200913</c->
-  <c- k="">using</c-> <c- n="">my_container</c-> <c- o="">=</c-> <c- n="">fixed_capacity_vector</c-><c- p="">;</c->
-<c- cp="">#else</c->
-  <c- k="">using</c-> <c- n="">my_container</c-> <c- o="">=</c-> <c- n="">my_vector</c-><c- p="">;</c->
-<c- cp="">#endif</c->
+<pre class="highlight"><c- cp>#if defined(__cpp_lib_no_default_operator_new) &amp;&amp; __cpp_lib_no_default_operator_new >= 20200913</c->
+  <c- k>using</c-> <c- n>my_container</c-> <c- o>=</c-> <c- n>fixed_capacity_vector</c-><c- p>;</c->
+<c- cp>#else</c->
+  <c- k>using</c-> <c- n>my_container</c-> <c- o>=</c-> <c- n>my_vector</c-><c- p>;</c->
+<c- cp>#endif</c->
 </pre>
-   <p>This is an imprecise check.  Even though there is no default 
-operator new, there may be a user provided operator new that works fine.</p>
-   <p>If this feature test macro were provided in the positive (<code class="highlight"><c- n="">__cpp_lib_has_default_operator_new</c-></code>), it wouldn’t be useful for a very long time.</p>
-<pre class="highlight"><c- cp="">#if defined(__cpp_lib_has_default_operator_new) &amp;&amp; __cpp_lib_has_default_operator_new &gt;= 20200913</c->
-  <c- k="">using</c-> <c- n="">my_container</c-> <c- o="">=</c-> <c- n="">my_vector</c-><c- p="">;</c->
-<c- cp="">#else</c->
-  <c- c1="">// spuriously triggers for C++20 and earlier code</c->
-  <c- k="">using</c-> <c- n="">my_container</c-> <c- o="">=</c-> <c- n="">fixed_capacity_vector</c-><c- p="">;</c->
-<c- cp="">#endif</c->
+   <p>This is an imprecise check.  Even though there is no default operator new, there may be a user provided operator new that works fine.</p>
+   <p>If this feature test macro were provided in the positive (<code class="highlight"><c- n>__cpp_lib_has_default_operator_new</c-></code>), it wouldn’t be useful for a very long time.</p>
+<pre class="highlight"><c- cp>#if defined(__cpp_lib_has_default_operator_new) &amp;&amp; __cpp_lib_has_default_operator_new >= 20200913</c->
+  <c- k>using</c-> <c- n>my_container</c-> <c- o>=</c-> <c- n>my_vector</c-><c- p>;</c->
+<c- cp>#else</c->
+  <c- c1>// spuriously triggers for C++20 and earlier code</c->
+  <c- k>using</c-> <c- n>my_container</c-> <c- o>=</c-> <c- n>fixed_capacity_vector</c-><c- p>;</c->
+<c- cp>#endif</c->
 </pre>
-   <p>If this feature test macro were provided in the negative (<code class="highlight"><c- n="">__cpp_lib_no_default_operator_new</c-></code>), it would be the only feature test macro that wouldn’t be required to be defined in a conforming implementation.</p>
+   <p>If this feature test macro were provided in the negative (<code class="highlight"><c- n>__cpp_lib_no_default_operator_new</c-></code>), it would be the only feature test macro that wouldn’t be required to be defined in a conforming implementation.</p>
    <p>All these considerations are deserving of dedicated SG10 discussion with <a href="https://wg21.link/P2198">P2198</a>, and should not hold up the progress of this paper.</p>
    <h3 class="heading settled" data-level="4.7" id="abuses"><span class="secno">4.7. </span><span class="content">Likely misuses and abuses</span><a class="self-link" href="#abuses"></a></h3>
-    Users are likely to provide overloads of <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> that do not follow the requirements set forth in <a href="http://eel.is/c++draft/new.delete">new.delete</a>, particularly the requirements around throwing <code class="highlight"><c- n="">bad_alloc</c-></code>.
-  Ignoring this requirement will still result in undefined behavior, 
-just as it does in C++20.  Some compilers optimize assuming that the 
-throwing forms of <code class="highlight"><c- k="">new</c-></code> will never return a null pointer <a data-link-type="biblio" href="#biblio-throwing_new">[throwing_new]</a>.
-  A likely outcome of the undefined behavior is unexpectedly eliding 
-null checks in the program source.  This problem already exists today, 
-and this proposal makes it no worse. 
+    Users are likely to provide overloads of <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> that do not follow the requirements set forth in <a href="http://eel.is/c++draft/new.delete">new.delete</a>, particularly the requirements around throwing <code class="highlight"><c- n>bad_alloc</c-></code>.  Ignoring this requirement will still result in undefined behavior, just as it does in C++20.  Some compilers optimize assuming that the throwing forms of <code class="highlight"><c- k>new</c-></code> will never return a null pointer <a data-link-type="biblio" href="#biblio-throwing_new">[throwing_new]</a>.  A likely outcome of the undefined behavior is unexpectedly eliding null checks in the program source.  This problem already exists today, and this proposal makes it no worse. 
    <h2 class="heading settled" data-level="5" id="experience"><span class="secno">5. </span><span class="content">Experience</span><a class="self-link" href="#experience"></a></h2>
-    The proposed design has field experience in a micro-controller 
-environment.  GCC was used, and the language support library was 
-intentionally omitted.  A no-op <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> was provided by the users.  The no-op <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code>
- enabled a small amount of code sharing between a hosted environment and
- this micro-controller environment.  Some shared code involved classes 
-with <code class="highlight"><c- k="">virtual</c-></code> destructors. 
+    The proposed design has field experience in a micro-controller environment.  GCC was used, and the language support library was intentionally omitted.  A no-op <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>delete</c-></code> was provided by the users.  The no-op <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>delete</c-></code> enabled a small amount of code sharing between a hosted environment and this micro-controller environment.  Some shared code involved classes with <code class="highlight"><c- k>virtual</c-></code> destructors. 
    <h2 class="heading settled" data-level="6" id="polling"><span class="secno">6. </span><span class="content">Polling history</span><a class="self-link" href="#polling"></a></h2>
    <h3 class="heading settled" data-level="6.1" id="ewg_aug_telecon"><span class="secno">6.1. </span><span class="content">Aug 19, 2020, EWG, Telecon</span><a class="self-link" href="#ewg_aug_telecon"></a></h3>
-    After updating wording for “either/of”, mandates, and talking to 
-SG10 about the feature test macro, P2013 is tentatively ready to be 
-forwarded to CWG. Walter volunteers to check that this is done. 
+    After updating wording for “either/of”, mandates, and talking to SG10 about the feature test macro, P2013 is tentatively ready to be forwarded to CWG. Walter volunteers to check that this is done. 
    <p>SF/F/N/A/SA</p>
    <p>2/16/1/0/0</p>
    <h3 class="heading settled" data-level="6.2" id="ewg_prague"><span class="secno">6.2. </span><span class="content">Feb 14, 2020, EWG, Prague</span><a class="self-link" href="#ewg_prague"></a></h3>
@@ -2383,79 +2289,32 @@ forwarded to CWG. Walter volunteers to check that this is done.
    <p>9/10/0/0/0</p>
    <p>approves to go to EWG</p>
    <h2 class="heading settled" data-level="7" id="design_alternatives"><span class="secno">7. </span><span class="content">Design Alternatives</span><a class="self-link" href="#design_alternatives"></a></h2>
-   <h3 class="heading settled" data-level="7.1" id="alternative_impl_def_op_new"><span class="secno">7.1. </span><span class="content">Alternative 0: Implementation defined allocating <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> (Proposed above)</span><a class="self-link" href="#alternative_impl_def_op_new"></a></h3>
-    This option preserves much functionality, without using any novel 
-techniques.  The main disadvantage of this approach compared to existing
- techniques is that diagnosing the problem requires more work.  See 
-above for further explanation. 
-   <h3 class="heading settled" data-level="7.2" id="alternative_throwing_new"><span class="secno">7.2. </span><span class="content">Alternative 1: Optional throwing <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>s, no-op default deallocation functions</span><a class="self-link" href="#alternative_throwing_new"></a></h3>
-    Rather than making all the replaceable allocation functions have 
-implementation defined behavior, we could make just the throwing <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>s implementation defined (array and single form, with and without <code class="highlight"><c- n="">align_val_t</c-></code> parameters).  The library would still be required to meet the hosted requirements for <code class="highlight"><c- n="">nothrow_t</c-></code> overloads. 
-   <p>The <code class="highlight"><c- n="">nothrow_t</c-></code> 
-overloads are specified to forward to an appropriate throwing overload. 
- That implementation would still be fine on a system without dynamic 
-storage available.  This alternative was not selected as it is more 
-difficult to teach, and because the target audience would likely be 
-astonished that the <code class="highlight"><c- n="">nothrow_t</c-></code> overload has a <code class="highlight"><c- k="">try</c-></code>/<code class="highlight"><c- k="">catch</c-></code> in it.</p>
+   <h3 class="heading settled" data-level="7.1" id="alternative_impl_def_op_new"><span class="secno">7.1. </span><span class="content">Alternative 0: Implementation defined allocating <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> (Proposed above)</span><a class="self-link" href="#alternative_impl_def_op_new"></a></h3>
+    This option preserves much functionality, without using any novel techniques.  The main disadvantage of this approach compared to existing techniques is that diagnosing the problem requires more work.  See above for further explanation. 
+   <h3 class="heading settled" data-level="7.2" id="alternative_throwing_new"><span class="secno">7.2. </span><span class="content">Alternative 1: Optional throwing <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code>s, no-op default deallocation functions</span><a class="self-link" href="#alternative_throwing_new"></a></h3>
+    Rather than making all the replaceable allocation functions have implementation defined behavior, we could make just the throwing <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code>s implementation defined (array and single form, with and without <code class="highlight"><c- n>align_val_t</c-></code> parameters).  The library would still be required to meet the hosted requirements for <code class="highlight"><c- n>nothrow_t</c-></code> overloads. 
+   <p>The <code class="highlight"><c- n>nothrow_t</c-></code> overloads are specified to forward to an appropriate throwing overload.  That implementation would still be fine on a system without dynamic storage available.  This alternative was not selected as it is more difficult to teach, and because the target audience would likely be astonished that the <code class="highlight"><c- n>nothrow_t</c-></code> overload has a <code class="highlight"><c- k>try</c-></code>/<code class="highlight"><c- k>catch</c-></code> in it.</p>
    <h3 class="heading settled" data-level="7.3" id="alternative_no_dealloc"><span class="secno">7.3. </span><span class="content">Alternative 2: No deallocation functions</span><a class="self-link" href="#alternative_no_dealloc"></a></h3>
-    The presence of the replaceable deallocation functions is implementation defined. <code class="highlight"><c- k="">virtual</c-></code> destructors will be ill-formed unless the implementation provides the deallocation function, the user provides a global <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> function, or the user provides a class specific <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code> overload. 
-   <p>This alternative has the benefit of being zero overhead and very 
-explicit, but it has troublesome consequences for implementations.  
-There are several language support classes that have <code class="highlight"><c- k="">virtual</c-></code> destructors, and something would need to be decided for them.  Notably, <code class="highlight"><c- n="">type_info</c-></code> and the <code class="highlight"><c- n="">exception</c-></code> hierarchy all have <code class="highlight"><c- k="">virtual</c-></code> destructors.  The standard library implementers may be prohibited from providing <code class="highlight"><c- k="">operator</c-> <c- k="">new</c-></code> and <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code> overloads (<a href="http://eel.is/c++draft/conforming#member.functions-2">conforming#member.functions</a>).  Alternatively, the facilities that require classes with <code class="highlight"><c- k="">virtual</c-></code> destructors could all be off-limits until <code class="highlight"><c- k="">operator</c-> <c- k="">delete</c-></code> was made available.  This would eliminate many cases with exceptions, <code class="highlight"><c- k="">dynamic_cast</c-></code> on references, and <code class="highlight"><c- k="">typeid</c-></code>.</p>
-   <p>If we were to adopt this alternative, many users would provide a no-op <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> in their code, giving their code the same semantics and trade-offs as the proposed solution.</p>
+    The presence of the replaceable deallocation functions is implementation defined. <code class="highlight"><c- k>virtual</c-></code> destructors will be ill-formed unless the implementation provides the deallocation function, the user provides a global <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>delete</c-></code> function, or the user provides a class specific <code class="highlight"><c- k>operator</c-> <c- k>delete</c-></code> overload. 
+   <p>This alternative has the benefit of being zero overhead and very explicit, but it has troublesome consequences for implementations.  There are several language support classes that have <code class="highlight"><c- k>virtual</c-></code> destructors, and something would need to be decided for them.  Notably, <code class="highlight"><c- n>type_info</c-></code> and the <code class="highlight"><c- n>exception</c-></code> hierarchy all have <code class="highlight"><c- k>virtual</c-></code> destructors.  The standard library implementers may be prohibited from providing <code class="highlight"><c- k>operator</c-> <c- k>new</c-></code> and <code class="highlight"><c- k>operator</c-> <c- k>delete</c-></code> overloads (<a href="http://eel.is/c++draft/conforming#member.functions-2">conforming#member.functions</a>).  Alternatively, the facilities that require classes with <code class="highlight"><c- k>virtual</c-></code> destructors could all be off-limits until <code class="highlight"><c- k>operator</c-> <c- k>delete</c-></code> was made available.  This would eliminate many cases with exceptions, <code class="highlight"><c- k>dynamic_cast</c-></code> on references, and <code class="highlight"><c- k>typeid</c-></code>.</p>
+   <p>If we were to adopt this alternative, many users would provide a no-op <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>delete</c-></code> in their code, giving their code the same semantics and trade-offs as the proposed solution.</p>
    <h4 class="heading settled" data-level="7.3.1" id="alt1_experience"><span class="secno">7.3.1. </span><span class="content">Experience</span><a class="self-link" href="#alt1_experience"></a></h4>
-    This alternative has field experience.  MSVC’s /kernel <a data-link-type="biblio" href="#biblio-kernel_switch">[kernel_switch]</a> flag omits definitions for <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> and <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code>.  Users of Clang and GCC can choose to not link against the language support library, and therefore not have <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> and <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> support, as well as many other language support features. 
+    This alternative has field experience.  MSVC’s /kernel <a data-link-type="biblio" href="#biblio-kernel_switch">[kernel_switch]</a> flag omits definitions for <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> and <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>delete</c-></code>.  Users of Clang and GCC can choose to not link against the language support library, and therefore not have <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> and <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>delete</c-></code> support, as well as many other language support features. 
    <h3 class="heading settled" data-level="7.4" id="alternative_new_odr"><span class="secno">7.4. </span><span class="content">Alternative 3: No deallocation functions and new ODR-used rules for virtual destructors</span><a class="self-link" href="#alternative_new_odr"></a></h3>
-    The presence of the replaceable deallocation functions is implementation defined.  Change <code class="highlight"><c- k="">virtual</c-></code> destructors so that they generate a partial vtable and don’t ODR-use <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code>.  Make <code class="highlight"><c- k="">new</c-></code> expressions ODR-use <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> and complete the vtable. 
+    The presence of the replaceable deallocation functions is implementation defined.  Change <code class="highlight"><c- k>virtual</c-></code> destructors so that they generate a partial vtable and don’t ODR-use <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>delete</c-></code>.  Make <code class="highlight"><c- k>new</c-></code> expressions ODR-use <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>delete</c-></code> and complete the vtable. 
    <h4 class="heading settled" data-level="7.4.1" id="alt2_how"><span class="secno">7.4.1. </span><span class="content">How could this virtual destructor ODR-use change be implemented?</span><a class="self-link" href="#alt2_how"></a></h4>
-    First, this is only a problem that needs to be solved on systems 
-without a default heap.  This means that typical user-mode desktop and 
-server implementations would be unaffected. 
-   <p>Existing linkers already have the ability to take multiple 
-identical virtual table implementations and pick one for use in the 
-final binary.  A potential implementation strategy is for compilers and 
-linkers to support a new "weaker" linkage.  When the default heap is 
-disabled, the compiler would emit a vtable with a <code class="highlight"><c- k="">nullptr</c-></code> or pure virtual function in the virtual destructor slot.  When <code class="highlight"><c- k="">new</c-></code>
- is called, a "stronger" linkage vtable would be emitted that has the 
-deleting destructor in the virtual destructor slot.  The linker would 
-then select a vtable with the strongest linkage available.  Today’s 
-linkage would be considered "stronger".  Only partially filled vtables 
-would have "weaker" linkage.</p>
+    First, this is only a problem that needs to be solved on systems without a default heap.  This means that typical user-mode desktop and server implementations would be unaffected. 
+   <p>Existing linkers already have the ability to take multiple identical virtual table implementations and pick one for use in the final binary.  A potential implementation strategy is for compilers and linkers to support a new "weaker" linkage.  When the default heap is disabled, the compiler would emit a vtable with a <code class="highlight"><c- k>nullptr</c-></code> or pure virtual function in the virtual destructor slot.  When <code class="highlight"><c- k>new</c-></code> is called, a "stronger" linkage vtable would be emitted that has the deleting destructor in the virtual destructor slot.  The linker would then select a vtable with the strongest linkage available.  Today’s linkage would be considered "stronger".  Only partially filled vtables would have "weaker" linkage.</p>
    <h4 class="heading settled" data-level="7.4.2" id="alt2_abi"><span class="secno">7.4.2. </span><span class="content">ABI impact</span><a class="self-link" href="#alt2_abi"></a></h4>
-    Mixing multiple object files into the same program should be fine, 
-even if some of them have a default heap and some don’t.  All the 
-regular / "strong" linkage vtables should be identical, and all the 
-"weaker" linkage vtables should be identical.  If anyone in the program 
-calls any form of <code class="highlight"><c- k="">new</c-></code>, the deleting destructor will be present and in the right slot.  If no-one calls <code class="highlight"><c- k="">new</c-></code> in the program, then no-one should be calling <code class="highlight"><c- k="">delete</c-></code>, and the empty vtable slot won’t be a problem. 
-   <p>Shared libraries are trickier.  Vtables aren’t always emitted into
- every translation unit.  Take shared library "leaf" that has a default 
-heap.  It depends upon shared library "root" that does not have a 
-default heap.  If a class with a virtual destructor is defined in 
-"root", along with its "key function", then a call to <code class="highlight"><c- k="">new</c-></code> on the class in "leaf" will generate an object with a partial vtable.  Calling <code class="highlight"><c- k="">delete</c-></code> on that object will cause UB (usually crashes).</p>
-   <p>Lack of a default heap should generally be considered a trait of 
-the platform.  Mixing this configuration shouldn’t be a common 
-occurrence.</p>
+    Mixing multiple object files into the same program should be fine, even if some of them have a default heap and some don’t.  All the regular / "strong" linkage vtables should be identical, and all the "weaker" linkage vtables should be identical.  If anyone in the program calls any form of <code class="highlight"><c- k>new</c-></code>, the deleting destructor will be present and in the right slot.  If no-one calls <code class="highlight"><c- k>new</c-></code> in the program, then no-one should be calling <code class="highlight"><c- k>delete</c-></code>, and the empty vtable slot won’t be a problem. 
+   <p>Shared libraries are trickier.  Vtables aren’t always emitted into every translation unit.  Take shared library "leaf" that has a default heap.  It depends upon shared library "root" that does not have a default heap.  If a class with a virtual destructor is defined in "root", along with its "key function", then a call to <code class="highlight"><c- k>new</c-></code> on the class in "leaf" will generate an object with a partial vtable.  Calling <code class="highlight"><c- k>delete</c-></code> on that object will cause UB (usually crashes).</p>
+   <p>Lack of a default heap should generally be considered a trait of the platform.  Mixing this configuration shouldn’t be a common occurrence.</p>
    <h4 class="heading settled" data-level="7.4.3" id="alt2_experience"><span class="secno">7.4.3. </span><span class="content">Experience</span><a class="self-link" href="#alt2_experience"></a></h4>
     This alternative is novel, and does not have implementation or usage experience. 
-   <h3 class="heading settled" data-level="7.5" id="alternative_nop_dealloc"><span class="secno">7.5. </span><span class="content">Alternative 4: Missing <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>, no-op default deallocation functions (Proposed in R3)</span><a class="self-link" href="#alternative_nop_dealloc"></a></h3>
-    Rather than have the behavior of the replaceable global allocation 
-functions be implementation defined on freestanding implementations, we 
-could instead have their presence be optional.  At runtime, this is easy
- enough, as we can lean on ODR to do the work (zero definitions is not 
-one definition).  This results in an IF-NDR program, but in practice, 
-you either get a linker error, or you get the "right" behavior, because 
-the calls to <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> were heap-elided. 
-   <p>This approach is substantially more difficult with <code class="highlight"><c- k="">constexpr</c-> <c- k="">new</c-></code> though.  Colloquially, users would expect that uses of <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> at compile time would not require a runtime definition of <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code>.  However, <code class="highlight"><c- k="">constexpr</c-></code> doesn’t work like that.  Implementations are permitted to emit a runtime definition of <code class="highlight"><c- k="">constexpr</c-></code>
- functions, as well as keep an internal representation for compile time 
-evaluation, even if the function only happens to be used for constant 
-evaluation.  The runtime definition could still cause linker errors, 
-even if nothing is calling the function.</p>
-   <p>It is possible to rework the ODR rules such that a runtime 
-definition is only emitted if needed.  That is a substantially larger 
-change though, and there was resistance from CWG to make this large of a
- change to ODR at this time.  This approach should be reconsidered for 
-adoption if more OS-dependent facilities become available at compile in 
-the future (e.g. <code class="highlight"><c- k="">constexpr</c-></code> iostreams).  A lower effort approach is acceptable for now though, since <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">new</c-></code> and <code class="highlight"><c- o="">::</c-><c- k="">operator</c-> <c- k="">delete</c-></code> are the only such facilities at present.</p>
+   <h3 class="heading settled" data-level="7.5" id="alternative_nop_dealloc"><span class="secno">7.5. </span><span class="content">Alternative 4: Missing <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code>, no-op default deallocation functions (Proposed in R3)</span><a class="self-link" href="#alternative_nop_dealloc"></a></h3>
+    Rather than have the behavior of the replaceable global allocation functions be implementation defined on freestanding implementations, we could instead have their presence be optional.  At runtime, this is easy enough, as we can lean on ODR to do the work (zero definitions is not one definition).  This results in an IF-NDR program, but in practice, you either get a linker error, or you get the "right" behavior, because the calls to <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> were heap-elided. 
+   <p>This approach is substantially more difficult with <code class="highlight"><c- k>constexpr</c-> <c- k>new</c-></code> though.  Colloquially, users would expect that uses of <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> at compile time would not require a runtime definition of <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code>.  However, <code class="highlight"><c- k>constexpr</c-></code> doesn’t work like that.  Implementations are permitted to emit a runtime definition of <code class="highlight"><c- k>constexpr</c-></code> functions, as well as keep an internal representation for compile time evaluation, even if the function only happens to be used for constant evaluation.  The runtime definition could still cause linker errors, even if nothing is calling the function.</p>
+   <p>It is possible to rework the ODR rules such that a runtime definition is only emitted if needed.  That is a substantially larger change though, and there was resistance from CWG to make this large of a change to ODR at this time.  This approach should be reconsidered for adoption if more OS-dependent facilities become available at compile in the future (e.g. <code class="highlight"><c- k>constexpr</c-></code> iostreams).  A lower effort approach is acceptable for now though, since <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code> and <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>delete</c-></code> are the only such facilities at present.</p>
    <h2 class="heading settled" data-level="8" id="wording"><span class="secno">8. </span><span class="content">Wording</span><a class="self-link" href="#wording"></a></h2>
     This is based on the <a href="https://wg21.link/N4878">December working draft, N4878</a>. 
    <h3 class="heading settled" data-level="8.1" id="new_delete"><span class="secno">8.1. </span><span class="content">new.delete</span><a class="self-link" href="#new_delete"></a></h3>
@@ -2463,30 +2322,22 @@ the future (e.g. <code class="highlight"><c- k="">constexpr</c-></code> iostream
    <blockquote>
     <p>17.6.3  Storage allocation and deallocation [new.delete]</p>
     <p>17.6.3.1  General [new.delete.general]</p>
-    <p>1 Except where otherwise specified, the provisions of 6.7.5.5 
-apply to the library versions of operator new and operator delete. If 
-the value of an alignment argument passed to any of these functions is 
-not a valid alignment value, the behavior is undefined.</p>
+    <p>1 Except where otherwise specified, the provisions of 6.7.5.5 apply to the library versions of operator new and operator delete. If the value of an alignment argument passed to any of these functions is not a valid alignment value, the behavior is undefined.</p>
     <p>
      <ins>2
-On freestanding implementations, it is implementation defined whether 
-the behavior of the implementation-provided replaceable global 
-allocation functions satisfy the required behaviors described in 
-[new.delete.single] and [new.delete.array].
-[<i>Note</i>: A freestanding implementation can provide replaceable global allocation functions that cause undefined behavior.- <i>end note</i>]
-If any of the implementation-provided replaceable global allocation 
-functions meet the requirements of a hosted implementation, they all 
-should.
-[<i>Note</i>: The behavior of the implementation-provided replaceable 
-global allocation functions during constant evaluation is irrelevant, as
- those calls are omitted ([expr.new]).- <i>end note</i>] </ins>
+On freestanding implementations, it is implementation defined whether the behavior of the default versions of the replaceable global allocation functions satisfy the required behaviors described in [new.delete.single] and [new.delete.array].</ins>
+    </p>
+    <p>
+     <ins>[<i>Note</i>: A freestanding implementation’s default versions of the replaceable global allocation functions can cause undefined behavior when invoked.
+During constant evaluation, the behavior of the default versions of the replaceable global allocation functions is irrelevant, as those calls are omitted ([expr.new]).- <i>end note</i>]</ins>
+    </p>
+    <p>
+     <ins><i>Recommended practice:</i> If any of the default versions of the replaceable global allocation functions meet the requirements of a hosted implementation, they all should. </ins>
     </p>
    </blockquote>
    <h2 class="heading settled" data-level="9" id="ack"><span class="secno">9. </span><span class="content">Acknowledgments</span><a class="self-link" href="#ack"></a></h2>
     Thank you to the many reviewers of this paper:
-Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred 
-Bratterud, Phil Hindman, Arthur O’Dwyer, Laurin-Luis Lehning, JF 
-Bastien, Matthew Bentley, and Alisdair Meredith. 
+Brandon Streiff, Irwan Djajadi, Joshua Cannon, Brad Keryan, Alfred Bratterud, Phil Hindman, Arthur O’Dwyer, Laurin-Luis Lehning, JF Bastien, Matthew Bentley, and Alisdair Meredith. 
    <p>Thank you to Daveed Vandevoorde and Walter Brown for providing feedback on the wording.</p>
   </main>
 <script>
@@ -2622,19 +2473,19 @@ Bastien, Matthew Bentley, and Alisdair Meredith.
   <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
    <dt id="biblio-freertos_staticvdynamic">[FreeRTOS_StaticVDynamic]
-   </dt><dd>FreeRTOS Documentation. <a href="https://www.freertos.org/Static_Vs_Dynamic_Memory_Allocation.html">Static Vs Dynamic Memory Allocation</a>. URL: <a href="https://www.freertos.org/Static_Vs_Dynamic_Memory_Allocation.html">https://www.freertos.org/Static_Vs_Dynamic_Memory_Allocation.html</a>
-   </dd><dt id="biblio-kernel_switch">[KERNEL_SWITCH]
-   </dt><dd>Microsoft Documentation. <a href="https://docs.microsoft.com/en-us/cpp/build/reference/kernel-create-kernel-mode-binary">/kernel (Create Kernel Mode Binary)</a>. URL: <a href="https://docs.microsoft.com/en-us/cpp/build/reference/kernel-create-kernel-mode-binary">https://docs.microsoft.com/en-us/cpp/build/reference/kernel-create-kernel-mode-binary</a>
-   </dd><dt id="biblio-kmalloc">[KMALLOC]
-   </dt><dd>kernel.org. <a href="https://www.kernel.org/doc/htmldocs/kernel-api/API-kmalloc.html">kmalloc</a>. URL: <a href="https://www.kernel.org/doc/htmldocs/kernel-api/API-kmalloc.html">https://www.kernel.org/doc/htmldocs/kernel-api/API-kmalloc.html</a>
-   </dd><dt id="biblio-mspools">[MSPools]
-   </dt><dd>Microsoft Documentation. <a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ne-wdm-_pool_type">POOL_TYPE enumeration</a>. URL: <a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ne-wdm-_pool_type">https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ne-wdm-_pool_type</a>
-   </dd><dt id="biblio-p1105r1">[P1105R1]
-   </dt><dd>Ben Craig; Ben Saks. <a href="https://wg21.link/P1105R1">Leaving no room for a lower-level language: A C++ Subset</a>. URL: <a href="https://wg21.link/P1105R1">https://wg21.link/P1105R1</a>
-   </dd><dt id="biblio-p1642r1">[P1642R1]
-   </dt><dd>Ben Craig. <a href="https://wg21.link/P1642R1">Freestanding Library: Easy [utilities], [ranges], and [iterators]</a>. URL: <a href="https://wg21.link/P1642R1">https://wg21.link/P1642R1</a>
-   </dd><dt id="biblio-threadx">[THREADX]
-   </dt><dd><a href="https://rtos.com/solutions/threadx/real-time-operating-system/">THREADX(R) RTOS - Royalty Free Real-Time Operating System</a>. URL: <a href="https://rtos.com/solutions/threadx/real-time-operating-system/">https://rtos.com/solutions/threadx/real-time-operating-system/</a>
-   </dd><dt id="biblio-throwing_new">[THROWING_NEW]
-   </dt><dd>Microsoft Documentation. <a href="https://docs.microsoft.com/en-us/cpp/build/reference/zc-throwingnew-assume-operator-new-throws?view=vs-2019">/Zc:throwingNew (Assume operator new throws)</a>. URL: <a href="https://docs.microsoft.com/en-us/cpp/build/reference/zc-throwingnew-assume-operator-new-throws?view=vs-2019">https://docs.microsoft.com/en-us/cpp/build/reference/zc-throwingnew-assume-operator-new-throws?view=vs-2019</a>
-  </dd></dl></body></html>
+   <dd>FreeRTOS Documentation. <a href="https://www.freertos.org/Static_Vs_Dynamic_Memory_Allocation.html"><cite>Static Vs Dynamic Memory Allocation</cite></a>. URL: <a href="https://www.freertos.org/Static_Vs_Dynamic_Memory_Allocation.html">https://www.freertos.org/Static_Vs_Dynamic_Memory_Allocation.html</a>
+   <dt id="biblio-kernel_switch">[KERNEL_SWITCH]
+   <dd>Microsoft Documentation. <a href="https://docs.microsoft.com/en-us/cpp/build/reference/kernel-create-kernel-mode-binary"><cite>/kernel (Create Kernel Mode Binary)</cite></a>. URL: <a href="https://docs.microsoft.com/en-us/cpp/build/reference/kernel-create-kernel-mode-binary">https://docs.microsoft.com/en-us/cpp/build/reference/kernel-create-kernel-mode-binary</a>
+   <dt id="biblio-kmalloc">[KMALLOC]
+   <dd>kernel.org. <a href="https://www.kernel.org/doc/htmldocs/kernel-api/API-kmalloc.html"><cite>kmalloc</cite></a>. URL: <a href="https://www.kernel.org/doc/htmldocs/kernel-api/API-kmalloc.html">https://www.kernel.org/doc/htmldocs/kernel-api/API-kmalloc.html</a>
+   <dt id="biblio-mspools">[MSPools]
+   <dd>Microsoft Documentation. <a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ne-wdm-_pool_type"><cite>POOL_TYPE enumeration</cite></a>. URL: <a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ne-wdm-_pool_type">https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ne-wdm-_pool_type</a>
+   <dt id="biblio-p1105r1">[P1105R1]
+   <dd>Ben Craig; Ben Saks. <a href="https://wg21.link/P1105R1"><cite>Leaving no room for a lower-level language: A C++ Subset</cite></a>. URL: <a href="https://wg21.link/P1105R1">https://wg21.link/P1105R1</a>
+   <dt id="biblio-p1642r1">[P1642R1]
+   <dd>Ben Craig. <a href="https://wg21.link/P1642R1"><cite>Freestanding Library: Easy [utilities], [ranges], and [iterators]</cite></a>. URL: <a href="https://wg21.link/P1642R1">https://wg21.link/P1642R1</a>
+   <dt id="biblio-threadx">[THREADX]
+   <dd><a href="https://rtos.com/solutions/threadx/real-time-operating-system/"><cite>THREADX(R) RTOS - Royalty Free Real-Time Operating System</cite></a>. URL: <a href="https://rtos.com/solutions/threadx/real-time-operating-system/">https://rtos.com/solutions/threadx/real-time-operating-system/</a>
+   <dt id="biblio-throwing_new">[THROWING_NEW]
+   <dd>Microsoft Documentation. <a href="https://docs.microsoft.com/en-us/cpp/build/reference/zc-throwingnew-assume-operator-new-throws?view=vs-2019"><cite>/Zc:throwingNew (Assume operator new throws)</cite></a>. URL: <a href="https://docs.microsoft.com/en-us/cpp/build/reference/zc-throwingnew-assume-operator-new-throws?view=vs-2019">https://docs.microsoft.com/en-us/cpp/build/reference/zc-throwingnew-assume-operator-new-throws?view=vs-2019</a>
+  </dl>
