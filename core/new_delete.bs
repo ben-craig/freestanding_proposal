@@ -5,7 +5,7 @@ Revision: 5
 Audience: EWG
 Status: P
 Group: WG21
-URL: https://wg21.link/P2013R4
+URL: https://wg21.link/P2013R5
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
 Editor: Ben Craig, NI and Boost Foundation, ben.craig@gmail.com
 Abstract: In freestanding implementations, standardize existing practices and make the default allocating <code>::operator new</code>s optional.
@@ -14,6 +14,10 @@ Markup Shorthands: markdown yes
 
 Revision History {#revision_history}
 ====================================
+R5 {#r5}
+-------
+LWG wording feedback.
+
 R4 {#r4}
 -------
 Definitions of the allocation functions must now exist, but they now have implementation defined behavior on freestanding implementations (which encompasses UB).
