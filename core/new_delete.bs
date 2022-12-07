@@ -7,7 +7,7 @@ Status: P
 Group: WG21
 URL: https://wg21.link/P2013R4
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
-Editor: Ben Craig, NI, ben.craig@gmail.com
+Editor: Ben Craig, NI and Boost Foundation, ben.craig@gmail.com
 Abstract: In freestanding implementations, standardize existing practices and make the default allocating <code>::operator new</code>s optional.
 Markup Shorthands: markdown yes
 </pre>
