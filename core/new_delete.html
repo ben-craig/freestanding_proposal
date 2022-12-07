@@ -2,7 +2,7 @@
  <head>
   <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-  <title>D2013R4: Freestanding Language: Optional &lt;code>::operator new&lt;/code></title>
+  <title>P2013R5: Freestanding Language: Optional &lt;code>::operator new&lt;/code></title>
 <style data-fill-with="stylesheet">/******************************************************************************
  *                   Style sheet for the W3C specifications                   *
  *
@@ -1561,7 +1561,7 @@ Possible extra rowspan handling
     blockquote c-[il] { color: inherit; } /* Literal.Number.Integer.Long */
   </style>
   <meta content="Bikeshed version 63e66730b, updated Tue Oct 25 12:35:05 2022 -0700" name="generator">
-  <link href="https://wg21.link/P2013R4" rel="canonical">
+  <link href="https://wg21.link/P2013R5" rel="canonical">
   <link href="https://isocpp.org/favicon.ico" rel="icon">
 <style>/* style-autolinks */
 
@@ -2089,14 +2089,14 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
  <body class="h-entry">
   <div class="head">
    <p data-fill-with="logo"></p>
-   <h1 class="p-name no-ref" id="title">D2013R4<br>Freestanding Language: Optional <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code></h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2022-12-07">2022-12-07</time></span></h2>
+   <h1 class="p-name no-ref" id="title">P2013R5<br>Freestanding Language: Optional <code class="highlight"><c- o>::</c-><c- k>operator</c-> <c- k>new</c-></code></h1>
+   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Published Proposal, <time class="dt-updated" datetime="2022-12-07">2022-12-07</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
-     <dd><a class="u-url" href="https://wg21.link/P2013R4">https://wg21.link/P2013R4</a>
+     <dd><a class="u-url" href="https://wg21.link/P2013R5">https://wg21.link/P2013R5</a>
      <dt class="editor">Author:
-     <dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:ben.craig@gmail.com">Ben Craig</a> (<span class="p-org org">NI</span>)
+     <dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:ben.craig@gmail.com">Ben Craig</a> (<span class="p-org org">NI and Boost Foundation</span>)
      <dt>Audience:
      <dd>EWG
      <dt>Project:
@@ -2118,11 +2118,12 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     <li>
      <a href="#revision_history"><span class="secno">1</span> <span class="content">Revision History</span></a>
      <ol class="toc">
-      <li><a href="#r4"><span class="secno">1.1</span> <span class="content">R4</span></a>
-      <li><a href="#r3"><span class="secno">1.2</span> <span class="content">R3</span></a>
-      <li><a href="#r2"><span class="secno">1.3</span> <span class="content">R2</span></a>
-      <li><a href="#r1"><span class="secno">1.4</span> <span class="content">R1</span></a>
-      <li><a href="#r0"><span class="secno">1.5</span> <span class="content">R0</span></a>
+      <li><a href="#r5"><span class="secno">1.1</span> <span class="content">R5</span></a>
+      <li><a href="#r4"><span class="secno">1.2</span> <span class="content">R4</span></a>
+      <li><a href="#r3"><span class="secno">1.3</span> <span class="content">R3</span></a>
+      <li><a href="#r2"><span class="secno">1.4</span> <span class="content">R2</span></a>
+      <li><a href="#r1"><span class="secno">1.5</span> <span class="content">R1</span></a>
+      <li><a href="#r0"><span class="secno">1.6</span> <span class="content">R0</span></a>
      </ol>
     <li><a href="#the_changes"><span class="secno">2</span> <span class="content">What is changing</span></a>
     <li><a href="#non_changes"><span class="secno">3</span> <span class="content">What is staying the same</span></a>
@@ -2180,27 +2181,29 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   </nav>
   <main>
    <h2 class="heading settled" data-level="1" id="revision_history"><span class="secno">1. </span><span class="content">Revision History</span><a class="self-link" href="#revision_history"></a></h2>
-   <h3 class="heading settled" data-level="1.1" id="r4"><span class="secno">1.1. </span><span class="content">R4</span><a class="self-link" href="#r4"></a></h3>
+   <h3 class="heading settled" data-level="1.1" id="r5"><span class="secno">1.1. </span><span class="content">R5</span><a class="self-link" href="#r5"></a></h3>
+    LWG wording feedback. 
+   <h3 class="heading settled" data-level="1.2" id="r4"><span class="secno">1.2. </span><span class="content">R4</span><a class="self-link" href="#r4"></a></h3>
     Definitions of the allocation functions must now exist, but they now have implementation defined behavior on freestanding implementations (which encompasses UB). 
    <p>Rebasing to N4878.  Accounting for shifted numbering in [new.delete].</p>
-   <h3 class="heading settled" data-level="1.2" id="r3"><span class="secno">1.2. </span><span class="content">R3</span><a class="self-link" href="#r3"></a></h3>
+   <h3 class="heading settled" data-level="1.3" id="r3"><span class="secno">1.3. </span><span class="content">R3</span><a class="self-link" href="#r3"></a></h3>
     Added <a href="#ewg_aug_telecon">EWG Aug 2020 telecon</a> polling results. 
    <p>In the design, an ODR-use without a definition no longer requires ill-formedness.  The intent is still the same, in that it typically results in a linker error.</p>
    <p>Updated grammar and ill-formedness of wording.</p>
    <p>Found an additional note in <a href="https://wg21.link/expr.new#10">expr.new/10</a> that needed adjustment.</p>
    <p>Deferred <a href="#feature_test_macro">feature test macro</a> decision to a future revision of <a href="https://wg21.link/P2198">P2198</a>.</p>
-   <h3 class="heading settled" data-level="1.3" id="r2"><span class="secno">1.3. </span><span class="content">R2</span><a class="self-link" href="#r2"></a></h3>
+   <h3 class="heading settled" data-level="1.4" id="r2"><span class="secno">1.4. </span><span class="content">R2</span><a class="self-link" href="#r2"></a></h3>
     Making the status of "placement" new more obvious ("placement" new is still required). 
    <p>Added words in the design to indicate that the declarations in <code class="highlight"><c- o>&lt;</c-><c- k>new</c-><c- o>></c-></code> are not changing.</p>
    <p>Mentioning that pointer safety remains unchanged.</p>
-   <h3 class="heading settled" data-level="1.4" id="r1"><span class="secno">1.4. </span><span class="content">R1</span><a class="self-link" href="#r1"></a></h3>
+   <h3 class="heading settled" data-level="1.5" id="r1"><span class="secno">1.5. </span><span class="content">R1</span><a class="self-link" href="#r1"></a></h3>
     Added polling results from Prague <a href="#ewgi_prague">EWGI</a> and <a href="#ewg_prague">EWG</a>. 
    <p>Added discussion on <a href="#feature_test_macro">feature test macro</a>.</p>
    <p>Added discussion on <a href="#why_not_fix">not fixing virtual destructors</a>.</p>
    <p>Declaring that <code class="highlight"><c- k>constexpr</c-> <c- k>new</c-></code> must continue to work.</p>
    <p>Added <a href="#wording">wording</a>.</p>
    <p>Wording includes <a href="#new_delete">changes to library clauses</a>, so added LEWG to the audience.</p>
-   <h3 class="heading settled" data-level="1.5" id="r0"><span class="secno">1.5. </span><span class="content">R0</span><a class="self-link" href="#r0"></a></h3>
+   <h3 class="heading settled" data-level="1.6" id="r0"><span class="secno">1.6. </span><span class="content">R0</span><a class="self-link" href="#r0"></a></h3>
     R0 of this paper was extracted from <a data-link-type="biblio" href="#biblio-p1105r1">[P1105R1]</a>. 
    <p>The proposed solution is different than the one proposed for P1105R1, but the motivation is the same.  The solution from P1105R1 is still listed as a design alternative.</p>
    <h2 class="heading settled" data-level="2" id="the_changes"><span class="secno">2. </span><span class="content">What is changing</span><a class="self-link" href="#the_changes"></a></h2>
@@ -2325,11 +2328,11 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     <p>1 Except where otherwise specified, the provisions of 6.7.5.5 apply to the library versions of operator new and operator delete. If the value of an alignment argument passed to any of these functions is not a valid alignment value, the behavior is undefined.</p>
     <p>
      <ins>2
-On freestanding implementations, it is implementation-defined whether the behavior of the default versions of the replaceable global allocation functions satisfy the required behaviors described in [new.delete.single] and [new.delete.array].</ins>
+On freestanding implementations, it is implementation-defined whether the default versions of the replaceable global allocation functions satisfy the required behaviors described in [new.delete.single] and [new.delete.array].</ins>
     </p>
     <p>
      <ins>[<i>Note</i>: A freestanding implementation’s default versions of the replaceable global allocation functions can cause undefined behavior when invoked.
-During constant evaluation, the behavior of those default versions is irrelevant, as those calls are omitted ([expr.new]).- <i>end note</i>]</ins>
+During constant evaluation, the behaviors of those default versions are irrelevant, as those calls are omitted ([expr.new]).- <i>end note</i>]</ins>
     </p>
     <p>
      <ins><i>Recommended practice:</i> If any of the default versions of the replaceable global allocation functions meet the requirements of a hosted implementation, they all should. </ins>
