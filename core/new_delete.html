@@ -2325,11 +2325,11 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     <p>1 Except where otherwise specified, the provisions of 6.7.5.5 apply to the library versions of operator new and operator delete. If the value of an alignment argument passed to any of these functions is not a valid alignment value, the behavior is undefined.</p>
     <p>
      <ins>2
-On freestanding implementations, it is implementation defined whether the behavior of the default versions of the replaceable global allocation functions satisfy the required behaviors described in [new.delete.single] and [new.delete.array].</ins>
+On freestanding implementations, it is implementation-defined whether the behavior of the default versions of the replaceable global allocation functions satisfy the required behaviors described in [new.delete.single] and [new.delete.array].</ins>
     </p>
     <p>
      <ins>[<i>Note</i>: A freestanding implementation’s default versions of the replaceable global allocation functions can cause undefined behavior when invoked.
-During constant evaluation, the behavior of the default versions of the replaceable global allocation functions is irrelevant, as those calls are omitted ([expr.new]).- <i>end note</i>]</ins>
+During constant evaluation, the behavior of those default versions is irrelevant, as those calls are omitted ([expr.new]).- <i>end note</i>]</ins>
     </p>
     <p>
      <ins><i>Recommended practice:</i> If any of the default versions of the replaceable global allocation functions meet the requirements of a hosted implementation, they all should. </ins>
