@@ -1,9 +1,9 @@
 <pre class='metadata'>
 Title: Freestanding Language: Optional <code>::operator new</code>
-Shortname: P2013
+Shortname: D2013
 Revision: 4
 Audience: EWG
-Status: P
+Status: D
 Group: WG21
 URL: https://wg21.link/P2013R4
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
@@ -287,10 +287,10 @@ Modify [new.delete](https://wg21.link/new.delete)
 <p>17.6.3.1  General [new.delete.general]</p>
 <p>1 Except where otherwise specified, the provisions of 6.7.5.5 apply to the library versions of operator new and operator delete. If the value of an alignment argument passed to any of these functions is not a valid alignment value, the behavior is undefined.</p>
 <p><ins>2
-On freestanding implementations, it is implementation defined whether the behavior of the implementation-provided replaceable global allocation functions satisfy the required behaviors described in [new.delete.single] and [new.delete.array].<p>
-<ins>[<i>Note</i>: A freestanding implementation can provide replaceable global allocation functions that cause undefined behavior.
-During constant evaluation, the behavior of the implementation-provided replaceable global allocation functions is irrelevant, as those calls are omitted ([expr.new]).- <i>end note</i>]<p>
-<ins><i>Recommended practice:</i> If any of the implementation-provided replaceable global allocation functions meet the requirements of a hosted implementation, they all should.
+On freestanding implementations, it is implementation defined whether the behavior of the default versions of the replaceable global allocation functions satisfy the required behaviors described in [new.delete.single] and [new.delete.array].<p>
+<ins>[<i>Note</i>: A freestanding implementation's default versions of the replaceable global allocation functions can cause undefined behavior when invoked.
+During constant evaluation, the behavior of the default versions of the replaceable global allocation functions is irrelevant, as those calls are omitted ([expr.new]).- <i>end note</i>]<p>
+<ins><i>Recommended practice:</i> If any of the default versions of the replaceable global allocation functions meet the requirements of a hosted implementation, they all should.
 </ins></p>
 </blockquote>
 
