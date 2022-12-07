@@ -1,9 +1,9 @@
 <pre class='metadata'>
 Title: Freestanding Language: Optional <code>::operator new</code>
-Shortname: D2013
-Revision: 4
+Shortname: P2013
+Revision: 5
 Audience: EWG
-Status: D
+Status: P
 Group: WG21
 URL: https://wg21.link/P2013R4
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs">github.com/ben-craig/freestanding_proposal/blob/master/core/new_delete.bs</a>
