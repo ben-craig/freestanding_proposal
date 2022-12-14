@@ -945,13 +945,13 @@ Please append the following paragraphs to <a href="https://wg21.link/compliance"
 </div>
 <div class="para">
     <div class="marginalizedparent"><a class="marginalized">6</a></div>
-    <div class="sentence">A freestanding implementation provides <a href="https://eel.is/c++draft/dcl.fct.def.delete#def:deleted_definition">deleted definition</a>s for a (possibly empty) implementation-defined subset of the namespace scoped functions and function templates from the hosted library facilities.</div>
-    <div class="note">[ <span class="textit">Note</span><span class="textit">:</span> An implementation may provide a deleted definition so that overload resolution does not silently change when migrating a library from a freestanding implementation to a hosted implementation. -<i>end note</i>]</div>
+    <div class="sentence">A freestanding implementation provides <i>deleted definition</i>s ([dcl.fct.def.delete]) for a (possibly empty) implementation-defined subset of the namespace-scope functions and function templates from the hosted library facilities.</div>
+    <div class="note">[ <span class="textit">Note</span><span class="textit">:</span> An implementation may provide a deleted definition so that the result of overload resolution does not silently change when migrating a program from a freestanding implementation to a hosted implementation. -<i>end note</i>]</div>
 </div>
 </blockquote>
 <h2>Change in <a href="https://wg21.link/version.syn#2">[version.syn]</a></h2>
 <p>
-Add "<ins><code>freestanding ,</code></ins>" to the beginning of each comment in the following macro definitions in <a href="https://wg21.link/version.syn#2">[version.syn]</a>:
+Add "<ins><code>freestanding, </code></ins>" to the beginning of each comment in the following macro definitions in <a href="https://wg21.link/version.syn#2">[version.syn]</a>:
 <ul>
   <li><code>__cpp_lib_addressof_constexpr</code></li>
   <li><code>__cpp_lib_allocator_traits_is_always_equal</code></li>
@@ -1072,7 +1072,7 @@ Please append the following paragraphs to <a href="https://wg21.link/version.syn
 <blockquote class="stdins">
 <div class="para">
     <div class="marginalizedparent"><a class="marginalized">3</a></div>
-    <div class="sentence">The macro <code>__cpp_lib_freestanding_operator_new</code> is defined to the integer literal <code><i>new-val</i></code> if all the default versions of the replaceable global allocation functions meet the requirements of a hosted implementation, and to the integer literal <code>0</code> otherwise. ([new.delete]).</div>
+    <div class="sentence">The macro <code>__cpp_lib_freestanding_operator_new</code> is defined to the integer literal <code><i>new-val</i></code> if all the default versions of the replaceable global allocation functions meet the requirements of a hosted implementation, and to the integer literal <code>0</code> otherwise ([new.delete]).</div>
 </div>
 <div class="para">
     <div class="marginalizedparent"><a class="marginalized">4</a></div>
