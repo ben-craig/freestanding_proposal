@@ -358,14 +358,18 @@ span.indented {
 }
 </style>
 
-<title>P2198R6: Freestanding Feature-Test Macros and Implementation-Defined Extensions</title>
+<title>TODO D2198R7: Freestanding Feature-Test Macros and Implementation-Defined Extensions</title>
 <body>
 <h1>Freestanding Feature-Test Macros and Implementation-Defined Extensions</h1>
-Document number: P2198R6<br/>
-Date: 2022-12-06<br/>
+Document number: TODO D2198R7<br/>
+Date: TODO 2022-12-06<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: Library Working Group
 <h1>Change history</h1>
+<h3> R7 </h3>
+<ul>
+  <li>LWG feedback</li>
+</ul>
 <h3> R6 </h3>
 <ul>
   <li>Rebase to N4917</li>
@@ -1068,7 +1072,7 @@ Please append the following paragraphs to <a href="https://wg21.link/version.syn
 <blockquote class="stdins">
 <div class="para">
     <div class="marginalizedparent"><a class="marginalized">3</a></div>
-    <div class="sentence">The macro <code>__cpp_lib_freestanding_operator_new</code> is defined to the integer literal <code><i>new-val</i></code> if all of the library provided replaceable global allocation functions meet the requirements of a hosted implementation, and to the integer literal <code>0</code> otherwise. ([new.delete]).</div>
+    <div class="sentence">The macro <code>__cpp_lib_freestanding_operator_new</code> is defined to the integer literal <code><i>new-val</i></code> if all the default versions of the replaceable global allocation functions meet the requirements of a hosted implementation, and to the integer literal <code>0</code> otherwise. ([new.delete]).</div>
 </div>
 <div class="para">
     <div class="marginalizedparent"><a class="marginalized">4</a></div>
