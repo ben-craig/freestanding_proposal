@@ -372,6 +372,9 @@ Audience: Library Working Group
 <h3>Changes from R1</h3>
 <ul>
   <li>Ported paper to HTML</li>
+  <li>Only annotating the deleted parts of partial classes, and not the present parts</li>
+  <li>Mentioning forward_like in relation to variant's value categories</li>
+  <li>New prose for [freestanding.item]</li>
 </ul>
 <h3>Changes from R0</h3>
 <ul>
@@ -430,10 +433,9 @@ This also means we can keep options open for reintroducing the deleted functions
 <p>
 The predecessor to this paper used <code>//freestanding, partial</code> to mean a class (template) is only required to be partially implemented, in conjunction with <code>//freestanding, omit</code> meaning a declaration is not in freestanding.
 </p><p>
-In this paper, we keep marking not fully freestanding classes templates as <code>//freestanding, partial</code>, requiring all members of such a class template to be individually marked as freestanding, or not.
-This is done to keep things explicit. We also introduce <code>//freestanding, delete</code>, to mean a declaration shall be deleted on freestanding.
+In this paper, we mark not fully freestanding classes templates as <code>// freestanding-partial</code>, and use P2338's <code>// freestanding-delete</code> to mark which pieces of the class should be omitted.
+We no longer annotate all the class members, favoring terseness over explicitness.
 </p>
-TODO: rework this
 
 <h2>On std::visit</h2>
 <p>
@@ -450,10 +452,14 @@ This however has the unfortunate side-effect that we need to keep bad_variant_ac
 </p>
 
 <h2>Notes on variant and value categories</h2>
+<p>
 By getting rid of std::get, we force users to use std::get_if.
 Since std::get_if returns a pointer, one can only access the value of a variant by dereferencing said pointer, obtaining an lvalue, discarding the value category of the held object.
 This is unlikely to have an impact on application code, but might impact highly generic library code.
-TODO: mention forward_like
+</p><p>
+std::forward_like can help in these cases.
+The value category of the variant can be transferred to the dereferenced pointer returned from set::get_if.
+</p>
 
 <h1>Justification for deletions</h1>
 Every deleted method is throwing.
@@ -465,17 +471,15 @@ All these functions are not throwing, and there are no other problems regarding 
 We therefore opt for them being marked as freestanding.
 
 <h1>Wording</h1>
-This paper’s wording is based on the current working draft, [N4878], and it assumes that the wording in [P1642R5] and [P2338R0] has been applied.
-TODO: rebase and update references
+This paper’s wording is based on the current working draft, [N4878], and it assumes that [P2338R3] has been applied.
+TODO: rebase and update working draft reference
 
 <h2>Change in [freestanding.item]</h2>
 Add a new paragraph to [freestanding.item].
-TODO: this
 <blockquote class="stdins">
 <div class='para'>
     <div class='marginalizedparent'><a class='marginalized'>?</a></div>
-    <div class='sentence'>Function declarations and function template declarations followed by a comment that include <span class='textit'>freestanding-deleted</span> are <span class='textit'>freestanding deleted functions</span>.</div>
-    <div class='sentence'>On freestanding implementations, it is implementation defined whether each function definition introduced by a freestanding deleted function is a freestanding item or a deleted function (<a href="https://wg21.link/dcl.fct.def.delete">[dcl.fct.def.delete]</a>).</div>
+    <div class='sentence'>A class type declaration or class template declaration in a header synopsis that is followed by a comment that includes <span class='textit'>freestanding-partial</span> is a freestanding item, except that it contains at least one freestanding deleted function.</div>
     <div class='example'>[  <span class='textit'>Example:</span>
 <pre class='codeblock'>
 template &lt;class T, size_t N&gt; struct array; <span class='comment'>//<span class='textit'>freestanding-partial</span></span>
@@ -587,7 +591,7 @@ Instructions to the editor:<br/>
 Please append a <code>// freestanding-delete</code> comment to every overload of <code>at</code>.
 
 <h2>Changes in [version.syn]</h2>
-This part of the paper follows the guide lines as specified in [P2198R2].
+This part of the paper follows the guide lines as specified in [P2198R6].
 Instructions to the editor:<br/>
 Add the following macros to [version.syn]:
 <blockquote class="stdins">
@@ -600,21 +604,19 @@ Add the following macros to [version.syn]:
 </blockquote>
 
 <h1>References</h1>
-TODO: update references<br/>
+TODO: update working draft reference<br/>
 [AK] Andreas Kling. Serenity OS AK Library.<br/>
 &emsp;&emsp;https://github.com/SerenityOS/serenity/tree/master/AK<br/>
 [Embedded Template Library] John Wellbelove. Embedded Template Library.<br/>
 &emsp;&emsp;https://www.etlcpp.com/<br/>
 [N4878] Thomas Köppe. 2020-12-15. Working Draft, Standard for Programming Language C++.<br/>
 &emsp;&emsp;https://wg21.link/n4878<br/>
-[P1642R5] Ben Craig. 2020-12-10. Freestanding Library: Easy [utilities], [ranges], and [iterators].<br/>
-&emsp;&emsp;https://wg21.link/p1642r5<br/>
-[P2198R2] Ben Craig. 2021-07-10. Freestanding Feature-Test Macros and Implementation-Defined Extensions.<br/>
-&emsp;&emsp;https://wg21.link/p2198r2<br/>
+[P2198R6] Ben Craig. 2022-12-06. Freestanding Feature-Test Macros and Implementation-Defined Extensions.<br/>
+&emsp;&emsp;https://wg21.link/P2198R6<br/>
 [P2268R0] Ben Craig. 2020-12-10. Freestanding Roadmap.<br/>
 &emsp;&emsp;https://wg21.link/p2268r0<br/>
-[P2338R0] Ben Craig. 2021-03-13. Freestanding Library: Character primitives and the C library.<br/>
-&emsp;&emsp;https://wg21.link/p2338r0<br/>
+[P2338R3] Ben Craig. 2022-12-06. Freestanding Library: Character primitives and the C library.<br/>
+&emsp;&emsp;https://wg21.link/P2338R3<br/>
 
 </body>
 </html>
