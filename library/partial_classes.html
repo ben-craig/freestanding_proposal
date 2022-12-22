@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<html>
+<style type="text/css">
+  ins, ins * { text-decoration:none; font-weight:bold; background-color:#A0FFA0 }
+  del, del * { text-decoration:line-through; background-color:#FFA0A0 }
+  #hidedel:checked ~ * del, #hidedel:checked ~ * del * { display:none; visibility:hidden }
+
+blockquote {
+  padding: .5em;
+  border: .5em;
+  border-color: silver;
+  border-left-style: solid;
+}
+
+blockquote.std { color: #000000; background-color: #F1F1F1;
+  border: 1px solid #D1D1D1;
+  padding-left: 0.5em; padding-right: 0.5em; }
+blockquote.stdins { text-decoration: underline;
+  color: #000000; background-color: #C8FFC8;
+  border: 1px solid #B3EBB3; padding: 0.5em; }
+blockquote.stddel { text-decoration: line-through;
+  color: #000000; background-color: #FFEBFF;
+  border: 1px solid #ECD7EC;
+  padding-left: 0.5em; padding-right: 0.5em; }
+
+p.grammarlhs { margin-bottom: 0 }
+p.grammarrhs { margin-left:8em; margin-top:0; margin-bottom:0; text-indent:-4em }
+
+div.wrapper {
+    max-width: 60em;
+    margin: auto;
+}
+
+a { text-decoration: none; }
+
+a.hidden_link {
+    text-decoration: none;
+    color: inherit;
+}
+
+li {
+    margin-top: 0.0em;
+    margin-bottom: 0.0em;
+}
+
+h1 { line-height: 1; }
+h2 { line-height: 1; }
+h3 { line-height: 1; }
+h4 { line-height: 1; }
+
+:target { background-color: #C9FBC9; }
+:target .codeblock { background-color: #C9FBC9; }
+:target ul { background-color: #C9FBC9; }
+
+.abbr_ref { float: right; }
+
+.folded_abbr_ref { float: right; }
+:target .folded_abbr_ref { display: none; }
+
+:target .unfolded_abbr_ref { float: right; display: inherit; }
+.unfolded_abbr_ref { display: none; }
+
+.secnum { display: inline-block; min-width: 35pt; }
+.annexnum { display: block; }
+
+div.sourceLinkParent {
+    float: right;
+}
+
+a.sourceLink {
+    position: absolute;
+    opacity: 0;
+    margin-left: 10pt;
+}
+
+a.sourceLink:hover {
+    opacity: 1;
+}
+
+div.marginalizedparent {
+    position: relative;
+    left: -5em;
+}
+
+div.footnoteNumberParent {
+    position: relative;
+    left: -4.7em;
+}
+
+a.marginalized {
+    position: absolute;
+    font-size: 75%;
+    text-align: right;
+    width: 5em;
+}
+
+a.enumerated_item_num {
+    position: relative;
+    left: -3.5em;
+    display: inline-block;
+    margin-right: -3em;
+    text-align: right;
+    width: 3em;
+}
+
+div.para { margin-bottom: 0.6em; margin-top: 0.6em; text-align: justify; }
+div.section { text-align: justify; }
+div.sentence { display: inline; }
+
+span.indexparent {
+    display: inline;
+    position: relative;
+    float: right;
+    right: -1em;
+}
+
+a.index {
+    position: absolute;
+    display: none;
+}
+
+a.index:before { content: "Ã¢Å¸Âµ"; }
+    /* this way the content is not selectable */
+
+a.index:target {
+    display: inline;
+}
+
+.indexitems {
+    margin-left: 2em;
+    text-indent: -2em;
+}
+
+div.itemdescr {
+    margin-left: 3em;
+}
+
+.bnf {
+    font-family: serif;
+    margin-left: 40pt;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.ncbnf {
+    font-family: serif;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+.bnftab {
+    font-family: serif;
+    font-style: italic;
+    margin-left: 40pt;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.ncsimplebnf {
+    font-family: serif;
+    font-style: italic;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+.ncbnftab {
+    font-family: serif;
+    font-style: italic;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+.bnfkeywordtab {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+span.textnormal {
+    font-style: normal;
+    font-family: serif;
+    white-space: normal;
+    display: inline-block;
+}
+
+span.descr { font-style: normal; font-family: serif; }
+span.grammarterm { font-style: italic; }
+span.term { font-style: italic; }
+span.terminal { font-family: monospace; font-style: normal; }
+span.nonterminal { font-style: italic; }
+span.tcode { font-family: monospace; font-style: normal; }
+span.textbf { font-weight: bold; }
+span.textsc { font-variant: small-caps; }
+a.nontermdef { font-style: italic; font-family: serif; }
+span.emph { font-style: italic; }
+span.techterm { font-style: italic; }
+span.mathit { font-style: italic; }
+span.mathsf { font-family: sans-serif; }
+span.mathrm { font-family: serif; font-style: normal; }
+span.textrm { font-family: serif; }
+span.textsl { font-style: italic; }
+span.mathtt { font-family: monospace; font-style: normal; }
+span.mbox { font-family: serif; font-style: normal; }
+span.ungap { display: inline-block; width: 2pt; }
+span.textit { font-style: italic; }
+span.texttt { font-family: monospace; }
+span.tcode_in_codeblock { font-family: monospace; font-style: normal; }
+
+span.phantom { color: white; }
+span.math { }
+
+span.mathblock {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1.2em;
+    margin-bottom: 1.2em;
+    text-align: center;
+}
+
+span.mathalpha {
+    font-style: italic;
+}
+
+span.synopsis {
+    font-weight: bold;
+    margin-top: 0.5em;
+    display: block;
+}
+
+span.definition {
+    font-weight: bold;
+    display: block;
+}
+
+.codeblock {
+    margin-left: 1.2em;
+    line-height: 127%;
+}
+
+code {
+    font-family: monospace;
+    font-style: normal;
+}
+
+code.itemdecl {
+    margin-top: 2ex;
+    white-space: pre;
+    display: block;
+}
+
+.comment {
+    font-style: italic;
+    font-family: serif;
+}
+
+span.textsuperscript {
+    vertical-align: super;
+    font-size: smaller;
+    line-height: 0;
+}
+
+.footnotenum { vertical-align: super; font-size: smaller; line-height: 0; }
+
+.footnote {
+    font-size: small;
+    margin-left: 2em;
+    margin-right: 2em;
+    margin-top: 0.6em;
+    margin-bottom: 0.6em;
+}
+
+div.minipage {
+    display: inline-block;
+    margin-right: 3em;
+}
+
+div.numberedTable {
+    text-align: center;
+    margin: 2em;
+}
+
+div.figure {
+    text-align: center;
+    margin: 2em;
+}
+
+table {
+    border: 1px solid black;
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0.8em;
+    text-align: left;
+    hyphens: none; /* otherwise some columns get very narrow, e.g. [tab:hash] */
+}
+
+td, th {
+    padding-left: 1em;
+    padding-right: 1em;
+    vertical-align: top;
+}
+
+td.left {
+    text-align: left;
+}
+
+td.right {
+    text-align: right;
+}
+
+td.center {
+    text-align: center;
+}
+
+td.justify {
+    text-align: justify;
+}
+
+td.border {
+    border-left: 1px solid black;
+}
+
+tr.rowsep, td.cline {
+    border-top: 1px solid black;
+}
+
+tr.capsep {
+    border-top: 3px solid black;
+    border-top-style: double;
+}
+
+th {
+    border-bottom: 1px solid black;
+}
+
+span.centry {
+    font-weight: bold;
+}
+
+div.table {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    width: 90%;
+}
+
+span.indented {
+    display: block;
+    margin-left: 2em;
+    margin-bottom: 1em;
+    margin-top: 1em;
+}
+</style>
+
+<title>TODO D2407R2: Freestanding Library: Partial Classes</title>
+<body>
+<h1>Freestanding Library: Partial Classes</h1>
+Document number: TODO D2407R2<br/>
+Date: TODO 2022-12-06<br/>
+Reply-to:<br/>
+&emsp;&emsp;Emil Meissner &lt;e dot meissner at seznam dot cz&gt;<br/>
+&emsp;&emsp;Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
+Audience: Library Working Group
+
+<h1>Changes from previous revisions</h1>
+<h3>Changes from R1</h3>
+<ul>
+  <li>Ported paper to HTML</li>
+</ul>
+<h3>Changes from R0</h3>
+<ul>
+  <li>Add wording for feature test macros</li>
+  <li>Mention monadic optional and <code>string_view::contains</code></li>
+</ul>
+
+<h1>Introduction</h1>
+This proposal is part of a group of papers aimed at improving the state of freestanding.
+It marks (parts of) std::array, std::string_view, std::variant, and std::optional as such.
+A future paper might add std::bitset (as was the original goal in [P2268R0])
+
+<h1>Motivation and Scope</h1>
+<p>
+All of the added classes are fundamentally compatible with freestanding, except for a few methods that throw (e.g. array::at).
+We explicitly =delete these undesirable methods.
+</p><p>
+The main driving factor for these additions is the immense usefulness of these types in practice.
+</p>
+
+<h2>Scope</h2>
+We refine [freestanding.item] by specifying the notion of partial classes, and accordingly specify the newly (partially) freestanding classes as such.
+
+<h3>About &lt;bitset&gt;</h3>
+As mentioned in the introduction, this paper does not deal with bitset.
+Bitset is unique in that a relatively big part of its interface depends on std::basic_string.
+We do not currently have a sound plan to make bitset work as nicely as we’d like to.
+This situation is made worse by a significant amount of bitset’s member functions that throw.
+
+<h2>Implementation experience</h2>
+<h3>The Existing Standard Library</h3>
+We’ve forked libc++, and =deleted all not freestanding methods.
+Except for some methods on string_view (which are implemented in terms of the deleted string_view::substring), this did not require any changes in the implementation.
+All test cases (except for the deleted methods) passed after some rather minor adjustments (e.g. replacing get<0>(v) with *get_if<0>(&v)), confirming that all these types are usable without the deleted methods.
+
+<h3>In Practice</h3>
+<p>
+Since we aren’t changing the semantics of any of the classes (except deleted non-critical methods), it is fair to say that all of the (implementer and user) experience gathered as part of hosted applies the same to freestanding.
+</p><p>
+The only question is, whether these classes are compatible with freestanding.
+To which the answer is yes! For example, the [Embedded Template Library] offers direct mappings of the std types.
+Even in kernel-level libraries, like Serenity’s [AK] use a form of these utilities.
+</p>
+
+<h1>Design decisions</h1>
+<h2>Deleting behavior</h2>
+<p>
+Our decision to delete methods we can’t mark as freestanding was made to keep overload resolution the same on freestanding as hosted.
+</p><p>
+An additional benefit here is, that users of these classes, who might expect to use a throwing method, which was not provided by the implementation, will get a more meaningful error than the method simply missing.
+This also means we can keep options open for reintroducing the deleted functions into freestanding.
+(e.g. operator&lt;&lt;(ostream, string_view), should &lt;ostream&gt; be added).
+</p>
+
+<h2>[conventions] changes</h2>
+<p>
+The predecessor to this paper used <code>//freestanding, partial</code> to mean a class (template) is only required to be partially implemented, in conjunction with <code>//freestanding, omit</code> meaning a declaration is not in freestanding.
+</p><p>
+In this paper, we keep marking not fully freestanding classes templates as <code>//freestanding, partial</code>, requiring all members of such a class template to be individually marked as freestanding, or not.
+This is done to keep things explicit. We also introduce <code>//freestanding, delete</code>, to mean a declaration shall be deleted on freestanding.
+</p>
+TODO: rework this
+
+<h2>On std::visit</h2>
+<p>
+In this paper, we mark std::visit as freestanding, even though it is theoretically throwing.
+However, the conditions for std::visit to throw are as follows:
+</p><p>
+It is possible for a variant to hold no value if an exception is thrown during a type-changing assignment or emplacement.
+</p><p>
+This means a variant will only throw on visit if a user type throws (library types don’t throw on freestanding).
+In this case, std::visit throwing isn’t a problem, since the user’s code is already using, and (hopefully) handling
+exceptions.
+</p><p>
+This however has the unfortunate side-effect that we need to keep bad_variant_access freestanding.
+</p>
+
+<h2>Notes on variant and value categories</h2>
+By getting rid of std::get, we force users to use std::get_if.
+Since std::get_if returns a pointer, one can only access the value of a variant by dereferencing said pointer, obtaining an lvalue, discarding the value category of the held object.
+This is unlikely to have an impact on application code, but might impact highly generic library code.
+TODO: mention forward_like
+
+<h1>Justification for deletions</h1>
+Every deleted method is throwing.
+We omit string_view’s associated operator&lt;&lt; since we don’t add basic_ostream.
+
+<h1>Monadic optional and string_view::contains</h1>
+Since this paper was first published, std::string_view got a new contains member function, and std::optional got transform, and_then, and or_else.
+All these functions are not throwing, and there are no other problems regarding freestanding.
+We therefore opt for them being marked as freestanding.
+
+<h1>Wording</h1>
+This paper’s wording is based on the current working draft, [N4878], and it assumes that the wording in [P1642R5] and [P2338R0] has been applied.
+TODO: rebase and update references
+
+<h2>Change in [freestanding.item]</h2>
+Add a new paragraph to [freestanding.item].
+TODO: this
+<blockquote class="stdins">
+<div class='para'>
+    <div class='marginalizedparent'><a class='marginalized'>?</a></div>
+    <div class='sentence'>Function declarations and function template declarations followed by a comment that include <span class='textit'>freestanding-deleted</span> are <span class='textit'>freestanding deleted functions</span>.</div>
+    <div class='sentence'>On freestanding implementations, it is implementation defined whether each function definition introduced by a freestanding deleted function is a freestanding item or a deleted function (<a href="https://wg21.link/dcl.fct.def.delete">[dcl.fct.def.delete]</a>).</div>
+    <div class='example'>[  <span class='textit'>Example:</span>
+<pre class='codeblock'>
+template &lt;class T, size_t N&gt; struct array; <span class='comment'>//<span class='textit'>freestanding-partial</span></span>
+</pre>
+    -<i>end example</i>]</div>
+</div>
+</blockquote>
+
+<h2>Changes in [compliance]</h2>
+Add new rows to the "C++ headers for freestanding implementations" table:
+<table style="border: 1px solid black">
+<thead>
+<tr style="border: 1px solid black">
+<th colspan="2" style="text-align: center">Subclause</th><th style="text-align: center">Header(s)</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+</tr>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/optional">[optional]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>Optional objects</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;optional&gt;</tt></ins></td>
+</tr>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/variant">[variant]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>Variants</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;variant&gt;</tt></ins></td>
+</tr>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/string.view">[string.view]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>String view classes</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;string_view&gt;</tt></ins></td>
+</tr>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/array">[array]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>Class template <code>array</code></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;array&gt;</tt></ins></td>
+</tr>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+</tr>
+</tbody>
+</table>
+
+<h2>Changes in [optional.syn]</h2>
+Instructions to the editor:<br/>
+Please append a <code>// freestanding</code> comment to every item in the synopsis except:
+<ul>
+  <li><code>bad_optional_access</code></li>
+  <li><code>optional</code></li>
+</ul>
+Please append a <code>// freestanding-partial</code> comment to the following items:
+<ul>
+  <li><code>optional</code></li>
+</ul>
+
+<h2>Changes in [optional.optional.general]</h2>
+Instructions to the editor:<br/>
+Please append a <code>// freestanding-delete</code> comment to every overload of <code>value</code>.
+
+<h2>Changes in [variant.syn]</h2>
+Instructions to the editor:<br/>
+<p>
+Please append a <code>// freestanding</code> comment to every item in the synopsis except the <code>get</code> overloads.
+</p><p>
+Please append a <code>// freestanding-delete</code> comment to every <code>get</code> overload in the synopsis.
+</p>
+
+<h2>Changes in [string.view.synop]</h2>
+Instructions to the editor:<br/>
+Please append a <code>// freestanding</code> comment to every item in the synopsis except:
+<ul>
+  <li><code>basic_string_view</code></li>
+  <li><code>operator&lt;&lt;</code></li>
+</ul>
+Please append a <code>// freestanding-partial</code> comment to the following items:
+<ul>
+  <li><code>basic_string_view</code></li>
+</ul>
+
+<h2>Changes in [string.view.template.general]</h2>
+Instructions to the editor:<br/>
+Please append a <code>//freestanding-delete</code> to the following items:
+<ul>
+  <li><code>at</code></li>
+  <li><code>copy</code></li>
+  <li><code>substr</code></li>
+  <li>The following overloads of compare:<ul>
+      <li><code>compare(size_type pos1, size_type n1, basic_string_view s)</code></li>
+      <li><code>compare(size_type pos1, size_type n1, basic_string_view s, size_type pos2, size_type n2)</code></li>
+      <li><code>compare(size_type pos1, size_type n1, const charT* s)</code></li>
+      <li><code>compare(size_type pos1, size_type n1, const charT* s, size_type n2)</code></li>
+  </ul></li>
+</ul>
+
+<h2>Changes in [array.syn]</h2>
+Instructions to the editor:<br/>
+Please append a <code>// freestanding</code> comment to every item in the synopsis except <code>array</code><br/>
+Please append a <code>// freestanding-partial</code> comment to <code>array</code><br/>
+
+<h2>Changes in [array.overview]</h2>
+Instructions to the editor:<br/>
+Please append a <code>// freestanding-delete</code> comment to every overload of <code>at</code>.
+
+<h2>Changes in [version.syn]</h2>
+This part of the paper follows the guide lines as specified in [P2198R2].
+Instructions to the editor:<br/>
+Add the following macros to [version.syn]:
+<blockquote class="stdins">
+<pre class='codeblock'>
+#define __cpp_lib_freestanding_array 20XXXXL //also in &lt;array&gt;
+#define __cpp_lib_freestanding_optional 20XXXXL //also in &lt;optional&gt;
+#define __cpp_lib_freestanding_string_view 20XXXXL //also in &lt;string_view&gt;
+#define __cpp_lib_freestanding_variant 20XXXXL //also in &lt;variant&gt;
+</pre>
+</blockquote>
+
+<h1>References</h1>
+TODO: update references<br/>
+[AK] Andreas Kling. Serenity OS AK Library.<br/>
+&emsp;&emsp;https://github.com/SerenityOS/serenity/tree/master/AK<br/>
+[Embedded Template Library] John Wellbelove. Embedded Template Library.<br/>
+&emsp;&emsp;https://www.etlcpp.com/<br/>
+[N4878] Thomas Köppe. 2020-12-15. Working Draft, Standard for Programming Language C++.<br/>
+&emsp;&emsp;https://wg21.link/n4878<br/>
+[P1642R5] Ben Craig. 2020-12-10. Freestanding Library: Easy [utilities], [ranges], and [iterators].<br/>
+&emsp;&emsp;https://wg21.link/p1642r5<br/>
+[P2198R2] Ben Craig. 2021-07-10. Freestanding Feature-Test Macros and Implementation-Defined Extensions.<br/>
+&emsp;&emsp;https://wg21.link/p2198r2<br/>
+[P2268R0] Ben Craig. 2020-12-10. Freestanding Roadmap.<br/>
+&emsp;&emsp;https://wg21.link/p2268r0<br/>
+[P2338R0] Ben Craig. 2021-03-13. Freestanding Library: Character primitives and the C library.<br/>
+&emsp;&emsp;https://wg21.link/p2338r0<br/>
+
+</body>
+</html>
