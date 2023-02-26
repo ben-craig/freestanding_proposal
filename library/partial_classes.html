@@ -358,17 +358,26 @@ span.indented {
 }
 </style>
 
-<title>P2407R2: Freestanding Library: Partial Classes</title>
+<title>TODO D2407R3: Freestanding Library: Partial Classes</title>
 <body>
 <h1>Freestanding Library: Partial Classes</h1>
-Document number: P2407R2<br/>
-Date: 2023-01-03<br/>
+Document number: D2407R3 TODO<br/>
+Date: 2023-01-03 TODO<br/>
 Reply-to:<br/>
 &emsp;&emsp;Emil Meissner &lt;e dot meissner at seznam dot cz&gt;<br/>
 &emsp;&emsp;Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: Library Working Group
 
 <h1>Changes from previous revisions</h1>
+<h3>Changes from R2</h3>
+<ul>
+  <li><code>// freestanding-delete</code> to <code>// freestanding-deleted</code></li>
+  <li>Adding <code>bad_optional_access</code> per LWG's request for consistency</li>
+  <li>Rewording <code>string_view::starts_with</code> and <code>string_view::ends_with</code> in terms of freestanding functions</li>
+  <li>Avoiding word "item" in instructions to the editor</li>
+  <li>Made example in wording use <code>// freestanding-deleted</code></li>
+  <li>TODO: add <code>// freestanding-mostly, see below</code>?</li>
+</ul>
 <h3>Changes from R1</h3>
 <ul>
   <li>Ported paper to HTML</li>
@@ -429,11 +438,11 @@ This also means we can keep options open for reintroducing the deleted functions
 (e.g. operator&lt;&lt;(ostream, string_view), should &lt;ostream&gt; be added).
 </p>
 
-<h2>[conventions] changes</h2>
+<h2><a href="https://eel.is/c++draft/conventions">[conventions]</a> changes</h2>
 <p>
 The predecessor to this paper used <code>//freestanding, partial</code> to mean a class (template) is only required to be partially implemented, in conjunction with <code>//freestanding, omit</code> meaning a declaration is not in freestanding.
 </p><p>
-In this paper, we mark not fully freestanding classes templates as <code>// freestanding-partial</code>, and use P2338's <code>// freestanding-delete</code> to mark which pieces of the class should be omitted.
+In this paper, we mark not fully freestanding classes templates as <code>// freestanding-partial</code>, and use P2338's <code>// freestanding-deleted</code> to mark which pieces of the class should be omitted.
 We no longer annotate all the class members, favoring terseness over explicitness.
 </p>
 
@@ -473,8 +482,8 @@ We therefore opt for them being marked as freestanding.
 <h1>Wording</h1>
 This paper’s wording is based on the current working draft, [N4928], and it assumes that [P2338R3] has been applied.
 
-<h2>Change in [freestanding.item]</h2>
-Add a new paragraph to [freestanding.item].
+<h2>Change in <a href="https://eel.is/c++draft/freestanding.item">[freestanding.item]</a></h2>
+Add a new paragraph to <a href="https://eel.is/c++draft/freestanding.item">[freestanding.item]</a>.
 <blockquote class="stdins">
 <div class='para'>
     <div class='marginalizedparent'><a class='marginalized'>?</a></div>
@@ -482,12 +491,20 @@ Add a new paragraph to [freestanding.item].
     <div class='example'>[  <span class='textit'>Example:</span>
 <pre class='codeblock'>
 template &lt;class T, size_t N&gt; struct array; <span class='comment'>//<span class='textit'>freestanding-partial</span></span>
+
+template&lt;class T, size_t N&gt;
+struct array {
+  constexpr reference       operator[](size_type n);
+  constexpr const_reference operator[](size_type n) const;
+  constexpr reference       at(size_type n); <span class='comment'>//<span class='textit'>freestanding-deleted</span></span>
+  constexpr const_reference at(size_type n) const; <span class='comment'>//<span class='textit'>freestanding-deleted</span></span>
+};
 </pre>
     -<i>end example</i>]</div>
 </div>
 </blockquote>
 
-<h2>Changes in [compliance]</h2>
+<h2>Changes in <a href="https://eel.is/c++draft/compliance">[compliance]</a></h2>
 Add new rows to the "C++ headers for freestanding implementations" table:
 <table style="border: 1px solid black">
 <thead>
@@ -529,45 +546,44 @@ Add new rows to the "C++ headers for freestanding implementations" table:
 </tbody>
 </table>
 
-<h2>Changes in [optional.syn]</h2>
+<h2>Changes in <a href="https://eel.is/c++draft/optional.syn">[optional.syn]</a></h2>
 Instructions to the editor:<br/>
-Please append a <code>// freestanding</code> comment to every item in the synopsis except:
+Please append a <code>// freestanding</code> comment to every non-namespace, non-exposition-only declaration in the synopsis except:
 <ul>
-  <li><code>bad_optional_access</code></li>
   <li><code>optional</code></li>
 </ul>
-Please append a <code>// freestanding-partial</code> comment to the following items:
+Please append a <code>// freestanding-partial</code> comment to the following declaration:
 <ul>
   <li><code>optional</code></li>
 </ul>
 
-<h2>Changes in [optional.optional.general]</h2>
+<h2>Changes in <a href="https://eel.is/c++draft/optional.optional.general">[optional.optional.general]</a></h2>
 Instructions to the editor:<br/>
-Please append a <code>// freestanding-delete</code> comment to every overload of <code>value</code>.
+Please append a <code>// freestanding-deleted</code> comment to every overload of <code>value</code>.
 
-<h2>Changes in [variant.syn]</h2>
+<h2>Changes in <a href="https://eel.is/c++draft/variant.syn">[variant.syn]</a></h2>
 Instructions to the editor:<br/>
 <p>
-Please append a <code>// freestanding</code> comment to every item in the synopsis except the <code>get</code> overloads.
+Please append a <code>// freestanding</code> comment to every non-namespace, non-exposition-only declaration in the synopsis except the <code>get</code> overloads.
 </p><p>
-Please append a <code>// freestanding-delete</code> comment to every <code>get</code> overload in the synopsis.
+Please append a <code>// freestanding-deleted</code> comment to every <code>get</code> overload in the synopsis.
 </p>
 
-<h2>Changes in [string.view.synop]</h2>
+<h2>Changes in <a href="https://eel.is/c++draft/string.view.synop">[string.view.synop]</a></h2>
 Instructions to the editor:<br/>
-Please append a <code>// freestanding</code> comment to every item in the synopsis except:
+Please append a <code>// freestanding</code> comment to every non-namespace, non-exposition-only declaration in the synopsis except:
 <ul>
   <li><code>basic_string_view</code></li>
   <li><code>operator&lt;&lt;</code></li>
 </ul>
-Please append a <code>// freestanding-partial</code> comment to the following items:
+Please append a <code>// freestanding-partial</code> comment to the following declaration:
 <ul>
   <li><code>basic_string_view</code></li>
 </ul>
 
-<h2>Changes in [string.view.template.general]</h2>
+<h2>Changes in <a href="https://eel.is/c++draft/string.view.template.general">[string.view.template.general]</a></h2>
 Instructions to the editor:<br/>
-Please append a <code>//freestanding-delete</code> to the following items:
+Please append a <code>// freestanding-deleted</code> to the following functions:
 <ul>
   <li><code>at</code></li>
   <li><code>copy</code></li>
@@ -579,20 +595,58 @@ Please append a <code>//freestanding-delete</code> to the following items:
       <li><code>compare(size_type pos1, size_type n1, const charT* s, size_type n2)</code></li>
   </ul></li>
 </ul>
+<p>
+Note that the <code>compare(basic_string_view str) const</code> and <code>compare(const charT* s) const</code> overloads are intentionally not freestanding-deleted.
+</p>
 
-<h2>Changes in [array.syn]</h2>
+<h2>Changes in <a href="https://eel.is/c++draft/string.view.ops">[string.view.ops]</a></h2>
+
+Please modify the <a href="https://eel.is/c++draft/string.view.ops#20"><code>basic_string_view</code> overload of <code>starts_with</code></a> so that it doesn't reference <i>freestanding-deleted</i> methods.
+<blockquote class="std">
+<code>constexpr bool starts_with(basic_string_view x) const noexcept;</code>
+<div class="para">
+    <ins>
+        <div class='marginalizedparent'><a class='marginalized'>?</a></div>
+        <div class="sentence">Let <code>rlen</code> be the smaller of <code>size()</code> and <code>x.size()</code>.</div>
+    </ins>
+    <div class='marginalizedparent'><a class='marginalized'>?</a></div>
+    <div class="sentence"><i>Effects</i>: Equivalent to: 
+        <del><code>return substr(0, x.size()) == x;</code></del>
+        <ins><code>return basic_string_view(data(), rlen) == x;</code></ins>
+    </div>
+</div>
+</blockquote>
+
+Please modify the <a href="https://eel.is/c++draft/string.view.ops#23"><code>basic_string_view</code> overload of <code>ends_with</code></a> so that it doesn't reference <i>freestanding-deleted</i> methods.
+
+<blockquote class="std">
+<code>constexpr bool ends_with(basic_string_view x) const noexcept;</code>
+<div class="para">
+    <ins>
+        <div class='marginalizedparent'><a class='marginalized'>?</a></div>
+        <div class="sentence">Let <code>rlen</code> be the smaller of <code>size()</code> and <code>x.size()</code>.</div>
+    </ins>
+    <div class='marginalizedparent'><a class='marginalized'>?</a></div>
+    <div class="sentence"><i>Effects</i>: Equivalent to: 
+        <del><code>return size() &gt;= x.size() && compare(size() - x.size(), npos, x) == 0</code></del>
+        <ins><code>return basic_string_view(data() + (size - rlen), rlen) == x;</code></ins>
+    </div>
+</div>
+</blockquote>
+
+<h2>Changes in <a href="https://eel.is/c++draft/array.syn">[array.syn]</a></h2>
 Instructions to the editor:<br/>
 Please append a <code>// freestanding</code> comment to every item in the synopsis except <code>array</code><br/>
 Please append a <code>// freestanding-partial</code> comment to <code>array</code><br/>
 
-<h2>Changes in [array.overview]</h2>
+<h2>Changes in <a href="https://eel.is/c++draft/array.overview">[array.overview]</a></h2>
 Instructions to the editor:<br/>
-Please append a <code>// freestanding-delete</code> comment to every overload of <code>at</code>.
+Please append a <code>// freestanding-deleted</code> comment to every overload of <code>at</code>.
 
-<h2>Changes in [version.syn]</h2>
+<h2>Changes in <a href="https://eel.is/c++draft/version.syn">[version.syn]</a></h2>
 This part of the paper follows the guide lines as specified in [P2198R6].
 Instructions to the editor:<br/>
-Add the following macros to [version.syn]:
+Add the following macros to <a href="https://eel.is/c++draft/version.syn">[version.syn]</a>:
 <blockquote class="stdins">
 <pre class='codeblock'>
 #define __cpp_lib_freestanding_array 20XXXXL //also in &lt;array&gt;
