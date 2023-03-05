@@ -362,21 +362,21 @@ span.indented {
 <body>
 <h1>Freestanding Library: Partial Classes</h1>
 Document number: D2407R3 TODO<br/>
-Date: 2023-01-03 TODO<br/>
+Date: 2023-03-05 TODO<br/>
 Reply-to:<br/>
-&emsp;&emsp;Emil Meissner &lt;e dot meissner at seznam dot cz&gt;<br/>
 &emsp;&emsp;Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
+&emsp;&emsp;Emil Meissner &lt;e dot meissner at seznam dot cz&gt;<br/>
 Audience: Library Working Group
 
 <h1>Changes from previous revisions</h1>
 <h3>Changes from R2</h3>
 <ul>
-  <li><code>// freestanding-delete</code> to <code>// freestanding-deleted</code></li>
+  <li><code>// freestanding-delete</code> to <code><i>// freestanding-deleted</i></code></li>
   <li>Adding <code>bad_optional_access</code> per LWG's request for consistency</li>
   <li>Rewording <code>string_view::starts_with</code> and <code>string_view::ends_with</code> in terms of freestanding functions</li>
   <li>Avoiding word "item" in instructions to the editor</li>
-  <li>Made example in wording use <code>// freestanding-deleted</code></li>
-  <li>TODO: add <code>// freestanding-mostly, see below</code>?</li>
+  <li>Made example in wording use <code><i>// freestanding-deleted</i></code></li>
+  <li>Added <code><i>// mostly freestanding</i></code> header marker</li>
 </ul>
 <h3>Changes from R1</h3>
 <ul>
@@ -483,6 +483,56 @@ We therefore opt for them being marked as freestanding.
 This paper’s wording is based on the current working draft, [N4928], and it assumes that [P2338R3] has been applied.
 
 <h2>Change in <a href="https://eel.is/c++draft/freestanding.item">[freestanding.item]</a></h2>
+Modify <a href="https://eel.is/c++draft/freestanding.item">[freestanding.item]</a>.
+<blockquote class="std">
+<div class='para'>
+    <div class='marginalizedparent'><a class='marginalized'>3</a></div>
+    <div class="sentence">A declaration in a header synopsis is a freestanding item if
+        <ul class="itemize">
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(3.1)</a></div>
+                it is followed by a comment that includes <i>freestanding</i>, or
+            </li>
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(3.2)</a></div>
+                the header synopsis begins with a comment that includes <i>all freestanding</i><del>.</del><ins>, or</ins>
+            </li>
+            <ins>
+                <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(3.3)</a></div>
+                    the header synopsis begins with a comment that includes <i>mostly freestanding</i> and the declaration is not followed by a comment that includes
+                    <ul class="itemize">
+                        <li><i>freestanding-partial</i>, or</li>
+                        <li><i>freestanding-deleted</i>, or</li>
+                        <li><i>hosted</i>.</li>
+                    </ul>
+                </li>
+            </ins>
+        </ul>
+    </div>
+    <p>...</p>
+
+    <div class='marginalizedparent'><a class='marginalized'>5</a></div>
+    <div class="sentence">A macro is a freestanding item if it is defined in a header synopsis and
+        <ul class="itemize">
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.1)</a></div>
+                the definition is followed by a comment that includes <i>freestanding</i>, or
+            </li>
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.2)</a></div>
+                the header synopsis begins with a comment that includes <i>all freestanding</i><del>.</del><ins>, or</ins>
+            </li>
+            <ins>
+                <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.3)</a></div>
+                    the header synopsis begins with a comment that includes <i>mostly freestanding</i> and the definition is not followed by a comment that includes
+                    <ul class="itemize">
+                        <li><i>freestanding-partial</i>, or</li>
+                        <li><i>freestanding-deleted</i>, or</li>
+                        <li><i>hosted</i>.</li>
+                    </ul>
+                </li>
+            </ins>
+        </ul>
+    </div></div>
+</blockquote>
+
+Drafting note: Apply the following change after applying the changes in P2338 "Freestanding Library: Character primitives and the C library".<br/>
 Add a new paragraph to <a href="https://eel.is/c++draft/freestanding.item">[freestanding.item]</a>.
 <blockquote class="stdins">
 <div class='para'>
@@ -548,42 +598,46 @@ Add new rows to the "C++ headers for freestanding implementations" table:
 
 <h2>Changes in <a href="https://eel.is/c++draft/optional.syn">[optional.syn]</a></h2>
 Instructions to the editor:<br/>
-Please append a <code>// freestanding</code> comment to every non-namespace, non-exposition-only declaration in the synopsis except:
-<ul>
-  <li><code>optional</code></li>
-</ul>
-Please append a <code>// freestanding-partial</code> comment to the following declaration:
+<p>
+Please insert a <code><i>// mostly freestanding</i></code> comment at the beginning of the <a href="https://eel.is/c++draft/optional.syn">[optional.syn]</a> synopsis.<br/>
+</p>
+Please append a <code><i>// freestanding-partial</i></code> comment to the following declaration:
 <ul>
   <li><code>optional</code></li>
 </ul>
 
 <h2>Changes in <a href="https://eel.is/c++draft/optional.optional.general">[optional.optional.general]</a></h2>
-Instructions to the editor:<br/>
-Please append a <code>// freestanding-deleted</code> comment to every overload of <code>value</code>.
+<p>
+Instructions to the editor:
+</p><p>
+Please append a <code><i>// freestanding-deleted</i></code> comment to every overload of <code>value</code>.
+</p>
 
 <h2>Changes in <a href="https://eel.is/c++draft/variant.syn">[variant.syn]</a></h2>
 Instructions to the editor:<br/>
 <p>
-Please append a <code>// freestanding</code> comment to every non-namespace, non-exposition-only declaration in the synopsis except the <code>get</code> overloads.
+Please insert a <code><i>// mostly freestanding</i></code> comment at the beginning of the <a href="https://eel.is/c++draft/variant.syn">[variant.syn]</a> synopsis.<br/>
 </p><p>
-Please append a <code>// freestanding-deleted</code> comment to every <code>get</code> overload in the synopsis.
+Please append a <code><i>// freestanding-deleted</i></code> comment to every <code>get</code> overload in the synopsis.
 </p>
 
 <h2>Changes in <a href="https://eel.is/c++draft/string.view.synop">[string.view.synop]</a></h2>
 Instructions to the editor:<br/>
-Please append a <code>// freestanding</code> comment to every non-namespace, non-exposition-only declaration in the synopsis except:
+<p>
+Please insert a <code><i>// mostly freestanding</i></code> comment at the beginning of the <a href="https://eel.is/c++draft/string.view.synop">[string.view.synop]</a> synopsis.<br/>
+</p>
+Please append a <code><i>// hosted</i></code> comment to the following declaration:
 <ul>
-  <li><code>basic_string_view</code></li>
   <li><code>operator&lt;&lt;</code></li>
 </ul>
-Please append a <code>// freestanding-partial</code> comment to the following declaration:
+Please append a <code><i>// freestanding-partial</i></code> comment to the following declaration:
 <ul>
   <li><code>basic_string_view</code></li>
 </ul>
 
 <h2>Changes in <a href="https://eel.is/c++draft/string.view.template.general">[string.view.template.general]</a></h2>
 Instructions to the editor:<br/>
-Please append a <code>// freestanding-deleted</code> to the following functions:
+Please append a <code><i>// freestanding-deleted</i></code> to the following functions:
 <ul>
   <li><code>at</code></li>
   <li><code>copy</code></li>
@@ -636,12 +690,15 @@ Please modify the <a href="https://eel.is/c++draft/string.view.ops#23"><code>bas
 
 <h2>Changes in <a href="https://eel.is/c++draft/array.syn">[array.syn]</a></h2>
 Instructions to the editor:<br/>
-Please append a <code>// freestanding</code> comment to every item in the synopsis except <code>array</code><br/>
-Please append a <code>// freestanding-partial</code> comment to <code>array</code><br/>
+<p>
+Please insert a <code><i>// mostly freestanding</i></code> comment at the beginning of the <a href="https://eel.is/c++draft/array.syn">[array.syn]</a> synopsis.<br/>
+</p><p>
+Please append a <code><i>// freestanding-partial</i></code> comment to <code>array</code><br/>
+</p>
 
 <h2>Changes in <a href="https://eel.is/c++draft/array.overview">[array.overview]</a></h2>
 Instructions to the editor:<br/>
-Please append a <code>// freestanding-deleted</code> comment to every overload of <code>at</code>.
+Please append a <code><i>// freestanding-deleted</i></code> comment to every overload of <code>at</code>.
 
 <h2>Changes in <a href="https://eel.is/c++draft/version.syn">[version.syn]</a></h2>
 This part of the paper follows the guide lines as specified in [P2198R6].
