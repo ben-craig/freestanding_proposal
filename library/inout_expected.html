@@ -358,7 +358,7 @@ span.indented {
 }
 </style>
 
-<title>D2833R0: Freestanding Library: inout expected span</title>
+<title>TODO D2833R0: Freestanding Library: inout expected span</title>
 <body>
 <h1>Freestanding Library: inout expected span</h1>
 Document number: TODO D2833R0<br/>
@@ -406,6 +406,11 @@ This paper mostly follows the guide lines as specified in [P2198R6] Freestanding
 However, <code>__cpp_lib_freestanding_mdspan</code> is added instead of bumping <code>__cpp_lib_mdspan</code> because I suspect the mdspan authors will be bumping the <code>__cpp_lib_mdspan</code> macro frequently in the C++26 cycle.
 When multiple orthogonal papers bump the same feature test macro, it becomes difficult for users to test for the specific features they care about.
 </p>
+
+<h1>Experience</h1>
+[P0323R12 std::expected] cites usage experience on bare metal systems without exceptions enabled. [P0009R18 MDSPAN] has a reference implementation that is usable with CUDA.  <code>mdspan</code> uses <code>span</code> in the implementation and interface, so the CUDA experience extends to <code>span</code> as well.
+
+TODO: inout_ptr experience.
 
 <h1>Wording</h1>
 This paper’s wording is based on the current working draft, [N4928], and it assumes that [P2338R4] has been applied.
@@ -528,8 +533,20 @@ Please insert an <code><i>// all freestanding</i></code> comment at the beginnin
 </p>
 
 <h1>References</h1>
+[P0009R18] Christian Trott et al. 2022-07-13. MDSPAN.<br/>
+&emsp;&emsp;https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p0009r18.html<br/>
+
+[P0122R7] Neil MacIntosh et al. 2018-03-16. span: bounds-safe views for sequences of objects.<br/>
+&emsp;&emsp;https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0122r7.pdf<br/>
+
+[P0323R12] Vicente Botet et al. 2022-01-07. std::expected.<br/>
+&emsp;&emsp;https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p0323r12.html<br/>
+
+[P1132R8] JeanHeyd Meneide et al. 2021-06-15. out_ptr - a scalable output pointer abstraction.<br/>
+&emsp;&emsp;https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p1132r8.html<br/>
+
 [P2338R4] Ben Craig. 2022-12-06. Freestanding Library: Character primitives and the C library.<br/>
-&emsp;&emsp;https://wg21.link/P2338R4<br/>
+&emsp;&emsp;https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2338r4.html<br/>
 
 </body>
 </html>
