@@ -358,11 +358,11 @@ span.indented {
 }
 </style>
 
-<title>P2833R0: Freestanding Library: inout expected span</title>
+<title>TODO D2833R1: Freestanding Library: inout expected span</title>
 <body>
 <h1>Freestanding Library: inout expected span</h1>
-Document number: P2833R0<br/>
-Date: 2023-03-13<br/>
+Document number: TODO D2833R1<br/>
+Date: TODO 2023-03-13<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: Library Evolution Working Group
 
@@ -413,8 +413,9 @@ When multiple orthogonal papers bump the same feature test macro, it becomes dif
 [P0009R18 MDSPAN] has a reference implementation that is usable with CUDA.
 <code>mdspan</code> uses <code>span</code> in the implementation and interface, so the CUDA experience extends to <code>span</code> as well.
 </p><p>
-The author is prototyping <code>out_ptr</code> and <code>inout_ptr</code> changes with MSVC's STL.
-Ask about this implementation experience during the LEWG review!
+The author has prototyped the necessary <code>out_ptr</code> and <code>inout_ptr</code> changes with MSVC's STL.
+This involved <code>#if</code>'ing out <code>weak_ptr</code>, as well as the definitions of <code>shared_ptr</code> facilities.
+The tests worked as is, except for the ones specifically testing <code>shared_ptr</code>.
 </p>
 
 <h1>Wording</h1>
