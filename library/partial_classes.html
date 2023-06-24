@@ -358,10 +358,10 @@ span.indented {
 }
 </style>
 
-<title>TODO D2407R3: Freestanding Library: Partial Classes</title>
+<title>D2407R4: Freestanding Library: Partial Classes TODO</title>
 <body>
 <h1>Freestanding Library: Partial Classes</h1>
-Document number: D2407R3 TODO<br/>
+Document number: D2407R4 TODO<br/>
 Date: 2023-03-05 TODO<br/>
 Reply-to:<br/>
 &emsp;&emsp;Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
@@ -369,6 +369,18 @@ Reply-to:<br/>
 Audience: Library Working Group
 
 <h1>Changes from previous revisions</h1>
+<h3>Changes from R3</h3>
+<ul>
+  <li>TODO: change note [freestanding.item] p2</li>
+  <li>TODONE: add note to mention overload resolution consequences of hosted vs. deleted</li>
+  <li>TODONE: header synopsis vs. class synopsis</li>
+  <li>TODONE: add freestanding comment to feature test macros</li>
+  <li>TODONE: make freestanding-deleted unconditionally freestanding item, just with different requirements</li>
+  <li>TODONE: make member freestanding requirements.  Was obvious that members of classes were freestanding items</li>
+  <li>TODONE: missing parens on size() in ends_with</li>
+  <li>TODO: string_view find / search defined in terms of at()</li>
+  <li>TODO: array specified in terms of algorithm...</li>
+</ul>
 <h3>Changes from R2</h3>
 <ul>
   <li><code>// freestanding-delete</code> to <code><i>// freestanding-deleted</i></code></li>
@@ -480,64 +492,68 @@ All these functions are not throwing, and there are no other problems regarding 
 We therefore opt for them being marked as freestanding.
 
 <h1>Wording</h1>
-This paper’s wording is based on the current working draft, [N4928], and it assumes that [P2338R3] has been applied.
+This paper’s wording is based on the current working draft, TODO [N4928].
 
 <h2>Change in <a href="https://eel.is/c++draft/freestanding.item">[freestanding.item]</a></h2>
 Modify <a href="https://eel.is/c++draft/freestanding.item">[freestanding.item]</a>.
+This includes a reordering of what was paragraph 6.
+
 <blockquote class="std">
 <div class='para'>
-    <div class='marginalizedparent'><a class='marginalized'>3</a></div>
-    <div class="sentence">A declaration in a header synopsis is a freestanding item if
-        <ul class="itemize">
-            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(3.1)</a></div>
-                it is followed by a comment that includes <i>freestanding</i>, or
-            </li>
-            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(3.2)</a></div>
-                the header synopsis begins with a comment that includes <i>all freestanding</i><del>.</del><ins>, or</ins>
-            </li>
-            <ins>
-                <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(3.3)</a></div>
-                    the header synopsis begins with a comment that includes <i>mostly freestanding</i> and the declaration is not followed by a comment that includes
-                    <ul class="itemize">
-                        <li><i>freestanding-partial</i>, or</li>
-                        <li><i>freestanding-deleted</i>, or</li>
-                        <li><i>hosted</i>.</li>
-                    </ul>
-                </li>
-            </ins>
-        </ul>
+    <div class='marginalizedparent'><a class='marginalized'>2</a></div>
+    <div class='sentence'>Unless otherwise specified,
+        the requirements on freestanding items for a freestanding implementation
+        are the same as the corresponding requirements for a hosted implementation,
+        except that not all of the members of the namespaces are required to be present.
     </div>
-    <p>...</p>
+    <del>
+    <div class='note'>
+        [<i>Note&nbsp;1</i>:
+        
+        <div class='sentence'>This implies that freestanding item enumerations have the same enumerators on
+            freestanding implementations and hosted implementations.
+        </div>
+        <div class='sentence'>Furthermore, class types have the same members and
+            class templates have the same deduction guides
+            on freestanding implementations and hosted implementations.
+        </div>
+        
+         —&nbsp;<i>end note</i>]
+    </div>
+    </del>
+</div>
 
-    <div class='marginalizedparent'><a class='marginalized'>5</a></div>
-    <div class="sentence">A macro is a freestanding item if it is defined in a header synopsis and
-        <ul class="itemize">
-            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.1)</a></div>
-                the definition is followed by a comment that includes <i>freestanding</i>, or
-            </li>
-            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.2)</a></div>
-                the header synopsis begins with a comment that includes <i>all freestanding</i><del>.</del><ins>, or</ins>
-            </li>
-            <ins>
-                <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.3)</a></div>
-                    the header synopsis begins with a comment that includes <i>mostly freestanding</i> and the definition is not followed by a comment that includes
-                    <ul class="itemize">
-                        <li><i>freestanding-partial</i>, or</li>
-                        <li><i>freestanding-deleted</i>, or</li>
-                        <li><i>hosted</i>.</li>
-                    </ul>
-                </li>
-            </ins>
-        </ul>
-    </div></div>
-</blockquote>
+<div class='para'>
+    <div class='marginalizedparent'><a class='marginalized'><del>6</del><ins>?</ins></a></div>
+    <div class='sentence'>Function declarations and function template declarations followed by
+        a comment that include <span class='textit'>freestanding-deleted</span> are 
+        <span class='textit'>freestanding deleted functions</span>.</div>
+    <div class='sentence'>On freestanding implementations, it is implementation
+        defined whether each function definition introduced by a freestanding deleted function
+        is <del>a freestanding item or </del>a deleted function
+        (<a href="https://wg21.link/dcl.fct.def.delete">[dcl.fct.def.delete]</a>)<ins> or whether the
+        requirements are the same as the corresponding requirements for a hosted implementation.</ins>.</div>
+    <ins>
+    <div class="note">[ <span class="textit">Note</span><span class="textit">:</span>
+        Deleted definitions ensure that overload resolution
+        does not silently change when migrating a library from a freestanding implementation
+        to a hosted implementation. -<i>end note</i>]
+    </div>
+    </ins>
+    <div class='example'>[  <span class='textit'>Example:</span>
+<pre class='codeblock'>
+double abs(double j); <span class='comment'>// <span class='textit'>freestanding-deleted</span></span>
+</pre>
+    -<i>end example</i>]
+    </div>
+</div>
 
-Drafting note: Apply the following change after applying the changes in P2338 "Freestanding Library: Character primitives and the C library".<br/>
-Add a new paragraph to <a href="https://eel.is/c++draft/freestanding.item">[freestanding.item]</a>.
-<blockquote class="stdins">
+<ins>
 <div class='para'>
     <div class='marginalizedparent'><a class='marginalized'>?</a></div>
-    <div class='sentence'>A class type declaration or class template declaration in a header synopsis that is followed by a comment that includes <span class='textit'>freestanding-partial</span> is a freestanding item, except that it contains at least one freestanding deleted function.</div>
+    <div class='sentence'>A class type declaration or class template declaration in a synopsis
+        that is followed by a comment that includes <span class='textit'>freestanding-partial</span>
+        is a freestanding item, except that it contains at least one freestanding deleted function.</div>
     <div class='example'>[  <span class='textit'>Example:</span>
 <pre class='codeblock'>
 template &lt;class T, size_t N&gt; struct array; <span class='comment'>//<span class='textit'>freestanding-partial</span></span>
@@ -552,6 +568,92 @@ struct array {
 </pre>
     -<i>end example</i>]</div>
 </div>
+</ins>
+
+<div class='para'>
+    <div class='marginalizedparent'><a class='marginalized'>3</a></div>
+    <div class="sentence">A declaration in a <del>header </del>synopsis is a freestanding item if
+        <ul class="itemize">
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(3.1)</a></div>
+                it is followed by a comment that includes <i>freestanding</i>,<del> or</del>
+            </li>
+            <ins>
+            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(3.?)</a></div>
+                it is followed by a comment that includes <i>freestanding-deleted</i>,
+            </li>
+            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(3.?)</a></div>
+                it is followed by a comment that includes <i>freestanding-partial</i>,
+            </li>
+            </ins>
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(3.2)</a></div>
+                the header synopsis begins with a comment that includes <i>all freestanding</i><del>.</del><ins>, or</ins>
+            </li>
+            <ins>
+                <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(3.?)</a></div>
+                    the header synopsis begins with a comment that includes <i>mostly freestanding</i> and the declaration is not followed by a comment that includes <i>hosted</i>.
+                    <div class="note">[ <span class="textit">Note</span><span class="textit">:</span>
+                        Declarations followed by <i>hosted</i> in <i>mostly freestanding</i> headers are not freestanding items.
+                        Overload resolution with such functions could vary between hosted and freestanding implementations. -<i>end note</i>]
+                    </div>
+                </li>
+            </ins>
+        </ul>
+    </div>
+</div>
+
+<div class='para'>
+    <div class='marginalizedparent'><a class='marginalized'>4</a></div>
+    <div class='sentence'>An entity or <i>typedef-name</i> is a freestanding item if it is:
+        <ul class='itemize'>
+            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(4.1)</a></div>
+                introduced by a declaration that is a freestanding item,
+            </li>
+            <ins>
+            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(4.?)</a></div>
+                a member of a freestanding item,
+            </li>
+            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(4.?)</a></div>
+                an enumerator of a freestanding item,
+            </li>
+            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(4.?)</a></div>
+                a deduction guide of a freestanding item,
+            </li>
+            </ins>
+            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(4.2)</a></div>
+                an enclosing namespace of a freestanding item,
+            </li>
+            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(4.3)</a></div>
+                a friend of a freestanding item,
+            </li>
+            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(4.4)</a></div>
+                denoted by a <i>typedef-name</i> that is a freestanding item, or
+            </li>
+            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(4.5)</a></div>
+                denoted by an alias template that is a freestanding item.
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class='para'>
+    <div class='marginalizedparent'><a class='marginalized'>5</a></div>
+    <div class="sentence">A macro is a freestanding item if it is defined in a header synopsis and
+        <ul class="itemize">
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.1)</a></div>
+                the definition is followed by a comment that includes <i>freestanding</i>,<del> or</del>
+            </li>
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.2)</a></div>
+                the header synopsis begins with a comment that includes <i>all freestanding</i><del>.</del><ins>, or</ins>
+            </li>
+            <ins>
+                <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.?)</a></div>
+                    the header synopsis begins with a comment that includes <i>mostly freestanding</i> and the definition is not followed by a comment that includes <i>hosted</i>.
+                </li>
+            </ins>
+        </ul>
+    </div>
+</div>
+
 </blockquote>
 
 <h2>Changes in <a href="https://eel.is/c++draft/compliance">[compliance]</a></h2>
@@ -595,6 +697,19 @@ Add new rows to the "C++ headers for freestanding implementations" table:
 </tr>
 </tbody>
 </table>
+
+<h2>Changes in <a href="https://eel.is/c++draft/version.syn">[version.syn]</a></h2>
+This part of the paper follows the guide lines as specified in [P2198R6].
+Instructions to the editor:<br/>
+Add the following macros to <a href="https://eel.is/c++draft/version.syn">[version.syn]</a>:
+<blockquote class="stdins">
+<pre class='codeblock'>
+#define __cpp_lib_freestanding_array 20XXXXL       // freestanding, also in &lt;array&gt;
+#define __cpp_lib_freestanding_optional 20XXXXL    // freestanding, also in &lt;optional&gt;
+#define __cpp_lib_freestanding_string_view 20XXXXL // freestanding, also in &lt;string_view&gt;
+#define __cpp_lib_freestanding_variant 20XXXXL     // freestanding, also in &lt;variant&gt;
+</pre>
+</blockquote>
 
 <h2>Changes in <a href="https://eel.is/c++draft/optional.syn">[optional.syn]</a></h2>
 Instructions to the editor:<br/>
@@ -683,7 +798,7 @@ Please modify the <a href="https://eel.is/c++draft/string.view.ops#23"><code>bas
     <div class='marginalizedparent'><a class='marginalized'>?</a></div>
     <div class="sentence"><i>Effects</i>: Equivalent to: 
         <del><code>return size() &gt;= x.size() && compare(size() - x.size(), npos, x) == 0</code></del>
-        <ins><code>return basic_string_view(data() + (size - rlen), rlen) == x;</code></ins>
+        <ins><code>return basic_string_view(data() + (size() - rlen), rlen) == x;</code></ins>
     </div>
 </div>
 </blockquote>
@@ -700,19 +815,6 @@ Please append a <code><i>// freestanding-partial</i></code> comment to <code>arr
 Instructions to the editor:<br/>
 Please append a <code><i>// freestanding-deleted</i></code> comment to every overload of <code>at</code>.
 
-<h2>Changes in <a href="https://eel.is/c++draft/version.syn">[version.syn]</a></h2>
-This part of the paper follows the guide lines as specified in [P2198R6].
-Instructions to the editor:<br/>
-Add the following macros to <a href="https://eel.is/c++draft/version.syn">[version.syn]</a>:
-<blockquote class="stdins">
-<pre class='codeblock'>
-#define __cpp_lib_freestanding_array 20XXXXL //also in &lt;array&gt;
-#define __cpp_lib_freestanding_optional 20XXXXL //also in &lt;optional&gt;
-#define __cpp_lib_freestanding_string_view 20XXXXL //also in &lt;string_view&gt;
-#define __cpp_lib_freestanding_variant 20XXXXL //also in &lt;variant&gt;
-</pre>
-</blockquote>
-
 <h1>References</h1>
 [AK] Andreas Kling. Serenity OS AK Library.<br/>
 &emsp;&emsp;https://github.com/SerenityOS/serenity/tree/master/AK<br/>
@@ -724,8 +826,8 @@ Add the following macros to <a href="https://eel.is/c++draft/version.syn">[versi
 &emsp;&emsp;https://wg21.link/P2198R6<br/>
 [P2268R0] Ben Craig. 2020-12-10. Freestanding Roadmap.<br/>
 &emsp;&emsp;https://wg21.link/p2268r0<br/>
-[P2338R3] Ben Craig. 2022-12-06. Freestanding Library: Character primitives and the C library.<br/>
-&emsp;&emsp;https://wg21.link/P2338R3<br/>
+[P2338R4] Ben Craig. 2023-02-09. Freestanding Library: Character primitives and the C library.<br/>
+&emsp;&emsp;https://wg21.link/P2338R4<br/>
 
 </body>
 </html>
