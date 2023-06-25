@@ -401,15 +401,15 @@ Audience: Library Working Group
   <li>TODONE: make member freestanding requirements.  Was obvious that members of classes were freestanding items</li>
   <li>TODONE: missing parens on size() in ends_with</li>
   <li>TODONE: optional monadic specified with .value()...</li>
-  <li>TODO: variant specified with get()</li>
+  <li>TODONE: variant specified with get()</li>
   <ul>
     <li>done: ctors taking variant ref and rvalue ref</li>
     <li>done: assignment taking variant ref and rvalue rev</li>
     <li>done: swap</li>
-    <li>[variant.relops]</li>
-    <li>visit</li>
+    <li>done:[variant.relops]</li>
+    <li>done: visit</li>
   </ul>
-  <li>TODO: string_view find / search defined in terms of at()</li>
+  <li>TODONE: string_view find / search defined in terms of at()</li>
   <li>TODO: array specified in terms of algorithm...</li>
 </ul>
 <h3>Changes from R2</h3>
@@ -521,6 +521,13 @@ We omit string_view’s associated operator&lt;&lt; since we don’t add basic_o
 Since this paper was first published, std::string_view got a new contains member function, and std::optional got transform, and_then, and or_else.
 All these functions are not throwing, and there are no other problems regarding freestanding.
 We therefore opt for them being marked as freestanding.
+
+<h1>Minimal <code>&lt;algorithm&gt;</code> inclusions</h1>
+<code>std::array::fill</code> is specified in terms of <code>std::fill_n</code>.
+<code>std::array::swap</code> is specified in terms of <code>std::swap_ranges</code>.
+Both <code>fill_n</code> and <code>swap_ranges</code> are reasonable inclusions in freestanding.
+Rather than respecify <code>array</code> in terms of other freestanding facilities, we have chosen to pull in the functions from <code>&lt;algorithm&gt;</code> that we need.
+A later paper will likely add many more facilities from <code>&lt;algorithm&gt;</code>.
 
 <h1>Wording</h1>
 This paper’s wording is based on the current working draft, TODO [N4928].
@@ -722,6 +729,11 @@ Add new rows to the "C++ headers for freestanding implementations" table:
 <td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;array&gt;</tt></ins></td>
 </tr>
 <tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://wg21.link/algorithms">[algorithms]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>Algorithms library</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;algorithm&gt;</tt></ins></td>
+</tr>
+<tr style="border: 1px solid black">
 <td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
 <td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
 <td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
@@ -735,6 +747,7 @@ Instructions to the editor:<br/>
 Add the following macros to <a href="https://eel.is/c++draft/version.syn">[version.syn]</a>:
 <blockquote class="stdins">
 <pre class='codeblock'>
+#define __cpp_lib_freestanding_algorithm 20XXXXL   // freestanding, also in &lt;algorithm&gt;
 #define __cpp_lib_freestanding_array 20XXXXL       // freestanding, also in &lt;array&gt;
 #define __cpp_lib_freestanding_optional 20XXXXL    // freestanding, also in &lt;optional&gt;
 #define __cpp_lib_freestanding_string_view 20XXXXL // freestanding, also in &lt;string_view&gt;
@@ -789,7 +802,7 @@ Please append a <code><i>// freestanding-deleted</i></code> comment to every ove
     <div class="itemdescr"><div class="texpara"><div id="3.sentence-1" class="sentence">
         <i>Effects</i>: Equivalent to:
 <span class="codeblock"><span class="keyword">if</span> (*<span class="keyword">this</span>) <span class="curlybracket">{</span>
-  <span class="keyword">return</span> invoke(std<span class="operator">::</span>forward&lt;F&gt;(f), <del>value()</del><ins>**<span class="keyword">this</span></ins>);
+  <span class="keyword">return</span> invoke(std::forward&lt;F&gt;(f), <del>value()</del><ins>**<span class="keyword">this</span></ins>);
 <span class="curlybracket">}</span> <span class="keyword">else</span> <span class="curlybracket">{</span>
   <span class="keyword">return</span> remove_cvref_t&lt;U&gt;();
 <span class="curlybracket">}</span></span>
@@ -820,7 +833,7 @@ Please append a <code><i>// freestanding-deleted</i></code> comment to every ove
     <div class="itemdescr"><div class="texpara"><div id="6.sentence-1" class="sentence">
         <i>Effects</i>: Equivalent to:
     <span class="codeblock"><span class="keyword">if</span> (*<span class="keyword">this</span>) <span class="curlybracket">{</span>
-  <span class="keyword">return</span> invoke(std<span class="operator">::</span>forward&lt;F&gt;(f), std<span class="operator">::</span>move(<del>value()</del><ins>**<span class="keyword">this</span></ins>));
+  <span class="keyword">return</span> invoke(std::forward&lt;F&gt;(f), std::move(<del>value()</del><ins>**<span class="keyword">this</span></ins>));
 <span class="curlybracket">}</span> <span class="keyword">else</span> <span class="curlybracket">{</span>
   <span class="keyword">return</span> remove_cvref_t&lt;U&gt;();
 <span class="curlybracket">}</span>
@@ -848,7 +861,7 @@ Please append a <code><i>// freestanding-deleted</i></code> comment to every ove
         </div>
         <div id="8.sentence-2" class="sentence">
             The declaration
-<span class="codeblock">U u(invoke(std<span class="operator">::</span>forward&lt;F&gt;(f), <del>value()</del><ins>**<span class="keyword">this</span></ins>));
+<span class="codeblock">U u(invoke(std::forward&lt;F&gt;(f), <del>value()</del><ins>**<span class="keyword">this</span></ins>));
 </span>
 is well-formed for some invented variable <span class="texttt">u</span>.
         </div>
@@ -891,7 +904,7 @@ otherwise, <span class="texttt">optional&lt;U&gt;()</span>.
         </div>
         <div id="11.sentence-2" class="sentence">
             The declaration
-<span class="codeblock">U u(invoke(std<span class="operator">::</span>forward&lt;F&gt;(f), std<span class="operator">::</span>move(<del>value()</del><ins>**<span class="keyword">this</span></ins>)));
+<span class="codeblock">U u(invoke(std::forward&lt;F&gt;(f), std::move(<del>value()</del><ins>**<span class="keyword">this</span></ins>)));
 </span>
 is well-formed for some invented variable <span class="texttt">u</span>.
         </div>
@@ -934,24 +947,24 @@ Please append a <code><i>// freestanding-deleted</i></code> comment to every <co
 <code class="itemdeclcode"><span class="keyword">constexpr</span> variant(<span class="keyword">const</span> variant<span class="operator">&amp;</span> w);
 </code></div></div></div>
 
-<div class="para" id="7"><div class="marginalizedparent"><a class="marginalized" href="#7">7</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5081">#</a></div><div class="texpara"><div id="7.sentence-1" class="sentence"><i>Effects</i>: If <span class="texttt">w</span> holds a value, initializes the <span class="texttt">variant</span> to hold the same
+<div class="para" id="7"><div class="marginalizedparent"><a class="marginalized" href="#7">7</a></div><div class="itemdescr"><div class="texpara"><div id="7.sentence-1" class="sentence"><i>Effects</i>: If <span class="texttt">w</span> holds a value, initializes the <span class="texttt">variant</span> to hold the same
 alternative as <span class="texttt">w</span> and direct-initializes the contained value
-with <span class="texttt"><del>get&lt;j&gt;(w)</del><ins>*get_if&lt;j&gt;(&w)</ins></span>, where <span class="texttt">j</span> is <span class="texttt">w.index()</span><a class="hidden_link" href="#7.sentence-1">.</a></div> <div id="7.sentence-2" class="sentence">Otherwise, initializes the <span class="texttt">variant</span> to not hold a value<a class="hidden_link" href="#7.sentence-2">.</a></div></div></div></div>
+with <span class="texttt"><del>get&lt;j&gt;(w)</del><ins>*get_if&lt;j&gt;(addressof(w))</ins></span>, where <span class="texttt">j</span> is <span class="texttt">w.index()</span><a class="hidden_link" href="#7.sentence-1">.</a></div> <div id="7.sentence-2" class="sentence">Otherwise, initializes the <span class="texttt">variant</span> to not hold a value<a class="hidden_link" href="#7.sentence-2">.</a></div></div></div></div>
 
-<div class="para" id="8"><div class="marginalizedparent"><a class="marginalized" href="#8">8</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5088">#</a></div><div class="texpara"><div id="8.sentence-1" class="sentence"><i>Throws</i>: Any exception thrown by direct-initializing any <span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span> for all <span class="math"><span class="mathalpha">i</span></span><a class="hidden_link" href="#8.sentence-1">.</a></div></div></div></div>
+<div class="para" id="8"><div class="marginalizedparent"><a class="marginalized" href="#8">8</a></div><div class="itemdescr"><div class="texpara"><div id="8.sentence-1" class="sentence"><i>Throws</i>: Any exception thrown by direct-initializing any <span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span> for all <span class="math"><span class="mathalpha">i</span></span><a class="hidden_link" href="#8.sentence-1">.</a></div></div></div></div>
 
-<div class="para" id="9"><div class="marginalizedparent"><a class="marginalized" href="#9">9</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5092">#</a></div><div class="texpara"><div id="9.sentence-1" class="sentence"><i>Remarks</i>: This constructor is defined as deleted unless
+<div class="para" id="9"><div class="marginalizedparent"><a class="marginalized" href="#9">9</a></div><div class="itemdescr"><div class="texpara"><div id="9.sentence-1" class="sentence"><i>Remarks</i>: This constructor is defined as deleted unless
 <span class="texttt">is_copy_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt;</span> is <span class="texttt"><span class="literal">true</span></span> for all <span class="math"><span class="mathalpha">i</span></span><a class="hidden_link" href="#9.sentence-1">.</a></div> <div id="9.sentence-2" class="sentence">If <span class="texttt">is_trivially_copy_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt;</span>
 is <span class="texttt"><span class="literal">true</span></span> for all <span class="math"><span class="mathalpha">i</span></span>, this constructor is trivial<a class="hidden_link" href="#9.sentence-2">.</a></div></div></div></div>
 
 <div class="texpara"><div id="lib:variant,constructor__"><div class="itemdecl"><code class="itemdeclcode"><span class="keyword">constexpr</span> variant(variant<span class="operator">&amp;</span><span class="operator">&amp;</span> w) <span class="keyword">noexcept</span>(<i><span class="texttt">see below</span></i>);
 </code></div></div></div>
 
-<div class="para" id="10"><div class="marginalizedparent"><a class="marginalized" href="#10">10</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5106">#</a></div><div class="texpara"><div id="10.sentence-1" class="sentence"><i>Constraints</i>: <span class="texttt">is_move_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt;</span> is <span class="texttt"><span class="literal">true</span></span> for all <span class="math"><span class="mathalpha">i</span></span><a class="hidden_link" href="#10.sentence-1">.</a></div></div></div></div>
+<div class="para" id="10"><div class="marginalizedparent"><a class="marginalized" href="#10">10</a></div><div class="itemdescr"><div class="texpara"><div id="10.sentence-1" class="sentence"><i>Constraints</i>: <span class="texttt">is_move_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt;</span> is <span class="texttt"><span class="literal">true</span></span> for all <span class="math"><span class="mathalpha">i</span></span><a class="hidden_link" href="#10.sentence-1">.</a></div></div></div></div>
 
-<div class="para" id="11"><div class="marginalizedparent"><a class="marginalized" href="#11">11</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5110">#</a></div><div class="texpara"><div id="11.sentence-1" class="sentence"><i>Effects</i>: If <span class="texttt">w</span> holds a value, initializes the <span class="texttt">variant</span> to hold the same
+<div class="para" id="11"><div class="marginalizedparent"><a class="marginalized" href="#11">11</a></div><div class="itemdescr"><div class="texpara"><div id="11.sentence-1" class="sentence"><i>Effects</i>: If <span class="texttt">w</span> holds a value, initializes the <span class="texttt">variant</span> to hold the same
 alternative as <span class="texttt">w</span> and direct-initializes the contained value with
-<span class="texttt"><del>get&lt;j&gt;(std::move(w))</del><ins>std::move(*get_if&lt;j&gt;(&w))</ins></span>, where <span class="texttt">j</span> is <span class="texttt">w.index()</span><a class="hidden_link" href="#11.sentence-1">.</a></div> <div id="11.sentence-2" class="sentence">Otherwise, initializes the <span class="texttt">variant</span> to not hold a value<a class="hidden_link" href="#11.sentence-2">.</a></div></div></div></div>
+<span class="texttt"><del>get&lt;j&gt;(std::move(w))</del><ins>std::move(*get_if&lt;j&gt;(addressof(w)))</ins></span>, where <span class="texttt">j</span> is <span class="texttt">w.index()</span><a class="hidden_link" href="#11.sentence-1">.</a></div> <div id="11.sentence-2" class="sentence">Otherwise, initializes the <span class="texttt">variant</span> to not hold a value<a class="hidden_link" href="#11.sentence-2">.</a></div></div></div></div>
 
 
 </blockquote>
@@ -966,9 +979,9 @@ alternative as <span class="texttt">w</span> and direct-initializes the containe
 
 <div class="texpara"><div id="lib:variant,operator="><div id="lib:operator=,variant"><div class="itemdecl"><code class="itemdeclcode"><span class="keyword">constexpr</span> variant<span class="operator">&amp;</span> <span class="keyword">operator</span>=(<span class="keyword">const</span> variant<span class="operator">&amp;</span> rhs);
 </code></div></div></div></div>
-<div class="para" id="1"><div class="marginalizedparent"><a class="marginalized" href="#1">1</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5354">#</a></div><div class="texpara"><div id="1.sentence-1" class="sentence">Let <span class="math"><span class="mathalpha">j</span></span> be <span class="texttt">rhs.index()</span><a class="hidden_link" href="#1.sentence-1">.</a></div></div></div></div>
+<div class="para" id="1"><div class="marginalizedparent"><a class="marginalized" href="#1">1</a></div><div class="itemdescr"><div class="texpara"><div id="1.sentence-1" class="sentence">Let <span class="math"><span class="mathalpha">j</span></span> be <span class="texttt">rhs.index()</span><a class="hidden_link" href="#1.sentence-1">.</a></div></div></div></div>
 
-<div class="para" id="2"><div class="marginalizedparent"><a class="marginalized" href="#2">2</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5357">#</a></div><div class="texpara"><div id="2.sentence-1" class="sentence"><i>Effects</i>: 
+<div class="para" id="2"><div class="marginalizedparent"><a class="marginalized" href="#2">2</a></div><div class="itemdescr"><div class="texpara"><div id="2.sentence-1" class="sentence"><i>Effects</i>: 
     <ul class="itemize">
         <li id="2.1"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#2.1">(2.1)</a></div><div class="texpara"><div id="2.1.sentence-1" class="sentence">If neither <span class="texttt">*<span class="keyword">this</span></span> nor <span class="texttt">rhs</span> holds a value, there is no effect<a class="hidden_link" href="#2.1.sentence-1">.</a></div></div></li>
         <li id="2.2"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#2.2">(2.2)</a></div><div class="texpara"><div id="2.2.sentence-1" class="sentence">Otherwise, if <span class="texttt">*<span class="keyword">this</span></span> holds a value but <span class="texttt">rhs</span> does not, destroys the value
@@ -978,15 +991,15 @@ to the value contained in <span class="texttt">*<span class="keyword">this</span
         <li id="2.4"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#2.4">(2.4)</a></div><div class="texpara"><div id="2.4.sentence-1" class="sentence">Otherwise, if either <span class="texttt">is_nothrow_copy_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.519em;">j</span></span></span></span></span></span></span>&gt;</span>
 is <span class="texttt"><span class="literal">true</span></span> or
 <span class="texttt">is_nothrow_move_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.519em;">j</span></span></span></span></span></span></span>&gt;</span> is <span class="texttt"><span class="literal">false</span></span>,
-equivalent to <span class="texttt">emplace&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(<del>get&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(rhs)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(&rhs)</ins>)</span><a class="hidden_link" href="#2.4.sentence-1">.</a></div></div></li>
+equivalent to <span class="texttt">emplace&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(<del>get&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(rhs)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(addressof(rhs))</ins>)</span><a class="hidden_link" href="#2.4.sentence-1">.</a></div></div></li>
         <li id="2.5"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#2.5">(2.5)</a></div><div class="texpara"><div id="2.5.sentence-1" class="sentence">Otherwise, equivalent to <span class="texttt"><span class="keyword">operator</span>=(variant(rhs))</span><a class="hidden_link" href="#2.5.sentence-1">.</a></div></div></li>
     </ul></div></div></div></div>
     
-<div class="para" id="3"><div class="marginalizedparent"><a class="marginalized" href="#3">3</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5377">#</a></div><div class="texpara"><div id="3.sentence-1" class="sentence"><i>Postconditions</i>: <span class="texttt">index() == rhs.index()</span><a class="hidden_link" href="#3.sentence-1">.</a></div></div></div></div>
+<div class="para" id="3"><div class="marginalizedparent"><a class="marginalized" href="#3">3</a></div><div class="itemdescr"><div class="texpara"><div id="3.sentence-1" class="sentence"><i>Postconditions</i>: <span class="texttt">index() == rhs.index()</span><a class="hidden_link" href="#3.sentence-1">.</a></div></div></div></div>
 
-<div class="para" id="4"><div class="marginalizedparent"><a class="marginalized" href="#4">4</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5381">#</a></div><div class="texpara"><div id="4.sentence-1" class="sentence"><i>Returns</i>: <span class="texttt">*<span class="keyword">this</span></span><a class="hidden_link" href="#4.sentence-1">.</a></div></div></div></div>
+<div class="para" id="4"><div class="marginalizedparent"><a class="marginalized" href="#4">4</a></div><div class="itemdescr"><div class="texpara"><div id="4.sentence-1" class="sentence"><i>Returns</i>: <span class="texttt">*<span class="keyword">this</span></span><a class="hidden_link" href="#4.sentence-1">.</a></div></div></div></div>
 
-<div class="para" id="5"><div class="marginalizedparent"><a class="marginalized" href="#5">5</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5385">#</a></div><div class="texpara"><div id="5.sentence-1" class="sentence"><i>Remarks</i>: This operator is defined as deleted unless
+<div class="para" id="5"><div class="marginalizedparent"><a class="marginalized" href="#5">5</a></div><div class="itemdescr"><div class="texpara"><div id="5.sentence-1" class="sentence"><i>Remarks</i>: This operator is defined as deleted unless
 <span class="texttt">is_copy_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt; <span class="operator">&amp;</span><span class="operator">&amp;</span></span>
 <span class="texttt">is_copy_assignable_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt;</span>
 is <span class="texttt"><span class="literal">true</span></span> for all <span class="math"><span class="mathalpha">i</span></span><a class="hidden_link" href="#5.sentence-1">.</a></div> <div id="5.sentence-2" class="sentence">If <span class="texttt">is_trivially_copy_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt; <span class="operator">&amp;</span><span class="operator">&amp;</span></span>
@@ -995,23 +1008,23 @@ is <span class="texttt"><span class="literal">true</span></span> for all <span c
 is <span class="texttt"><span class="literal">true</span></span> for all <span class="math"><span class="mathalpha">i</span></span>, this assignment operator is trivial<a class="hidden_link" href="#5.sentence-2">.</a></div></div></div></div><div class="texpara"><div id="lib:variant,operator=_"><div id="lib:operator=,variant_"><div class="itemdecl"><div class="marginalizedparent"><a class="itemDeclLink" href="#lib:operator=,variant_">🔗</a></div><code class="itemdeclcode"><span class="keyword">constexpr</span> variant<span class="operator">&amp;</span> <span class="keyword">operator</span>=(variant<span class="operator">&amp;</span><span class="operator">&amp;</span> rhs) <span class="keyword">noexcept</span>(<i><span class="texttt">see below</span></i>);
 </code></div></div></div></div>
 
-<div class="para" id="6"><div class="marginalizedparent"><a class="marginalized" href="#6">6</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5403">#</a></div><div class="texpara"><div id="6.sentence-1" class="sentence">Let <span class="math"><span class="mathalpha">j</span></span> be <span class="texttt">rhs.index()</span><a class="hidden_link" href="#6.sentence-1">.</a></div></div></div></div>
+<div class="para" id="6"><div class="marginalizedparent"><a class="marginalized" href="#6">6</a></div><div class="itemdescr"><div class="texpara"><div id="6.sentence-1" class="sentence">Let <span class="math"><span class="mathalpha">j</span></span> be <span class="texttt">rhs.index()</span><a class="hidden_link" href="#6.sentence-1">.</a></div></div></div></div>
 
-<div class="para" id="7"><div class="marginalizedparent"><a class="marginalized" href="#7">7</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5406">#</a></div><div class="texpara"><div id="7.sentence-1" class="sentence"><i>Constraints</i>: <span class="texttt">is_move_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt; <span class="operator">&amp;</span><span class="operator">&amp;</span></span>
+<div class="para" id="7"><div class="marginalizedparent"><a class="marginalized" href="#7">7</a></div><div class="itemdescr"><div class="texpara"><div id="7.sentence-1" class="sentence"><i>Constraints</i>: <span class="texttt">is_move_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt; <span class="operator">&amp;</span><span class="operator">&amp;</span></span>
 <span class="texttt">is_move_assignable_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt;</span> is
 <span class="texttt"><span class="literal">true</span></span> for all <span class="math"><span class="mathalpha">i</span></span><a class="hidden_link" href="#7.sentence-1">.</a></div></div></div></div>
 
-<div class="para" id="8"><div class="marginalizedparent"><a class="marginalized" href="#8">8</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5412">#</a></div><div class="texpara"><div id="8.sentence-1" class="sentence"><i>Effects</i>: 
+<div class="para" id="8"><div class="marginalizedparent"><a class="marginalized" href="#8">8</a></div><div class="itemdescr"><div class="texpara"><div id="8.sentence-1" class="sentence"><i>Effects</i>: 
     <ul class="itemize">
         <li id="8.1"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#8.1">(8.1)</a></div><div class="texpara"><div id="8.1.sentence-1" class="sentence">If neither <span class="texttt">*<span class="keyword">this</span></span> nor <span class="texttt">rhs</span> holds a value, there is no effect<a class="hidden_link" href="#8.1.sentence-1">.</a></div></div></li>
         <li id="8.2"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#8.2">(8.2)</a></div><div class="texpara"><div id="8.2.sentence-1" class="sentence">Otherwise, if <span class="texttt">*<span class="keyword">this</span></span> holds a value but <span class="texttt">rhs</span> does not, destroys the value
 contained in <span class="texttt">*<span class="keyword">this</span></span> and sets <span class="texttt">*<span class="keyword">this</span></span> to not hold a value<a class="hidden_link" href="#8.2.sentence-1">.</a></div></div></li>
         <li id="8.3"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#8.3">(8.3)</a></div><div class="texpara"><div id="8.3.sentence-1" class="sentence">Otherwise, if <span class="texttt">index() == <span class="math"><span class="mathalpha">j</span></span></span>, 
-assigns <span class="texttt"><del>get&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(std::move(rhs))</del><ins>std::move(*get_if&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(&rhs))</ins></span> to
+assigns <span class="texttt"><del>get&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(std::move(rhs))</del><ins>std::move(*get_if&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(addressof(rhs)))</ins></span> to
 
 the value contained in <span class="texttt">*<span class="keyword">this</span></span><a class="hidden_link" href="#8.3.sentence-1">.</a></div></div></li>
         <li id="8.4"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#8.4">(8.4)</a></div><div class="texpara"><div id="8.4.sentence-1" class="sentence">Otherwise,
-equivalent to <span class="texttt">emplace&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(<del>get&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(std::move(rhs))</del><ins>std::move(*get_if&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(&rhs))</ins>)</span><a class="hidden_link" href="#8.4.sentence-1">.</a></div></div></li>
+equivalent to <span class="texttt">emplace&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(<del>get&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(std::move(rhs))</del><ins>std::move(*get_if&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(addressof(rhs)))</ins>)</span><a class="hidden_link" href="#8.4.sentence-1">.</a></div></div></li>
 
     </ul></div></div></div>
 </div>
@@ -1034,31 +1047,31 @@ equivalent to <span class="texttt">emplace&lt;<span class="math"><span class="ma
 
 <div class="texpara"><div id="lib:variant,swap"><div id="lib:swap,variant"><div class="itemdecl"><div class="marginalizedparent"><a class="itemDeclLink" href="#lib:swap,variant">🔗</a></div><code class="itemdeclcode"><span class="keyword">constexpr</span> <span class="keyword">void</span> swap(variant<span class="operator">&amp;</span> rhs) <span class="keyword">noexcept</span>(<i><span class="texttt">see below</span></i>);
 </code></div></div></div></div>
-<div class="para" id="swap-1"><div class="marginalizedparent"><a class="marginalized" href="#swap-1">1</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5699">#</a></div><div class="texpara"><div id="swap-1.sentence-1" class="sentence"><i>Mandates</i>: <span class="texttt">is_move_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt;</span> is <span class="texttt"><span class="literal">true</span></span> for all <span class="math"><span class="mathalpha">i</span></span><a class="hidden_link" href="#swap-1.sentence-1">.</a></div></div></div></div>
-<div class="para" id="swap-2"><div class="marginalizedparent"><a class="marginalized" href="#swap-2">2</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5703">#</a></div><div class="texpara"><div id="swap-2.sentence-1" class="sentence"><i>Preconditions</i>: Each <span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span> meets the <i>Cpp17Swappable</i> requirements (<a href="https://eel.is/c++draft/swappable.requirements">[swappable.requirements]</a>)<a class="hidden_link" href="#swap-2.sentence-1">.</a></div></div></div></div>
-<div class="para" id="swap-3"><div class="marginalizedparent"><a class="marginalized" href="#swap-3">3</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5707">#</a></div><div class="texpara"><div id="swap-3.sentence-1" class="sentence"><i>Effects</i>: 
+<div class="para" id="swap-1"><div class="marginalizedparent"><a class="marginalized" href="#swap-1">1</a></div><div class="itemdescr"><div class="texpara"><div id="swap-1.sentence-1" class="sentence"><i>Mandates</i>: <span class="texttt">is_move_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt;</span> is <span class="texttt"><span class="literal">true</span></span> for all <span class="math"><span class="mathalpha">i</span></span><a class="hidden_link" href="#swap-1.sentence-1">.</a></div></div></div></div>
+<div class="para" id="swap-2"><div class="marginalizedparent"><a class="marginalized" href="#swap-2">2</a></div><div class="itemdescr"><div class="texpara"><div id="swap-2.sentence-1" class="sentence"><i>Preconditions</i>: Each <span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span> meets the <i>Cpp17Swappable</i> requirements (<a href="https://eel.is/c++draft/swappable.requirements">[swappable.requirements]</a>)<a class="hidden_link" href="#swap-2.sentence-1">.</a></div></div></div></div>
+<div class="para" id="swap-3"><div class="marginalizedparent"><a class="marginalized" href="#swap-3">3</a></div><div class="itemdescr"><div class="texpara"><div id="swap-3.sentence-1" class="sentence"><i>Effects</i>: 
     <ul class="itemize">
         <li id="swap-3.1"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#swap-3.1">(3.1)</a></div><div class="texpara"><div id="swap-3.1.sentence-1" class="sentence">If <span class="texttt">valueless_by_exception() <span class="operator">&amp;</span><span class="operator">&amp;</span> rhs.valueless_by_exception()</span> no effect<a class="hidden_link" href="#swap-3.1.sentence-1">.</a></div></div></li>
         <li id="swap-3.2"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#swap-3.2">(3.2)</a></div><div class="texpara"><div id="swap-3.2.sentence-1" class="sentence">
             Otherwise, if <span class="texttt">index() == rhs.index()</span>, calls 
-            <span class="texttt">swap(<del>get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(*<span class="keyword">this</span>)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(<span class="keyword">this</span>)</ins>, <del>get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(rhs)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(&rhs)</ins>)</span>
+            <span class="texttt">swap(<del>get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(*<span class="keyword">this</span>)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(<span class="keyword">this</span>)</ins>, <del>get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(rhs)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(addressof(rhs))</ins>)</span>
             where <span class="math"><span class="mathalpha">i</span></span> is <span class="texttt">index()</span><a class="hidden_link" href="#swap-3.2.sentence-1">.</a></div></div></li>
         <li id="swap-3.3"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#swap-3.3">(3.3)</a></div><div class="texpara"><div id="swap-3.3.sentence-1" class="sentence">Otherwise, exchanges values of <span class="texttt">rhs</span> and <span class="texttt">*<span class="keyword">this</span></span><a class="hidden_link" href="#swap-3.3.sentence-1">.</a></div></div></li>
     </ul>
 </div></div></div></div>
 
-<div class="para" id="swap-4"><div class="marginalizedparent"><a class="marginalized" href="#swap-4">4</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5718">#</a></div><div class="texpara"><div id="swap-4.sentence-1" class="sentence"><i>Throws</i>: If <span class="texttt">index() == rhs.index()</span>,
+<div class="para" id="swap-4"><div class="marginalizedparent"><a class="marginalized" href="#swap-4">4</a></div><div class="itemdescr"><div class="texpara"><div id="swap-4.sentence-1" class="sentence"><i>Throws</i>: If <span class="texttt">index() == rhs.index()</span>,
 any exception thrown by
 
-<span class="texttt">swap(<del>get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(*<span class="keyword">this</span>)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(<span class="keyword">this</span>)</ins>, <del>get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(rhs)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(&rhs)</ins>)</span>
+<span class="texttt">swap(<del>get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(*<span class="keyword">this</span>)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(<span class="keyword">this</span>)</ins>, <del>get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(rhs)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(addressof(rhs))</ins>)</span>
 
 with <span class="math"><span class="mathalpha">i</span></span> being <span class="texttt">index()</span><a class="hidden_link" href="#swap-4.sentence-1">.</a></div> <div id="swap-4.sentence-2" class="sentence">Otherwise, any exception thrown by the move constructor
 of <span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span> or <span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.519em;">j</span></span></span></span></span></span></span>
 with <span class="math"><span class="mathalpha">i</span></span> being <span class="texttt">index()</span> and <span class="math"><span class="mathalpha">j</span></span> being <span class="texttt">rhs.index()</span><a class="hidden_link" href="#swap-4.sentence-2">.</a></div></div></div></div>
 
-<div class="para" id="swap-5"><div class="marginalizedparent"><a class="marginalized" href="#swap-5">5</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5727">#</a></div><div class="texpara"><div id="swap-5.sentence-1" class="sentence"><i>Remarks</i>: If an exception is thrown during the call to function 
+<div class="para" id="swap-5"><div class="marginalizedparent"><a class="marginalized" href="#swap-5">5</a></div><div class="itemdescr"><div class="texpara"><div id="swap-5.sentence-1" class="sentence"><i>Remarks</i>: If an exception is thrown during the call to function 
 
-<span class="texttt">swap(<del>get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(*<span class="keyword">this</span>)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(<span class="keyword">this</span>)</ins>, <del>get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(rhs)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(&rhs)</ins>)</span>,
+<span class="texttt">swap(<del>get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(*<span class="keyword">this</span>)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(<span class="keyword">this</span>)</ins>, <del>get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(rhs)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(addressof(rhs))</ins>)</span>,
 
 the states of the contained values of <span class="texttt">*<span class="keyword">this</span></span> and of <span class="texttt">rhs</span> are
 determined by the exception safety guarantee of <span class="texttt">swap</span> for lvalues of
@@ -1070,18 +1083,46 @@ are determined by the exception safety guarantee of <span class="texttt">variant
 </blockquote>
 </p>
 
+<h2>Changes in <a href="https://eel.is/c++draft/variant.relops">[variant.relops]</a></h2>
+
+Instructions to the editor:<br/>
+<p>
+Replace every instance of
+<span class="texttt">get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(v)</span>
+in <a href="https://eel.is/c++draft/variant.relops">[variant.relops]</a> with
+<ins><span class="texttt">*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(addressof(v))</span></ins>.
+</p><p>
+Replace every instance of
+<span class="texttt">get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(w)</span>
+in <a href="https://eel.is/c++draft/variant.relops">[variant.relops]</a> with
+<ins><span class="texttt">*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(addressof(w))</span></ins>.
+
+</p>
+
+<h2>Changes in <a href="https://eel.is/c++draft/variant.visit">[variant.visit]</a></h2>
+<p>
+<blockquote class="std">
+
+<div class="para" id="4">
+    <div class="marginalizedparent"><a class="marginalized" href="#4">4</a></div>
+    <div class="itemdescr"><div class="texpara"><div id="4.sentence-1" class="sentence">Let <span class="math"><span class="mathalpha">m</span></span> be a pack of <span class="math"><span class="mathalpha">n</span></span> values of type <span class="texttt">size_<span class="shy"></span>t</span><a class="hidden_link" href="#4.sentence-1">.</a></div> <div id="4.sentence-2" class="sentence">Such a pack is valid if<br><span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-mn"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.372em; padding-bottom: 0.372em;">0</span></span><span class="mjx-mo MJXc-space3"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.372em; padding-bottom: 0.446em;">≤</span></span><span class="mjx-texatom MJXc-space3"><span class="mjx-mrow"></span></span><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.225em; padding-bottom: 0.298em;">m</span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span><span class="mjx-mo MJXc-space3"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.225em; padding-bottom: 0.372em;">&lt;</span></span><span class="mjx-msubsup MJXc-space3"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.446em; padding-bottom: 0.372em;">variant_size_v&lt;remove_reference_t&lt;V</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.22em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">&gt;&gt;</span></span></span></span></span></span></span>
+for all <span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-mn"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.372em; padding-bottom: 0.372em;">0</span></span><span class="mjx-mo MJXc-space3"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.372em; padding-bottom: 0.446em;">≤</span></span><span class="mjx-texatom MJXc-space3"><span class="mjx-mrow"></span></span><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span><span class="mjx-mo MJXc-space3"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.225em; padding-bottom: 0.372em;">&lt;</span></span><span class="mjx-mi MJXc-space3"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.225em; padding-bottom: 0.298em;">n</span></span></span></span></span><a class="hidden_link" href="#4.sentence-2">.</a></div> <div id="4.sentence-3" class="sentence">For each valid pack <span class="math"><span class="mathalpha">m</span></span>, let <span class="math"><span class="mathalpha">e</span>(<span class="mathalpha">m</span>)</span> denote the expression:
+
+<del><span class="codeblock"><i>INVOKE</i>(std::forward&lt;Visitor&gt;(vis), get&lt;<span class="math"><span class="mathalpha">m</span></span>&gt;(std::forward&lt;V&gt;(vars))...)  <span class="comment">// see <a href="https://eel.is/c++draft/func.require">[func.require]</a></span>
+</span></del>
+<ins><span class="codeblock"><i>INVOKE</i>(std::forward&lt;Visitor&gt;(vis), forward_like&lt;V&gt;(*get_if&lt;<span class="math"><span class="mathalpha">m</span></span>&gt;(addressof(vars)))...)  <span class="comment">// see <a href="https://eel.is/c++draft/func.require">[func.require]</a></span>
+</span></ins>
+for the first form and
+
+<del><span class="codeblock"><i>INVOKE</i>&lt;R&gt;(std::forward&lt;Visitor&gt;(vis), get&lt;<span class="math"><span class="mathalpha">m</span></span>&gt;(std::forward&lt;V&gt;(vars))...)  <span class="comment">// see <a href="https://eel.is/c++draft/func.require">[func.require]</a></span>
+</span></del>
+<ins><span class="codeblock"><i>INVOKE</i>&lt;R&gt;(std::forward&lt;Visitor&gt;(vis), forward_like&lt;V&gt;(*get_if&lt;<span class="math"><span class="mathalpha">m</span></span>&gt;(addressof(vars)))...)  <span class="comment">// see <a href="https://eel.is/c++draft/func.require">[func.require]</a></span>
+</span></ins>
+for the second form.</div></div></div></div>
 
 
-
-
-
-
-
-
-
-
-
-
+</blockquote>
+</p>
 
 
 <h2>Changes in <a href="https://eel.is/c++draft/string.view.synop">[string.view.synop]</a></h2>
@@ -1151,6 +1192,26 @@ Please modify the <a href="https://eel.is/c++draft/string.view.ops#23"><code>bas
 </div>
 </blockquote>
 
+<h2>Changes in <a href="https://eel.is/c++draft/string.view.find">[string.view.find]</a></h2>
+
+Instructions to the editor:<br/>
+<p>
+    Replace every instance of
+    <span class="texttt">at(xpos + I)</span>
+    in <a href="https://eel.is/c++draft/string.view.find">[string.view.find]</a> with
+    <ins><span class="texttt">data_[xpos + I]</span></ins>.
+</p><p>
+    Replace every instance of
+    <span class="texttt">at(xpos)</span>
+    in <a href="https://eel.is/c++draft/string.view.find">[string.view.find]</a> with
+    <ins><span class="texttt">data_[xpos]</span></ins>.
+</p><p>
+    Replace every instance of
+    <span class="texttt">str.at(I)</span>
+    in <a href="https://eel.is/c++draft/string.view.find">[string.view.find]</a> with
+    <ins><span class="texttt">str.data_[I]</span></ins>.
+</p>
+
 <h2>Changes in <a href="https://eel.is/c++draft/array.syn">[array.syn]</a></h2>
 Instructions to the editor:<br/>
 <p>
@@ -1162,6 +1223,16 @@ Please append a <code><i>// freestanding-partial</i></code> comment to <code>arr
 <h2>Changes in <a href="https://eel.is/c++draft/array.overview">[array.overview]</a></h2>
 Instructions to the editor:<br/>
 Please append a <code><i>// freestanding-deleted</i></code> comment to every overload of <code>at</code>.
+
+<h2>Changes in <a href="https://eel.is/c++draft/algorithm.syn">[algorithm.syn]</a></h2>
+Instructions to the editor:<br/>
+<p>
+Please append a <code><i>// freestanding</i></code> comment to the following functions:
+<ul>
+    <li><code>fill_n(OutputIterator first, Size n, const T& value)</code></li>
+    <li><code>swap_ranges(ForwardIterator1 first1, ForwardIterator1 last1, ForwardIterator2 first2)</code></li>
+</ul>
+</p>
 
 <h1>References</h1>
 [AK] Andreas Kling. Serenity OS AK Library.<br/>
