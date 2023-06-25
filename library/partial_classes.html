@@ -393,24 +393,18 @@ Audience: Library Working Group
 <h1>Changes from previous revisions</h1>
 <h3>Changes from R3</h3>
 <ul>
-  <li>TODONE: change note [freestanding.item] p2</li>
-  <li>TODONE: add note to mention overload resolution consequences of hosted vs. deleted</li>
-  <li>TODONE: header synopsis vs. class synopsis</li>
-  <li>TODONE: add freestanding comment to feature test macros</li>
-  <li>TODONE: make freestanding-deleted unconditionally freestanding item, just with different requirements</li>
-  <li>TODONE: make member freestanding requirements.  Was obvious that members of classes were freestanding items</li>
-  <li>TODONE: missing parens on size() in ends_with</li>
-  <li>TODONE: optional monadic specified with .value()...</li>
-  <li>TODONE: variant specified with get()</li>
-  <ul>
-    <li>done: ctors taking variant ref and rvalue ref</li>
-    <li>done: assignment taking variant ref and rvalue rev</li>
-    <li>done: swap</li>
-    <li>done:[variant.relops]</li>
-    <li>done: visit</li>
-  </ul>
-  <li>TODONE: string_view find / search defined in terms of at()</li>
-  <li>TODO: array specified in terms of algorithm...</li>
+  <li>TODO: add lewg reflector poll results for adding fill_n and swap_ranges</li>
+  <li>Added <code>fill_n</code> and <code>swap_ranges</code> from <code>&lt;algorithm&gt;</code></li>
+  <li><code>optional</code> now specified in terms of <code>**this</code> instead of <code>.value()</code></li>
+  <li><code>variant</code> now specified in terms of <code>get_if</code> instead of <code>get</code></li>
+  <li><code>string_view</code> find / search operations now specified in terms of <code>data_</code> instead of <code>at()</code></li>
+  <li>Added missing parenthesis on <code>size()</code> call in <code>string_view::ends_with</code></li>
+  <li>Made feature test macros <code>// freestanding</code></li>
+  <li>More deliberate with use of "synopsis" vs. "header synopsis"</li>
+  <li>freestanding-deleted and freestanding-partial are now freestanding items with altered requirements</li>
+  <li>Added notes stating overload resolution consequences of <code>// hosted</code> vs. <code>// freestanding-deleted</code></li>
+  <li>More explicitly making the members of freestanding items also be freestanding items</li>
+  <li>Deleted note discussing implication of having the same requirements, as those are covered more explicitly now</li>
 </ul>
 <h3>Changes from R2</h3>
 <ul>
@@ -530,7 +524,9 @@ Rather than respecify <code>array</code> in terms of other freestanding faciliti
 A later paper will likely add many more facilities from <code>&lt;algorithm&gt;</code>.
 
 <h1>Wording</h1>
-This paper’s wording is based on the current working draft, TODO [N4928].
+This paper’s wording is based on the working draft, <a href="https://wg21.link/N4950">[N4950]</a>,
+plus the anticipated inclusion of merging <a href="https://wg21.link/P2198R6">[P2198R6] (Freestanding Feature-Test Macros and Implementation-Defined Extensions)</a> and
+<a href="https://wg21.link/P2338R4">[P2338R4] (Freestanding Library: Character primitives and the C library)</a>.
 
 <h2>Change in <a href="https://eel.is/c++draft/freestanding.item">[freestanding.item]</a></h2>
 Modify <a href="https://eel.is/c++draft/freestanding.item">[freestanding.item]</a>.
@@ -641,7 +637,7 @@ struct array {
 
 <div class='para'>
     <div class='marginalizedparent'><a class='marginalized'>4</a></div>
-    <div class='sentence'>An entity or <i>typedef-name</i> is a freestanding item if it is:
+    <div class='sentence'>An entity<ins>, deduction guide,</ins> or <i>typedef-name</i> is a freestanding item if it is:
         <ul class='itemize'>
             <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(4.1)</a></div>
                 introduced by a declaration that is a freestanding item,
