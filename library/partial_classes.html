@@ -393,7 +393,6 @@ Audience: Library Working Group
 <h1>Changes from previous revisions</h1>
 <h3>Changes from R3</h3>
 <ul>
-  <li>TODO: add lewg reflector poll results for adding fill_n and swap_ranges</li>
   <li>Added <code>fill_n</code> and <code>swap_ranges</code> from <code>&lt;algorithm&gt;</code></li>
   <li><code>optional</code> now specified in terms of <code>**this</code> instead of <code>.value()</code></li>
   <li><code>variant</code> now specified in terms of <code>get_if</code> instead of <code>get</code></li>
@@ -522,6 +521,10 @@ We therefore opt for them being marked as freestanding.
 Both <code>fill_n</code> and <code>swap_ranges</code> are reasonable inclusions in freestanding.
 Rather than respecify <code>array</code> in terms of other freestanding facilities, we have chosen to pull in the functions from <code>&lt;algorithm&gt;</code> that we need.
 A later paper will likely add many more facilities from <code>&lt;algorithm&gt;</code>.
+
+An email on the LEWG reflector in June 2023 asked to add <code>std::fill_n</code> and <code>std::swap_ranges</code>.
+The request received eleven +1's, and no opposition to this change.
+The authors did not vote on the reflector poll.
 
 <h1>Wording</h1>
 This paper’s wording is based on the working draft, <a href="https://wg21.link/N4950">[N4950]</a>,
