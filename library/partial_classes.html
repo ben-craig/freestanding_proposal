@@ -380,17 +380,29 @@ span.indented {
 }
 </style>
 
-<title>P2407R4: Freestanding Library: Partial Classes</title>
+<title>TODO D2407R5.3: Freestanding Library: Partial Classes</title>
 <body>
 <h1>Freestanding Library: Partial Classes</h1>
-Document number: P2407R4<br/>
-Date: 2023-06-28<br/>
+Document number: D2407R5.3 TODO<br/>
+Date: 2023-06-28 TODO<br/>
 Reply-to:<br/>
 &emsp;&emsp;Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 &emsp;&emsp;Emil Meissner &lt;e dot meissner at seznam dot cz&gt;<br/>
 Audience: Library Working Group
 
 <h1>Changes from previous revisions</h1>
+<h3>Changes from R4</h3>
+<ul>
+  <li>Clarified "a member of a freestanding item" to non-namespace members</li>
+  <li>Explicit renumbering in freestanding.item to make conversation possible</li>
+  <li>Tweaked requirements on freestanding items to not require all members, with later rules putting most of those requirements back</li>
+  <li>Discussing entities rather than function definitions</li>
+  <li>Simplified freestanding comment grammar.  Now the only normative words are freestanding and freestanding-deleted<li>
+  <li>Tweaked notes on freestanding to hosted migration</li>
+  <li>Added some drafting and LWG notes explaining wording rationale<li>
+  <li>Using exposition-only <code><i>GET</i></code> function in <code>variant</code> rather than respecify in terms of <code>get_if</code></li>
+  <li>Using public interface of <code>string_view</code> rather than exposition interface when accessing non-<code>this</code> objects</li>
+</ul>
 <h3>Changes from R3</h3>
 <ul>
   <li>Added <code>fill_n</code> and <code>swap_ranges</code> from <code>&lt;algorithm&gt;</code></li>
@@ -478,7 +490,7 @@ This also means we can keep options open for reintroducing the deleted functions
 <p>
 The predecessor to this paper used <code>//freestanding, partial</code> to mean a class (template) is only required to be partially implemented, in conjunction with <code>//freestanding, omit</code> meaning a declaration is not in freestanding.
 </p><p>
-In this paper, we mark not fully freestanding classes templates as <code>// freestanding-partial</code>, and use P2338's <code>// freestanding-deleted</code> to mark which pieces of the class should be omitted.
+In this paper, we mark not fully freestanding classes templates as <code>// partially freestanding</code>, and use P2338's <code>// freestanding-deleted</code> to mark which pieces of the class should be omitted.
 We no longer annotate all the class members, favoring terseness over explicitness.
 </p>
 
@@ -541,39 +553,39 @@ This includes a reordering of what was paragraph 6.
     <div class='sentence'>Unless otherwise specified,
         the requirements on freestanding items for a freestanding implementation
         are the same as the corresponding requirements for a hosted implementation,
-        except that not all of the members of the namespaces are required to be present.
+        except that not all of the members of <del>the namespaces</del><ins>those items</ins> are required to be present.
     </div>
     <del>
     <div class='note'>
         [<i>Note&nbsp;1</i>:
         
-        <div class='sentence'>This implies that freestanding item enumerations have the same enumerators on
-            freestanding implementations and hosted implementations.
-        </div>
-        <div class='sentence'>Furthermore, class types have the same members and
-            class templates have the same deduction guides
-            on freestanding implementations and hosted implementations.
-        </div>
-        
+            <div class='sentence'>This implies that freestanding item enumerations have the same enumerators on
+                freestanding implementations and hosted implementations.
+            </div>
+            <div class='sentence'>Furthermore, class types have the same members and
+                class templates have the same deduction guides
+                on freestanding implementations and hosted implementations.
+            </div>
+
          —&nbsp;<i>end note</i>]
     </div>
     </del>
 </div>
 
 <div class='para'>
-    <div class='marginalizedparent'><a class='marginalized'><del>6</del><ins>?</ins></a></div>
+    <div class='marginalizedparent'><a class='marginalized'><del>6</del><ins>3</ins></a></div>
     <div class='sentence'>Function declarations and function template declarations followed by
         a comment that include <span class='textit'>freestanding-deleted</span> are 
         <span class='textit'>freestanding deleted functions</span>.</div>
     <div class='sentence'>On freestanding implementations, it is implementation
-        defined whether each function definition introduced by a freestanding deleted function
+        defined whether each <del>function definition</del><ins>entity</ins> introduced by a freestanding deleted function
         is <del>a freestanding item or </del>a deleted function
         (<a href="https://wg21.link/dcl.fct.def.delete">[dcl.fct.def.delete]</a>)<ins> or whether the
-        requirements are the same as the corresponding requirements for a hosted implementation.</ins>.</div>
+        requirements are the same as the corresponding requirements for a hosted implementation</ins>.</div>
     <ins>
     <div class="note">[ <span class="textit">Note</span><span class="textit">:</span>
-        Deleted definitions ensure that overload resolution
-        does not silently change when migrating a library from a freestanding implementation
+        Deleted definitions reduce the chance of overload resolution
+        silently changing when migrating from a freestanding implementation
         to a hosted implementation. -<i>end note</i>]
     </div>
     </ins>
@@ -585,15 +597,92 @@ double abs(double j); <span class='comment'>// <span class='textit'>freestanding
     </div>
 </div>
 
+<div class='para'>
+    <div class='marginalizedparent'><a class='marginalized'><del>3</del><ins>4</ins></a></div>
+    <div class="sentence">A declaration in a <del>header </del>synopsis is a freestanding item if
+        <ul class="itemize">
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized"><del>(3.1)</del><ins>(4.1)</ins></a></div>
+                it is followed by a comment that includes <i>freestanding</i>,<del> or</del>
+            </li>
+            <ins>
+            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(4.2)</a></div>
+                it is followed by a comment that includes <i>freestanding-deleted</i>,
+            </li>
+            </ins>
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized"><del>(3.2)</del><ins>(4.3)</ins></a></div>
+                the header synopsis begins with a comment that includes <i><del>all </del>freestanding</i><ins> and the declaration is not followed by a comment that includes <i>hosted</i></ins>.
+                <ins>
+                    <div class="note">[ <span class="textit">Note</span><span class="textit">:</span>
+                        Declarations followed by <i>hosted</i> in <i>freestanding</i> headers are not freestanding items.
+                        As a result, looking up the name of such functions can vary between hosted and freestanding implementations. -<i>end note</i>]
+                    </div>
+                </ins>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class='para'>
+    <div class='marginalizedparent'><a class='marginalized'><del>4</del><ins>5</ins></a></div>
+    <div class='sentence'>An entity<ins>, deduction guide,</ins> or <i>typedef-name</i> is a freestanding item if it is:
+        <ul class='itemize'>
+            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized"><del>(4.1)</del><ins>(5.1)</ins></a></div>
+                introduced by a declaration that is a freestanding item,
+            </li>
+            <ins>
+            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(5.2)</a></div>
+                a member of a freestanding item other than a namespace,
+            </li>
+            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(5.3)</a></div>
+                an enumerator of a freestanding item,
+            </li>
+            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(5.4)</a></div>
+                a deduction guide of a freestanding item,
+            </li>
+            </ins>
+            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized"><del>(4.2)</del><ins>(5.5)</ins></a></div>
+                an enclosing namespace of a freestanding item,
+            </li>
+            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized"><del>(4.3)</del><ins>(5.6)</ins></a></div>
+                a friend of a freestanding item,
+            </li>
+            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized"><del>(4.4)</del><ins>(5.7)</ins></a></div>
+                denoted by a <i>typedef-name</i> that is a freestanding item, or
+            </li>
+            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized"><del>(4.5)</del><ins>(5.8)</ins></a></div>
+                denoted by an alias template that is a freestanding item.
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class='para'>
+    <div class='marginalizedparent'><a class='marginalized'><del>5</del><ins>6</ins></a></div>
+    <div class="sentence">A macro is a freestanding item if it is defined in a header synopsis and
+        <ul class="itemize">
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.1)</del><ins>(6.1)</ins></a></div>
+                the definition is followed by a comment that includes <i>freestanding</i>,<del> or</del>
+            </li>
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.2)</del><ins>(6.2)</ins></a></div>
+                the header synopsis begins with a comment that includes <i><del>all </del>freestanding</i><ins> and the definition is not followed by a comment that includes <i>hosted</i></ins>.
+            </li>
+        </ul>
+    </div>
+</div>
+
 <ins>
 <div class='para'>
-    <div class='marginalizedparent'><a class='marginalized'>?</a></div>
-    <div class='sentence'>A class type declaration or class template declaration in a synopsis
-        that is followed by a comment that includes <span class='textit'>freestanding-partial</span>
-        is a freestanding item, except that it contains at least one freestanding deleted function.</div>
+    <div class='marginalizedparent'><a class='marginalized'>7</a></div>
+    <div class="note">[ <span class="textit">Note</span><span class="textit">:</span>
+        Freestanding annotations follow some additional exposition conventions that do not impose any additional normative requirements.
+        Header synopses that begin with a comment containing "all freestanding" contain no hosted items and no freestanding deleted functions.
+        Header synopses that begin with a comment containing "mostly freestanding" contain at least one hosted item or freestanding deleted function.
+        Classes and class templates followed by a comment containing "partially freestanding" contain at least one hosted item or freestanding deleted function.
+    -<i>end note</i>]
+    </div>
     <div class='example'>[  <span class='textit'>Example:</span>
 <pre class='codeblock'>
-template &lt;class T, size_t N&gt; struct array; <span class='comment'>//<span class='textit'>freestanding-partial</span></span>
+template &lt;class T, size_t N&gt; struct array; <span class='comment'>//<span class='textit'>partially freestanding</span></span>
 
 template&lt;class T, size_t N&gt;
 struct array {
@@ -606,90 +695,6 @@ struct array {
     -<i>end example</i>]</div>
 </div>
 </ins>
-
-<div class='para'>
-    <div class='marginalizedparent'><a class='marginalized'>3</a></div>
-    <div class="sentence">A declaration in a <del>header </del>synopsis is a freestanding item if
-        <ul class="itemize">
-            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(3.1)</a></div>
-                it is followed by a comment that includes <i>freestanding</i>,<del> or</del>
-            </li>
-            <ins>
-            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(3.?)</a></div>
-                it is followed by a comment that includes <i>freestanding-deleted</i>,
-            </li>
-            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(3.?)</a></div>
-                it is followed by a comment that includes <i>freestanding-partial</i>,
-            </li>
-            </ins>
-            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(3.2)</a></div>
-                the header synopsis begins with a comment that includes <i>all freestanding</i><del>.</del><ins>, or</ins>
-            </li>
-            <ins>
-                <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(3.?)</a></div>
-                    the header synopsis begins with a comment that includes <i>mostly freestanding</i> and the declaration is not followed by a comment that includes <i>hosted</i>.
-                    <div class="note">[ <span class="textit">Note</span><span class="textit">:</span>
-                        Declarations followed by <i>hosted</i> in <i>mostly freestanding</i> headers are not freestanding items.
-                        Overload resolution with such functions could vary between hosted and freestanding implementations. -<i>end note</i>]
-                    </div>
-                </li>
-            </ins>
-        </ul>
-    </div>
-</div>
-
-<div class='para'>
-    <div class='marginalizedparent'><a class='marginalized'>4</a></div>
-    <div class='sentence'>An entity<ins>, deduction guide,</ins> or <i>typedef-name</i> is a freestanding item if it is:
-        <ul class='itemize'>
-            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(4.1)</a></div>
-                introduced by a declaration that is a freestanding item,
-            </li>
-            <ins>
-            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(4.?)</a></div>
-                a member of a freestanding item,
-            </li>
-            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(4.?)</a></div>
-                an enumerator of a freestanding item,
-            </li>
-            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(4.?)</a></div>
-                a deduction guide of a freestanding item,
-            </li>
-            </ins>
-            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(4.2)</a></div>
-                an enclosing namespace of a freestanding item,
-            </li>
-            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(4.3)</a></div>
-                a friend of a freestanding item,
-            </li>
-            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(4.4)</a></div>
-                denoted by a <i>typedef-name</i> that is a freestanding item, or
-            </li>
-            <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(4.5)</a></div>
-                denoted by an alias template that is a freestanding item.
-            </li>
-        </ul>
-    </div>
-</div>
-
-<div class='para'>
-    <div class='marginalizedparent'><a class='marginalized'>5</a></div>
-    <div class="sentence">A macro is a freestanding item if it is defined in a header synopsis and
-        <ul class="itemize">
-            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.1)</a></div>
-                the definition is followed by a comment that includes <i>freestanding</i>,<del> or</del>
-            </li>
-            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.2)</a></div>
-                the header synopsis begins with a comment that includes <i>all freestanding</i><del>.</del><ins>, or</ins>
-            </li>
-            <ins>
-                <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.?)</a></div>
-                    the header synopsis begins with a comment that includes <i>mostly freestanding</i> and the definition is not followed by a comment that includes <i>hosted</i>.
-                </li>
-            </ins>
-        </ul>
-    </div>
-</div>
 
 </blockquote>
 
@@ -759,7 +764,7 @@ Instructions to the editor:<br/>
 <p>
 Please insert a <code><i>// mostly freestanding</i></code> comment at the beginning of the <a href="https://eel.is/c++draft/optional.syn">[optional.syn]</a> synopsis.<br/>
 </p>
-Please append a <code><i>// freestanding-partial</i></code> comment to the following declaration:
+Please append a <code><i>// partially freestanding</i></code> comment to the following declaration:
 <ul>
   <li><code>optional</code></li>
 </ul>
@@ -773,7 +778,8 @@ Please append a <code><i>// freestanding-deleted</i></code> comment to every ove
 
 <h2>Changes in <a href="https://eel.is/c++draft/optional.monadic">[optional.monadic]</a></h2>
 <p>
-
+Please modify the functions in <a href="https://eel.is/c++draft/optional.monadic">[optional.monadic]</a> so that they don't reference the <i>freestanding-deleted</i> method <code>value()</code>.
+</p><p>
 <blockquote class="std">
 
 <code class="itemdeclcode">
@@ -929,12 +935,51 @@ otherwise, <span class="texttt">optional&lt;U&gt;()</span>.
 </p>
 
 <h2>Changes in <a href="https://eel.is/c++draft/variant.syn">[variant.syn]</a></h2>
-Instructions to the editor:<br/>
 <p>
-Please insert a <code><i>// mostly freestanding</i></code> comment at the beginning of the <a href="https://eel.is/c++draft/variant.syn">[variant.syn]</a> synopsis.<br/>
-</p><p>
-Please append a <code><i>// freestanding-deleted</i></code> comment to every <code>get</code> overload in the synopsis.
+LWG note: four <code><i>GET</i></code> overloads are added, because we can't use <code>get</code> in the specification anymore since it could be <code>=delete</code>d, and we still need the right return types, value categories, and mandates of <code><i>GET</i></code> to deal with <code>visit</code> and the relops.
 </p>
+<blockquote class="std">
+<span class="codeblock"><ins><span class="comment">// mostly freestanding</span></ins>
+<span class="preprocessordirective">#include</span> <span class="anglebracket">&lt;</span>compare<span class="anglebracket">&gt;</span>              <span class="comment">// see <a href="compare.syn" title="17.11.1 Header <compare> synopsis">[compare.<span class="shy"></span>syn]</a></span>
+
+<span class="keyword">namespace</span> std <span class="curlybracket">{</span>
+</span>
+</blockquote>
+...
+<blockquote class="std">
+<span class="codeblock">  <span class="comment">// <a href="#get" title="22.6.5 Value access">[variant.get]</a>, value access</span>
+  <span class="keyword">template</span>&lt;<span class="keyword">class</span> T, <span class="keyword">class</span>... Types&gt;
+    <span class="keyword">constexpr</span> <span class="keyword">bool</span> holds_alternative(<span class="keyword">const</span> variant&lt;Types...&gt;&amp;) <span class="keyword">noexcept</span>;
+<ins>
+  <span class="keyword">template</span>&lt;size_t I, <span class="keyword">class</span>... Types&gt;
+    <span class="keyword">constexpr</span> variant_alternative_t&lt;I, variant&lt;Types...&gt;&gt;&amp; <i>GET</i>(variant&lt;Types...&gt;&amp;); <span class="comment">// exposition only</span>
+  <span class="keyword">template</span>&lt;size_t I, <span class="keyword">class</span>... Types&gt;
+    <span class="keyword">constexpr</span> variant_alternative_t&lt;I, variant&lt;Types...&gt;&gt;&amp;&amp; <i>GET</i>(variant&lt;Types...&gt;&amp;&amp;); <span class="comment">// exposition only</span>
+  <span class="keyword">template</span>&lt;size_t I, <span class="keyword">class</span>... Types&gt;
+    <span class="keyword">constexpr</span> <span class="keyword">const</span> variant_alternative_t&lt;I, variant&lt;Types...&gt;&gt;&amp; <i>GET</i>(<span class="keyword">const</span> variant&lt;Types...&gt;&amp;); <span class="comment">// exposition only</span>
+  <span class="keyword">template</span>&lt;size_t I, <span class="keyword">class</span>... Types&gt;
+    <span class="keyword">constexpr</span> <span class="keyword">const</span> variant_alternative_t&lt;I, variant&lt;Types...&gt;&gt;&amp;&amp; <i>GET</i>(<span class="keyword">const</span> variant&lt;Types...&gt;&amp;&amp;); <span class="comment">// exposition only</span>
+</ins>
+  <span class="keyword">template</span>&lt;size_t I, <span class="keyword">class</span>... Types&gt;
+    <span class="keyword">constexpr</span> variant_alternative_t&lt;I, variant&lt;Types...&gt;&gt;&amp; get(variant&lt;Types...&gt;&amp;);<ins> <span class="comment">// freestanding-deleted</span></ins>
+  <span class="keyword">template</span>&lt;size_t I, <span class="keyword">class</span>... Types&gt;
+    <span class="keyword">constexpr</span> variant_alternative_t&lt;I, variant&lt;Types...&gt;&gt;&amp;&amp; get(variant&lt;Types...&gt;&amp;&amp;);<ins> <span class="comment">// freestanding-deleted</span></ins>
+  <span class="keyword">template</span>&lt;size_t I, <span class="keyword">class</span>... Types&gt;
+    <span class="keyword">constexpr</span> <span class="keyword">const</span> variant_alternative_t&lt;I, variant&lt;Types...&gt;&gt;&amp; get(<span class="keyword">const</span> variant&lt;Types...&gt;&amp;);<ins> <span class="comment">// freestanding-deleted</span></ins>
+  <span class="keyword">template</span>&lt;size_t I, <span class="keyword">class</span>... Types&gt;
+    <span class="keyword">constexpr</span> <span class="keyword">const</span> variant_alternative_t&lt;I, variant&lt;Types...&gt;&gt;&amp;&amp; get(<span class="keyword">const</span> variant&lt;Types...&gt;&amp;&amp;);<ins> <span class="comment">// freestanding-deleted</span></ins>
+
+
+  <span class="keyword">template</span>&lt;<span class="keyword">class</span> T, <span class="keyword">class</span>... Types&gt;
+    <span class="keyword">constexpr</span> T&amp; get(variant&lt;Types...&gt;&amp;);<ins> <span class="comment">// freestanding-deleted</span></ins>
+  <span class="keyword">template</span>&lt;<span class="keyword">class</span> T, <span class="keyword">class</span>... Types&gt;
+    <span class="keyword">constexpr</span> T&amp;&amp; get(variant&lt;Types...&gt;&amp;&amp;);<ins> <span class="comment">// freestanding-deleted</span></ins>
+  <span class="keyword">template</span>&lt;<span class="keyword">class</span> T, <span class="keyword">class</span>... Types&gt;
+    <span class="keyword">constexpr</span> <span class="keyword">const</span> T&amp; get(<span class="keyword">const</span> variant&lt;Types...&gt;&amp;);<ins> <span class="comment">// freestanding-deleted</span></ins>
+  <span class="keyword">template</span>&lt;<span class="keyword">class</span> T, <span class="keyword">class</span>... Types&gt;
+    <span class="keyword">constexpr</span> <span class="keyword">const</span> T&amp;&amp; get(<span class="keyword">const</span> variant&lt;Types...&gt;&amp;&amp;);<ins> <span class="comment">// freestanding-deleted</span></ins>
+</span>
+</blockquote>
 
 
 <h2>Changes in <a href="https://eel.is/c++draft/variant.ctor">[variant.ctor]</a></h2>
@@ -943,12 +988,12 @@ Please append a <code><i>// freestanding-deleted</i></code> comment to every <co
 <blockquote class="std">
 
 <div class="texpara"><div id="lib:variant,constructor_"><div class="itemdecl">
-<code class="itemdeclcode"><span class="keyword">constexpr</span> variant(<span class="keyword">const</span> variant<span class="operator">&amp;</span> w);
+<code class="itemdeclcode"><span class="keyword">constexpr</span> variant(<span class="keyword">const</span> variant&amp; w);
 </code></div></div></div>
 
 <div class="para" id="7"><div class="marginalizedparent"><a class="marginalized" href="#7">7</a></div><div class="itemdescr"><div class="texpara"><div id="7.sentence-1" class="sentence"><i>Effects</i>: If <span class="texttt">w</span> holds a value, initializes the <span class="texttt">variant</span> to hold the same
 alternative as <span class="texttt">w</span> and direct-initializes the contained value
-with <span class="texttt"><del>get&lt;j&gt;(w)</del><ins>*get_if&lt;j&gt;(addressof(w))</ins></span>, where <span class="texttt">j</span> is <span class="texttt">w.index()</span><a class="hidden_link" href="#7.sentence-1">.</a></div> <div id="7.sentence-2" class="sentence">Otherwise, initializes the <span class="texttt">variant</span> to not hold a value<a class="hidden_link" href="#7.sentence-2">.</a></div></div></div></div>
+with <span class="texttt"><del>get</del><ins><i>GET</i></ins>&lt;j&gt;(w)</span>, where <span class="texttt">j</span> is <span class="texttt">w.index()</span><a class="hidden_link" href="#7.sentence-1">.</a></div> <div id="7.sentence-2" class="sentence">Otherwise, initializes the <span class="texttt">variant</span> to not hold a value<a class="hidden_link" href="#7.sentence-2">.</a></div></div></div></div>
 
 <div class="para" id="8"><div class="marginalizedparent"><a class="marginalized" href="#8">8</a></div><div class="itemdescr"><div class="texpara"><div id="8.sentence-1" class="sentence"><i>Throws</i>: Any exception thrown by direct-initializing any <span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span> for all <span class="math"><span class="mathalpha">i</span></span><a class="hidden_link" href="#8.sentence-1">.</a></div></div></div></div>
 
@@ -956,14 +1001,14 @@ with <span class="texttt"><del>get&lt;j&gt;(w)</del><ins>*get_if&lt;j&gt;(addres
 <span class="texttt">is_copy_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt;</span> is <span class="texttt"><span class="literal">true</span></span> for all <span class="math"><span class="mathalpha">i</span></span><a class="hidden_link" href="#9.sentence-1">.</a></div> <div id="9.sentence-2" class="sentence">If <span class="texttt">is_trivially_copy_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt;</span>
 is <span class="texttt"><span class="literal">true</span></span> for all <span class="math"><span class="mathalpha">i</span></span>, this constructor is trivial<a class="hidden_link" href="#9.sentence-2">.</a></div></div></div></div>
 
-<div class="texpara"><div id="lib:variant,constructor__"><div class="itemdecl"><code class="itemdeclcode"><span class="keyword">constexpr</span> variant(variant<span class="operator">&amp;</span><span class="operator">&amp;</span> w) <span class="keyword">noexcept</span>(<i><span class="texttt">see below</span></i>);
+<div class="texpara"><div id="lib:variant,constructor__"><div class="itemdecl"><code class="itemdeclcode"><span class="keyword">constexpr</span> variant(variant&amp;&amp; w) <span class="keyword">noexcept</span>(<i><span class="texttt">see below</span></i>);
 </code></div></div></div>
 
 <div class="para" id="10"><div class="marginalizedparent"><a class="marginalized" href="#10">10</a></div><div class="itemdescr"><div class="texpara"><div id="10.sentence-1" class="sentence"><i>Constraints</i>: <span class="texttt">is_move_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt;</span> is <span class="texttt"><span class="literal">true</span></span> for all <span class="math"><span class="mathalpha">i</span></span><a class="hidden_link" href="#10.sentence-1">.</a></div></div></div></div>
 
 <div class="para" id="11"><div class="marginalizedparent"><a class="marginalized" href="#11">11</a></div><div class="itemdescr"><div class="texpara"><div id="11.sentence-1" class="sentence"><i>Effects</i>: If <span class="texttt">w</span> holds a value, initializes the <span class="texttt">variant</span> to hold the same
 alternative as <span class="texttt">w</span> and direct-initializes the contained value with
-<span class="texttt"><del>get&lt;j&gt;(std::move(w))</del><ins>std::move(*get_if&lt;j&gt;(addressof(w)))</ins></span>, where <span class="texttt">j</span> is <span class="texttt">w.index()</span><a class="hidden_link" href="#11.sentence-1">.</a></div> <div id="11.sentence-2" class="sentence">Otherwise, initializes the <span class="texttt">variant</span> to not hold a value<a class="hidden_link" href="#11.sentence-2">.</a></div></div></div></div>
+<span class="texttt"><del>get</del><ins><i>GET</i></ins>&lt;j&gt;(std::move(w))</span>, where <span class="texttt">j</span> is <span class="texttt">w.index()</span><a class="hidden_link" href="#11.sentence-1">.</a></div> <div id="11.sentence-2" class="sentence">Otherwise, initializes the <span class="texttt">variant</span> to not hold a value<a class="hidden_link" href="#11.sentence-2">.</a></div></div></div></div>
 
 
 </blockquote>
@@ -976,7 +1021,7 @@ alternative as <span class="texttt">w</span> and direct-initializes the containe
 
 <blockquote class="std">
 
-<div class="texpara"><div id="lib:variant,operator="><div id="lib:operator=,variant"><div class="itemdecl"><code class="itemdeclcode"><span class="keyword">constexpr</span> variant<span class="operator">&amp;</span> <span class="keyword">operator</span>=(<span class="keyword">const</span> variant<span class="operator">&amp;</span> rhs);
+<div class="texpara"><div id="lib:variant,operator="><div id="lib:operator=,variant"><div class="itemdecl"><code class="itemdeclcode"><span class="keyword">constexpr</span> variant&amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> variant&amp; rhs);
 </code></div></div></div></div>
 <div class="para" id="1"><div class="marginalizedparent"><a class="marginalized" href="#1">1</a></div><div class="itemdescr"><div class="texpara"><div id="1.sentence-1" class="sentence">Let <span class="math"><span class="mathalpha">j</span></span> be <span class="texttt">rhs.index()</span><a class="hidden_link" href="#1.sentence-1">.</a></div></div></div></div>
 
@@ -990,7 +1035,7 @@ to the value contained in <span class="texttt">*<span class="keyword">this</span
         <li id="2.4"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#2.4">(2.4)</a></div><div class="texpara"><div id="2.4.sentence-1" class="sentence">Otherwise, if either <span class="texttt">is_nothrow_copy_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.519em;">j</span></span></span></span></span></span></span>&gt;</span>
 is <span class="texttt"><span class="literal">true</span></span> or
 <span class="texttt">is_nothrow_move_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.519em;">j</span></span></span></span></span></span></span>&gt;</span> is <span class="texttt"><span class="literal">false</span></span>,
-equivalent to <span class="texttt">emplace&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(<del>get&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(rhs)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(addressof(rhs))</ins>)</span><a class="hidden_link" href="#2.4.sentence-1">.</a></div></div></li>
+equivalent to <span class="texttt">emplace&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(<del>get</del><ins><i>GET</i></ins>&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(rhs))</span><a class="hidden_link" href="#2.4.sentence-1">.</a></div></div></li>
         <li id="2.5"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#2.5">(2.5)</a></div><div class="texpara"><div id="2.5.sentence-1" class="sentence">Otherwise, equivalent to <span class="texttt"><span class="keyword">operator</span>=(variant(rhs))</span><a class="hidden_link" href="#2.5.sentence-1">.</a></div></div></li>
     </ul></div></div></div></div>
     
@@ -999,17 +1044,17 @@ equivalent to <span class="texttt">emplace&lt;<span class="math"><span class="ma
 <div class="para" id="4"><div class="marginalizedparent"><a class="marginalized" href="#4">4</a></div><div class="itemdescr"><div class="texpara"><div id="4.sentence-1" class="sentence"><i>Returns</i>: <span class="texttt">*<span class="keyword">this</span></span><a class="hidden_link" href="#4.sentence-1">.</a></div></div></div></div>
 
 <div class="para" id="5"><div class="marginalizedparent"><a class="marginalized" href="#5">5</a></div><div class="itemdescr"><div class="texpara"><div id="5.sentence-1" class="sentence"><i>Remarks</i>: This operator is defined as deleted unless
-<span class="texttt">is_copy_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt; <span class="operator">&amp;</span><span class="operator">&amp;</span></span>
+<span class="texttt">is_copy_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt; &amp;&amp;</span>
 <span class="texttt">is_copy_assignable_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt;</span>
-is <span class="texttt"><span class="literal">true</span></span> for all <span class="math"><span class="mathalpha">i</span></span><a class="hidden_link" href="#5.sentence-1">.</a></div> <div id="5.sentence-2" class="sentence">If <span class="texttt">is_trivially_copy_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt; <span class="operator">&amp;</span><span class="operator">&amp;</span></span>
-<span class="texttt">is_trivially_copy_assignable_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt; <span class="operator">&amp;</span><span class="operator">&amp;</span></span>
+is <span class="texttt"><span class="literal">true</span></span> for all <span class="math"><span class="mathalpha">i</span></span><a class="hidden_link" href="#5.sentence-1">.</a></div> <div id="5.sentence-2" class="sentence">If <span class="texttt">is_trivially_copy_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt; &amp;&amp;</span>
+<span class="texttt">is_trivially_copy_assignable_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt; &amp;&amp;</span>
 <span class="texttt">is_trivially_destructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt;</span>
-is <span class="texttt"><span class="literal">true</span></span> for all <span class="math"><span class="mathalpha">i</span></span>, this assignment operator is trivial<a class="hidden_link" href="#5.sentence-2">.</a></div></div></div></div><div class="texpara"><div id="lib:variant,operator=_"><div id="lib:operator=,variant_"><div class="itemdecl"><div class="marginalizedparent"><a class="itemDeclLink" href="#lib:operator=,variant_">🔗</a></div><code class="itemdeclcode"><span class="keyword">constexpr</span> variant<span class="operator">&amp;</span> <span class="keyword">operator</span>=(variant<span class="operator">&amp;</span><span class="operator">&amp;</span> rhs) <span class="keyword">noexcept</span>(<i><span class="texttt">see below</span></i>);
+is <span class="texttt"><span class="literal">true</span></span> for all <span class="math"><span class="mathalpha">i</span></span>, this assignment operator is trivial<a class="hidden_link" href="#5.sentence-2">.</a></div></div></div></div><div class="texpara"><div id="lib:variant,operator=_"><div id="lib:operator=,variant_"><div class="itemdecl"><div class="marginalizedparent"><a class="itemDeclLink" href="#lib:operator=,variant_">🔗</a></div><code class="itemdeclcode"><span class="keyword">constexpr</span> variant&amp; <span class="keyword">operator</span>=(variant&amp;&amp; rhs) <span class="keyword">noexcept</span>(<i><span class="texttt">see below</span></i>);
 </code></div></div></div></div>
 
 <div class="para" id="6"><div class="marginalizedparent"><a class="marginalized" href="#6">6</a></div><div class="itemdescr"><div class="texpara"><div id="6.sentence-1" class="sentence">Let <span class="math"><span class="mathalpha">j</span></span> be <span class="texttt">rhs.index()</span><a class="hidden_link" href="#6.sentence-1">.</a></div></div></div></div>
 
-<div class="para" id="7"><div class="marginalizedparent"><a class="marginalized" href="#7">7</a></div><div class="itemdescr"><div class="texpara"><div id="7.sentence-1" class="sentence"><i>Constraints</i>: <span class="texttt">is_move_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt; <span class="operator">&amp;</span><span class="operator">&amp;</span></span>
+<div class="para" id="7"><div class="marginalizedparent"><a class="marginalized" href="#7">7</a></div><div class="itemdescr"><div class="texpara"><div id="7.sentence-1" class="sentence"><i>Constraints</i>: <span class="texttt">is_move_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt; &amp;&amp;</span>
 <span class="texttt">is_move_assignable_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt;</span> is
 <span class="texttt"><span class="literal">true</span></span> for all <span class="math"><span class="mathalpha">i</span></span><a class="hidden_link" href="#7.sentence-1">.</a></div></div></div></div>
 
@@ -1019,11 +1064,11 @@ is <span class="texttt"><span class="literal">true</span></span> for all <span c
         <li id="8.2"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#8.2">(8.2)</a></div><div class="texpara"><div id="8.2.sentence-1" class="sentence">Otherwise, if <span class="texttt">*<span class="keyword">this</span></span> holds a value but <span class="texttt">rhs</span> does not, destroys the value
 contained in <span class="texttt">*<span class="keyword">this</span></span> and sets <span class="texttt">*<span class="keyword">this</span></span> to not hold a value<a class="hidden_link" href="#8.2.sentence-1">.</a></div></div></li>
         <li id="8.3"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#8.3">(8.3)</a></div><div class="texpara"><div id="8.3.sentence-1" class="sentence">Otherwise, if <span class="texttt">index() == <span class="math"><span class="mathalpha">j</span></span></span>, 
-assigns <span class="texttt"><del>get&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(std::move(rhs))</del><ins>std::move(*get_if&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(addressof(rhs)))</ins></span> to
+assigns <span class="texttt"><del>get</del><ins><i>GET</i></ins>&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(std::move(rhs))</span> to
 
 the value contained in <span class="texttt">*<span class="keyword">this</span></span><a class="hidden_link" href="#8.3.sentence-1">.</a></div></div></li>
         <li id="8.4"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#8.4">(8.4)</a></div><div class="texpara"><div id="8.4.sentence-1" class="sentence">Otherwise,
-equivalent to <span class="texttt">emplace&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(<del>get&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(std::move(rhs))</del><ins>std::move(*get_if&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(addressof(rhs)))</ins>)</span><a class="hidden_link" href="#8.4.sentence-1">.</a></div></div></li>
+equivalent to <span class="texttt">emplace&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(<del>get</del><ins><i>GET</i></ins>&lt;<span class="math"><span class="mathalpha">j</span></span>&gt;(std::move(rhs)))</span><a class="hidden_link" href="#8.4.sentence-1">.</a></div></div></li>
 
     </ul></div></div></div>
 </div>
@@ -1044,16 +1089,16 @@ equivalent to <span class="texttt">emplace&lt;<span class="math"><span class="ma
 <blockquote class="std">
 
 
-<div class="texpara"><div id="lib:variant,swap"><div id="lib:swap,variant"><div class="itemdecl"><div class="marginalizedparent"><a class="itemDeclLink" href="#lib:swap,variant">🔗</a></div><code class="itemdeclcode"><span class="keyword">constexpr</span> <span class="keyword">void</span> swap(variant<span class="operator">&amp;</span> rhs) <span class="keyword">noexcept</span>(<i><span class="texttt">see below</span></i>);
+<div class="texpara"><div id="lib:variant,swap"><div id="lib:swap,variant"><div class="itemdecl"><div class="marginalizedparent"><a class="itemDeclLink" href="#lib:swap,variant">🔗</a></div><code class="itemdeclcode"><span class="keyword">constexpr</span> <span class="keyword">void</span> swap(variant&amp; rhs) <span class="keyword">noexcept</span>(<i><span class="texttt">see below</span></i>);
 </code></div></div></div></div>
 <div class="para" id="swap-1"><div class="marginalizedparent"><a class="marginalized" href="#swap-1">1</a></div><div class="itemdescr"><div class="texpara"><div id="swap-1.sentence-1" class="sentence"><i>Mandates</i>: <span class="texttt">is_move_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt;</span> is <span class="texttt"><span class="literal">true</span></span> for all <span class="math"><span class="mathalpha">i</span></span><a class="hidden_link" href="#swap-1.sentence-1">.</a></div></div></div></div>
 <div class="para" id="swap-2"><div class="marginalizedparent"><a class="marginalized" href="#swap-2">2</a></div><div class="itemdescr"><div class="texpara"><div id="swap-2.sentence-1" class="sentence"><i>Preconditions</i>: Each <span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span> meets the <i>Cpp17Swappable</i> requirements (<a href="https://eel.is/c++draft/swappable.requirements">[swappable.requirements]</a>)<a class="hidden_link" href="#swap-2.sentence-1">.</a></div></div></div></div>
 <div class="para" id="swap-3"><div class="marginalizedparent"><a class="marginalized" href="#swap-3">3</a></div><div class="itemdescr"><div class="texpara"><div id="swap-3.sentence-1" class="sentence"><i>Effects</i>: 
     <ul class="itemize">
-        <li id="swap-3.1"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#swap-3.1">(3.1)</a></div><div class="texpara"><div id="swap-3.1.sentence-1" class="sentence">If <span class="texttt">valueless_by_exception() <span class="operator">&amp;</span><span class="operator">&amp;</span> rhs.valueless_by_exception()</span> no effect<a class="hidden_link" href="#swap-3.1.sentence-1">.</a></div></div></li>
+        <li id="swap-3.1"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#swap-3.1">(3.1)</a></div><div class="texpara"><div id="swap-3.1.sentence-1" class="sentence">If <span class="texttt">valueless_by_exception() &amp;&amp; rhs.valueless_by_exception()</span> no effect<a class="hidden_link" href="#swap-3.1.sentence-1">.</a></div></div></li>
         <li id="swap-3.2"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#swap-3.2">(3.2)</a></div><div class="texpara"><div id="swap-3.2.sentence-1" class="sentence">
             Otherwise, if <span class="texttt">index() == rhs.index()</span>, calls 
-            <span class="texttt">swap(<del>get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(*<span class="keyword">this</span>)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(<span class="keyword">this</span>)</ins>, <del>get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(rhs)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(addressof(rhs))</ins>)</span>
+            <span class="texttt">swap(<del>get</del><ins><i>GET</i></ins>&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(*<span class="keyword">this</span>), <del>get</del><ins><i>GET</i></ins>&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(rhs))</span>
             where <span class="math"><span class="mathalpha">i</span></span> is <span class="texttt">index()</span><a class="hidden_link" href="#swap-3.2.sentence-1">.</a></div></div></li>
         <li id="swap-3.3"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#swap-3.3">(3.3)</a></div><div class="texpara"><div id="swap-3.3.sentence-1" class="sentence">Otherwise, exchanges values of <span class="texttt">rhs</span> and <span class="texttt">*<span class="keyword">this</span></span><a class="hidden_link" href="#swap-3.3.sentence-1">.</a></div></div></li>
     </ul>
@@ -1062,7 +1107,7 @@ equivalent to <span class="texttt">emplace&lt;<span class="math"><span class="ma
 <div class="para" id="swap-4"><div class="marginalizedparent"><a class="marginalized" href="#swap-4">4</a></div><div class="itemdescr"><div class="texpara"><div id="swap-4.sentence-1" class="sentence"><i>Throws</i>: If <span class="texttt">index() == rhs.index()</span>,
 any exception thrown by
 
-<span class="texttt">swap(<del>get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(*<span class="keyword">this</span>)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(<span class="keyword">this</span>)</ins>, <del>get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(rhs)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(addressof(rhs))</ins>)</span>
+<span class="texttt">swap(<del>get</del><ins><i>GET</i></ins>&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(*<span class="keyword">this</span>), <del>get</del><ins><i>GET</i></ins>&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(rhs))</span>
 
 with <span class="math"><span class="mathalpha">i</span></span> being <span class="texttt">index()</span><a class="hidden_link" href="#swap-4.sentence-1">.</a></div> <div id="swap-4.sentence-2" class="sentence">Otherwise, any exception thrown by the move constructor
 of <span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span> or <span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.519em;">j</span></span></span></span></span></span></span>
@@ -1070,14 +1115,14 @@ with <span class="math"><span class="mathalpha">i</span></span> being <span clas
 
 <div class="para" id="swap-5"><div class="marginalizedparent"><a class="marginalized" href="#swap-5">5</a></div><div class="itemdescr"><div class="texpara"><div id="swap-5.sentence-1" class="sentence"><i>Remarks</i>: If an exception is thrown during the call to function 
 
-<span class="texttt">swap(<del>get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(*<span class="keyword">this</span>)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(<span class="keyword">this</span>)</ins>, <del>get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(rhs)</del><ins>*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(addressof(rhs))</ins>)</span>,
+<span class="texttt">swap(<del>get</del><ins><i>GET</i></ins>&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(*<span class="keyword">this</span>), <del>get</del><ins><i>GET</i></ins>&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(rhs))</span>,
 
 the states of the contained values of <span class="texttt">*<span class="keyword">this</span></span> and of <span class="texttt">rhs</span> are
 determined by the exception safety guarantee of <span class="texttt">swap</span> for lvalues of
 <span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span> with <span class="math"><span class="mathalpha">i</span></span> being <span class="texttt">index()</span><a class="hidden_link" href="#swap-5.sentence-1">.</a></div> <div id="swap-5.sentence-2" class="sentence">If an exception is thrown during the exchange of the values of <span class="texttt">*<span class="keyword">this</span></span>
 and <span class="texttt">rhs</span>, the states of the values of <span class="texttt">*<span class="keyword">this</span></span> and of <span class="texttt">rhs</span>
 are determined by the exception safety guarantee of <span class="texttt">variant</span>'s move constructor<a class="hidden_link" href="#swap-5.sentence-2">.</a></div> <div id="swap-5.sentence-3" class="sentence">The exception specification is equivalent to the logical <span class="textsc">and</span> of
-<span class="texttt">is_nothrow_move_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt; <span class="operator">&amp;</span><span class="operator">&amp;</span> is_nothrow_swappable_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt;</span> for all <span class="math"><span class="mathalpha">i</span></span><a class="hidden_link" href="#swap-5.sentence-3">.</a></div></div></div></div></div></div>
+<span class="texttt">is_nothrow_move_constructible_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt; &amp;&amp; is_nothrow_swappable_v&lt;<span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">T</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span></span></span></span>&gt;</span> for all <span class="math"><span class="mathalpha">i</span></span><a class="hidden_link" href="#swap-5.sentence-3">.</a></div></div></div></div></div></div>
 
 </blockquote>
 </p>
@@ -1087,36 +1132,59 @@ are determined by the exception safety guarantee of <span class="texttt">variant
 Instructions to the editor:<br/>
 <p>
 Replace every instance of
-<span class="texttt">get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(v)</span>
+<span class="texttt">get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;</span>
 in <a href="https://eel.is/c++draft/variant.relops">[variant.relops]</a> with
-<ins><span class="texttt">*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(addressof(v))</span></ins>.
-</p><p>
-Replace every instance of
-<span class="texttt">get&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(w)</span>
-in <a href="https://eel.is/c++draft/variant.relops">[variant.relops]</a> with
-<ins><span class="texttt">*get_if&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;(addressof(w))</span></ins>.
-
+<ins><span class="texttt"><i>GET</i>&lt;<span class="math"><span class="mathalpha">i</span></span>&gt;</span></ins>.
 </p>
 
+<h2>Changes in <a href="https://eel.is/c++draft/variant.get">[variant.get]</a></h2>
+<p>
+<blockquote class="std">
+<ins><div class="texpara"><div class="itemdecl">
+<code class="itemdeclcode"><span class="keyword">template</span><span class="anglebracket">&lt;</span>size_t I, <span class="keyword">class</span><span class="operator">.</span><span class="operator">.</span><span class="operator">.</span> Types<span class="anglebracket">&gt;</span>
+  <span class="keyword">constexpr</span> variant_alternative_t<span class="anglebracket">&lt;</span>I, variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span> <i>GET</i><span class="parenthesis">(</span>variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span> v<span class="parenthesis">)</span>;
+<span class="keyword">template</span><span class="anglebracket">&lt;</span>size_t I, <span class="keyword">class</span><span class="operator">.</span><span class="operator">.</span><span class="operator">.</span> Types<span class="anglebracket">&gt;</span>
+  <span class="keyword">constexpr</span> variant_alternative_t<span class="anglebracket">&lt;</span>I, variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> <i>GET</i><span class="parenthesis">(</span>variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> v<span class="parenthesis">)</span>;
+<span class="keyword">template</span><span class="anglebracket">&lt;</span>size_t I, <span class="keyword">class</span><span class="operator">.</span><span class="operator">.</span><span class="operator">.</span> Types<span class="anglebracket">&gt;</span>
+  <span class="keyword">constexpr</span> <span class="keyword">const</span> variant_alternative_t<span class="anglebracket">&lt;</span>I, variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span> <i>GET</i><span class="parenthesis">(</span><span class="keyword">const</span> variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span> v<span class="parenthesis">)</span>;
+<span class="keyword">template</span><span class="anglebracket">&lt;</span>size_t I, <span class="keyword">class</span><span class="operator">.</span><span class="operator">.</span><span class="operator">.</span> Types<span class="anglebracket">&gt;</span>
+  <span class="keyword">constexpr</span> <span class="keyword">const</span> variant_alternative_t<span class="anglebracket">&lt;</span>I, variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> <i>GET</i><span class="parenthesis">(</span><span class="keyword">const</span> variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> v<span class="parenthesis">)</span>;
+</code></div></div>
+<div class="para" id="3"><div class="marginalizedparent"><a class="marginalized" href="#3">3</a></div><div class="itemdescr"><div class="texpara"><div id="3.sentence-1" class="sentence"><i>Mandates</i>: <span class="math"><span class="texttt">I</span> &lt; <span class="texttt"><span class="keyword">sizeof</span><span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="parenthesis">(</span>Types<span class="parenthesis">)</span></span></span><a class="hidden_link" href="#3.sentence-1">.</a></div></div></div></div>
+<div class="para" id="4"><div class="marginalizedparent"><a class="marginalized" href="#4">4</a></div><div class="itemdescr"><div class="texpara"><div id="4.sentence-1" class="sentence"><i>Effects</i>: If <span class="texttt">v<span class="operator">.</span>index<span class="parenthesis">(</span><span class="parenthesis">)</span></span> is <span class="texttt">I</span>, returns a reference to the object stored in the <span class="texttt">variant</span><a class="hidden_link" href="#4.sentence-1">.</a></div> <div id="4.sentence-2" class="sentence">Otherwise, the behavior is undefined.</div></div></div></div>
+</ins>
+<div class="texpara"><div class="itemdecl"><code class="itemdeclcode">
+<span class="keyword">template</span><span class="anglebracket">&lt;</span>size_t I, <span class="keyword">class</span><span class="operator">.</span><span class="operator">.</span><span class="operator">.</span> Types<span class="anglebracket">&gt;</span>
+  <span class="keyword">constexpr</span> variant_alternative_t<span class="anglebracket">&lt;</span>I, variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span> get<span class="parenthesis">(</span>variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span> v<span class="parenthesis">)</span>;
+<span class="keyword">template</span><span class="anglebracket">&lt;</span>size_t I, <span class="keyword">class</span><span class="operator">.</span><span class="operator">.</span><span class="operator">.</span> Types<span class="anglebracket">&gt;</span>
+  <span class="keyword">constexpr</span> variant_alternative_t<span class="anglebracket">&lt;</span>I, variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> get<span class="parenthesis">(</span>variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> v<span class="parenthesis">)</span>;
+<span class="keyword">template</span><span class="anglebracket">&lt;</span>size_t I, <span class="keyword">class</span><span class="operator">.</span><span class="operator">.</span><span class="operator">.</span> Types<span class="anglebracket">&gt;</span>
+  <span class="keyword">constexpr</span> <span class="keyword">const</span> variant_alternative_t<span class="anglebracket">&lt;</span>I, variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span> get<span class="parenthesis">(</span><span class="keyword">const</span> variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span> v<span class="parenthesis">)</span>;
+<span class="keyword">template</span><span class="anglebracket">&lt;</span>size_t I, <span class="keyword">class</span><span class="operator">.</span><span class="operator">.</span><span class="operator">.</span> Types<span class="anglebracket">&gt;</span>
+  <span class="keyword">constexpr</span> <span class="keyword">const</span> variant_alternative_t<span class="anglebracket">&lt;</span>I, variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> get<span class="parenthesis">(</span><span class="keyword">const</span> variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> v<span class="parenthesis">)</span>;
+</code></div></div><div class="para" id="3"><div class="marginalizedparent"><a class="marginalized" href="#3"><del>3</del><ins>5</ins></a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5834">#</a></div><div class="texpara"><div id="3.sentence-1" class="sentence"><i>Mandates</i>: <span class="math"><span class="texttt">I</span> &lt; <span class="texttt"><span class="keyword">sizeof</span><span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="parenthesis">(</span>Types<span class="parenthesis">)</span></span></span><a class="hidden_link" href="#3.sentence-1">.</a></div></div></div></div><div class="para" id="4"><div class="marginalizedparent"><a class="marginalized" href="#4"><del>4</del><ins>6</ins></a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/4d5d40dd74d0062cbcd086381b8f51b606740cf6/source/utilities.tex#L5838">#</a></div><div class="texpara"><div id="4.sentence-1" class="sentence"><i>Effects</i>: If <span class="texttt">v<span class="operator">.</span>index<span class="parenthesis">(</span><span class="parenthesis">)</span></span> is <span class="texttt">I</span>, returns a reference to the object stored in the <span class="texttt">variant</span><a class="hidden_link" href="#4.sentence-1">.</a></div> <div id="4.sentence-2" class="sentence">Otherwise, throws an exception of type <span class="texttt">bad_<span class="shy"></span>variant_<span class="shy"></span>access</span><a class="hidden_link" href="#4.sentence-2">.</a></div></div></div>
+
+
+</blockquote>
+</p>
+
+
 <h2>Changes in <a href="https://eel.is/c++draft/variant.visit">[variant.visit]</a></h2>
+
 <p>
 <blockquote class="std">
 
 <div class="para" id="4">
     <div class="marginalizedparent"><a class="marginalized" href="#4">4</a></div>
-    <div class="itemdescr"><div class="texpara"><div id="4.sentence-1" class="sentence">Let <span class="math"><span class="mathalpha">m</span></span> be a pack of <span class="math"><span class="mathalpha">n</span></span> values of type <span class="texttt">size_<span class="shy"></span>t</span><a class="hidden_link" href="#4.sentence-1">.</a></div> <div id="4.sentence-2" class="sentence">Such a pack is valid if<br><span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-mn"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.372em; padding-bottom: 0.372em;">0</span></span><span class="mjx-mo MJXc-space3"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.372em; padding-bottom: 0.446em;">≤</span></span><span class="mjx-texatom MJXc-space3"><span class="mjx-mrow"></span></span><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.225em; padding-bottom: 0.298em;">m</span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span><span class="mjx-mo MJXc-space3"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.225em; padding-bottom: 0.372em;">&lt;</span></span><span class="mjx-msubsup MJXc-space3"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.446em; padding-bottom: 0.372em;">variant_size_v&lt;remove_reference_t&lt;V</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.22em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">&gt;&gt;</span></span></span></span></span></span></span>
+    <div class="itemdescr"><div class="texpara"><div id="4.sentence-1" class="sentence">Let <span class="math"><span class="mathalpha">m</span></span> be a pack of <span class="math"><span class="mathalpha">n</span></span> values of type <span class="texttt">size_t</span><a class="hidden_link" href="#4.sentence-1">.</a></div> <div id="4.sentence-2" class="sentence">Such a pack is valid if<br><span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-mn"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.372em; padding-bottom: 0.372em;">0</span></span><span class="mjx-mo MJXc-space3"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.372em; padding-bottom: 0.446em;">≤</span></span><span class="mjx-texatom MJXc-space3"><span class="mjx-mrow"></span></span><span class="mjx-msubsup"><span class="mjx-base"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.225em; padding-bottom: 0.298em;">m</span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span><span class="mjx-mo MJXc-space3"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.225em; padding-bottom: 0.372em;">&lt;</span></span><span class="mjx-msubsup MJXc-space3"><span class="mjx-base"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.446em; padding-bottom: 0.372em;">variant_size_v&lt;remove_reference_t&lt;V</span></span></span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.22em; padding-right: 0.071em;"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span></span></span><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-type-R" style="padding-top: 0.372em; padding-bottom: 0.225em;">&gt;&gt;</span></span></span></span></span></span></span>
 for all <span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-mn"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.372em; padding-bottom: 0.372em;">0</span></span><span class="mjx-mo MJXc-space3"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.372em; padding-bottom: 0.446em;">≤</span></span><span class="mjx-texatom MJXc-space3"><span class="mjx-mrow"></span></span><span class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.446em; padding-bottom: 0.298em;">i</span></span><span class="mjx-mo MJXc-space3"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.225em; padding-bottom: 0.372em;">&lt;</span></span><span class="mjx-mi MJXc-space3"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.225em; padding-bottom: 0.298em;">n</span></span></span></span></span><a class="hidden_link" href="#4.sentence-2">.</a></div> <div id="4.sentence-3" class="sentence">For each valid pack <span class="math"><span class="mathalpha">m</span></span>, let <span class="math"><span class="mathalpha">e</span>(<span class="mathalpha">m</span>)</span> denote the expression:
 
-<del><span class="codeblock"><i>INVOKE</i>(std::forward&lt;Visitor&gt;(vis), get&lt;<span class="math"><span class="mathalpha">m</span></span>&gt;(std::forward&lt;V&gt;(vars))...)  <span class="comment">// see <a href="https://eel.is/c++draft/func.require">[func.require]</a></span>
-</span></del>
-<ins><span class="codeblock"><i>INVOKE</i>(std::forward&lt;Visitor&gt;(vis), forward_like&lt;V&gt;(*get_if&lt;<span class="math"><span class="mathalpha">m</span></span>&gt;(addressof(vars)))...)  <span class="comment">// see <a href="https://eel.is/c++draft/func.require">[func.require]</a></span>
-</span></ins>
+<span class="codeblock"><i>INVOKE</i>(std::forward&lt;Visitor&gt;(vis), <del>get</del><ins><i>GET</i></ins>&lt;<span class="math"><span class="mathalpha">m</span></span>&gt;(std::forward&lt;V&gt;(vars))...)  <span class="comment">// see <a href="https://eel.is/c++draft/func.require">[func.require]</a></span>
+</span>
 for the first form and
 
-<del><span class="codeblock"><i>INVOKE</i>&lt;R&gt;(std::forward&lt;Visitor&gt;(vis), get&lt;<span class="math"><span class="mathalpha">m</span></span>&gt;(std::forward&lt;V&gt;(vars))...)  <span class="comment">// see <a href="https://eel.is/c++draft/func.require">[func.require]</a></span>
-</span></del>
-<ins><span class="codeblock"><i>INVOKE</i>&lt;R&gt;(std::forward&lt;Visitor&gt;(vis), forward_like&lt;V&gt;(*get_if&lt;<span class="math"><span class="mathalpha">m</span></span>&gt;(addressof(vars)))...)  <span class="comment">// see <a href="https://eel.is/c++draft/func.require">[func.require]</a></span>
-</span></ins>
+<span class="codeblock"><i>INVOKE</i>&lt;R&gt;(std::forward&lt;Visitor&gt;(vis), <del>get</del><ins><i>GET</i></ins>&lt;<span class="math"><span class="mathalpha">m</span></span>&gt;(std::forward&lt;V&gt;(vars))...)  <span class="comment">// see <a href="https://eel.is/c++draft/func.require">[func.require]</a></span>
+</span>
 for the second form.</div></div></div></div>
 
 
@@ -1133,7 +1201,7 @@ Please append a <code><i>// hosted</i></code> comment to the following declarati
 <ul>
   <li><code>operator&lt;&lt;</code></li>
 </ul>
-Please append a <code><i>// freestanding-partial</i></code> comment to the following declaration:
+Please append a <code><i>// partially freestanding</i></code> comment to the following declaration:
 <ul>
   <li><code>basic_string_view</code></li>
 </ul>
@@ -1192,31 +1260,36 @@ Please modify the <a href="https://eel.is/c++draft/string.view.ops#23"><code>bas
 </blockquote>
 
 <h2>Changes in <a href="https://eel.is/c++draft/string.view.find">[string.view.find]</a></h2>
-
-Instructions to the editor:<br/>
 <p>
-    Replace every instance of
-    <span class="texttt">at(xpos + I)</span>
-    in <a href="https://eel.is/c++draft/string.view.find">[string.view.find]</a> with
-    <ins><span class="texttt">data_[xpos + I]</span></ins>.
+Please avoid using the the <i>freestanding-deleted</i> method <code>at()</code>.
 </p><p>
-    Replace every instance of
-    <span class="texttt">at(xpos)</span>
-    in <a href="https://eel.is/c++draft/string.view.find">[string.view.find]</a> with
-    <ins><span class="texttt">data_[xpos]</span></ins>.
-</p><p>
-    Replace every instance of
-    <span class="texttt">str.at(I)</span>
-    in <a href="https://eel.is/c++draft/string.view.find">[string.view.find]</a> with
-    <ins><span class="texttt">str.data_[I]</span></ins>.
+Instructions to the editor:
 </p>
+<ul>
+    <li>
+        Replace every instance of
+        <span class="texttt">at(xpos + I)</span>
+        in <a href="https://eel.is/c++draft/string.view.find">[string.view.find]</a> with
+        <ins><span class="texttt">data_[xpos + I]</span></ins>.
+    </li><li>
+        Replace every instance of
+        <span class="texttt">at(xpos)</span>
+        in <a href="https://eel.is/c++draft/string.view.find">[string.view.find]</a> with
+        <ins><span class="texttt">data_[xpos]</span></ins>.
+    </li><li>
+        Replace every instance of
+        <span class="texttt">str.at(I)</span>
+        in <a href="https://eel.is/c++draft/string.view.find">[string.view.find]</a> with
+        <ins><span class="texttt">str[I]</span></ins>.
+    </li>
+</ul>
 
 <h2>Changes in <a href="https://eel.is/c++draft/array.syn">[array.syn]</a></h2>
 Instructions to the editor:<br/>
 <p>
 Please insert a <code><i>// mostly freestanding</i></code> comment at the beginning of the <a href="https://eel.is/c++draft/array.syn">[array.syn]</a> synopsis.<br/>
 </p><p>
-Please append a <code><i>// freestanding-partial</i></code> comment to <code>array</code><br/>
+Please append a <code><i>// partially freestanding</i></code> comment to <code>array</code><br/>
 </p>
 
 <h2>Changes in <a href="https://eel.is/c++draft/array.overview">[array.overview]</a></h2>
@@ -1226,7 +1299,7 @@ Please append a <code><i>// freestanding-deleted</i></code> comment to every ove
 <h2>Changes in <a href="https://eel.is/c++draft/algorithm.syn">[algorithm.syn]</a></h2>
 Instructions to the editor:<br/>
 <p>
-Please append a <code><i>// freestanding</i></code> comment to the following functions:
+Please append a <code><i>// freestanding</i></code> comment to the following functions, so that <code>std::array</code> can be specified in terms of freestanding functions:
 <ul>
     <li><code>fill_n(OutputIterator first, Size n, const T& value)</code></li>
     <li><code>swap_ranges(ForwardIterator1 first1, ForwardIterator1 last1, ForwardIterator2 first2)</code></li>
