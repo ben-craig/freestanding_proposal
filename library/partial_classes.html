@@ -380,10 +380,10 @@ span.indented {
 }
 </style>
 
-<title>TODO D2407R5.4: Freestanding Library: Partial Classes</title>
+<title>TODO D2407R5.6: Freestanding Library: Partial Classes</title>
 <body>
 <h1>Freestanding Library: Partial Classes</h1>
-Document number: D2407R5.4 TODO<br/>
+Document number: D2407R5.6 TODO<br/>
 Date: 2023-06-28 TODO<br/>
 Reply-to:<br/>
 &emsp;&emsp;Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
@@ -397,9 +397,9 @@ Audience: Library Working Group
   <li>Explicit renumbering in freestanding.item to make conversation possible</li>
   <li>Tweaked requirements on freestanding items to not require all members, with later rules putting most of those requirements back</li>
   <li>Discussing entities rather than function definitions</li>
-  <li>Simplified freestanding comment grammar.  Now the only normative words are freestanding and freestanding-deleted<li>
+  <li>Simplified freestanding comment grammar.  Now the only normative words are freestanding and freestanding-deleted</li>
   <li>Tweaked notes on freestanding to hosted migration</li>
-  <li>Added some drafting and LWG notes explaining wording rationale<li>
+  <li>Added some drafting and LWG notes explaining wording rationale</li>
   <li>Using exposition-only <code><i>GET</i></code> function in <code>variant</code> rather than respecify in terms of <code>get_if</code></li>
   <li>Using public interface of <code>string_view</code> rather than exposition interface when accessing non-<code>this</code> objects</li>
 </ul>
@@ -606,7 +606,7 @@ double abs(double j); <span class='comment'>// <span class='textit'>freestanding
             </li>
             <ins>
             <li><div class='marginalizedparent' style='left:-27mm'><a class="marginalized">(4.2)</a></div>
-                it is followed by a comment that includes <i>freestanding-deleted</i>,
+                it is followed by a comment that includes <i>freestanding-deleted</i>, or
             </li>
             </ins>
             <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized"><del>(3.2)</del><ins>(4.3)</ins></a></div>
@@ -661,7 +661,7 @@ double abs(double j); <span class='comment'>// <span class='textit'>freestanding
     <div class="sentence">A macro is a freestanding item if it is defined in a header synopsis and
         <ul class="itemize">
             <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.1)</del><ins>(6.1)</ins></a></div>
-                the definition is followed by a comment that includes <i>freestanding</i>,<del> or</del>
+                the definition is followed by a comment that includes <i>freestanding</i>, or
             </li>
             <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.2)</del><ins>(6.2)</ins></a></div>
                 the header synopsis begins with a comment that includes <i><del>all </del>freestanding</i><ins> and the definition is not followed by a comment that includes <i>hosted</i></ins>.
@@ -934,10 +934,23 @@ otherwise, <span class="texttt">optional&lt;U&gt;()</span>.
 </blockquote>
 </p>
 
-<h2>Changes in <a href="https://eel.is/c++draft/variant.syn">[variant.syn]</a></h2>
+<h2>Changes in <a href="https://eel.is/c++draft/variant.general">[variant.general]</a></h2>
 <p>
 LWG note: four <code><i>GET</i></code> overloads are added, because we can't use <code>get</code> in the specification anymore since it could be <code>=delete</code>d, and we still need the right return types, value categories, and mandates of <code><i>GET</i></code> to deal with <code>visit</code> and the relops.
 </p>
+<p>
+Add a new paragraph to [variant.general].
+</p>
+<blockquote class="stdins">
+<div class="para">
+    <div class="marginalizedparent"><a class="marginalized" href="#10">?</a></div>
+    <div class="itemdescr"><div class="texpara"><div id="10.sentence-1" class="sentence">
+        In subclause [variant], <code><i>GET</i></code> denotes a set of exposition only function templates ([variant.get]).
+    </div></div></div>
+</div>
+</blockquote>
+
+<h2>Changes in <a href="https://eel.is/c++draft/variant.syn">[variant.syn]</a></h2>
 <blockquote class="std">
 <span class="codeblock"><ins><span class="comment">// mostly freestanding</span></ins>
 <span class="preprocessordirective">#include</span> <span class="anglebracket">&lt;</span>compare<span class="anglebracket">&gt;</span>              <span class="comment">// see <a href="compare.syn" title="17.11.1 Header <compare> synopsis">[compare.<span class="shy"></span>syn]</a></span>
@@ -950,16 +963,7 @@ LWG note: four <code><i>GET</i></code> overloads are added, because we can't use
 <span class="codeblock">  <span class="comment">// <a href="#get" title="22.6.5 Value access">[variant.get]</a>, value access</span>
   <span class="keyword">template</span>&lt;<span class="keyword">class</span> T, <span class="keyword">class</span>... Types&gt;
     <span class="keyword">constexpr</span> <span class="keyword">bool</span> holds_alternative(<span class="keyword">const</span> variant&lt;Types...&gt;&amp;) <span class="keyword">noexcept</span>;
-<ins>
-  <span class="keyword">template</span>&lt;size_t I, <span class="keyword">class</span>... Types&gt;
-    <span class="keyword">constexpr</span> variant_alternative_t&lt;I, variant&lt;Types...&gt;&gt;&amp; <i>GET</i>(variant&lt;Types...&gt;&amp;); <span class="comment">// exposition only</span>
-  <span class="keyword">template</span>&lt;size_t I, <span class="keyword">class</span>... Types&gt;
-    <span class="keyword">constexpr</span> variant_alternative_t&lt;I, variant&lt;Types...&gt;&gt;&amp;&amp; <i>GET</i>(variant&lt;Types...&gt;&amp;&amp;); <span class="comment">// exposition only</span>
-  <span class="keyword">template</span>&lt;size_t I, <span class="keyword">class</span>... Types&gt;
-    <span class="keyword">constexpr</span> <span class="keyword">const</span> variant_alternative_t&lt;I, variant&lt;Types...&gt;&gt;&amp; <i>GET</i>(<span class="keyword">const</span> variant&lt;Types...&gt;&amp;); <span class="comment">// exposition only</span>
-  <span class="keyword">template</span>&lt;size_t I, <span class="keyword">class</span>... Types&gt;
-    <span class="keyword">constexpr</span> <span class="keyword">const</span> variant_alternative_t&lt;I, variant&lt;Types...&gt;&gt;&amp;&amp; <i>GET</i>(<span class="keyword">const</span> variant&lt;Types...&gt;&amp;&amp;); <span class="comment">// exposition only</span>
-</ins>
+
   <span class="keyword">template</span>&lt;size_t I, <span class="keyword">class</span>... Types&gt;
     <span class="keyword">constexpr</span> variant_alternative_t&lt;I, variant&lt;Types...&gt;&gt;&amp; get(variant&lt;Types...&gt;&amp;);<ins> <span class="comment">// freestanding-deleted</span></ins>
   <span class="keyword">template</span>&lt;size_t I, <span class="keyword">class</span>... Types&gt;
@@ -1142,13 +1146,13 @@ in <a href="https://eel.is/c++draft/variant.relops">[variant.relops]</a> with
 <blockquote class="std">
 <ins><div class="texpara"><div class="itemdecl">
 <code class="itemdeclcode"><span class="keyword">template</span><span class="anglebracket">&lt;</span>size_t I, <span class="keyword">class</span><span class="operator">.</span><span class="operator">.</span><span class="operator">.</span> Types<span class="anglebracket">&gt;</span>
-  <span class="keyword">constexpr</span> variant_alternative_t<span class="anglebracket">&lt;</span>I, variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span> <i>GET</i><span class="parenthesis">(</span>variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span> v<span class="parenthesis">)</span>;
+  <span class="keyword">constexpr</span> variant_alternative_t<span class="anglebracket">&lt;</span>I, variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span> <i>GET</i><span class="parenthesis">(</span>variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span> v<span class="parenthesis">)</span>; <span class="comment">// exposition only</span>
 <span class="keyword">template</span><span class="anglebracket">&lt;</span>size_t I, <span class="keyword">class</span><span class="operator">.</span><span class="operator">.</span><span class="operator">.</span> Types<span class="anglebracket">&gt;</span>
-  <span class="keyword">constexpr</span> variant_alternative_t<span class="anglebracket">&lt;</span>I, variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> <i>GET</i><span class="parenthesis">(</span>variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> v<span class="parenthesis">)</span>;
+  <span class="keyword">constexpr</span> variant_alternative_t<span class="anglebracket">&lt;</span>I, variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> <i>GET</i><span class="parenthesis">(</span>variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> v<span class="parenthesis">)</span>; <span class="comment">// exposition only</span>
 <span class="keyword">template</span><span class="anglebracket">&lt;</span>size_t I, <span class="keyword">class</span><span class="operator">.</span><span class="operator">.</span><span class="operator">.</span> Types<span class="anglebracket">&gt;</span>
-  <span class="keyword">constexpr</span> <span class="keyword">const</span> variant_alternative_t<span class="anglebracket">&lt;</span>I, variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span> <i>GET</i><span class="parenthesis">(</span><span class="keyword">const</span> variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span> v<span class="parenthesis">)</span>;
+  <span class="keyword">constexpr</span> <span class="keyword">const</span> variant_alternative_t<span class="anglebracket">&lt;</span>I, variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span> <i>GET</i><span class="parenthesis">(</span><span class="keyword">const</span> variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span> v<span class="parenthesis">)</span>; <span class="comment">// exposition only</span>
 <span class="keyword">template</span><span class="anglebracket">&lt;</span>size_t I, <span class="keyword">class</span><span class="operator">.</span><span class="operator">.</span><span class="operator">.</span> Types<span class="anglebracket">&gt;</span>
-  <span class="keyword">constexpr</span> <span class="keyword">const</span> variant_alternative_t<span class="anglebracket">&lt;</span>I, variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> <i>GET</i><span class="parenthesis">(</span><span class="keyword">const</span> variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> v<span class="parenthesis">)</span>;
+  <span class="keyword">constexpr</span> <span class="keyword">const</span> variant_alternative_t<span class="anglebracket">&lt;</span>I, variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> <i>GET</i><span class="parenthesis">(</span><span class="keyword">const</span> variant<span class="anglebracket">&lt;</span>Types<span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> v<span class="parenthesis">)</span>; <span class="comment">// exposition only</span>
 </code></div></div>
 <div class="para" id="3"><div class="marginalizedparent"><a class="marginalized" href="#3">3</a></div><div class="itemdescr"><div class="texpara"><div id="3.sentence-1" class="sentence"><i>Mandates</i>: <span class="math"><span class="texttt">I</span> &lt; <span class="texttt"><span class="keyword">sizeof</span><span class="operator">.</span><span class="operator">.</span><span class="operator">.</span><span class="parenthesis">(</span>Types<span class="parenthesis">)</span></span></span><a class="hidden_link" href="#3.sentence-1">.</a></div></div></div></div>
 <div class="para" id="3"><div class="marginalizedparent"><a class="marginalized" href="#3">4</a></div><div class="itemdescr"><div class="texpara"><div id="3.sentence-1" class="sentence"><i>Preconditions</i>: <span class="texttt">v.index()</span> is <span class="texttt">I</span>.</div></div></div></div>
