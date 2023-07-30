@@ -367,7 +367,12 @@ Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: Library Evolution Working Group
 
 <h1>Changes from previous revisions</h1>
-First revision!
+<h3>Changes from R0</h3>
+<ul>
+<li>Reworked wording based on changes in P2407R5.</li>
+<li>Made feature test macros <code>// freestanding</code></li>
+<li>TODO: handle span::at merge conflict</li>
+</ul>
 
 <h1>Introduction</h1>
 <p>
@@ -419,7 +424,7 @@ The tests worked as is, except for the ones specifically testing <code>shared_pt
 </p>
 
 <h1>Wording</h1>
-This paper’s wording is based on the current working draft, [N4928], and it assumes that [P2338R4] has been applied.
+This paper’s wording is based on the current working draft, [N4950], and it assumes that [P2407R5] has been applied.
 
 <h2>Change in <a href="https://eel.is/c++draft/freestanding.item">[freestanding.item]</a></h2>
 Add a new paragraph to <a href="https://wg21.link/freestanding.item">[freestanding.item]</a>.
@@ -428,7 +433,7 @@ Add a new paragraph to <a href="https://wg21.link/freestanding.item">[freestandi
 <div class="para">
     <div class="marginalizedparent"><a class="marginalized">?</a></div>
     <div class="sentence">Class template declarations followed by a comment that include <span class="textit">freestanding-deleted</span> are <span class="textit">freestanding deleted class template declarations</span>.</div>
-    <div class="sentence">On freestanding implementations, it is implementation-defined whether each class introduced by a freestanding deleted class template declaration is a freestanding item or undefined.</div>
+    <div class="sentence">On freestanding implementations, it is implementation-defined whether each entity introduced by a freestanding deleted class template declaration is undefined or whether the requirements are the same as the corresponding requirements for a hosted implementation.</div>
     <div class="note">[  <span class="textit">Note:</span> An instantiation of an undefined template yields an incomplete class type (<a href="https://wg21.link/temp.inst#2.sentence-4">temp.inst#2.sentence-4</a>). -<i>end note</i>]</div>
     <div class="example">[  <span class="textit">Example:</span>
 <pre class="codeblock">template&lt;class T&gt; class shared_ptr; <span class="comment">// <span class="textit">freestanding-deleted</span></span>
@@ -475,20 +480,17 @@ Add new rows to the "C++ headers for freestanding implementations" table:
 </table>
 
 <h2>Changes in <a href="https://eel.is/c++draft/version.syn">[version.syn]</a></h2>
-Instructions to the editor:<br/>
-Add the following macro to <a href="https://eel.is/c++draft/version.syn">[version.syn]</a>:
-<blockquote class="stdins">
+Drafting note: <code>__cpp_lib_mdspan</code> is intentionally left unmodified.<br/>
+<blockquote class="std">
 <pre class='codeblock'>
-#define __cpp_lib_freestanding_expected 20XXXXL //also in &lt;expected&gt;
-#define __cpp_lib_freestanding_mdspan 20XXXXL //also in &lt;mdspan&gt;
+<ins>#define __cpp_lib_freestanding_expected             <i>new-val</i> // freestanding, also in &lt;expected&gt;</ins>
+<ins>#define __cpp_lib_freestanding_mdspan               <i>new-val</i> // freestanding, also in &lt;mdspan&gt;</ins>
+<i>...</i>
+#define __cpp_lib_out_ptr                           <del>202106L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;memory&gt;
+<i>...</i>
+#define __cpp_lib_span                              <del>202002L</del><ins><i>new-val</i></ins> // <ins>freestanding, </ins>also in &lt;span&gt;
 </pre>
 </blockquote>
-
-Update the integer literal for the following macros:
-<ul>
-  <li><code>__cpp_lib_out_ptr</code></li>
-  <li><code>__cpp_lib_span</code></li>
-</ul>
 
 <h2>Changes in <a href="https://eel.is/c++draft/memory.syn">[memory.syn]</a></h2>
 Instructions to the editor:<br/>
@@ -511,7 +513,7 @@ Instructions to the editor:<br/>
 <p>
 Please insert a <code><i>// mostly freestanding</i></code> comment at the beginning of the <a href="https://eel.is/c++draft/expected.syn">[expected.syn]</a> synopsis.<br/>
 </p><p>
-Please append a <code><i>// freestanding-partial</i></code> comment to every <code>expected</code> declaration in the synopsis.
+Please append a <code><i>// partially freestanding</i></code> comment to every <code>expected</code> declaration in the synopsis.
 </p>
 
 <h2>Changes in <a href="https://eel.is/c++draft/expected.object.general">[expected.object.general]</a></h2>
@@ -551,8 +553,11 @@ Please insert an <code><i>// all freestanding</i></code> comment at the beginnin
 [P1132R8] JeanHeyd Meneide et al. 2021-06-15. out_ptr - a scalable output pointer abstraction.<br/>
 &emsp;&emsp;https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p1132r8.html<br/>
 
-[P2338R4] Ben Craig. 2022-12-06. Freestanding Library: Character primitives and the C library.<br/>
+[P2407R5] Ben Craig. 2023-07-26. Freestanding Library: Freestanding Library: Partial Classes.<br/>
 &emsp;&emsp;https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2338r4.html<br/>
+
+[N4950] Thomas Köppe. 2023-05-10. Working Draft, Standard for Programming Language C++.<br/>
+&emsp;&emsp;https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf<br/>
 
 </body>
 </html>
