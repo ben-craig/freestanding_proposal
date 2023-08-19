@@ -358,20 +358,20 @@ span.indented {
 }
 </style>
 
-<title>TODO D2833R1: Freestanding Library: inout expected span</title>
+<title>P2833R1: Freestanding Library: inout expected span</title>
 <body>
 <h1>Freestanding Library: inout expected span</h1>
-Document number: TODO D2833R1<br/>
-Date: TODO 2023-03-13<br/>
+Document number: P2833R1<br/>
+Date: 2023-08-19<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: Library Evolution Working Group
 
 <h1>Changes from previous revisions</h1>
 <h3>Changes from R0</h3>
 <ul>
-<li>Reworked wording based on changes in P2407R5.</li>
+<li>Reworked wording based on changes in P2407R5</li>
 <li>Made feature test macros <code>// freestanding</code></li>
-<li>TODO: handle span::at merge conflict</li>
+<li>Discuss P2821 <code>span::at</code> merge conflict</li>
 </ul>
 
 <h1>Introduction</h1>
@@ -400,16 +400,18 @@ This combination keeps the burden low for standard library implementations to si
 <h1>Design</h1>
 <p>
 All overloads of <code>expected::value</code> are deleted, as they can throw exceptions.
-This follows the precedent from P2338 "Freestanding Library: Character primitives and the C library".
+This follows the precedent from P2407 "Freestanding Library: Partial Classes".
 </p><p>
 The declaration of <code>shared_ptr</code> is included, but the template class is left undefined.
 This allows <code>out_ptr</code> and <code>inout_ptr</code> to disallow certain <code>shared_ptr</code> usages in the same way in hosted and freestanding.
 This approach is less specification work and less implementation work, while still providing reasonable diagnostics to users if they mistakenly use <code>shared_ptr</code> on a minimal freestanding implementation.
 This approach still allows non-minimal freestanding implementations to provide a <code>shared_ptr</code> implementation that will interact with <code>out_ptr</code> and <code>inout_ptr</code> the same as they do on hosted implementations.
 </p><p>
-This paper mostly follows the guide lines as specified in [P2198R6] Freestanding Feature-Test Macros and Implementation-Defined Extensions.
+This paper mostly follows the guide lines as specified in [P2198R6] "Freestanding Feature-Test Macros and Implementation-Defined Extensions".
 However, <code>__cpp_lib_freestanding_mdspan</code> is added instead of bumping <code>__cpp_lib_mdspan</code> because I suspect the mdspan authors will be bumping the <code>__cpp_lib_mdspan</code> macro frequently in the C++26 cycle.
 When multiple orthogonal papers bump the same feature test macro, it becomes difficult for users to test for the specific features they care about.
+</p><p>
+The in flight paper [P2821] "span.at()" paper adds <code>at()</code> to <code>span</code>.  The <code>at()</code> function originates exceptions, so it will not be required to be present in a freestanding implementation.  This follows the precedent set by <code>array</code> in P2407 "Freestanding Library: Partial Classes".
 </p>
 
 <h1>Experience</h1>
@@ -529,9 +531,28 @@ Please append a <code><i>// freestanding-deleted</i></code> comment to every <co
 </p>
 
 <h2>Changes in <a href="https://eel.is/c++draft/span.syn">[span.syn]</a></h2>
+There are two versions of this wording.
+One version assumes that span.at() has been added in [P2821] "span.at()", the other version assumes that it has not been added yet.
+
+<h3>Changes assuming [P2821] "span.at()" has <b>NOT</b> been merged</h3>
 Instructions to the editor:<br/>
 <p>
 Please insert an <code><i>// all freestanding</i></code> comment at the beginning of the <a href="https://eel.is/c++draft/span.syn">[span.syn]</a> synopsis.<br/>
+</p>
+
+<h3>Changes assuming [P2821] "span.at()" has been merged</h3>
+Instructions to the editor:<br/>
+<p>
+Please insert a <code><i>// mostly freestanding</i></code> comment at the beginning of the <a href="https://eel.is/c++draft/span.syn">[span.syn]</a> synopsis.
+</p><p>
+Please append a <code><i>// partially freestanding</i></code> comment to the <code>span</code> declaration.
+</p>
+
+<h2>Changes in <a href="https://eel.is/c++draft/views.span">[views.span]</a></h2>
+<p>
+Drafting note: Only apply this change if [P2821] "span.at()" has been merged.
+</p><p>
+Please append a <code><i>// freestanding-deleted</i></code> comment to every overload of <code>at</code>.
 </p>
 
 <h2>Changes in <a href="https://eel.is/c++draft/mdspan.syn">[mdspan.syn]</a></h2>
