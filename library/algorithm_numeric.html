@@ -408,6 +408,14 @@ I did not take that approach, as I see it being a subtle performance break.
 I would much rather have a loud compiler error than a subtle performance break.
 </p>
 
+<h2>Random number iostreams</h2>
+<p>
+This paper makes the iostreams streaming requirements optional for random number engines <a href="https://eel.is/c++draft/rand.req.eng">[rand.req.eng]</a> and random number distributions <a href="https://eel.is/c++draft/rand.req.dist">[rand.req.dist]</a> on freestanding implementations.
+Freestanding doesn't require iostreams to be present, and won't require the random number iostreams operations to be present either.
+Streaming these objects allows users to save and restore the state of the object in a round-trippable manner.
+Common usages of the random number facilities that don't involve serialization still work without iostreams support.
+</p>
+
 <h2>Floating point randomness</h2>
 <p>
 In many kernel environments, loading, storing, or manipulating floating point values is not allowed in the general case.
@@ -443,7 +451,42 @@ TODO: AVR gcc, NI-STL
 <h1>Wording</h1>
 TODO: ensure that there aren't specification traps where we rely on non-freestanding things
 
-This paper’s wording is based on the current working draft, TODO [N4928], and it assumes that TODO [P2338R4] has been applied.
+This paper’s wording is based on the current working draft, TODO [N4928], and it assumes that [P2407R5] has been applied.
+
+<h2>Changes in <a href="https://eel.is/c++draft/freestanding.item">[freestanding.item]</a></h2>
+<blockquote class="std">
+<div class="para">
+    <div class="marginalizedparent"><a class="marginalized">5</a></div>
+    <div class="sentence">An entity, deduction guide, or <i>typedef-name</i> is a freestanding item if it is:
+        <ul class="itemize">
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.1)</a></div>
+                introduced by a declaration that is a freestanding item,
+            </li>
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.2)</a></div>
+                a member of a freestanding item other than a namespace<ins> where the introducing declaration is not followed by a comment that includes <i>hosted</i></ins>,
+            </li>
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.3)</a></div>
+                an enumerator of a freestanding item,
+            </li>
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.4)</a></div>
+                a deduction guide of a freestanding item,
+            </li>
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.5)</a></div>
+                an enclosing namespace of a freestanding item,
+            </li>
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.6)</a></div>
+                a friend of a freestanding item<ins> where the introducing declaration is not followed by a comment that includes <i>hosted</i></ins>,
+            </li>
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.7)</a></div>
+                denoted by a <i>typedef-name</i> that is a freestanding item, or
+            </li>
+            <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.8)</a></div>
+                denoted by an alias template that is a freestanding item.
+            </li>
+        </ul>
+    </div>
+</div>
+</blockquote>
 
 <h2>Changes in <a href="https://eel.is/c++draft/compliance">[compliance]</a></h2>
 Drafting note: <code>&lt;algorithm&gt;</code> and <code>&lt;numeric&gt;</code> are already freestanding headers.<br/>
@@ -531,8 +574,6 @@ The markings are now redundant given the <code><i>// mostly freestanding</i></co
 
 <h2>Changes in <a href="https://eel.is/c++draft/rand.synopsis">[rand.synopsis]</a></h2>
 Instructions to the editor:<br/>
-TODO: op&lt;&lt;<br/>
-TODO: prose that lets me mark members hosted<br/>
 Please append a <code><i>// freestanding</i></code> comment to the following declarations:<br/>
 <ul>
   <li><code>uniform_random_bit_generator </code></li>
@@ -558,6 +599,266 @@ Please append a <code><i>// partially freestanding</i></code> comment to the fol
   <li><code>uniform_int_distribution</code></li>
 </ul>
 Drafting note: The omission of <code>shuffle_order_engine</code> is intentional.<br/>
+
+
+<h2>Changes in <a href="https://eel.is/c++draft/rand.req.eng">[rand.req.eng]</a></h2>
+
+<blockquote class="std">
+<div class="texpara"><div class="numberedTable" id="tab:rand.req.eng">Table <a href="#tab:rand.req.eng">96</a>: Random number engine requirements <a href="./tab:rand.req.eng">[tab:rand.req.eng]</a><br><table><tbody>
+
+<tr id="tab:rand.req.eng-row-1" class="rowsep"><td class="center"><div class="texpara"><div id="tab:rand.req.eng-row-1-column-1-sentence-1" class="sentence"><b>Expression</b></div></div></td><td class="center"><div class="texpara"><div id="tab:rand.req.eng-row-1-column-2-sentence-1" class="sentence"><b>Return type</b></div></div></td><td class="center"><div class="texpara"><div id="tab:rand.req.eng-row-1-column-3-sentence-1" class="sentence"><b>Pre/post-condition</b></div></div></td><td class="center"><div class="texpara"><div id="tab:rand.req.eng-row-1-column-4-sentence-1" class="sentence"><b>Complexity</b></div></div></td></tr>
+
+<tr id="tab:rand.req.eng-row-2" class="capsep"><td class="left" style="width:22%">...</td><td class="left" style="width:22%">...</td><td class="left" style="width:30%">...</td><td class="left" style="width:15%">...</td></tr>
+
+    <tr id="tab:rand.req.eng-row-13" class="rowsep"><td class="left" style="width:22%"><del><div class="texpara"><div id="tab:rand.req.eng-row-13-column-1-sentence-1" class="sentence"><span class="texttt">os &lt;&lt; x</span></div></div></del></td><td class="left" style="width:22%"><del><div class="texpara"><div id="tab:rand.req.eng-row-13-column-2-sentence-1" class="sentence">reference to the type of <span class="texttt">os</span></div></div></del></td><td class="left" style="width:30%"><del>
+    
+    <div class="texpara"><div id="tab:rand.req.eng-row-13-column-3-sentence-1" class="sentence">With <span class="texttt">os.</span><i>fmtflags</i> set to
+    <span class="texttt">ios_base::dec|ios_base::left</span>
+    and the fill character set to the space character,
+    writes to <span class="texttt">os</span>
+    the textual representation
+    of <span class="texttt">x</span>'s current state<a class="hidden_link" href="#tab:rand.req.eng-row-13-column-3-sentence-1">.</a></div> <div id="tab:rand.req.eng-row-13-column-3-sentence-2" class="sentence">In the output,
+    adjacent numbers are separated
+    by one or more space characters<a class="hidden_link" href="#tab:rand.req.eng-row-13-column-3-sentence-2">.</a></div></div>
+    
+    <div class="texpara"><div id="tab:rand.req.eng-row-13-column-3-sentence-3" class="sentence"><i>Postconditions</i>: The <span class="texttt">os.</span><i>fmtflags</i> and fill character are unchanged<a class="hidden_link" href="#tab:rand.req.eng-row-13-column-3-sentence-3">.</a></div></div>
+    
+    </del></td><td class="left" style="width:15%"><del><div class="texpara"><span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-script-R" style="padding-top: 0.519em; padding-bottom: 0.225em; padding-right: 0.067em;">O</span></span></span></span><span class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.446em; padding-bottom: 0.593em;">(</span></span><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.446em; padding-bottom: 0.372em;">size of state</span></span><span class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.446em; padding-bottom: 0.593em;">)</span></span></span></span></span></div></del></td></tr>
+    <tr id="tab:rand.req.eng-row-14" class="rowsep"><td class="left" style="width:22%"><del><div class="texpara"><div id="tab:rand.req.eng-row-14-column-1-sentence-1" class="sentence"><span class="texttt">is &gt;&gt; v</span></div></div></del></td><td class="left" style="width:22%"><del><div class="texpara"><div id="tab:rand.req.eng-row-14-column-2-sentence-1" class="sentence">reference to the type of <span class="texttt">is</span></div></div></del></td><td class="left" style="width:30%"><del><div class="texpara"><div id="tab:rand.req.eng-row-14-column-3-sentence-1" class="sentence">With <span class="texttt">is.fmtflags</span>
+    set to <span class="texttt">ios_base::dec</span>,
+    sets <span class="texttt">v</span>'s state
+    as determined by reading its textual representation from <span class="texttt">is</span><a class="hidden_link" href="#tab:rand.req.eng-row-14-column-3-sentence-1">.</a></div> <div id="tab:rand.req.eng-row-14-column-3-sentence-2" class="sentence">If bad input is encountered,
+    ensures that <span class="texttt">v</span>'s state is unchanged by the operation
+    and
+    calls <span class="texttt">is.setstate(ios_base::failbit)</span>
+    (which may throw <span class="texttt">ios_base::failure</span> (<a href="iostate.flags" title="31.5.4.4 Flags functions">[iostate.flags]</a>))<a class="hidden_link" href="#tab:rand.req.eng-row-14-column-3-sentence-2">.</a></div> <div id="tab:rand.req.eng-row-14-column-3-sentence-3" class="sentence">If a textual representation written via <span class="texttt">os &lt;&lt; x</span>
+    was subsequently read via <span class="texttt">is &gt;&gt; v</span>,
+    then <span class="texttt">x == v</span>
+    provided that there have been no intervening invocations
+    of <span class="texttt">x</span> or of <span class="texttt">v</span><a class="hidden_link" href="#tab:rand.req.eng-row-14-column-3-sentence-3">.</a></div></div><div class="texpara"><div id="tab:rand.req.eng-row-14-column-3-sentence-4" class="sentence"><i>Preconditions</i>: <span class="texttt">is</span> provides a textual representation
+    that was previously written
+    using an output stream
+    whose imbued locale
+    was the same as that of <span class="texttt">is</span>,
+    and whose type's template specialization arguments
+    <span class="texttt">charT</span> and <span class="texttt">traits</span>
+    were respectively the same as those of <span class="texttt">is</span><a class="hidden_link" href="#tab:rand.req.eng-row-14-column-3-sentence-4">.</a></div></div><div class="texpara"><div id="tab:rand.req.eng-row-14-column-3-sentence-5" class="sentence"><i>Postconditions</i>: The <span class="texttt">is.</span><i>fmtflags</i> are unchanged<a class="hidden_link" href="#tab:rand.req.eng-row-14-column-3-sentence-5">.</a></div></div></del></td><td class="left" style="width:15%"><del><div class="texpara"><span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-script-R" style="padding-top: 0.519em; padding-bottom: 0.225em; padding-right: 0.067em;">O</span></span></span></span><span class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.446em; padding-bottom: 0.593em;">(</span></span><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.446em; padding-bottom: 0.372em;">size of state</span></span><span class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.446em; padding-bottom: 0.593em;">)</span></span></span></span></span></div></del></td></tr>
+
+    
+    </tbody></table></div></div></div>
+
+<div class="para" id="5"><div class="marginalizedparent"><a class="marginalized" href="#5">5</a></div><div class="texpara"><div id="5.sentence-1" class="sentence">...</div></div></div>
+<ins>
+<div class="para" id="6"><div class="marginalizedparent"><a class="marginalized" href="#6">6</a></div><div class="texpara"><div id="6.sentence-1" class="sentence">On hosted implementations, the following expressions are well-formed and have the specified semantics.</div></div></div>
+
+<div class="texpara"><span class="texttt">os &lt;&lt; x</span></div>
+
+<div class="para" id="#7">
+    <div class="marginalizedparent"><a class="marginalized" href="#7">7</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Result</i>: reference to the type of <span class="texttt">os</span>.</div></div></div>
+</div>
+<div class="para" id="#8">
+    <div class="marginalizedparent"><a class="marginalized" href="#8">8</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Effects</i>: <div id="tab:rand.req.eng-row-13-column-3-sentence-1" class="sentence">With <span class="texttt">os.</span><i>fmtflags</i> set to
+    <span class="texttt">ios_base::dec|ios_base::left</span>
+    and the fill character set to the space character,
+    writes to <span class="texttt">os</span>
+    the textual representation
+    of <span class="texttt">x</span>'s current state<a class="hidden_link" href="#tab:rand.req.eng-row-13-column-3-sentence-1">.</a></div> <div id="tab:rand.req.eng-row-13-column-3-sentence-2" class="sentence">In the output,
+    adjacent numbers are separated
+    by one or more space characters<a class="hidden_link" href="#tab:rand.req.eng-row-13-column-3-sentence-2">.</a></div>
+    </div></div></div>
+</div>
+<div class="para" id="#9">
+    <div class="marginalizedparent"><a class="marginalized" href="#9">9</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Postconditions</i>: The <span class="texttt">os.</span><i>fmtflags</i> and fill character are unchanged.</div></div></div>
+</div>
+<div class="para" id="#10">
+    <div class="marginalizedparent"><a class="marginalized" href="#10">10</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Complexity</i>: <span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-script-R" style="padding-top: 0.519em; padding-bottom: 0.225em; padding-right: 0.067em;">O</span></span></span></span><span class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.446em; padding-bottom: 0.593em;">(</span></span><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.446em; padding-bottom: 0.372em;">size of state</span></span><span class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.446em; padding-bottom: 0.593em;">)</span></span></span></span></span>
+    
+    
+    </div></div></div>
+</div>
+
+
+<div class="texpara"><span class="texttt">is &gt;&gt; v</span></div>
+
+<div class="para" id="#11">
+    <div class="marginalizedparent"><a class="marginalized" href="#11">11</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Result</i>: reference to the type of <span class="texttt">is</span>.</div></div></div>
+</div>
+<div class="para" id="#12">
+    <div class="marginalizedparent"><a class="marginalized" href="#12">12</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Effects</i>: 
+    <div id="tab:rand.req.eng-row-14-column-3-sentence-1" class="sentence">With <span class="texttt">is.<i>fmtflags</i></span>
+    set to <span class="texttt">ios_base::dec</span>,
+    sets <span class="texttt">v</span>'s state
+    as determined by reading its textual representation from <span class="texttt">is</span><a class="hidden_link" href="#tab:rand.req.eng-row-14-column-3-sentence-1">.</a></div> <div id="tab:rand.req.eng-row-14-column-3-sentence-2" class="sentence">If bad input is encountered,
+    ensures that <span class="texttt">v</span>'s state is unchanged by the operation
+    and
+    calls <span class="texttt">is.setstate(ios_base::failbit)</span>
+    (which may throw <span class="texttt">ios_base::failure</span> (<a href="iostate.flags" title="31.5.4.4 Flags functions">[iostate.flags]</a>))<a class="hidden_link" href="#tab:rand.req.eng-row-14-column-3-sentence-2">.</a></div> <div id="tab:rand.req.eng-row-14-column-3-sentence-3" class="sentence">If a textual representation written via <span class="texttt">os &lt;&lt; x</span>
+    was subsequently read via <span class="texttt">is &gt;&gt; v</span>,
+    then <span class="texttt">x == v</span>
+    provided that there have been no intervening invocations
+    of <span class="texttt">x</span> or of <span class="texttt">v</span><a class="hidden_link" href="#tab:rand.req.eng-row-14-column-3-sentence-3">.</a></div>
+    </div></div></div>
+</div>
+<div class="para" id="#13">
+    <div class="marginalizedparent"><a class="marginalized" href="#13">13</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Preconditions</i>: 
+    <span class="texttt">is</span> provides a textual representation
+    that was previously written using an output stream whose imbued locale
+    was the same as that of <span class="texttt">is</span>, and whose type's template specialization arguments
+    <span class="texttt">charT</span> and <span class="texttt">traits</span>
+    were respectively the same as those of <span class="texttt">is</span><a class="hidden_link" href="#tab:rand.req.eng-row-14-column-3-sentence-4">.</a>
+    </div></div></div>
+</div>
+<div class="para" id="#14">
+    <div class="marginalizedparent"><a class="marginalized" href="#14">14</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Postconditions</i>: The <span class="texttt">is.<i>fmtflags</i></span> are unchanged.</div></div></div>
+</div>
+<div class="para" id="#15">
+    <div class="marginalizedparent"><a class="marginalized" href="#15">15</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Complexity</i>: <span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-script-R" style="padding-top: 0.519em; padding-bottom: 0.225em; padding-right: 0.067em;">O</span></span></span></span><span class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.446em; padding-bottom: 0.593em;">(</span></span><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.446em; padding-bottom: 0.372em;">size of state</span></span><span class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.446em; padding-bottom: 0.593em;">)</span></span></span></span></span>
+    
+    
+    </div></div></div>
+</div>
+</ins>
+</blockquote>
+    
+<h2>Changes in <a href="https://eel.is/c++draft/rand.req.dist">[rand.req.dist]</a></h2>
+    
+
+
+<blockquote class="std">
+<div class="texpara"><div class="numberedTable" id="tab:rand.req.dist">Table <a href="#tab:rand.req.dist">97</a>: Random number distribution requirements <a href="./tab:rand.req.dist">[tab:rand.req.dist]</a><br><table><tbody><tr id="tab:rand.req.dist-row-1" class="rowsep"><td class="center"><div class="texpara"><div id="tab:rand.req.dist-row-1-column-1-sentence-1" class="sentence"><b>Expression</b></div></div></td><td class="center"><div class="texpara"><div id="tab:rand.req.dist-row-1-column-2-sentence-1" class="sentence"><b>Return type</b></div></div></td><td class="center"><div class="texpara"><div id="tab:rand.req.dist-row-1-column-3-sentence-1" class="sentence"><b>Pre/post-condition</b></div></div></td><td class="center"><div class="texpara"><div id="tab:rand.req.dist-row-1-column-4-sentence-1" class="sentence"><b>Complexity</b></div></div></td></tr>
+
+<tr id="tab:rand.req.dist-row-2" class="capsep"><td class="left" style="width:22%">...</td><td class="left" style="width:22%">...</td><td class="left" style="width:30%">...</td><td class="left" style="width:15%">...</td></tr>
+
+<tr id="tab:rand.req.dist-row-15" class="rowsep">
+    <td class="left" style="width:22%"><del><div class="texpara"><div id="tab:rand.req.dist-row-15-column-1-sentence-1" class="sentence"><span class="texttt">os <span class="anglebracket">&lt;</span><span class="anglebracket">&lt;</span> x</span></div></div></del></td>
+    <td class="left" style="width:22%"><del><div class="texpara"><div id="tab:rand.req.dist-row-15-column-2-sentence-1" class="sentence">reference to the type of <span class="texttt">os</span></div></div></del></td>
+    <td class="left" style="width:30%"><del><div class="texpara"><div id="tab:rand.req.dist-row-15-column-3-sentence-1" class="sentence">Writes to <span class="texttt">os</span> a textual representation
+    for the parameters and the additional internal data of <span class="texttt">x</span><a class="hidden_link" href="#tab:rand.req.dist-row-15-column-3-sentence-1">.</a></div></div><div class="texpara"><div id="tab:rand.req.dist-row-15-column-3-sentence-2" class="sentence"><i>Postconditions</i>: The <span class="texttt">os.</span><i>fmtflags</i> and fill character are unchanged<a class="hidden_link" href="#tab:rand.req.dist-row-15-column-3-sentence-2">.</a></div></div></del></td>
+    <td class="empty left" style="width:15%"></td>
+</tr>
+
+<tr id="tab:rand.req.dist-row-16" class="rowsep">
+    <td class="left" style="width:22%"><del><div class="texpara"><div id="tab:rand.req.dist-row-16-column-1-sentence-1" class="sentence"><span class="texttt">is <span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span> d</span></div></div></del></td>
+    <td class="left" style="width:22%"><del><div class="texpara"><div id="tab:rand.req.dist-row-16-column-2-sentence-1" class="sentence">reference to the type of <span class="texttt">is</span></div></div></del></td>
+    <td class="left" style="width:30%"><del><div class="texpara"><div id="tab:rand.req.dist-row-16-column-3-sentence-1" class="sentence">Restores from <span class="texttt">is</span>
+    the parameters and additional internal data of the lvalue <span class="texttt">d</span><a class="hidden_link" href="#tab:rand.req.dist-row-16-column-3-sentence-1">.</a></div> <div id="tab:rand.req.dist-row-16-column-3-sentence-2" class="sentence">If bad input is encountered,
+    ensures that <span class="texttt">d</span> is unchanged by the operation
+    and
+    calls <span class="texttt">is.setstate(ios_base::failbit)</span>
+    (which may throw <span class="texttt">ios_base::failure</span> (<a href="iostate.flags" title="31.5.4.4 Flags functions">[iostate.flags]</a>))<a class="hidden_link" href="#tab:rand.req.dist-row-16-column-3-sentence-2">.</a></div></div><div class="texpara"><div id="tab:rand.req.dist-row-16-column-3-sentence-3" class="sentence"><i>Preconditions</i>: <span class="texttt">is</span> provides a textual representation
+    that was previously written
+    using an <span class="texttt">os</span> whose imbued locale
+    and whose type's template specialization arguments
+    <span class="texttt">charT</span> and <span class="texttt">traits</span>
+    were the same as those of <span class="texttt">is</span><a class="hidden_link" href="#tab:rand.req.dist-row-16-column-3-sentence-3">.</a></div></div><div class="texpara"><div id="tab:rand.req.dist-row-16-column-3-sentence-4" class="sentence"><i>Postconditions</i>: The <span class="texttt">is.</span><i>fmtflags</i> are unchanged<a class="hidden_link" href="#tab:rand.req.dist-row-16-column-3-sentence-4">.</a></div></div></del></td>
+    <td class="empty left" style="width:15%"></td>
+</tr></tbody></table></div></div>
+...
+
+<ins>
+<div class="para" id="11"><div class="marginalizedparent"><a class="marginalized" href="#11">11</a></div><div class="texpara"><div id="6.sentence-1" class="sentence">On hosted implementations, the following expressions are well-formed and have the specified semantics.</div></div></div>
+
+<div class="texpara"><span class="texttt">os &lt;&lt; x</span></div>
+
+<div class="para" id="#12">
+    <div class="marginalizedparent"><a class="marginalized" href="#12">12</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Result</i>: reference to the type of <span class="texttt">os</span>.</div></div></div>
+</div>
+<div class="para" id="#13">
+    <div class="marginalizedparent"><a class="marginalized" href="#13">13</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Effects</i>: <div id="tab:rand.req.dist-row-15-column-3-sentence-1" class="sentence">Writes to <span class="texttt">os</span> a textual representation
+    for the parameters and the additional internal data of <span class="texttt">x</span>.</div>
+    </div></div></div>
+</div>
+<div class="para" id="#14">
+    <div class="marginalizedparent"><a class="marginalized" href="#14">14</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Postconditions</i>: The <span class="texttt">os.</span><i>fmtflags</i> and fill character are unchanged.</div></div></div>
+</div>
+
+<div class="texpara"><span class="texttt">is &gt;&gt; d</span></div>
+
+<div class="para" id="#15">
+    <div class="marginalizedparent"><a class="marginalized" href="#15">15</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Result</i>: reference to the type of <span class="texttt">is</span>.</div></div></div>
+</div>
+<div class="para" id="#16">
+    <div class="marginalizedparent"><a class="marginalized" href="#16">16</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Effects</i>: 
+    <div id="tab:rand.req.dist-row-16-column-3-sentence-1" class="sentence">Restores from <span class="texttt">is</span>
+    the parameters and additional internal data of the lvalue <span class="texttt">d</span><a class="hidden_link" href="#tab:rand.req.dist-row-16-column-3-sentence-1">.</a></div> <div id="tab:rand.req.dist-row-16-column-3-sentence-2" class="sentence">If bad input is encountered,
+    ensures that <span class="texttt">d</span> is unchanged by the operation
+    and
+    calls <span class="texttt">is.setstate(ios_base::failbit)</span>
+    (which may throw <span class="texttt">ios_base::failure</span> (<a href="iostate.flags" title="31.5.4.4 Flags functions">[iostate.flags]</a>))<a class="hidden_link" href="#tab:rand.req.dist-row-16-column-3-sentence-2">.</a></div>
+    </div></div></div>
+</div>
+<div class="para" id="#17">
+    <div class="marginalizedparent"><a class="marginalized" href="#17">17</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Preconditions</i>: 
+    <span class="texttt">is</span> provides a textual representation
+    that was previously written
+    using an <span class="texttt">os</span> whose imbued locale
+    and whose type's template specialization arguments
+    <span class="texttt">charT</span> and <span class="texttt">traits</span>
+    were the same as those of <span class="texttt">is</span>.
+    </div></div></div>
+</div>
+<div class="para" id="#18">
+    <div class="marginalizedparent"><a class="marginalized" href="#18">18</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Postconditions</i>: The <span class="texttt">is.<i>fmtflags</i></span> are unchanged.</div></div></div>
+</div>
+</ins>
+
+</blockquote>
+
+<h2>Changes in <a href="https://eel.is/c++draft/rand.eng.lcong">[rand.eng.lcong]</a></h2>
+Instructions to the editor:<br/>
+Please append a <i>// hosted</i> comment to each <code>operator&lt;&lt;</code> and <code>operator&gt;&gt;</code> overload in the <code>linear_congruential_engine</code> synopsis.<br/>
+
+<h2>Changes in <a href="https://eel.is/c++draft/rand.eng.mers">[rand.eng.mers]</a></h2>
+Instructions to the editor:<br/>
+Please append a <i>// hosted</i> comment to each <code>operator&lt;&lt;</code> and <code>operator&gt;&gt;</code> overload in the <code>mersenne_twister_engine</code> synopsis.<br/>
+
+<h2>Changes in <a href="https://eel.is/c++draft/rand.eng.sub">[rand.eng.sub]</a></h2>
+Instructions to the editor:<br/>
+Please append a <i>// hosted</i> comment to each <code>operator&lt;&lt;</code> and <code>operator&gt;&gt;</code> overload in the <code>subtract_with_carry_engine</code> synopsis.<br/>
+
+<h2>Changes in <a href="https://eel.is/c++draft/rand.adapt.disc">[rand.adapt.disc]</a></h2>
+Instructions to the editor:<br/>
+Please append a <i>// hosted</i> comment to each <code>operator&lt;&lt;</code> and <code>operator&gt;&gt;</code> overload in the <code>discard_block_engine</code> synopsis.<br/>
+
+<h2>Changes in <a href="https://eel.is/c++draft/rand.adapt.ibits">[rand.adapt.ibits]</a></h2>
+Instructions to the editor:<br/>
+Please append a <i>// hosted</i> comment to each <code>operator&lt;&lt;</code> and <code>operator&gt;&gt;</code> overload in the <code>independent_bits_engine</code> synopsis.<br/>
+
+<h2>Changes in <a href="https://eel.is/c++draft/rand.dist.uni.int">[rand.dist.uni.int]</a></h2>
+Instructions to the editor:<br/>
+Please append a <i>// hosted</i> comment to each <code>operator&lt;&lt;</code> and <code>operator&gt;&gt;</code> overload in the <code>uniform_int_distribution</code> synopsis.<br/>
 
 </body>
 </html>
