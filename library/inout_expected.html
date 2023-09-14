@@ -358,15 +358,19 @@ span.indented {
 }
 </style>
 
-<title>P2833R1: Freestanding Library: inout expected span</title>
+<title>P2833R2: Freestanding Library: inout expected span</title>
 <body>
 <h1>Freestanding Library: inout expected span</h1>
-Document number: P2833R1<br/>
-Date: 2023-08-19<br/>
+Document number: P2833R2<br/>
+Date: 2023-09-13<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
-Audience: Library Evolution Working Group
+Audience: Library Working Group
 
 <h1>Changes from previous revisions</h1>
+<h3>Changes from R1</h3>
+<ul>
+<li>Removed forward declaration of <code>shared_ptr</code></li>
+</ul>
 <h3>Changes from R0</h3>
 <ul>
 <li>Reworked wording based on changes in P2407R5</li>
@@ -402,10 +406,10 @@ This combination keeps the burden low for standard library implementations to si
 All overloads of <code>expected::value</code> are deleted, as they can throw exceptions.
 This follows the precedent from P2407 "Freestanding Library: Partial Classes".
 </p><p>
-The declaration of <code>shared_ptr</code> is included, but the template class is left undefined.
-This allows <code>out_ptr</code> and <code>inout_ptr</code> to disallow certain <code>shared_ptr</code> usages in the same way in hosted and freestanding.
-This approach is less specification work and less implementation work, while still providing reasonable diagnostics to users if they mistakenly use <code>shared_ptr</code> on a minimal freestanding implementation.
-This approach still allows non-minimal freestanding implementations to provide a <code>shared_ptr</code> implementation that will interact with <code>out_ptr</code> and <code>inout_ptr</code> the same as they do on hosted implementations.
+<code>out_ptr</code> and <code>inout_ptr</code> have mandates involving <code>shared_ptr</code>.
+<code>shared_ptr</code> is not freestanding.
+This paper leaves those mandates in place, without changing the freestanding status of <code>shared_ptr</code>.
+Implementations are expected to <code>#if</code> out those mandates as needed.
 </p><p>
 This paper mostly follows the guide lines as specified in [P2198R6] "Freestanding Feature-Test Macros and Implementation-Defined Extensions".
 However, <code>__cpp_lib_freestanding_mdspan</code> is added instead of bumping <code>__cpp_lib_mdspan</code> because I suspect the mdspan authors will be bumping the <code>__cpp_lib_mdspan</code> macro frequently in the C++26 cycle.
@@ -421,28 +425,12 @@ The in flight paper [P2821] "span.at()" paper adds <code>at()</code> to <code>sp
 <code>mdspan</code> uses <code>span</code> in the implementation and interface, so the CUDA experience extends to <code>span</code> as well.
 </p><p>
 The author has prototyped the necessary <code>out_ptr</code> and <code>inout_ptr</code> changes with MSVC's STL.
-This involved <code>#if</code>'ing out <code>weak_ptr</code>, as well as the definitions of <code>shared_ptr</code> facilities.
+This involved <code>#if</code>'ing out <code>shared_ptr</code> and <code>weak_ptr</code> facilities, as well as one <code>static_assert</code> in <code>out_ptr_t</code> and one <code>static_assert</code> in <code>inout_ptr_t</code>.
 The tests worked as is, except for the ones specifically testing <code>shared_ptr</code>.
 </p>
 
 <h1>Wording</h1>
 This paper’s wording is based on the current working draft, [N4950], and it assumes that [P2407R5] has been applied.
-
-<h2>Change in <a href="https://eel.is/c++draft/freestanding.item">[freestanding.item]</a></h2>
-Add a new paragraph to <a href="https://wg21.link/freestanding.item">[freestanding.item]</a>.
-
-<blockquote class="stdins">
-<div class="para">
-    <div class="marginalizedparent"><a class="marginalized">?</a></div>
-    <div class="sentence">Class template declarations followed by a comment that include <span class="textit">freestanding-deleted</span> are <span class="textit">freestanding deleted class template declarations</span>.</div>
-    <div class="sentence">On freestanding implementations, it is implementation-defined whether each entity introduced by a freestanding deleted class template declaration is undefined or whether the requirements are the same as the corresponding requirements for a hosted implementation.</div>
-    <div class="note">[  <span class="textit">Note:</span> An instantiation of an undefined template yields an incomplete class type (<a href="https://wg21.link/temp.inst#2.sentence-4">temp.inst#2.sentence-4</a>). -<i>end note</i>]</div>
-    <div class="example">[  <span class="textit">Example:</span>
-<pre class="codeblock">template&lt;class T&gt; class shared_ptr; <span class="comment">// <span class="textit">freestanding-deleted</span></span>
-</pre>
-    -<i>end example</i>]</div>
-</div>
-</blockquote>
 
 <h2>Changes in <a href="https://eel.is/c++draft/compliance">[compliance]</a></h2>
 Add new rows to the "C++ headers for freestanding implementations" table:
@@ -497,11 +485,6 @@ Drafting note: <code>__cpp_lib_mdspan</code> is intentionally left unmodified.<b
 <h2>Changes in <a href="https://eel.is/c++draft/memory.syn">[memory.syn]</a></h2>
 Instructions to the editor:<br/>
 <p>
-Please append a <code><i>// freestanding-deleted</i></code> comment to the following declaration:
-<ul>
-  <li><code>shared_ptr</code></li>
-</ul>
-</p>
 Please append a <code><i>// freestanding</i></code> comment to the following declarations:
 <ul>
   <li><code>out_ptr_t</code></li>
@@ -509,6 +492,7 @@ Please append a <code><i>// freestanding</i></code> comment to the following dec
   <li><code>inout_ptr_t</code></li>
   <li><code>inout_ptr</code></li>
 </ul>
+</p>
 
 <h2>Changes in <a href="https://eel.is/c++draft/expected.syn">[expected.syn]</a></h2>
 Instructions to the editor:<br/>
