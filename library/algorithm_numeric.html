@@ -445,13 +445,18 @@ Those constructors are templated on the seed sequence, and do not specifically r
 
 <h1>Experience</h1>
 <p>
-TODO: AVR gcc, NI-STL
+These changes have been <a href="https://github.com/ben-craig/kernel_test_harness">tested</a> with the libc++ test suite in the Microsoft Windows 11 kernel with the MSVC STL.
+The binaries produced were scanned for unexpected floating point usage.
+Usage of exceptions, iostreams, and global <code>::operator new</code> and <code>::operator delete</code> cause linker errors on that platform.
+</p><p>
+The C++03 portions of the library have seen extensive field use in kernel drivers produced by NI (formerly National Instruments).
+Those drivers use a modified version of STLport in kernel drivers built for Microsoft Windows, Linux, and Apple MacOS, as well as for various real time operating systems.
+</p><p>
+Paul Bendixen has implemented <a href="https://wg21.link/P0829">P0829</a> in a <a href="https://gitlab.com/avr-libstdcxx">libstdc++ fork</a>.  P0829 is (almost) a superset of the facilities in this paper.
 </p>
 
 <h1>Wording</h1>
-TODO: ensure that there aren't specification traps where we rely on non-freestanding things
-
-This paper’s wording is based on the current working draft, TODO [N4928], and it assumes that [P2407R5] has been applied.
+This paper’s wording is based on the current working draft, [N4928], and it assumes that [P2407R5] has been applied.
 
 <h2>Changes in <a href="https://eel.is/c++draft/freestanding.item">[freestanding.item]</a></h2>
 <blockquote class="std">
