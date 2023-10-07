@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<html>
+<style type="text/css">
+  ins, ins * { text-decoration:none; font-weight:bold; background-color:#A0FFA0 }
+  del, del * { text-decoration:line-through; background-color:#FFA0A0 }
+  #hidedel:checked ~ * del, #hidedel:checked ~ * del * { display:none; visibility:hidden }
+
+blockquote {
+  padding: .5em;
+  border: .5em;
+  border-color: silver;
+  border-left-style: solid;
+}
+
+blockquote.std { color: #000000; background-color: #F1F1F1;
+  border: 1px solid #D1D1D1;
+  padding-left: 0.5em; padding-right: 0.5em; }
+blockquote.stdins { text-decoration: underline;
+  color: #000000; background-color: #C8FFC8;
+  border: 1px solid #B3EBB3; padding: 0.5em; }
+blockquote.stddel { text-decoration: line-through;
+  color: #000000; background-color: #FFEBFF;
+  border: 1px solid #ECD7EC;
+  padding-left: 0.5em; padding-right: 0.5em; }
+
+p.grammarlhs { margin-bottom: 0 }
+p.grammarrhs { margin-left:8em; margin-top:0; margin-bottom:0; text-indent:-4em }
+
+div.wrapper {
+    max-width: 60em;
+    margin: auto;
+}
+
+a { text-decoration: none; }
+
+a.hidden_link {
+    text-decoration: none;
+    color: inherit;
+}
+
+li {
+    margin-top: 0.0em;
+    margin-bottom: 0.0em;
+}
+
+h1 { line-height: 1; }
+h2 { line-height: 1; }
+h3 { line-height: 1; }
+h4 { line-height: 1; }
+
+:target { background-color: #C9FBC9; }
+:target .codeblock { background-color: #C9FBC9; }
+:target ul { background-color: #C9FBC9; }
+
+.abbr_ref { float: right; }
+
+.folded_abbr_ref { float: right; }
+:target .folded_abbr_ref { display: none; }
+
+:target .unfolded_abbr_ref { float: right; display: inherit; }
+.unfolded_abbr_ref { display: none; }
+
+.secnum { display: inline-block; min-width: 35pt; }
+.annexnum { display: block; }
+
+div.sourceLinkParent {
+    float: right;
+}
+
+a.sourceLink {
+    position: absolute;
+    opacity: 0;
+    margin-left: 10pt;
+}
+
+a.sourceLink:hover {
+    opacity: 1;
+}
+
+div.marginalizedparent {
+    position: relative;
+    left: -5em;
+}
+
+div.footnoteNumberParent {
+    position: relative;
+    left: -4.7em;
+}
+
+a.marginalized {
+    position: absolute;
+    font-size: 75%;
+    text-align: right;
+    width: 5em;
+}
+
+a.enumerated_item_num {
+    position: relative;
+    left: -3.5em;
+    display: inline-block;
+    margin-right: -3em;
+    text-align: right;
+    width: 3em;
+}
+
+div.para { margin-bottom: 0.6em; margin-top: 0.6em; text-align: justify; }
+div.section { text-align: justify; }
+div.sentence { display: inline; }
+
+span.indexparent {
+    display: inline;
+    position: relative;
+    float: right;
+    right: -1em;
+}
+
+a.index {
+    position: absolute;
+    display: none;
+}
+
+a.index:before { content: "Ã¢Å¸Âµ"; }
+    /* this way the content is not selectable */
+
+a.index:target {
+    display: inline;
+}
+
+.indexitems {
+    margin-left: 2em;
+    text-indent: -2em;
+}
+
+div.itemdescr {
+    margin-left: 3em;
+}
+
+.bnf {
+    font-family: serif;
+    margin-left: 40pt;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.ncbnf {
+    font-family: serif;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+.bnftab {
+    font-family: serif;
+    font-style: italic;
+    margin-left: 40pt;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.ncsimplebnf {
+    font-family: serif;
+    font-style: italic;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+.ncbnftab {
+    font-family: serif;
+    font-style: italic;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+.bnfkeywordtab {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+span.textnormal {
+    font-style: normal;
+    font-family: serif;
+    white-space: normal;
+    display: inline-block;
+}
+
+span.descr { font-style: normal; font-family: serif; }
+span.grammarterm { font-style: italic; }
+span.term { font-style: italic; }
+span.terminal { font-family: monospace; font-style: normal; }
+span.nonterminal { font-style: italic; }
+span.tcode { font-family: monospace; font-style: normal; }
+span.textbf { font-weight: bold; }
+span.textsc { font-variant: small-caps; }
+a.nontermdef { font-style: italic; font-family: serif; }
+span.emph { font-style: italic; }
+span.techterm { font-style: italic; }
+span.mathit { font-style: italic; }
+span.mathsf { font-family: sans-serif; }
+span.mathrm { font-family: serif; font-style: normal; }
+span.textrm { font-family: serif; }
+span.textsl { font-style: italic; }
+span.mathtt { font-family: monospace; font-style: normal; }
+span.mbox { font-family: serif; font-style: normal; }
+span.ungap { display: inline-block; width: 2pt; }
+span.textit { font-style: italic; }
+span.texttt { font-family: monospace; }
+span.tcode_in_codeblock { font-family: monospace; font-style: normal; }
+
+span.phantom { color: white; }
+span.math { }
+
+span.mathblock {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1.2em;
+    margin-bottom: 1.2em;
+    text-align: center;
+}
+
+span.mathalpha {
+    font-style: italic;
+}
+
+span.synopsis {
+    font-weight: bold;
+    margin-top: 0.5em;
+    display: block;
+}
+
+span.definition {
+    font-weight: bold;
+    display: block;
+}
+
+.codeblock {
+    margin-left: 1.2em;
+    line-height: 127%;
+}
+
+code {
+    font-family: monospace;
+    font-style: normal;
+}
+
+code.itemdecl {
+    margin-top: 2ex;
+    white-space: pre;
+    display: block;
+}
+
+.comment {
+    font-style: italic;
+    font-family: serif;
+}
+
+span.textsuperscript {
+    vertical-align: super;
+    font-size: smaller;
+    line-height: 0;
+}
+
+.footnotenum { vertical-align: super; font-size: smaller; line-height: 0; }
+
+.footnote {
+    font-size: small;
+    margin-left: 2em;
+    margin-right: 2em;
+    margin-top: 0.6em;
+    margin-bottom: 0.6em;
+}
+
+div.minipage {
+    display: inline-block;
+    margin-right: 3em;
+}
+
+div.numberedTable {
+    text-align: center;
+    margin: 2em;
+}
+
+div.figure {
+    text-align: center;
+    margin: 2em;
+}
+
+table {
+    border: 1px solid black;
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0.8em;
+    text-align: left;
+    hyphens: none; /* otherwise some columns get very narrow, e.g. [tab:hash] */
+}
+
+td, th {
+    padding-left: 1em;
+    padding-right: 1em;
+    vertical-align: top;
+}
+
+td.left {
+    text-align: left;
+}
+
+td.right {
+    text-align: right;
+}
+
+td.center {
+    text-align: center;
+}
+
+td.justify {
+    text-align: justify;
+}
+
+td.border {
+    border-left: 1px solid black;
+}
+
+tr.rowsep, td.cline {
+    border-top: 1px solid black;
+}
+
+tr.capsep {
+    border-top: 3px solid black;
+    border-top-style: double;
+}
+
+th {
+    border-bottom: 1px solid black;
+}
+
+span.centry {
+    font-weight: bold;
+}
+
+div.table {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    width: 90%;
+}
+
+span.indented {
+    display: block;
+    margin-left: 2em;
+    margin-bottom: 1em;
+    margin-top: 1em;
+}
+</style>
+
+<title>D0000R0: Library Policy Standing Document (explicit constructors)</title>
+<body>
+<h1>Library Policy Standing Document (explicit constructors)</h1>
+Document number: D0000R0 TODO<br/>
+Date: 2023-09-23 TODO<br/>
+Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
+Audience: Library Evolution Working Group
+
+<h1>Changes from previous revisions</h1>
+First revision!
+
+<h1>Introduction</h1>
+<p>
+This paper introduces a location for LEWG to document design policies (SD-9), as well as documenting the first such policy.
+</p><p>
+This paper recommends the policy that multi-argument constructors should not be marked as <code>explicit</code> by default.
+</p><p>
+This paper also discusses an alternative policy that multi-argument constructors should be marked as <code>explicit</code> by default.
+</p><p>
+With luck, one of these two policies can gain consensus.
+</p>
+
+<h1>SD-9 Motivation and Scope</h1>
+<p>
+There's no way that SD-9 could document every design principle that LEWG would like authors to follow.
+So which kinds of policies should we document?
+What shouldn't we document?
+What level of agreement should we get on deciding our policies?
+When can we re-litigate a policy?
+What effect does this have on authors?
+</p>
+
+<h2>Policy on adding policies</h2>
+<p>
+This paper should go through plenary in order to establish a new standing document.
+After that, changes to the standing document will go through LEWG meeting polls (either telecon or in-person meetings), and then through a LEWG electronic poll.
+</p><p>
+The electronic polling step is key, as it allows interested parties to participate without needing to sit in LEWG for the duration of WG21 meetings.
+</p>
+
+<h2>Re-litigation</h2>
+<p>
+Policies can be re-litigated, provided there is new information relative to the last discussion.
+The standing document will include links to the papers involved in the prior discussions to make it easier for everyone to know what information had been presented before.
+</p><p>
+Likely sources of "new information" are large new features that interact poorly with the an existing policy.
+Multi-year changes in the technology landscape may also constitute new information.
+</p>
+
+
+<h2>Effect on authors</h2>
+<p>
+Authors should follow LEWG policies by default.
+If a proposal has a good reason for breaking policy, then the paper must explain the rationale in the paper itself.
+If LWG notices that a paper is ignoring the LEWG policies without in-paper rationale, then LWG can assume that this was a LEWG oversight, and should should request the paper be corrected.
+This doesn't require sending the paper back to LEWG.
+</p><p>
+In situations where we don't have a LEWG policy, LWG cannot assume what LEWG's preferred outcome is for undiscussed odd or inconsistent choices in papers.
+This means that LWG needs to send the paper back to LEWG to see what LEWG prefers.
+</p>
+
+<h2>When to document policies</h2>
+<h3>Consistency over preference</h3>
+<p>
+There are some design areas where the difference in two choices is of little consequence.
+LEWG will often spend some time rediscovering the trade-offs and existing practice around the differences, and then make a somewhat arbitrary decision.
+In these cases, LEWG tends to bias towards "whatever the bulk of the standard is currently doing".
+</p><p>
+LEWG could become more self consistent by documenting one way, and then requiring authors to either follow the policy, or provide rationale for why the policy should not be applied in this case.
+</p><p>
+The explicit-ness of multi-argument constructors is one such area. <a href="https://wg21.link/P2711R1">[P2711R1] Making multi-param constructors of views explicit</a> and <a href="https://wg21.link/P1163R0">[P1163R0] Explicitly Implicifying explicit Constructors</a> are prior discussions in this area.
+</p>
+<h3>Changes in direction</h3>
+<p>
+Sometimes, LEWG follows one design pattern in the standard, then discovers or invents a new pattern.
+The new pattern is inconsistent with the old pattern.
+Authors then wonder whether to follow the new pattern or old pattern.
+</p><p>
+This is a reasonable place for LEWG to document a policy.
+</p><p>
+Using hidden <code>friend</code>s for non-member operators is one example of a change in direction.
+Whether to make all new "free functions" in the standard library customization point objects (like <code>std::ranges</code>) is another.
+</p>
+
+<h3>Cross group trust</h3>
+<p>
+There are a lot of discussions happening concurrently within WG21.
+Sometimes, one group wants to rely on conventions from another group.
+These policies help people focus on the groups they are needed, rather than spend a large portion of their time ensuring their policy is followed (or not) in LEWG.
+</p><p>
+An example policy here would be ensuring that <code>const</code> means either shallow bitwise const or internally synchronized.
+The concurrency study group is likely relying on that convention to be followed, so changing <code>const</code> directions would cause surprise.
+</p>
+
+
+<h2>When not to document policies</h2>
+<h3>Non-controversial existing practice</h3>
+The LEWG guidelines do not need to duplicate the core guidelines.
+Refining the wording of the guideline would be a waste of LEWG's time, and would end up diluting the design policies to the point that no one would know what was in them.
+
+<h3>Infrequent concerns</h3>
+<p>
+Some areas of the standard are infrequently modified.
+If there's a technique only used a small number of times in the standard, or only used in an old part of the standard, then it isn't worth bloating the guidelines.
+</p><p>
+For example, it wouldn't be worth our time to add a guideline saying all nondeterministic random bit generators should have an <code>entropy</code> method.
+Maybe the advice is good, but we only have one such generator, and it is unlikely that we will add a significant number of additional nondeterministic random bit generators.
+</p>
+
+<h3>Vague guidance</h3>
+Some forms of guidance can be well-intentioned, but too vague to put into practice.
+For example, saying that "facilities that are similar should have a consistent interface" is too vague to be useful.
+Should <code>optional</code> have an interface more similar to a pointer, or to <code>variant</code>?
+The vague guidance doesn't help here.
+
+<h3>When we don't have experience</h3>
+2018 would have been a bad time to start making LEWG policies involving concepts.
+The committee did not yet have enough usage experience to make such recommendations.
+There's a high probability that we would have made substantial mistakes if we documented policies at that point in time.
+
+<h1>Policy history on explicit constructors</h1>
+TODO
+
+<h1>Suggested polls</h1>
+
+<h2>Any policy on explicit multi-argument constructors is better than no policy</h2>
+<b>Poll:</b> Having a policy on explicit multi-argument constructors in place is more important than having my preferred policy, so a head-to-head poll is an acceptable way to select the policy.<br/>
+5-way poll (SF/WF/N/WA/SA)<br/>
+
+<p>
+If the "any policy" poll gains consensus, then we do a head-to-head poll on the policies.
+</p><p>
+If the "any policy" poll does not gain consensus, then we do two 5 way polls.
+Whichever poll has consensus in general, and has more consensus than the other, wins.
+It is possible that neither has consensus.
+If LEWG is a little crazy, then both may have consensus.
+</p><p>
+If we do these as electronic polls (and we should), then all four polls should run.
+</p>
+
+<h2>Head-to-head policy poll</h2>
+<b>Poll:</b> Which policy do we adopt?<br/>
+3-way poll Explicit/Neutral/Implicit<br/>
+
+<h2>Adopt the explicit constructors policy</h2>
+<b>Poll:</b> Adopt the explicit constructors policy and create SD-9 with the proposed explicit constructors text.<br/>
+5-way poll (SF/WF/N/WA/SA)<br/>
+
+<h2>Adopt the implicit constructors policy</h2>
+<b>Poll:</b> Adopt the implicit constructors policy and create SD-9 with the proposed implicit constructors text.<br/>
+5-way poll (SF/WF/N/WA/SA)<br/>
+
+
+<h1>Proposed SD-9 text</h1>
+
+<h1>References</h1>
+</body>
+</html>
