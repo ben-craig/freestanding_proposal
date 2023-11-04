@@ -358,9 +358,9 @@ span.indented {
 }
 </style>
 
-<title>D0000R0: Library Policy Standing Document (explicit constructors)</title>
+<title>noexcept policy for SD-9 (throws nothing)</title>
 <body>
-<h1>Library Policy Standing Document (explicit constructors)</h1>
+<h1>noexcept policy for SD-9 (throws nothing)</h1>
 Document number: D0000R0 TODO<br/>
 Date: 2023-09-23 TODO<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
@@ -371,23 +371,67 @@ First revision!
 
 <h1>Introduction</h1>
 <p>
-This paper introduces a location for LEWG to document design policies (SD-9), as well as documenting the first such policy.
+The first priority of this paper is to establish a lasting policy on the usage of <code>noexcept </code> in the standard library that avoids re-litigation for a few years.
 </p><p>
-This paper recommends the policy that functions that LEWG and LWG agree cannot throw should be marked unconditionally <code>noexcept</code>.
+The second priority is to establish the author's preferred policy.
 </p><p>
-This paper also discusses an alternative policy that library functions that could exhibit undefined behavior due to precondition violations should not be marked <code>noexcept</code> (i.e. the "Lakos rule").
+This paper currently recommends the policy that functions that LEWG and LWG agree cannot throw should be marked unconditionally <code>noexcept</code>.
+</p><p>
+This paper discusses an alternative policy that library functions that could exhibit undefined behavior due to precondition violations should not be marked <code>noexcept</code> (AKA the "Lakos rule", AKA the narrow noexcept policy).
 </p><p>
 With luck, one of these two policies can gain consensus.
 </p>
 
-<h1>SD-9 Motivation and Scope</h1>
-<p>
-There's no way that SD-9 could document every design principle that LEWG would like authors to follow.
-So which kinds of policies should we document?
-What shouldn't we document?
-</p>
-<h2>When to document policies</h2>
-<h3>Consistency over preference</h3>
+<h1>Prior <code>noexcept</code> Discussions</h1>
+
+<h2>History papers</h2>
+<a href="https://www.open-std.org/JTC1/SC22/WG21/docs/papers/2009/n2855.html">N2855, Rvalue References and Exception Safety</a><br/>
+<a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2009/n2983.html">N2983, Allowing Move Constructors to Throw</a><br/>
+<a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3248.pdf">N3248, noexcept Prevents Library Validation.</a><br/>
+<a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3279.pdf">N3279, Conservative use of noexcept in the Library</a><br/>
+<a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0884r0.pdf">P0884R0, Extending the noexcept Policy, Rev0</a><br/>
+<a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2920r0.pdf">P2920R0, Library Evolution Leadership's Understanding of the Noexcept Policy History </a><br/>
+
+<h2>Throws Nothing Rule</h2>
+<a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p1656r2.html">P1656R2, "Throws: Nothing" should be noexcept</a><br/>
+<a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p2148r0.pdf">P2148R0, Library Evolution Design Guidelines</a><br/>
+<a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p0000r0.html">TODO: This paper</a><br/>
+
+<h2>Narrow <code>noexcept</code> / Lakos Rule</h2>
+<a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2831r0.pdf">P2831R0, Functions having a narrow contract should not be noexcept</a><br/>
+<a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2837r0.pdf">P2837R0 Planning to Revisit the Lakos Rule </a><br/>
+<a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2858r0.html">TODO(is this pro lakos?) P2858R0, Noexcept vs contract violations </a><br/>
+<a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2861r0.pdf">P2861R0, The Lakos Rule: Narrow Contracts And `noexcept` Are Inherently Incompatible </a><br/>
+<a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2949r0.pdf">P2949R0, Slides for P2861R0: Narrow Contracts and `noexcept` are Inherently Incompatable </a><br/>
+<a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2946r0.pdf">P2946R0, A flexible solution to the problems of `noexcept` </a><br/>
+
+<h1>Policies in question</h1>
+These two policies only differ on point b.
+
+<h2>Common parts (proposed)</h2>
+This wording matches the shared wording from P1656R2 and P0884R0.
+<ol type="a">
+    <li><p>No library destructor should throw. They shall use the implicitly supplied (non-throwing) exception specification.</p></li>
+    <li><p><i>See below</i></p></li>
+    <li><p>If a library swap function, move-constructor, or move-assignment operator is conditionally-wide (i.e.&nbsp;can be proven to not throw by applying the <code>noexcept</code> operator) then it should be marked as conditionally <code>noexcept</code>.</p></li>
+    <li><p>If a library type has wrapping semantics to transparently provide the same behavior as the underlying type, then default constructor, copy constructor, and copy-assignment operator should be marked as conditionally <code>noexcept</code> the underlying exception specification still holds.</p></li>
+    <li><p>No other function should use a conditional <code>noexcept</code> specification.</p></li>
+    <li><p>Library functions designed for compatibility with “C” code (such as the atomics facility), may be marked as unconditionally <code>noexcept</code>.</p></li>
+</ol>
+
+<h2>Throws Nothing Rule (proposed)</h2>
+This wording matches the wording in P1656R2 "Throws: Nothing" should be noexcept.
+
+<p>b. Each library function that LEWG and LWG agree cannot throw, should be marked as unconditionally <code>noexcept</code>.</p>
+
+<h2>Narrow <code>noexcept</code> / Lakos Rule (not proposed in this revision></h2>
+This wording matches the wording in P0884R0 Extending the noexcept Policy, Rev0.
+
+<p>b. Each library function having a <em>wide</em> contract (i.e., does not specify undefined behavior due to a precondition) that the LWG agree cannot throw, should be marked as unconditionally <code>noexcept</code>.</p>
+
+<h1>Why should we establish any <code>noexcept</code> policy?</h1>
+<h2>Contracts</h2>
+<h2>Consistency over preference</h2>
 <p>
 There are some design areas where the difference in two choices is of little consequence.
 LEWG will often spend some time rediscovering the trade-offs and existing practice around the differences, and then make a somewhat arbitrary decision.
@@ -397,7 +441,7 @@ LEWG could become more self consistent by documenting one way, and then requirin
 </p><p>
 The explicit-ness of multi-argument constructors is one such area. <a href="https://wg21.link/P2711R1">[P2711R1] Making multi-param constructors of views explicit </a>.
 </p>
-<h3>Changes in direction</h3>
+<h2>Changes in direction</h2>
 <p>
 Sometimes, LEWG follows one design pattern in the standard, then discovers or invents a new pattern.
 The new pattern is inconsistent with the old pattern.
@@ -409,7 +453,7 @@ Using hidden <code>friend</code>s for non-member operators is one example of a c
 Whether to make all new "free functions" in the standard library customization point objects (like <code>std::ranges</code>) is another.
 </p>
 
-<h3>Cross group trust</h3>
+<h2>Cross group trust</h2>
 <p>
 There are a lot of discussions happening concurrently within WG21.
 Sometimes, one group wants to rely on conventions from another group.
@@ -419,40 +463,85 @@ An example policy here would be ensuring that <code>const</code> means either sh
 The concurrency study group is likely relying on that convention to be followed, so changing <code>const</code> directions would cause surprise.
 </p>
 
+<h1>Why the LEWG noexcept policy isn't actually that important</h1>
 
-<h2>When not to document policies</h2>
-<h3>Non-controversial existing practice</h3>
-The LEWG guidelines do not need to duplicate the core guidelines.
-Refining the wording of the guideline would be a waste of LEWG's time, and would end up diluting the design policies to the point that no one would know what was in them.
+<h1>Arguments</h1>
+<h2>Standard library policies need not be C++ library policies</h2>
 
-<h3>Infrequent concerns</h3>
-<p>
-Some areas of the standard are infrequently modified.
-If there's a technique only used a small number of times in the standard, or only used in an old part of the standard, then it isn't worth bloating the guidelines.
-</p><p>
-For example, it wouldn't be worth our time to add a guideline saying all nondeterministic random bit generators should have an <code>entropy</code> method.
-Maybe the advice is good, but we only have one such generator, and it is unlikely that we will add a significant number of additional nondeterministic random bit generators.
-</p>
+<h2>Library Testing</h2>
+n3248
+<h3>Precondition checks / contracts need testing</h3>
+n3248
+P2831R0
+<h3>Potential contracts features</h3>
+<h3>Contracts workarounds</h3>
+<h3>noexcept macro</h3>
+n3248
+P2831R0
+<h3>setjmp/longjmp</h3>
+n3248
+P2831R0
+<h3>child threads, fibers, and signals</h3>
+P2831R0
+<h3>magic compiler exception exploiting precondition UB</h3>
+<h3>Death tests</h3>
+p1656r2
+* Quantity of information
+P2831R0
+* Speed
+P2831R0
+* Only GoogleTest
+P2831R0
+* Limited platforms(browsers, embedded)
+P2831R0
+* Spawn vs clone vs fork
 
-<h3>Vague guidance</h3>
-Some forms of guidance can be well-intentioned, but too vague to put into practice.
-For example, saying that "facilities that are similar should have a consistent interface" is too vague to be useful.
-Should <code>optional</code> have an interface more similar to a pointer, or to <code>variant</code>?
-The vague guidance doesn't help here.
+<h2>Termination risk</h2>
+P2831R0
+<h2>Algorithmic optimizations and exception safety</h2>
+N2855, N2983, N3248
 
-<h3>When we don't have experience</h3>
-2018 would have been a bad time to start making LEWG policies involving concepts.
-The committee did not yet have enough usage experience to make such recommendations.
-There's a high probability that we would have made substantial mistakes if we documented policies at that point in time.
+<h2>Codegen changes</h2>
+<h3>Destructors</h3>
+<h3>Optimization<h3>
+N2983
+N3248
+p1656r2
+P2831R0
+<h3>Bloat</h3>
+p1656r2
+P2831R0
 
-<h1>noexcept policy history</h1>
-TODO
+<h2>Implementations don't diagnose contract violations with exceptions</h2>
+p1656r2
+P2831R0
 
-<h1>"Lakos rule" noexcept policy rationale</h1>
-TODO
+<h2>Other implementations</h2>
+P2831R0
 
-<h1>"Throws Nothing" noexcept policy rationale</h1>
-TODO
+<h2>Diagnosing UB</h2>
+p1656r2
+
+<h2><code>noexcept</code>-accuracy</h2>
+p1656r2
+P2831R0 (purity not worth it)
+
+<h2>Doesn't matter since implementations can already add noexcept</h2>
+P2831R0
+
+<h2>Precondition UB and noexcept contradict</h2>
+P2831R0
+
+<h2>Narrow to wide backwards compatibility</h2>
+P2831R0
+
+<h2>Standard library should provide an example of good user library design</h2>
+P2831R0
+
+<h2>Exceptions disabled</h2>
+P2831R0
+<h3>noexcept operator doesn't change</h3>
+
 
 <h1>Suggested polls</h1>
 
