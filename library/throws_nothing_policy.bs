@@ -1,0 +1,511 @@
+<pre class='metadata'>
+Title: `noexcept` policy for SD-9 (throws nothing)
+Shortname: D0000
+Revision: 0.0
+Audience: LEWG
+Status: D
+Group: WG21
+URL: TODO
+!Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/library/throws_nothing_policy.bs">github.com/ben-craig/freestanding_proposal/blob/master/library/throws_nothing_policy.bs</a>
+Editor: Ben Craig, ben.craig@gmail.com
+Abstract:
+Markup Shorthands: markdown yes
+</pre>
+
+Revision history {#rev}
+=====================
+First revision!
+
+Introduction {#intro}
+=====================
+The first priority of this paper is to establish a lasting policy on the usage of `noexcept` in the standard library that avoids re-litigation for a few years.
+
+The second priority is to establish the author's preferred policy.
+
+This paper currently recommends the policy that functions that LEWG and LWG agree cannot throw should be marked unconditionally `noexcept`.
+
+This paper discusses an alternative policy that library functions that could exhibit undefined behavior due to precondition violations should not be marked `noexcept` (AKA the "Lakos rule", AKA the narrow noexcept policy).
+
+With luck, one of these two policies can gain consensus.
+
+Prior `noexcept` Discussions {#prior}
+===========
+
+History papers {#history_papers}
+------------
+* [N2855, Rvalue References and Exception Safety](https://www.open-std.org/JTC1/SC22/WG21/docs/papers/2009/n2855.html)
+* [N2983, Allowing Move Constructors to Throw](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2009/n2983.html)
+* [N3248, noexcept Prevents Library Validation.](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3248.pdf)
+* [N3279, Conservative use of noexcept in the Library](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3279.pdf)
+* [P0884R0, Extending the noexcept Policy, Rev0](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0884r0.pdf)
+* [P2920R0, Library Evolution Leadership's Understanding of the Noexcept Policy History](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2920r0.pdf)
+
+Throws Nothing Rule {#throws_nothing_papers}
+------------
+* [P1656R2, "Throws: Nothing" should be noexcept](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p1656r2.html)
+* [P2148R0, Library Evolution Design Guidelines](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p2148r0.pdf)
+
+Narrow `noexcept` / Lakos Rule {#narrow_noexcept_papers}
+------------
+* [P2831R0, Functions having a narrow contract should not be noexcept](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2831r0.pdf)
+* [P2837R0 Planning to Revisit the Lakos Rule](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2837r0.pdf)
+* [P2861R0, The Lakos Rule: Narrow Contracts And noexcept Are Inherently Incompatible](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2861r0.pdf)
+* [P2949R0, Slides for P2861R0: Narrow Contracts and noexcept are Inherently Incompatable](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2949r0.pdf)
+* [P2946R0, A flexible solution to the problems of noexcept](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2946r0.pdf)
+
+Both {#combined_papers}
+-----
+* [P2858R0, Noexcept vs contract violations](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2858r0.html)
+* [TODO: This paper](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p0000r0.html)
+
+
+Policies in question {#wording}
+===============
+These two policies only differ on point b.
+TODO TODO TODO: Link to this paper in a rationale section.
+This policy needs to be the template for future policies.
+
+Common parts (proposed) {#wording_common}
+-----
+This wording matches the shared wording from P1656R2 and P0884R0.
+
+<ol type="a">
+    <li>No library destructor should throw. They shall use the implicitly supplied (non-throwing) exception specification.</li>
+    <li><i>See below</i></li>
+    <li>If a library swap function, move-constructor, or move-assignment operator is conditionally-wide (i.e. can be proven to not throw by applying the `noexcept` operator) then it should be marked as conditionally `noexcept`.</li>
+    <li>If a library type has wrapping semantics to transparently provide the same behavior as the underlying type, then default constructor, copy constructor, and copy-assignment operator should be marked as conditionally `noexcept` the underlying exception specification still holds.</li>
+    <li>No other function should use a conditional `noexcept` specification.</li>
+    <li>Library functions designed for compatibility with “C” code (such as the atomics facility), may be marked as unconditionally `noexcept`.</li>
+</ol>
+
+Throws Nothing Rule (proposed)  {#wording_throws_nothing}
+-----
+This wording matches the wording in P1656R2 "Throws: Nothing" should be noexcept.
+
+> b. Each library function that LEWG and LWG agree cannot throw, should be marked as unconditionally `noexcept`.
+
+Narrow `noexcept` / Lakos Rule (not proposed in this revision)  {#wording_lakos}
+-----
+This wording matches the wording in P0884R0 Extending the noexcept Policy, Rev0.
+
+> b. Each library function having a <em>wide</em> contract (i.e., does not specify undefined behavior due to a precondition) that the LWG agree cannot throw, should be marked as unconditionally `noexcept`.
+
+
+Why should we establish any `noexcept` policy?
+==========
+Contracts
+-----
+TODO
+
+Consistency over preference
+-----
+
+There are some design areas where the difference in two choices is of little consequence.
+LEWG will often spend some time rediscovering the trade-offs and existing practice around the differences, and then make a somewhat arbitrary decision.
+In these cases, LEWG tends to bias towards "whatever the bulk of the standard is currently doing".
+
+LEWG could become more self consistent by documenting one way, and then requiring authors to either follow the policy, or provide rationale for why the policy should not be applied in this case.
+
+The explicit-ness of multi-argument constructors is one such area. [P2711R1 Making multi-param constructors of views explicit](https://wg21.link/P2711R1).
+
+Changes in direction
+-----
+
+Sometimes, LEWG follows one design pattern in the standard, then discovers or invents a new pattern.
+The new pattern is inconsistent with the old pattern.
+Authors then wonder whether to follow the new pattern or old pattern.
+
+This is a reasonable place for LEWG to document a policy.
+
+Using hidden `friend`s for non-member operators is one example of a change in direction.
+Whether to make all new "free functions" in the standard library customization point objects (like `std::ranges`) is another.
+
+
+Cross group trust
+-----
+
+There are a lot of discussions happening concurrently within WG21.
+Sometimes, one group wants to rely on conventions from another group.
+These policies help people focus on the groups they are needed, rather than spend a large portion of their time ensuring their policy is followed (or not) in LEWG.
+
+An example policy here would be ensuring that `const` means either shallow bitwise const or internally synchronized.
+The concurrency study group is likely relying on that convention to be followed, so changing `const` directions would cause surprise.
+
+
+Why the LEWG noexcept policy isn't actually that important
+==========
+
+Implementations already strengthen the `noexcept` status of many STL functions.
+MSVC STL, libc++, and libstdc++ all mark `vector::back()`, `vector::operator[]`, and many other functions as `noexcept`.
+
+Marking existing functions in the standard `noexcept` will change the results of very few instances of the `noexcept` operator in practice.
+
+If the committee continues to permit implementations to strengthen the `noexcept` status of functions, then implementations won't change.
+
+If the committee chooses to remove this permission, implementations will either ignore the requirement and be non-conforming, or they will accept the code breakage that the Liskov substitutability arguments are trying to avoid.
+If we are breaking compatibility in this way once, we may very well break it again in the future.
+The main way changing the `noexcept` policy changes things for standardization and users is if we remove the permission to strengthen `noexcept` and implementations grudgingly take a one time (but not an N time) compatibility hit.
+
+Note that this paper makes no attempt to change the `noexcept` strengthening rules in either it's proposed rules or the presented alternative.
+
+
+Potential Principles
+==========
+TODO.  Maybe delete
+Don't pay for what you don't use
+-----
+The C++ Standard policies should be appropriate policies for user libraries
+-----
+Adding contract checks should not effect the behavior of the program
+-----
+Algorithmic improvements are worth the costs of noexcept
+-----
+Binary size improvements are not worth the costs of noexcept, particularly when "-fno-exceptions" is an option
+-----
+
+
+Arguments
+==========
+Algorithmic optimizations and exception safety
+-----
+N2855, N2983, N3248
+
+The original, primary motivation for `noexcept` was to make it possible for `vector` and similar constructs to take advantage of `move` optimizations, without breaking existing code (e.g. `vector`'s strong exception guarantee).
+
+This motivation and use case is uncontested in the various papers debating the usage of `noexcept`, so this paper will not spend further time on it.
+
+Narrow to wide substitutability / backwards compatibility
+-----
+P2831R0, P2949R0, P2861R0
+
+Suppose we have a function `void unchecked_f(int x)` with a precondition of `x > 0`.
+`unchecked_f` has undefined behavior when the precondition is violated.
+
+Now suppose we have a function `void checked_f(int x)` that has the same behavior as `unchecked_f` when the precondition is met, but it throws an exception when the precondition is violated.
+`checked_f` and `unchecked_f` are substitutable for each other, as all in-contract uses behave the same.
+
+Now suppose we have a function `void noexcept_f(int x) noexcept` that has the same behavior as `unchecked_f` when the precondition is met.
+`noexcept_f` and `unchecked_f` aren't substitutable with each other, due to the change in behavior of the `noexcept` operator.
+`noexcept(noexcept_f(0))` returns `true`, and `noexcept(unchecked_f(0))` returns `false`.
+This change in behavior constrains implementations and the C++ committee.
+
+In theory, avoiding `noexcept` gives WG21 more latitude to make changes in the future.
+In practice, this latitude is unneeded, and difficult to use.
+
+The author is unaware of any previous proposal that attempted to make a "Throws: nothing" function released in one standard into a function that could throw something in a later standard.
+This suggests that this freedom to change isn't that valuable in practice.
+We've had the freedom, but haven't needed it or used it.
+
+Using the freedom to make an out-of-contract call throw an exception would be a compatibility break in practice.
+MSVC STL, libc++, and libstdc++ all mark `vector::back()`, `vector::operator[]`, and many other functions as `noexcept`.
+If we were to require `vector::back()` to be `noexcept(false)` so that it could throw when the container is empty, it would cause a (minor) break for the majority of C++ code bases migrating to that standard due to the change in the `noexcept` operator's result.
+Perhaps such a break would be small enough to gain consensus in WG21 though.
+
+Major implementations don't currently use `noexcept` latitude to implement throwing precondition checks.
+The three major implementations (MSVC STL, libstdc++, and libc++) all have checked implementations.
+All three use some variation of termination as their mechanism of handling a failed check.
+
+Less prevalent implementations do use such latitude for checked implementations and library testing.
+
+Library Testing
+-----
+n3248, P2831R0
+
+Implementations often constrain some undefined behavior for out-of-contract function invocations, particularly in debug and checked modes.
+"Negative testing" validates that the assertion / contract checks are authored correctly, and that the resulting constrained undefined behavior does the expected thing.
+The contract checks are code, and code needs testing.
+
+Negative tests can be authored for codebases using the narrow noexcept rule or the throws nothing noexcept rule, but it is substantially easier to do so for narrow noexcept rule codebases.
+
+### Core-language contracts
+
+Usage of the proposed core-language contracts facilities will need to be tested.
+`noexcept` will present testing challenges when violations of core-language contracts are configured to throw an exception.
+Death tests are an option, but they have a large set of challenges on their own.
+
+#### Put the contract check on the outside of the `noexcept`
+TODO: ask Lakos about his objections on this.  I think the objection was based on the principle that adding a contract shouldn't change the program?  But I'm not sure how that follows.
+
+One of the design decisions that core-language contracts needs to make is to decide exactly where the checks will be run.
+If precondition and post-condition checks happen within the callee (i.e. inside the `noexcept`), then failed preconditions and post-conditions checks set to throw will cause the program to terminate.
+If those checks happen in the caller of the function (i.e. outside the `noexcept`), then at least one layer of throwing can still work in testing.
+Deeply nested checks can still cause a terminate if they end up propagating through a different `noexcept`.
+If precondition and post-condition checks in the caller of a `noexcept` function, then that would resolve most of the core-language contracts negative testing issues.
+
+Putting preconditions and post-conditions outside the `noexcept` doesn't help with core-language contract asserts.
+
+[P2780R0, 
+Caller-side precondition checking, and Eval_and_throw](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2780r0.html) discusses this point, as well as discussing other benefits involving calling external libraries.
+It also discusses the challenges of this approach with regards to indirect calls and multiply evaluated preconditions.
+
+Caller-side precondition checking is likely to be less efficient in terms of code size compared to callee-side precondition checking.
+
+#### Retrieve precondition and post-condition results via reflection
+Suppose we have the following function + contract:
+```c++
+int f(int x) noexcept 
+  pre (x >= 0)
+  post(r : r % 2 == 0);
+```
+
+Now imagine we had reflection facilities that let us do something like the following:
+```c++
+// // evaluate contracts of f(x) without calling f(x)
+EXPECT_TRUE(  $evaluate_pre(f, 20) );
+EXPECT_FALSE( $evaluate_pre(f, -1) );
+EXPECT_TRUE(  $evaluate_post(f, 2, 20) );
+EXPECT_FALSE( $evaluate_post(f, 1, 0) );
+```
+
+This would allow directly testing contracts without violating those contracts.
+The tests would be very fast (no throws or terminates involved), and low maintenance.
+
+To the author's knowledge, no such facility is currently proposed.
+This reflection utility has applications beyond testing, such as automatically generating "wide" wrapper functions from "narrow" functions.
+This strawman proposal doesn't address core-language asserts.
+
+#### extract contract predicates to a function
+TODO: not core language contracts, so reorganization is needed
+
+A user could emulate the above precondition reflection by following a good naming convention.
+```c++
+bool precondition_f(int x) noexcept;
+bool postcondition_f(int retval, int x) noexcept;
+int f(int x) noexcept {
+  assert(precondition_f(x));
+  int retval = 0;
+  /*...*/
+  assert(postcondition_f(retval, x));
+  return retval;
+}
+
+EXPECT_TRUE(  precondition_f(20) );
+EXPECT_FALSE( precondition_f(-1) );
+EXPECT_TRUE(  postcondition_f(2, 20) );
+EXPECT_FALSE( postcondition_f(1, 0) );
+```
+
+This is an approach that is available for today's precondition and post-condition checking facilities.
+A sophisticated user could write static analysis checks to enforce such a convention.
+The author is unaware of any libraries or guidelines that do this though, which suggests that users either didn't think of it, or they don't see this approach as a good return on investment.
+
+### noexcept macro
+N3248, P2831R0
+
+Libraries can define a macro like the following:
+```c++
+#if TEST_ASSERTIONS
+  #define MY_NOEXCEPT
+#else
+  #define MY_NOEXCEPT noexcept
+#endif
+```
+
+This approach works, but it requires a large number of annotations.
+Switching between the modes is detectable and increases the number of differences between the test environment and production environment.
+Each difference between test and production decreases the value of the test.
+
+### setjmp/longjmp
+N3248, P2831R0
+
+`setjmp` and `longjmp` can be used to bypass `noexcept` without triggering termination.
+It is very difficult to use `setjmp` and `longjmp` without triggering undefined behavior though.
+That makes `setjmp` and `longjmp` generally not viable.
+
+### child threads, fibers, and signals
+P2831R0
+
+There are other creative ways to write contract handlers that permit testing while avoiding having an exception run into a `noexcept`.
+[P2831R0, Functions having a narrow contract should not be noexcept](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2831r0.pdf) describes some approaches for using (and leaking) threads that halt on failure rather than return.
+There's also a description for how to use fibers / stackful coroutines to halt without consuming as many resources as the child thread approach.
+Finally there's a signal based approach.
+All of these approaches have substantial downsides.
+None of these approaches are in wide use to the best of the author's knowledge.
+
+### Potentially mitigating compiler features
+
+There is the potential to address some of the testability concerns of `noexcept` with compiler extensions.
+
+These ideas aren't new.
+Some of them have been floating around for more than 10 years.
+
+The fact that they haven't been implemented says something.
+That something may be "Upstreaming compiler changes is an expensive prospect, and outside the capabilities of most organizations."
+It may be "I'll do negative testing in a way that doesn't require a compiler feature."
+Or it may be "Negative testing isn't sufficiently valuable to jump through these hoops."
+So I'm not entirely sure what the lack of implementations says, but it certainly says something.
+
+#### Compiler flag that makes `noexcept` unchecked
+The `noexcept` specifier has two direct effects on the semantics of a program:
+    * exceptions leaving a `noexcept` function trigger `std::terminate`, and
+    * uses of the `noexcept` operator on expressions with the `noexcept` specifier change.
+
+In theory, a compiler could add a non-conforming extensions that removes the `std::terminate` aspects, while keeping the `noexcept` operator aspects.
+This would make it easier to test contracts, as then any exceptions could still escape `noexcept` functions.
+
+In some ways, this is the inverse of [P2946R0, A flexible solution to the problems of noexcept](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2946r0.pdf).
+P2946R0 proposes a new attribute that (conditionally) keeps the `std::terminate` semantics, but doesn't modify the `noexcept` operator's behavior.
+
+#### Exploiting precondition undefined behavior to ignore termination
+If a function does not meet its preconditions, then it is not required to meet its post-conditions.
+A post-condition of `noexcept` functions is terminating when there's an exception.
+An implementation could, conformingly, bypass the termination aspect of `noexcept` if the program has encountered undefined behavior.
+In practice, this may be done by having a "magic" exception type (e.g. `nonstd::undefined_behavior_exception`) that bypasses `noexcept`.
+Users would then be required to only use that exception when undefined behavior has been encountered.
+
+### Death tests
+p1656r2
+#### Quantity of information
+P2831R0
+#### Speed
+P2831R0
+#### Only GoogleTest
+P2831R0
+#### Limited platforms(browsers, embedded)
+P2831R0
+#### Spawn vs clone vs fork
+
+Codegen changes
+-----
+### Other implementations
+P2831R0
+TODO: mention renwick, win32, maybe baker
+https://api.github.com/repos/llvm/llvm-project/releases
+
+https://www.pure.ed.ac.uk/ws/portalfiles/portal/78829292/low_cost_deterministic_C_exceptions_for_embedded_systems.pdf
+### Destructors
+### Optimization
+N2983
+N3248
+p1656r2
+P2831R0
+P2861r0
+
+### Bloat
+p1656r2
+P2831R0
+P2861r0
+
+Using exceptions to diagnose precondition violations in production
+-----
+
+### Implementations don't diagnose contract violations with exceptions
+p1656r2
+P2831R0
+
+### Temporary continuation
+[P2861r0]
+#### Likely to cause more UB or hit a dtor noexcept
+
+### Diagnosing UB
+p1656r2
+
+### Precondition UB and noexcept contradict
+P2831R0
+
+### Postconditions only hold when preconditions hold
+[p2858r0]
+
+
+Termination risk
+-----
+P2831R0
+P2861R0
+[p2949r0]
+
+
+Philosophy
+-----
+### `noexcept`-accuracy
+p1656r2
+P2831R0 (purity not worth it)
+P2946R0
+
+### Doesn't matter since implementations can already add noexcept
+P2831R0
+
+### Standard library policies need not be C++ library policies
+[p2861r0]
+TODO
+### Standard library implementation strategies need not be encoded in the C++ standard
+[p2861r0]
+TODO
+### Standard library should provide an example of good user library design
+P2831R0
+
+### Cleanup functions have preconditions, and need to be noexcept
+
+
+Exceptions disabled
+-----
+P2831R0
+### noexcept operator doesn't change
+
+Can't write narrow-noexcept on top of throws-nothing
+-----
+[p2837r0]
+
+narrow-noexcept is inconsistent wrt which preconditions matter
+-----
+### Cleanup functions often have preconditions, and need to be noexcept
+    [p2858r0]
+### narrow-noexcept ignores implicit precondition of object validity
+    [p2949r0]
+
+Wait for contracts before setting a policy
+-----
+[p2837r0]
+
+
+
+
+Suggested polls
+==========
+Either policy is better than no policy
+-----
+> <b>Poll:</b> Having one of the two proposed noexcept policies in place is more important than having my preferred policy, so a head-to-head poll between the two presented alternatives is an acceptable way to select the policy.<br/>
+>
+> 5-way poll (SF/WF/N/WA/SA)<br/>
+
+
+If the "any policy" poll gains consensus, then we do a head-to-head poll on the policies.
+
+If the "any policy" poll does not gain consensus, then we do two 5 way polls.
+Whichever poll has consensus in general, and has more consensus than the other, wins.
+It is possible that neither has consensus.
+If LEWG is a little crazy, then both may have consensus.
+
+If we do these as electronic polls (and we should), then all four polls should run.
+
+
+Head-to-head policy poll
+-----
+> <b>Poll:</b> Which policy do we adopt?<br/>
+>
+> 3-way poll (narrow-noexcept/"Lakos rule")/Neutral/"Throws nothing rule"<br/>
+
+Adopt the narrow-noexcept/"Lakos rule" noexcept policy
+-----
+> <b>Poll:</b> Adopt the "Lakos rule" noexcept policy and create SD-9 with the proposed "Lakos rule" text.<br/>
+>
+> 5-way poll (SF/WF/N/WA/SA)<br/>
+
+Adopt the "Throws nothing rule" noexcept policy
+-----
+> <b>Poll:</b> Adopt the "Throws nothing rule" noexcept policy and create SD-9 with the proposed "Throws nothing rule" text.<br/>
+>
+> 5-way poll (SF/WF/N/WA/SA)<br/>
+
+
+Acknowledgments {#ack}
+======================
+
+<pre class=biblio>
+{
+    "Renwick2019": {
+        "authors": ["James Renwick", "Tom Spink", "Björn Franke"],
+        "title": "Low-cost deterministic C++ exceptions for embedded systems",
+        "href": "https://www.research.ed.ac.uk/portal/en/publications/lowcost-deterministic-c-exceptions-for-embedded-systems(2cfc59d5-fa95-45e0-83b2-46e51098cf1f).html"
+    }
+}
+</pre>
