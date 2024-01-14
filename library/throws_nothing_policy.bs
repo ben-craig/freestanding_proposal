@@ -93,9 +93,15 @@ This wording matches the wording in P0884R0 Extending the noexcept Policy, Rev0.
 
 Why should we establish any `noexcept` policy?
 ==========
-Contracts
+Core-language Contracts
 -----
-TODO
+Interactions between `noexcept` and the upcoming core-language contracts facilities is likely to be significant.
+It would be unfortunate if decisions in the library prevented the core-language contracts work from reaching its full potential.
+
+[p2837r0] argues that the interaction may be significant and unpredictable enough that it would be better to proceed with no policy in the short term, rather than settle on a policy that will immediately get in the way of contracts.
+
+If we don't set a policy, then we leave it to paper authors and LEWG to determine the proper noexcept specifier on a per-function basis.
+This is likely to cause a great deal of inconsistency in the interim.
 
 Consistency over preference
 -----
@@ -151,8 +157,11 @@ Note that this paper makes no attempt to change the `noexcept` strengthening rul
 
 Potential Principles
 ==========
-TODO.  Maybe delete
+TODO.  Maybe delete this and leave it to the Bloomberg paper?
+
 Don't pay for what you don't use
+-----
+Testing the standard library needs to be possible, but it doesn't need to be cheap
 -----
 The C++ Standard policies should be appropriate policies for user libraries
 -----
@@ -163,9 +172,11 @@ Algorithmic improvements are worth the costs of noexcept
 Binary size improvements are not worth the costs of noexcept, particularly when "-fno-exceptions" is an option
 -----
 
-
 Arguments
 ==========
+This section is organized by topic, and not by policy.
+That means that sections discuss one topic at a time (e.g. testing), and then discuss the affect of the policies on the topic.
+
 Algorithmic optimizations and exception safety
 -----
 N2855, N2983, N3248
@@ -173,6 +184,9 @@ N2855, N2983, N3248
 The original, primary motivation for `noexcept` was to make it possible for `vector` and similar constructs to take advantage of `move` optimizations, without breaking existing code (e.g. `vector`'s strong exception guarantee).
 
 This motivation and use case is uncontested in the various papers debating the usage of `noexcept`, so this paper will not spend further time on it.
+
+On most implementations, disabling exceptions does not change the result of the `noexcept` operator (The discontinued Intel ICC makes the `noexcept` operator return `true` unconditionally under `-fno-exceptions`).
+This means that `noexcept` is still needed in order to opt-in to algorithmic optimizations, even when exceptions are disabled.
 
 Narrow to wide substitutability / backwards compatibility
 -----
@@ -207,6 +221,152 @@ All three use some variation of termination as their mechanism of handling a fai
 
 Less prevalent implementations do use such latitude for checked implementations and library testing.
 
+Codegen changes
+-----
+To examine code generation changes, we will be looking at this code snippet using various compilers and instruction sets.
+TODO: do we still need this snippet?
+```
+struct Dtor {
+    ~Dtor();
+};
+
+void wont_throw() noexcept;
+void may_throw();
+
+void test_wont() {
+    Dtor d;
+    wont_throw();
+}
+
+void test_may() {
+    Dtor d;
+    may_throw();
+}
+```
+
+### "Modern" implementations
+Most platforms use the "table-based" implementation strategy for exceptions.
+The combinations of (x86-64, ARM, Aarch64) X (Windows, Linux, iOS, OSX) all use table-based exceptions.
+
+With table-based implementations, `noexcept` changes the generated assembly.
+There are sometimes extra stack manipulations, and minor bookkeeping changes, but no extra branches.
+Those minor changes affect the performance in a small and measurable way, but sometimes that difference is positive (for `noexcept`), and sometimes negative (against `noexcept`).
+The magnitude of the difference is under six cycles for the programs and compilers tested (TODO see P1886).
+Full application testing might show some instruction cache effects, but it is even more likely than any differences would be lost in the noise and immeasurable.
+
+### Other implementations
+Not all implementations use the table-based implementation strategy.
+These implementations have more substantial bookkeeping relative to table-based implementations.
+
+The most well known of these implementations is the Microsoft Windows 32-bit x86 implementation.
+Each new cleanup context requires manipulating a linked list of cleanup actions, even on the happy path.
+This results in substantial extra code, and more than a 20% execution performance penalty with micro-benchmarks relative to exceptions being disabled.
+With heavy use of `noexcept`, the overhead can be removed.
+The default and recommended exception project settings of the Microsoft Visual Studio compilers is `/EHsc`, which (non-conformingly) makes `extern "C"` functions `noexcept` by default as a way to reduce exception overhead.
+
+While the days of peak Microsoft Windows for 32-bit x86 is far behind us, new compilers targeting the platform are still regularly released and downloaded.
+The Microsoft Visual Studio 2022 (the latest version at time of writing) still ships compilers targeting 32-bit Windows.
+Clang 17.0.5 (released on Nov 14, 2023) still targets 32-bit Windows.
+Download statistics for Clang binaries are available through the GitHub API.
+```
+// Clang 17.0.5 download statistices, gathered on Dec 26, 2023
+// https://api.github.com/repos/llvm/llvm-project/releases
+LLVM-17.0.5-win32.exe : 1344 downloads
+LLVM-17.0.5-win64.exe : 21870 downloads
+LLVM-17.0.5-woa64.exe : 250 downloads
+clang+llvm-17.0.5-aarch64-linux-gnu.tar.xz : 484 downloads
+clang+llvm-17.0.5-arm64-apple-darwin22.0.tar.xz : 441 downloads
+clang+llvm-17.0.5-x86_64…gnu-ubuntu-22.04.tar.xz : 1648 downloads
+clang+llvm-17.0.5-powerpc64-ibm-aix-7.2.tar.xz : 67 downloads
+```
+Readers should not try to make too many inferences about the relative popularity of platforms based on these numbers, as developers can get compiler releases from multiple sources that wouldn't register on the GitHub download page.
+Regardless, the Microsoft Windows 32-bit platform still gets used, even with the most recent compilers, so it should not be brushed off as irrelevant.
+
+James Renwick has an alternative implementation of exceptions (TODO: citation) with the intent of improving determinism in embedded systems.
+This implementation also needs to manipulate bookkeeping information in each new cleanup context.
+The bookkeeping information is passed along to potentially throwing functions through a hidden parameter.
+`noexcept` can remove the cost of the hidden parameter, but can introduce a new cleanup context.
+
+On GPUs, there is a large cost to having additional control flow edges.
+Using noexcept can remove control flow edges.
+However, to the author's knowledge, no GPU currently supports C++ exceptions.
+
+P2831R0
+TODO: mention renwick, win32, maybe baker
+https://www.pure.ed.ac.uk/ws/portalfiles/portal/78829292/low_cost_deterministic_C_exceptions_for_embedded_systems.pdf
+
+### Bloat
+p1656r2
+P2831R0
+P2861r0
+
+The "tables" backing table-based exception handling, and the code implementing non-table-based bookkeeping all consume space.
+Adding `noexcept` can reduce code bloat, as this can reduce the amount of information that needs to go into tables or bookkeeping.
+Adding `noexcept` can also cause bloat if the `noexcept` function calls potentially throwing functions, as a formerly "pass-through" function may need to introduce table entries or bookkeeping to ensure that `std::terminate` gets called.
+
+In Compiler Explorer, bloat is best examined by disabling debug information (`-g0` for Clang and GCC), enabling optimizations (`-O2`), and leaving directives in the output (uncheck the box in "Filter...").
+As a (very rough) estimate of bloat, we can use lines of assembly output as a proxy.
+Some of the lines don't end up as bytes in the resulting binary, but many do show up, often as variable length integers.
+Measuring the results on actual binaries is substantially more difficult, due to section alignment quantizing and obfuscating size differences.
+
+[This code](https://godbolt.org/z/MoGMh9Gxo) makes it possible to see what happens to the quantity of assembly when switching whether `caller` is noexcept or not, and whether `callee` is `noexcept` or not.  All measurements are in the very rough lines of assembly measurement.
+
+<table>
+    <tr>
+        <th>Compiler</th>
+        <th>noexcept(false) calls noexcept(false)</th>
+        <th>noexcept(false) calls noexcept(true)</th>
+        <th>noexcept(true) calls noexcept(false)</th>
+        <th>noexcept(true) calls noexcept(true)</th>
+    </tr>
+    <tr>
+        <td>x86 msvc v19.38</td>
+        <td>76</td>
+        <td>25</td>
+        <td>70</td>
+        <td>25</td>
+    </tr>
+    <tr>
+        <td>x64 msvc v19.38</td>
+        <td>44</td>
+        <td>26</td>
+        <td>37</td>
+        <td>26</td>
+    </tr>
+    <tr>
+        <td>x86-64 gcc 13.2</td>
+        <td>85</td>
+        <td>20</td>
+        <td>32</td>
+        <td>20</td>
+    </tr>
+    <tr>
+        <td>x86-64 clang 17.0.1</td>
+        <td>68</td>
+        <td>22</td>
+        <td>76</td>
+        <td>22</td>
+    </tr>
+    <tr>
+        <td>ARM64 gcc 13.2.0</td>
+        <td>69</td>
+        <td>26</td>
+        <td>46</td>
+        <td>26</td>
+    </tr>
+    <tr>
+        <td>armv8-a clang 17.0.1</td>
+        <td>74</td>
+        <td>30</td>
+        <td>88</td>
+        <td>30</td>
+    </tr>
+</table>
+
+For many platforms and applications, this bloat is inconsequential.
+For many platforms and applications that are size constrained, exceptions are already disabled.
+When exceptions are disabled, the "noexcept(true) calls noexcept(true)" code and the exception disabled code take the same number of lines of assembly.
+
 Library Testing
 -----
 n3248, P2831R0
@@ -224,7 +384,7 @@ Usage of the proposed core-language contracts facilities will need to be tested.
 Death tests are an option, but they have a large set of challenges on their own.
 
 #### Put the contract check on the outside of the `noexcept`
-TODO: ask Lakos about his objections on this.  I think the objection was based on the principle that adding a contract shouldn't change the program?  But I'm not sure how that follows.
+TODO: ask Lakos about his objections on this.  I think the objection was based on the principle that adding a contract shouldn't change the program?  Maybe contract checks on the outside is fine, but not sufficient to solve the problems with noexcept.
 
 One of the design decisions that core-language contracts needs to make is to decide exactly where the checks will be run.
 If precondition and post-condition checks happen within the callee (i.e. inside the `noexcept`), then failed preconditions and post-conditions checks set to throw will cause the program to terminate.
@@ -264,10 +424,17 @@ To the author's knowledge, no such facility is currently proposed.
 This reflection utility has applications beyond testing, such as automatically generating "wide" wrapper functions from "narrow" functions.
 This strawman proposal doesn't address core-language asserts.
 
-#### extract contract predicates to a function
-TODO: not core language contracts, so reorganization is needed
+#### Allow contract build modes to change the behavior of `noexcept`
+Perhaps we consider `noexcept` the first core-language contract, with a default violation handler of `std::terminate`.
+The `Eval_and_throw` mode could change the behavior of `noexcept` to observe exceptions instead of `terminate`.
 
-A user could emulate the above precondition reflection by following a good naming convention.
+Doing this could be a concise way to unify `noexcept` and core-language contracts, but it comes at a substantial compatibility cost for those using contracts.
+If their code was relying on `noexcept` terminating, then enabling `Eval_and_throw` will break their program.
+
+This approach may be able to be combined with [magic.ub.exception] TODO to avoid major compatibility breaks.
+
+### Extract contract predicates to a function
+A user could emulate the precondition reflection by following a good naming convention.
 ```c++
 bool precondition_f(int x) noexcept;
 bool postcondition_f(int retval, int x) noexcept;
@@ -288,6 +455,13 @@ EXPECT_FALSE( postcondition_f(1, 0) );
 This is an approach that is available for today's precondition and post-condition checking facilities.
 A sophisticated user could write static analysis checks to enforce such a convention.
 The author is unaware of any libraries or guidelines that do this though, which suggests that users either didn't think of it, or they don't see this approach as a good return on investment.
+
+### The widely deployed implementations don't diagnose contract violations with exceptions
+p1656r2
+P2831R0
+
+In 2023, the three most widely deployed standard libraries are libc++ (shipping with Clang), libstdc++ (shipping with GCC), and Microsoft's Visual Studio standard library (shipping with Microsoft Visual Studio).
+None of these implementations use exceptions to diagnose contract violations.
 
 ### noexcept macro
 N3248, P2831R0
@@ -312,7 +486,7 @@ N3248, P2831R0
 It is very difficult to use `setjmp` and `longjmp` without triggering undefined behavior though.
 That makes `setjmp` and `longjmp` generally not viable.
 
-### child threads, fibers, and signals
+### Child threads, fibers, and signals
 P2831R0
 
 There are other creative ways to write contract handlers that permit testing while avoiding having an exception run into a `noexcept`.
@@ -346,7 +520,7 @@ This would make it easier to test contracts, as then any exceptions could still 
 In some ways, this is the inverse of [P2946R0, A flexible solution to the problems of noexcept](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2946r0.pdf).
 P2946R0 proposes a new attribute that (conditionally) keeps the `std::terminate` semantics, but doesn't modify the `noexcept` operator's behavior.
 
-#### Exploiting precondition undefined behavior to ignore termination
+#### Exploiting precondition undefined behavior to ignore termination [magic.ub.exception]
 If a function does not meet its preconditions, then it is not required to meet its post-conditions.
 A post-condition of `noexcept` functions is terminating when there's an exception.
 An implementation could, conformingly, bypass the termination aspect of `noexcept` if the program has encountered undefined behavior.
@@ -354,58 +528,80 @@ In practice, this may be done by having a "magic" exception type (e.g. `nonstd::
 Users would then be required to only use that exception when undefined behavior has been encountered.
 
 ### Death tests
-p1656r2
-#### Quantity of information
-P2831R0
-#### Speed
-P2831R0
-#### Only GoogleTest
-P2831R0
-#### Limited platforms(browsers, embedded)
-P2831R0
-#### Spawn vs clone vs fork
+p1656r2, P2831R0
 
-Codegen changes
------
-### Other implementations
-P2831R0
-TODO: mention renwick, win32, maybe baker
-https://api.github.com/repos/llvm/llvm-project/releases
+A commonly recommended approach for negative testing is to use "Death tests".
+With death testing, the code under test is run in a different process.
+When the code under test executes a failing contract check, the code under test is expected to exit abnormally.
+The exit value of the child process is checked in the parent process to ensure that the contract check was triggered appropriately.
+Multiple standard libraries use death tests for their negative testing.
 
-https://www.pure.ed.ac.uk/ws/portalfiles/portal/78829292/low_cost_deterministic_C_exceptions_for_embedded_systems.pdf
-### Destructors
-### Optimization
-N2983
-N3248
-p1656r2
-P2831R0
-P2861r0
+The largest complaint regarding death testing is the performance penalty.
+Launching a process is orders of magnitude more expensive than throwing an exception, and this can inflate test times from seconds to minutes when large numbers of negative tests are present.
+The performance penalty is particularly large on Microsoft Windows.
 
-### Bloat
-p1656r2
-P2831R0
-P2861r0
+Traditionally, death tests can communicate a very limited amount of information from the child process to the parent process, typically one integer or less.
+This makes it difficult to know whether the child process's abnormal termination was from the intended contract check failure, or some other reason.
+In theory, the failing checks could communicate through some other out-of-band channel (a file on disk, standard out / error, shared memory), but this isn't currently common practice.
+
+Launching child processes has other hazards as well.
+Using the POSIX `fork()` call while code under test is running in another thread introduces substantial testing risks and uncertainty.
+If the code under test is not `fork()` safe, then death tests can't be launched with `fork()` while the code under test is running.
+This can add yet-another performance penalty, as it forces the test to re-run potentially expensive setup code.
+The test framework and code under test also have to take care not to run `fork()` unsafe code, which can be challenging when global constructors are involved.
+A mitigation for this is to have a test launcher that is entirely distinct from the code under test.
+`spawn()` and `clone()` calls can also be used, but with their own draw backs.
+
+Death tests have portability issues.
+C++ can run in a variety of environments, and death tests are mostly suited to desktop and server environments.
+Implementing death tests in browsers and embedded / microcontroller environments would be very challenging, as they typically don't support multiple processes.
+In addition, most testing frameworks don't support death tests, with GoogleTest being the main test framework with that support.
+GoogleTest mixes the code under test and the test infrastructure in the same process(es).
 
 Using exceptions to diagnose precondition violations in production
 -----
 
-### Implementations don't diagnose contract violations with exceptions
-p1656r2
-P2831R0
+
+### Security dangers of throwing exceptions while in an unknown state
+
+In security sensitive contexts, running out of contract is very dangerous.
+Each instruction executed while out of contract is another opportunity for an attacker to do as they please with the system.
+Programs should run as little code as possible after detecting contract violations.
+This is typically done by exiting the program as quickly as possible.
+
+Throwing an exception runs a lot of instructions.
+Many of those instructions are indirect code branches, which are particularly dangerous.
+The Microsoft Visual Studio 32-bit x86 implementation has a build flag (`/SAFESEH`) to harden their exception handling implementation against attacks attempting to leverage those indirect code branches, but the number of instructions run is still very high.
 
 ### Temporary continuation
 [P2861r0]
-#### Likely to cause more UB or hit a dtor noexcept
+Following the narrow-noexcept/"Lakos rule" policy is more permissive in terms of allowing temporary continuation than the Throws Nothing policy.
+Some users of C++ desire temporary continuation after contract violations, and the Throws Nothing policy prevents temporary continuation in many places.
 
-### Diagnosing UB
-p1656r2
+### Likely to cause more UB or hit a destructor noexcept
+Writing exception safe code often requires using operations that aren't allowed to throw.
+A common pattern is to "do all the work off to the side, then commit using nonthrowing operations only" (http://www.gotw.ca/gotw/082.htm).
+If one of the non-throwing operations ends up throwing due to a contract violation, then additional library UB has been added to the program, beyond the initial contract violation.
 
-### Precondition UB and noexcept contradict
-P2831R0
+Throwing from a non-throwing operation can also cause termination in destructors, which are `noexcept` by default.
+So if a contract is violated in a throws nothing function called from a destructor, then termination is the behavior, even if continuation is the desire.
+
+Both of these points illustrate the difficulty and danger in requiring a program to never terminate, even when aided by throwing contract handlers.
 
 ### Postconditions only hold when preconditions hold
 [p2858r0]
+A general programming principle is that postconditions aren't required to hold when preconditions don't hold.
+This is often paraphrased as garbage in, garbage out.
+If `noexcept` is a postcondition, then the termination aspect is not required to hold if the precondition doesn't hold.
 
+### Precondition UB and noexcept contradict?
+P2831R0
+P2831 argues that `noexcept` and precondition undefined behavior contradict, as any behavior should be permitted.
+`noexcept` prevents the implementer of the function from manifesting some of those behaviors.
+
+For user code, the extent of their undefined behavior is indeed constrained by `noexcept`.
+Standard library implementations are under no such restriction.
+[magic.ub.exception] describes one way that an implementation could choose to throw an exception past `noexcept`, if they deemed it worth the implementation effort.
 
 Termination risk
 -----
@@ -413,6 +609,14 @@ P2831R0
 P2861R0
 [p2949r0]
 
+Using `noexcept` can insert code paths that invoke `std::terminate`.
+The terminating code paths are often unreachable code removed by the optimizer, but this isn't always the case.
+
+There are applications that prefer library UB over `std::terminate` when faced with a failing contract.
+Those libraries may use exceptions to indicate failed contracts.
+
+For safety critical systems (note the use of the term "systems", not applications), undefined behavior is generally considered worse than termination, even if the undefined behavior is "only" library UB.
+In these systems, an individual application may terminate, but the system as a whole has ways to recover from a terminated application, or to put the system into a safe state.
 
 Philosophy
 -----
@@ -421,42 +625,72 @@ p1656r2
 P2831R0 (purity not worth it)
 P2946R0
 
+There is a desire to document the exception behavior of a function in the signature of that function.
+This documentation helps compilers, static analyzers, and people reading the code to understand what the function does.
+
+[p2858] makes the distinction between functions that can't throw and functions that can't fail.
+C++'s `fclose` [can't throw](https://eel.is/c++draft/library#res.on.exception.handling-2) (POSIX's can as part of thread cancellation).  `fclose` can fail though, as part of `fclose` is flushing buffer contents to storage, and that storage may not be available at time of close (imagine a USB drive being removed).
+
+This separation between can't throw and can't fail makes it more difficult to determine what constitutes `noexcept`-accuracy.
+
 ### Doesn't matter since implementations can already add noexcept
 P2831R0
+p1656r2
 
-### Standard library policies need not be C++ library policies
+If the narrow noexcept/"Lakos rule" policy is in place, implementations can strengthen the `noexcept` annotations on their functions.
+Major implementations have done so.
+Strengthening `noexcept` in the standard would end up adding very few `noexcept` annotations in the major implementations.
+
+### Standard library policies vs. C++ library policies
 [p2861r0]
-TODO
+P2831R0
+Many libraries attempt to emulate the design policies of the standard library.
+The standard library should try to set a good example for third-party and end-user libraries, as others will use the standard library as an example whether the committee thinks they should or not.
+
+The standard library needs to accommodate all domains, serve millions of programmers, and billions of users.
+Most other libraries aren't as widely used.
+In some libraries, the customers are known well enough that a compatibility hit from changing noexcept can be absorbed.
+The domain and use cases are known well enough that termination on precondition violation can be deemed suitable.
+
+For some libraries, improving some performance aspect (like binary size) by half a percent is worth increasing the cost of testing by a factor of 100.
+The more heavily used a library, the more likely it is that such a trade-off is worthwhile.
+Few libraries are used more heavily than the STL.
+
 ### Standard library implementation strategies need not be encoded in the C++ standard
 [p2861r0]
-TODO
-### Standard library should provide an example of good user library design
-P2831R0
+For some standard library implementations, the correct technical and business choice is to terminate on precondition failure via a `noexcept` decoration.
+That is a valid implementation strategy.
+However, that doesn't mean that this implementation should be put in the standard, where it constrains other implementations that don't want to make that choice.
 
-### Cleanup functions have preconditions, and need to be noexcept
+### Cleanup operations often have preconditions, and need to not throw
+[p2858r0]
+Cleanup operations, like `delete`, `fclose`, and `std::lock_guard::~lock_guard` all have preconditions, and all need to be made to not throw.
+If the preconditions on these functions were checked and made to throw, they would cause the `noexcept` on destructors to terminate.
+If the destructors were marked `noexcept(false)`, you would still run the risk of termination from when unwinding triggered a precondition fault, causing two exceptions to be active at the same time.
 
+### narrow-noexcept ignores implicit precondition of indeterminate values and invalid objects
+[p2949r0]
 
-Exceptions disabled
------
-P2831R0
-### noexcept operator doesn't change
+The "Lakos rule" / narrow-noexcept is defined in terms of wide and narrow contracts, but even the wide contracts have their limits.
+Take `std::string::c_str()` as an example.
+`c_str()` is safe to call on any valid `std::string`, even the empty string.
+However, if the bytes composing the `std::string` are corrupted in some way, then `c_str()` is likely to dereference an invalid program.
+This means that `c_str()` (and most functions) have a precondition of basic object validity.
+If wide contracts are expanded to encompass functions that work with invalid objects, then very little has a wide contract.
 
 Can't write narrow-noexcept on top of throws-nothing
 -----
 [p2837r0]
+TODO: needs elaboration from Alisdair
 
-narrow-noexcept is inconsistent wrt which preconditions matter
------
-### Cleanup functions often have preconditions, and need to be noexcept
-    [p2858r0]
-### narrow-noexcept ignores implicit precondition of object validity
-    [p2949r0]
+If part of a system is written with a throws nothing policy, then the system as a whole loses the narrow-noexcept property.
 
-Wait for contracts before setting a policy
------
-[p2837r0]
+Systems built with libc++, libstdc++, and the Microsoft Visual Studio standard library generally do not have the narrow-noexcept property.
 
-
+Other libraries can get many of the benefits of the narrow-noexcept, even if the system as a whole doesn't have the narrow-noexcept property.
+Negative testing can be performed on narrow-noexcept libraries, as exceptions usually don't need to travel far.
+Preconditions can be checked in production for all the code between entry points and the first non-narrow-noexcept code.
+Non-narrow-noexcept libraries that interact heavily with callbacks can get in the way of both precondition checking and negative testing.
 
 
 Suggested polls
@@ -486,13 +720,13 @@ Head-to-head policy poll
 
 Adopt the narrow-noexcept/"Lakos rule" noexcept policy
 -----
-> <b>Poll:</b> Adopt the "Lakos rule" noexcept policy and create SD-9 with the proposed "Lakos rule" text.<br/>
+> <b>Poll:</b> Add the narrow-noexcept/"Lakos rule" noexcept policy to SD-9<br/>
 >
 > 5-way poll (SF/WF/N/WA/SA)<br/>
 
 Adopt the "Throws nothing rule" noexcept policy
 -----
-> <b>Poll:</b> Adopt the "Throws nothing rule" noexcept policy and create SD-9 with the proposed "Throws nothing rule" text.<br/>
+> <b>Poll:</b> Add the "Throws nothing rule" noexcept policy to SD-9<br/>
 >
 > 5-way poll (SF/WF/N/WA/SA)<br/>
 
