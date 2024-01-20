@@ -33,30 +33,30 @@ Prior `noexcept` Discussions {#prior}
 
 History papers {#history_papers}
 ------------
-* [N2855, Rvalue References and Exception Safety](https://www.open-std.org/JTC1/SC22/WG21/docs/papers/2009/n2855.html)
-* [N2983, Allowing Move Constructors to Throw](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2009/n2983.html)
-* [N3248, noexcept Prevents Library Validation.](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3248.pdf)
-* [N3279, Conservative use of noexcept in the Library](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3279.pdf)
-* [P0884R0, Extending the noexcept Policy, Rev0](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0884r0.pdf)
-* [P2920R0, Library Evolution Leadership's Understanding of the Noexcept Policy History](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2920r0.pdf)
+* [N2855, Rvalue References and Exception Safety](https://www.open-std.org/JTC1/SC22/WG21/docs/papers/2009/n2855.html), [[GregorN2855]]
+* [N2983, Allowing Move Constructors to Throw](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2009/n2983.html), [[AbrahamsN2983]]
+* [N3248, noexcept Prevents Library Validation.](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3248.pdf), [[MeredithN3248]]
+* [N3279, Conservative use of noexcept in the Library](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3279.pdf), [[MeredithN3279]]
+* [P0884R0, Extending the noexcept Policy, Rev0](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0884r0.pdf), [[Josuttis0884]]
+* [P2920R0, Library Evolution Leadership's Understanding of the Noexcept Policy History](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2920r0.pdf), [[Lelbach2920]]
 
 Throws Nothing Rule {#throws_nothing_papers}
 ------------
-* [P1656R2, "Throws: Nothing" should be noexcept](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p1656r2.html)
-* [P2148R0, Library Evolution Design Guidelines](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p2148r0.pdf)
+* [P1656R2, "Throws: Nothing" should be noexcept](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p1656r2.html), [[Bergé1656]]
+* [P2148R0, Library Evolution Design Guidelines](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p2148r0.pdf), [[Johnson2148]]
 
 Narrow `noexcept` / Lakos Rule {#narrow_noexcept_papers}
 ------------
-* [P2831R0, Functions having a narrow contract should not be noexcept](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2831r0.pdf)
-* [P2837R0 Planning to Revisit the Lakos Rule](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2837r0.pdf)
-* [P2861R0, The Lakos Rule: Narrow Contracts And noexcept Are Inherently Incompatible](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2861r0.pdf)
-* [P2949R0, Slides for P2861R0: Narrow Contracts and noexcept are Inherently Incompatable](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2949r0.pdf)
-* [P2946R0, A flexible solution to the problems of noexcept](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2946r0.pdf)
+* [P2831R0, Functions having a narrow contract should not be noexcept](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2831r0.pdf), [[Doumler2831]]
+* [P2837R0, Planning to Revisit the Lakos Rule](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2837r0.pdf), [[Meredith2837]]
+* [P2861R0, The Lakos Rule: Narrow Contracts And noexcept Are Inherently Incompatible](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2861r0.pdf), [[Lakos2861]]
+* [P2949R0, Slides for P2861R0: Narrow Contracts and noexcept are Inherently Incompatable](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2949r0.pdf), [[Lakos2949]]
+* [P2946R0, A flexible solution to the problems of noexcept](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2946r0.pdf), [[Halpern2946]]
 
 Both {#combined_papers}
 -----
-* [P2858R0, Noexcept vs contract violations](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2858r0.html)
-* This paper, [P3085, `noexcept` policy for SD-9 (throws nothing)](https://wg21.link/P3085)
+* [P2858R0, Noexcept vs contract violations](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2858r0.html), [[Krzemieński2858]]
+* This paper, P3085, `noexcept` policy for SD-9 (throws nothing)
 
 
 Policies in question {#wording}
@@ -67,7 +67,7 @@ This policy needs to be the template for future policies.
 
 Common parts (proposed) {#wording_common}
 -----
-This wording matches the shared wording from P1656R2 and P0884R0.
+This wording matches the shared wording from [[Bergé1656]] and [[Josuttis0884]].
 
 <ol type="a">
     <li>No library destructor should throw. They shall use the implicitly supplied (non-throwing) exception specification.</li>
@@ -80,19 +80,19 @@ This wording matches the shared wording from P1656R2 and P0884R0.
 
 Throws Nothing Rule (proposed)  {#wording_throws_nothing}
 -----
-This wording does not match P1656R2("Throws: Nothing" should be noexcept), but it has the same intent.
+This wording does not match [[Bergé1656]], but it has the same intent.
 > b. Each library function that will not throw when called with all preconditions satisfied should be marked as unconditionally noexcept.
 
 
-The wording in P1656R2("Throws: Nothing" should be noexcept) is as follows:
+The wording in [[Bergé1656]] is as follows:
 > b. Each library function that LEWG and LWG agree cannot throw, should be marked as unconditionally `noexcept`.
 
-The P1656 wording could be interpreted as disallowing narrow contract functions, since a function that is called without meeting preconditions could do anything, including throw.
-That interpretation isn't the intent of P1656.
+The [[Bergé1656]] wording could be interpreted as disallowing narrow contract functions, since a function that is called without meeting preconditions could do anything, including throw.
+That interpretation isn't the intent of [[Bergé1656]].
 
 Narrow `noexcept` / Lakos Rule (not proposed in this revision)  {#wording_lakos}
 -----
-This wording matches the wording in P0884R0 Extending the noexcept Policy, Rev0.
+This wording matches the wording in [[Josuttis0884]] Extending the noexcept Policy, Rev0.
 
 > b. Each library function having a <em>wide</em> contract (i.e., does not specify undefined behavior due to a precondition) that the LWG agree cannot throw, should be marked as unconditionally `noexcept`.
 
@@ -104,7 +104,7 @@ Core-language Contracts {#core_language_contracts}
 Interactions between `noexcept` and the upcoming core-language contracts facilities is likely to be significant.
 It would be unfortunate if decisions in the library prevented the core-language contracts work from reaching its full potential.
 
-[p2837r0] argues that the interaction may be significant and unpredictable enough that it would be better to proceed with no policy in the short term, rather than settle on a policy that will immediately get in the way of contracts.
+[[Meredith2837]] argues that the interaction may be significant and unpredictable enough that it would be better to proceed with no policy in the short term, rather than settle on a policy that will immediately get in the way of contracts.
 
 If we don't set a policy, then we leave it to paper authors and LEWG to determine the proper noexcept specifier on a per-function basis.
 This is likely to cause a great deal of inconsistency in the interim.
@@ -118,7 +118,7 @@ In these cases, LEWG tends to bias towards "whatever the bulk of the standard is
 
 LEWG could become more self consistent by documenting one way, and then requiring authors to either follow the policy, or provide rationale for why the policy should not be applied in this case.
 
-The explicit-ness of multi-argument constructors is one such area. [P2711R1 Making multi-param constructors of views explicit](https://wg21.link/P2711R1).
+The explicit-ness of multi-argument constructors is one such area [[Voutilainen2711]].
 
 Changes in direction {#changes_in_direction}
 -----
@@ -185,7 +185,7 @@ That means that sections discuss one topic at a time (e.g. testing), and then di
 
 Algorithmic optimizations and exception safety {#algorithmic_optimizations}
 -----
-N2855, N2983, N3248
+[[GregorN2855]], [[AbrahamsN2983]], [[MeredithN3248]]
 
 The original, primary motivation for `noexcept` was to make it possible for `vector` and similar constructs to take advantage of `move` optimizations, without breaking existing code (e.g. `vector`'s strong exception guarantee).
 
@@ -196,7 +196,7 @@ This means that `noexcept` is still needed in order to opt-in to algorithmic opt
 
 Narrow to wide substitutability / backwards compatibility {#backwards_compat}
 -----
-P2831R0, P2949R0, P2861R0
+[[Doumler2831]], [[Lakos2949]], [[Lakos2861]]
 
 Suppose we have a function `void unchecked_f(int x)` with a precondition of `x > 0`.
 `unchecked_f` has undefined behavior when the precondition is violated.
@@ -257,16 +257,18 @@ The combinations of (x86-64, ARM, Aarch64) X (Windows, Linux, iOS, OSX) all use 
 With table-based implementations, `noexcept` changes the generated assembly.
 There are sometimes extra stack manipulations, and minor bookkeeping changes, but no extra branches.
 Those minor changes affect the performance in a small and measurable way, but sometimes that difference is positive (for `noexcept`), and sometimes negative (against `noexcept`).
-The magnitude of the difference is under six cycles for the programs and compilers tested (TODO see P1886).
+The magnitude of the difference is under six cycles for the programs and compilers tested [[Craig1886]].
 Full application testing might show some instruction cache effects, but it is even more likely than any differences would be lost in the noise and immeasurable.
 
 ### Other implementations ### {#other_impls}
+[[Doumler2831]]
+
 Not all implementations use the table-based implementation strategy.
 These implementations have more substantial bookkeeping relative to table-based implementations.
 
 The most well known of these implementations is the Microsoft Windows 32-bit x86 implementation.
 Each new cleanup context requires manipulating a linked list of cleanup actions, even on the happy path.
-This results in substantial extra code, and more than a 20% execution performance penalty with micro-benchmarks relative to exceptions being disabled.
+This results in substantial extra code, and more than a 20% execution performance penalty with micro-benchmarks relative to exceptions being disabled [[Craig1886]].
 With heavy use of `noexcept`, the overhead can be removed.
 The default and recommended exception project settings of the Microsoft Visual Studio compilers is `/EHsc`, which (non-conformingly) makes `extern "C"` functions `noexcept` by default as a way to reduce exception overhead.
 
@@ -288,7 +290,7 @@ clang+llvm-17.0.5-powerpc64-ibm-aix-7.2.tar.xz : 67 downloads
 Readers should not try to make too many inferences about the relative popularity of platforms based on these numbers, as developers can get compiler releases from multiple sources that wouldn't register on the GitHub download page.
 Regardless, the Microsoft Windows 32-bit platform still gets used, even with the most recent compilers, so it should not be brushed off as irrelevant.
 
-James Renwick has an alternative implementation of exceptions (TODO: citation) with the intent of improving determinism in embedded systems.
+James Renwick has an alternative implementation of exceptions [[Renwick2019]] with the intent of improving determinism in embedded systems.
 This implementation also needs to manipulate bookkeeping information in each new cleanup context.
 The bookkeeping information is passed along to potentially throwing functions through a hidden parameter.
 `noexcept` can remove the cost of the hidden parameter, but can introduce a new cleanup context.
@@ -297,14 +299,10 @@ On GPUs, there is a large cost to having additional control flow edges.
 Using noexcept can remove control flow edges.
 However, to the author's knowledge, no GPU currently supports C++ exceptions.
 
-P2831R0
-TODO: mention renwick, win32, maybe baker
-https://www.pure.ed.ac.uk/ws/portalfiles/portal/78829292/low_cost_deterministic_C_exceptions_for_embedded_systems.pdf
-
 ### Bloat ### {#size_bloat}
-p1656r2
-P2831R0
-P2861r0
+[[Bergé1656]]
+[[Doumler2831]]
+[[Lakos2861]]
 
 The "tables" backing table-based exception handling, and the code implementing non-table-based bookkeeping all consume space.
 Adding `noexcept` can reduce code bloat, as this can reduce the amount of information that needs to go into tables or bookkeeping.
@@ -314,6 +312,7 @@ In Compiler Explorer, bloat is best examined by disabling debug information (`-g
 As a (very rough) estimate of bloat, we can use lines of assembly output as a proxy.
 Some of the lines don't end up as bytes in the resulting binary, but many do show up, often as variable length integers.
 Measuring the results on actual binaries is substantially more difficult, due to section alignment quantizing and obfuscating size differences.
+[[Craig1640]] presents size benchmarks comparing exceptions to abort, and some of these measurements can be used as proxy byte-based statistics for `noexcept` bloat.
 
 [This code](https://godbolt.org/z/MoGMh9Gxo) makes it possible to see what happens to the quantity of assembly when switching whether `caller` is noexcept or not, and whether `callee` is `noexcept` or not.  All measurements are in the very rough lines of assembly measurement.
 
@@ -375,7 +374,7 @@ When exceptions are disabled, the "noexcept(true) calls noexcept(true)" code and
 
 Library Testing {#library_testing}
 -----
-n3248, P2831R0
+[[MeredithN3248]], [[Doumler2831]]
 
 Implementations often constrain some undefined behavior for out-of-contract function invocations, particularly in debug and checked modes.
 "Negative testing" validates that the assertion / contract checks are authored correctly, and that the resulting constrained undefined behavior does the expected thing.
@@ -400,8 +399,7 @@ If precondition and post-condition checks in the caller of a `noexcept` function
 
 Putting preconditions and post-conditions outside the `noexcept` doesn't help with core-language contract asserts.
 
-[P2780R0, 
-Caller-side precondition checking, and Eval_and_throw](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2780r0.html) discusses this point, as well as discussing other benefits involving calling external libraries.
+[[Voutilainen2780]] discusses this point, as well as discussing other benefits involving calling external libraries.
 It also discusses the challenges of this approach with regards to indirect calls and multiply evaluated preconditions.
 
 Caller-side precondition checking is likely to be less efficient in terms of code size compared to callee-side precondition checking.
@@ -441,7 +439,7 @@ Making such sad-path post-condition checks throw on failure would also lead to e
 Allowing contract build modes to change the behavior of `noexcept` could be a concise way to unify `noexcept` and core-language contracts, but it could come at a substantial compatibility cost for those using contracts.
 If their code was relying on `noexcept` terminating, then enabling `Eval_and_throw` will break their program.
 
-This approach may be able to be combined with {#magic_ub_exception} TODO to avoid major compatibility breaks.
+This approach may be able to be combined with [[#magic_ub_exception]] to avoid major compatibility breaks.
 
 ### Extract contract predicates to a function ### {#extract_contracts_to_function}
 A user could emulate the precondition reflection by following a good naming convention.
@@ -467,14 +465,14 @@ A sophisticated user could write static analysis checks to enforce such a conven
 The author is unaware of any libraries or guidelines that do this though, which suggests that users either didn't think of it, or they don't see this approach as a good return on investment.
 
 ### The widely deployed implementations don't diagnose contract violations with exceptions ### {#throwing_not_used_by_big_impls}
-p1656r2
-P2831R0
+[[Bergé1656]]
+[[Doumler2831]]
 
 In 2023, the three most widely deployed standard libraries are libc++ (shipping with Clang), libstdc++ (shipping with GCC), and Microsoft's Visual Studio standard library (shipping with Microsoft Visual Studio).
 None of these implementations use exceptions to diagnose contract violations.
 
 ### noexcept macro ### {#noexcept_macro}
-N3248, P2831R0
+[[MeredithN3248]], [[Doumler2831]]
 
 Libraries can define a macro like the following:
 ```c++
@@ -490,17 +488,17 @@ Switching between the modes is detectable and increases the number of difference
 Each difference between test and production decreases the value of the test.
 
 ### setjmp/longjmp ### {#setjmp_longjmp}
-N3248, P2831R0
+[[MeredithN3248]], [[Doumler2831]]
 
 `setjmp` and `longjmp` can be used to bypass `noexcept` without triggering termination.
 It is very difficult to use `setjmp` and `longjmp` without triggering undefined behavior though.
 That makes `setjmp` and `longjmp` generally not viable.
 
 ### Child threads, fibers, and signals ### {#threads_fibers_signals}
-P2831R0
+[[Doumler2831]]
 
 There are other creative ways to write contract handlers that permit testing while avoiding having an exception run into a `noexcept`.
-[P2831R0, Functions having a narrow contract should not be noexcept](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2831r0.pdf) describes some approaches for using (and leaking) threads that halt on failure rather than return.
+[[Doumler2831]] describes some approaches for using (and leaking) threads that halt on failure rather than return.
 There's also a description for how to use fibers / stackful coroutines to halt without consuming as many resources as the child thread approach.
 Finally there's a signal based approach.
 All of these approaches have substantial downsides.
@@ -527,8 +525,8 @@ The `noexcept` specifier has two direct effects on the semantics of a program:
 In theory, a compiler could add a non-conforming extensions that removes the `std::terminate` aspects, while keeping the `noexcept` operator aspects.
 This would make it easier to test contracts, as then any exceptions could still escape `noexcept` functions.
 
-In some ways, this is the inverse of [P2946R0, A flexible solution to the problems of noexcept](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2946r0.pdf).
-P2946R0 proposes a new attribute that (conditionally) keeps the `std::terminate` semantics, but doesn't modify the `noexcept` operator's behavior.
+In some ways, this is the inverse of [[Halpern2946]].
+[[Halpern2946]] proposes a new attribute that (conditionally) keeps the `std::terminate` semantics, but doesn't modify the `noexcept` operator's behavior.
 
 #### Exploiting precondition undefined behavior to ignore termination #### {#magic_ub_exception}
 If a function does not meet its preconditions, then it is not required to meet its post-conditions.
@@ -538,7 +536,7 @@ In practice, this may be done by having a "magic" exception type (e.g. `nonstd::
 Users would then be required to only use that exception when undefined behavior has been encountered.
 
 ### Death tests ### {#death_tests}
-p1656r2, P2831R0
+[[Bergé1656]], [[Doumler2831]]
 
 A commonly recommended approach for negative testing is to use "Death tests".
 With death testing, the code under test is run in a different process.
@@ -584,13 +582,14 @@ Many of those instructions are indirect code branches, which are particularly da
 The Microsoft Visual Studio 32-bit x86 implementation has a build flag (`/SAFESEH`) to harden their exception handling implementation against attacks attempting to leverage those indirect code branches, but the number of instructions run is still very high.
 
 ### Temporary continuation ### {#temporary_continuation}
-[P2861r0]
+[[Lakos2861]]
+
 Following the narrow-noexcept/"Lakos rule" policy is more permissive in terms of allowing temporary continuation than the Throws Nothing policy.
 Some users of C++ desire temporary continuation after contract violations, and the Throws Nothing policy prevents temporary continuation in many places.
 
 ### Likely to cause more UB or hit a destructor noexcept ### {#more_ub_and_noexcept}
 Writing exception safe code often requires using operations that aren't allowed to throw.
-A common pattern is to "do all the work off to the side, then commit using nonthrowing operations only" (http://www.gotw.ca/gotw/082.htm).
+A common pattern is to "do all the work off to the side, then commit using nonthrowing operations only" [[Sutter82]].
 If one of the non-throwing operations ends up throwing due to a contract violation, then additional library UB has been added to the program, beyond the initial contract violation.
 
 Throwing from a non-throwing operation can also cause termination in destructors, which are `noexcept` by default.
@@ -599,28 +598,30 @@ So if a contract is violated in a throws nothing function called from a destruct
 Both of these points illustrate the difficulty and danger in requiring a program to never terminate, even when aided by throwing contract handlers.
 
 ### Postconditions only hold when preconditions hold ### {#garbage_in_garbage_out}
-[p2858r0]
+[[Krzemieński2858]]
+
 A general programming principle is that postconditions aren't required to hold when preconditions don't hold.
 This is often paraphrased as garbage in, garbage out.
 If `noexcept` is a postcondition, then the termination aspect is not required to hold if the precondition doesn't hold.
 
 ### Precondition UB and noexcept contradict? ### {#noexcept_contradiction}
-P2831R0
-P2831 argues that `noexcept` and precondition undefined behavior contradict, as any behavior should be permitted.
+[[Doumler2831]]
+
+[[Doumler2831]] argues that `noexcept` and precondition undefined behavior contradict, as any behavior should be permitted.
 `noexcept` prevents the implementer of the function from manifesting some of those behaviors.
 
 For user code, the extent of their undefined behavior is indeed constrained by `noexcept`.
 Standard library implementations are under no such restriction.
-{#magic_ub_exception} TODO describes one way that an implementation could choose to throw an exception past `noexcept`, if they deemed it worth the implementation effort.
+[[#magic_ub_exception]] describes one way that an implementation could choose to throw an exception past `noexcept`, if they deemed it worth the implementation effort.
 
 Termination risk {#termination_risk}
 -----
-P2831R0
-P2861R0
-[p2949r0]
+[[Doumler2831]]
+[[Lakos2861]]
+[[Lakos2949]]
 
 Using `noexcept` can insert code paths that invoke `std::terminate`.
-The terminating code paths are often unreachable code removed by the optimizer, but this isn't always the case.
+The terminating code paths are often unreachable code removed during translation, but this isn't always the case.
 
 There are applications that prefer library UB over `std::terminate` when faced with a failing contract.
 Those libraries may use exceptions to indicate failed contracts.
@@ -631,29 +632,30 @@ In these systems, an individual application may terminate, but the system as a w
 Philosophy {#philosphy}
 -----
 ### `noexcept`-accuracy ### {#noexcept_accuracy}
-p1656r2
-P2831R0 (purity not worth it)
-P2946R0
+[[Bergé1656]]
+[[Doumler2831]] (purity not worth it)
+[[Halpern2946]]
 
 There is a desire to document the exception behavior of a function in the signature of that function.
 This documentation helps compilers, static analyzers, and people reading the code to understand what the function does.
 
-[p2858] makes the distinction between functions that can't throw and functions that can't fail.
+[[Krzemieński2858]] makes the distinction between functions that can't throw and functions that can't fail.
 C++'s `fclose` [can't throw](https://eel.is/c++draft/library#res.on.exception.handling-2) (POSIX's can as part of thread cancellation).  `fclose` can fail though, as part of `fclose` is flushing buffer contents to storage, and that storage may not be available at time of close (imagine a USB drive being removed).
 
 This separation between can't throw and can't fail makes it more difficult to determine what constitutes `noexcept`-accuracy.
 
 ### Doesn't matter since implementations can already add noexcept ### {#can_already_add_noexcept}
-P2831R0
-p1656r2
+[[Doumler2831]]
+[[Bergé1656]]
 
 If the narrow noexcept/"Lakos rule" policy is in place, implementations can strengthen the `noexcept` annotations on their functions.
 Major implementations have done so.
 Strengthening `noexcept` in the standard would end up adding very few `noexcept` annotations in the major implementations.
 
 ### Standard library policies vs. C++ library policies ### {#stdlib_vs_user_lib_policies}
-[p2861r0]
-P2831R0
+[[Lakos2861]]
+[[Doumler2831]]
+
 Many libraries attempt to emulate the design policies of the standard library.
 The standard library should try to set a good example for third-party and end-user libraries, as others will use the standard library as an example whether the committee thinks they should or not.
 
@@ -667,19 +669,21 @@ The more heavily used a library, the more likely it is that such a trade-off is 
 Few libraries are used more heavily than the STL.
 
 ### Standard library implementation strategies need not be encoded in the C++ standard ### {#impl_strategies_in_the_std}
-[p2861r0]
+[[Lakos2861]]
+
 For some standard library implementations, the correct technical and business choice is to terminate on precondition failure via a `noexcept` decoration.
 That is a valid implementation strategy.
 However, that doesn't mean that this implementation should be put in the standard, where it constrains other implementations that don't want to make that choice.
 
 ### Cleanup operations often have preconditions, and need to not throw ### {#cleanup_preconditions}
-[p2858r0]
+[[Krzemieński2858]]
+
 Cleanup operations, like `delete`, `fclose`, and `std::lock_guard::~lock_guard` all have preconditions, and all need to be made to not throw.
 If the preconditions on these functions were checked and made to throw, they would cause the `noexcept` on destructors to terminate.
 If the destructors were marked `noexcept(false)`, you would still run the risk of termination from when unwinding triggered a precondition fault, causing two exceptions to be active at the same time.
 
 ### narrow-noexcept ignores implicit precondition of indeterminate values and invalid objects ### {#invalid_and_indeterminate}
-[p2949r0]
+[[Lakos2949]]
 
 The "Lakos rule" / narrow-noexcept is defined in terms of wide and narrow contracts, but even the wide contracts have their limits.
 Take `std::string::c_str()` as an example.
@@ -690,7 +694,7 @@ If wide contracts are expanded to encompass functions that work with invalid obj
 
 Can't write narrow-noexcept on top of throws-nothing {#narrow_above_throws_nothing}
 -----
-[p2837r0]
+[[Meredith2837]]
 TODO: needs elaboration from Alisdair
 
 If part of a system is written with a throws nothing policy, then the system as a whole loses the narrow-noexcept property.
@@ -749,7 +753,102 @@ Acknowledgments {#ack}
     "Renwick2019": {
         "authors": ["James Renwick", "Tom Spink", "Björn Franke"],
         "title": "Low-cost deterministic C++ exceptions for embedded systems",
-        "href": "https://www.research.ed.ac.uk/portal/en/publications/lowcost-deterministic-c-exceptions-for-embedded-systems(2cfc59d5-fa95-45e0-83b2-46e51098cf1f).html"
+        "href": "https://www.pure.ed.ac.uk/ws/portalfiles/portal/78829292/low_cost_deterministic_C_exceptions_for_embedded_systems.pdf"
+    },
+    "GregorN2855": {
+        "authors": ["Douglas Gregor", "David Abrahams"],
+        "title": "N2855, Rvalue References and Exception Safety",
+        "href": "https://www.open-std.org/JTC1/SC22/WG21/docs/papers/2009/n2855.html"
+    },
+    "AbrahamsN2983": {
+        "authors": ["David Abrahams", "Rani Sharoni", "Douglas Gregor"],
+        "title": "N2983, Allowing Move Constructors to Throw",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2009/n2983.html"
+    },
+    "MeredithN3248": {
+        "authors": ["Alisdair Meredith", "John Lakos"],
+        "title": "N3248, noexcept Prevents Library Validation",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3248.pdf"
+    },
+    "MeredithN3279": {
+        "authors": ["Alisdair Meredith", "John Lakos"],
+        "title": "N3279, Conservative use of noexcept in the Library",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3279.pdf"
+    },
+    "Josuttis0884": {
+        "authors": ["Nicolai Josuttis"],
+        "title": "P0884R0, Extending the noexcept Policy, Rev0",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0884r0.pdf"
+    },
+    "Lelbach2920": {
+        "authors": ["Bryce Adelstein Lelbach", "Nevin Liber", "Robert Leahy", "Ben Craig", "Fabio Fracassi", "Guy Davidson"],
+        "title": "P2920R0, Library Evolution Leadership's Understanding of the Noexcept Policy History",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2920r0.pdf"
+    },
+    "Bergé1656": {
+        "authors": ["Agustín Bergé"],
+        "title": "P1656R2, \"Throws: Nothing\" should be noexcept",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p1656r2.html"
+    },
+    "Johnson2148": {
+        "authors": ["CJ Johnson", "Bryce Adelstein Lelbach"],
+        "title": "P2148R0, Library Evolution Design Guidelines",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p2148r0.pdf"
+    },
+    "Doumler2831": {
+        "authors": ["Timur Doumler", "Ed Catmur"],
+        "title": "P2831R0, Functions having a narrow contract should not be noexcept",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2831r0.pdf"
+    },
+    "Meredith2837": {
+        "authors": ["Alisdair Meredith", "Harold Bott Jr."],
+        "title": "P2837R0, Planning to Revisit the Lakos Rule",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2837r0.pdf"
+    },
+    "Lakos2861": {
+        "authors": ["John Lakos"],
+        "title": "P2861R0, The Lakos Rule: Narrow Contracts And noexcept Are Inherently Incompatible",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2861r0.pdf"
+    },
+    "Lakos2949": {
+        "authors": ["John Lakos"],
+        "title": "P2949R0, Slides for P2861R0: Narrow Contracts and noexcept are Inherently Incompatable",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2949r0.pdf"
+    },
+    "Halpern2946": {
+        "authors": ["Pablo Halpern"],
+        "title": "P2946R0, A flexible solution to the problems of noexcept",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2946r0.pdf"
+    },
+    "Krzemieński2858": {
+        "authors": ["Andrzej Krzemieński"],
+        "title": "P2858R0, Noexcept vs contract violations",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2858r0.html"
+    },
+    "Voutilainen2711": {
+        "authors": ["Ville Voutilainen"],
+        "title": "P2711R1, Making multi-param constructors of views explicit",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p2711r1.html"
+    },
+    "Craig1886": {
+        "authors": ["Ben Craig"],
+        "title": "P1886R0, Error speed benchmarking",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1886r0.html"
+    },
+    "Craig1640": {
+        "authors": ["Ben Craig"],
+        "title": "P1640R1, Error size benchmarking: Redux",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1640r1.html"
+    },
+    "Voutilainen2780": {
+        "authors": ["Ville Voutilainen"],
+        "title": "P2780R0, Caller-side precondition checking, and Eval_and_throw",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2780r0.html"
+    },
+    "Sutter82": {
+        "authors": ["Herb Sutter"],
+        "title": "Exception Safety and Exception Specifications: Are They Worth It?",
+        "href": "http://www.gotw.ca/gotw/082.htm"
     }
 }
 </pre>
