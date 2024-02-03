@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: `noexcept` policy for SD-9 (throws nothing) TODO
 Shortname: D3085
-Revision: 0.2
+Revision: 0.3
 Audience: LEWG
 Status: D
 Group: WG21
@@ -95,7 +95,7 @@ That interpretation isn't the intent of [[Bergé1656]].
 
 Narrow `noexcept` / Lakos Rule (not proposed in this revision)  {#wording_lakos}
 -----
-This wording matches the wording in [[Josuttis0884]] Extending the noexcept Policy, Rev0.
+This wording matches the wording in [[Josuttis0884]].
 
 > b. Each library function having a <em>wide</em> contract (i.e., does not specify undefined behavior due to a precondition) that the LWG agree cannot throw, should be marked as unconditionally `noexcept`.
 
@@ -157,7 +157,7 @@ Marking existing functions in the standard `noexcept` will change the results of
 
 If the committee continues to permit implementations to strengthen the `noexcept` status of functions, then implementations won't change.
 
-If the committee chooses to remove this permission, implementations will either ignore the requirement and be non-conforming, or they will accept the code breakage that the Liskov substitutability arguments are trying to avoid.
+If the committee chooses to remove this permission, implementations will either ignore the requirement and be non-conforming, or they will accept the code breakage that the backwards compatibility arguments [[#backwards_compat]] are trying to avoid.
 If we are breaking compatibility in this way once, we may very well break it again in the future.
 The main way changing the `noexcept` policy changes things for standardization and users is if we remove the permission to strengthen `noexcept` and implementations grudgingly take a one time (but not an N time) compatibility hit.
 
@@ -238,20 +238,20 @@ This results in substantial extra code, and more than a 20% execution performanc
 With heavy use of `noexcept`, the overhead can be removed.
 The default and recommended exception project settings of the Microsoft Visual Studio compilers is `/EHsc`, which (non-conformingly) makes `extern "C"` functions `noexcept` by default as a way to reduce exception overhead.
 
-While the days of peak Microsoft Windows for 32-bit x86 is far behind us, new compilers targeting the platform are still regularly released and downloaded.
-The Microsoft Visual Studio 2022 (the latest version at time of writing) still ships compilers targeting 32-bit Windows.
+While the days of peak Microsoft Windows for 32-bit x86 are far behind us, new compilers targeting the platform are still regularly released and downloaded.
+Microsoft Visual Studio 2022 (the latest version at time of writing) still ships compilers targeting 32-bit Windows.
 Clang 17.0.5 (released on Nov 14, 2023) still targets 32-bit Windows.
 Download statistics for Clang binaries are available through the GitHub API.
 ```
-// Clang 17.0.5 download statistices, gathered on Dec 26, 2023
+// Clang 17.0.5 download statistices, gathered on Feb 2, 2024
 // https://api.github.com/repos/llvm/llvm-project/releases
-LLVM-17.0.5-win32.exe : 1344 downloads
-LLVM-17.0.5-win64.exe : 21870 downloads
-LLVM-17.0.5-woa64.exe : 250 downloads
-clang+llvm-17.0.5-aarch64-linux-gnu.tar.xz : 484 downloads
-clang+llvm-17.0.5-arm64-apple-darwin22.0.tar.xz : 441 downloads
-clang+llvm-17.0.5-x86_64…gnu-ubuntu-22.04.tar.xz : 1648 downloads
-clang+llvm-17.0.5-powerpc64-ibm-aix-7.2.tar.xz : 67 downloads
+LLVM-17.0.5-win32.exe : 1422 downloads
+LLVM-17.0.5-win64.exe : 22370 downloads
+LLVM-17.0.5-woa64.exe : 304 downloads
+clang+llvm-17.0.5-aarch64-linux-gnu.tar.xz : 532 downloads
+clang+llvm-17.0.5-arm64-apple-darwin22.0.tar.xz : 585 downloads
+clang+llvm-17.0.5-x86_64…gnu-ubuntu-22.04.tar.xz : 1803 downloads
+clang+llvm-17.0.5-powerpc64-ibm-aix-7.2.tar.xz : 69 downloads
 ```
 Readers should not try to make too many inferences about the relative popularity of platforms based on these numbers, as developers can get compiler releases from multiple sources that wouldn't register on the GitHub download page.
 Regardless, the Microsoft Windows 32-bit platform still gets used, even with the most recent compilers, so it should not be brushed off as irrelevant.
@@ -266,9 +266,7 @@ Using `noexcept` can remove control flow edges.
 However, to the author's knowledge, no GPU currently supports C++ exceptions.
 
 ### Bloat ### {#size_bloat}
-[[Bergé1656]]
-[[Doumler2831]]
-[[Lakos2861]]
+[[Bergé1656]], [[Doumler2831]], [[Lakos2861]]
 
 The "tables" backing table-based exception handling, and the code implementing non-table-based bookkeeping all consume space.
 Adding `noexcept` can reduce code bloat, as this can reduce the amount of information that needs to go into tables or bookkeeping.
@@ -382,8 +380,8 @@ Now imagine we had reflection facilities that let us do something like the follo
 // // evaluate contracts of f(x) without calling f(x)
 EXPECT_TRUE(  $evaluate_pre(f, 20) );
 EXPECT_FALSE( $evaluate_pre(f, -1) );
-EXPECT_TRUE(  $evaluate_post(f, 2, 20) );
-EXPECT_FALSE( $evaluate_post(f, 1, 0) );
+EXPECT_TRUE(  $evaluate_post(f, 2, 20) ); // x = 20, returns 2
+EXPECT_FALSE( $evaluate_post(f, 1, 0) ); // x = 0, returns 1
 ```
 
 This would allow directly testing contracts without violating those contracts.
@@ -401,7 +399,7 @@ This may even be something that should be extended to a general sad-path post-co
 It would be nice if we could express that, on failure, `std::vector`'s single element insert should leave the container with the same `size()`, and the same `data()` pointer.
 Making such sad-path post-condition checks throw on failure would also lead to early termination.
 
-Allowing contract build modes to change the behavior of `noexcept` could be a concise way to unify `noexcept` and core-language contracts, but it could come at a substantial compatibility cost for those using contracts.
+Allowing contract build modes to change the behavior of `noexcept` could be a concise way to unify `noexcept` and core-language contracts, but it could come at a substantial compatibility cost for those using core-language contracts.
 If their code was relying on `noexcept` terminating, then enabling `Eval_and_throw` will break their program.
 
 This approach may be able to be combined with [[#magic_ub_exception]] to avoid major compatibility breaks.
@@ -430,8 +428,7 @@ A sophisticated user could write static analysis checks to enforce such a conven
 The author is unaware of any libraries or guidelines that do this though, which suggests that users either didn't think of it, or they don't see this approach as a good return on investment.
 
 ### The widely deployed implementations don't diagnose contract violations with exceptions ### {#throwing_not_used_by_big_impls}
-[[Bergé1656]]
-[[Doumler2831]]
+[[Bergé1656]], [[Doumler2831]]
 
 In 2023, the three most widely deployed standard libraries are libc++ (shipping with Clang), libstdc++ (shipping with GCC), and Microsoft's Visual Studio standard library (shipping with Microsoft Visual Studio).
 None of these implementations use exceptions to diagnose contract violations.
@@ -569,6 +566,8 @@ A general programming principle is that postconditions aren't required to hold w
 This is often paraphrased as garbage in, garbage out.
 If `noexcept` is a postcondition, then the termination aspect is not required to hold if the precondition doesn't hold.
 
+[Here](https://godbolt.org/z/36nbY48Er) is an example program where the violation of a library precondition leads to language undefined behavior, with an end result of `noexcept` being bypassed by an exception.
+
 ### Precondition UB and `noexcept` contradict? ### {#noexcept_contradiction}
 [[Doumler2831]]
 
@@ -581,9 +580,7 @@ Standard library implementations are under no such restriction.
 
 Termination risk {#termination_risk}
 -----
-[[Doumler2831]]
-[[Lakos2861]]
-[[Lakos2949]]
+[[Doumler2831]], [[Lakos2861]], [[Lakos2949]]
 
 Using `noexcept` can insert code paths that invoke `std::terminate`.
 The terminating code paths are often unreachable code removed during translation, but this isn't always the case.
@@ -597,9 +594,7 @@ In these systems, an individual application may terminate, but the system as a w
 Philosophy {#philosphy}
 -----
 ### `noexcept`-accuracy ### {#noexcept_accuracy}
-[[Bergé1656]]
-[[Doumler2831]] (purity not worth it)
-[[Halpern2946]]
+[[Bergé1656]], [[Doumler2831]], [[Halpern2946]]
 
 There is a desire to document the exception behavior of a function in the signature of that function.
 This documentation helps compilers, static analyzers, and people reading the code to understand what the function does.
@@ -610,16 +605,14 @@ C++'s `fclose` [can't throw](https://eel.is/c++draft/library#res.on.exception.ha
 This separation between can't throw and can't fail makes it more difficult to determine what constitutes `noexcept`-accuracy.
 
 ### Doesn't matter since implementations can already add `noexcept` ### {#can_already_add_noexcept}
-[[Doumler2831]]
-[[Bergé1656]]
+[[Doumler2831]], [[Bergé1656]]
 
 If the narrow `noexcept` policy is in place, implementations can strengthen the `noexcept` annotations on their functions.
 Major implementations have done so.
 Strengthening `noexcept` in the standard would end up adding very few `noexcept` annotations in the major implementations.
 
 ### Standard library policies vs. C++ library policies ### {#stdlib_vs_user_lib_policies}
-[[Lakos2861]]
-[[Doumler2831]]
+[[Lakos2861]], [[Doumler2831]]
 
 Many libraries attempt to emulate the design policies of the standard library.
 The standard library should try to set a good example for third-party and end-user libraries, as others will use the standard library as an example whether the committee thinks they should or not.
@@ -653,7 +646,7 @@ If the destructors were marked `noexcept(false)`, you would still run the risk o
 The narrow `noexcept` policy is defined in terms of wide and narrow contracts, but even the wide contracts have their limits.
 Take `std::string::c_str()` as an example.
 `c_str()` is safe to call on any valid `std::string`, even the empty string.
-However, if the bytes composing the `std::string` are corrupted in some way, then `c_str()` is likely to dereference an invalid program.
+However, if the bytes composing the `std::string` are corrupted in some way, then `c_str()` is likely to dereference an invalid pointer.
 This means that `c_str()` (and most functions) have a precondition of basic object validity.
 If wide contracts are expanded to encompass functions that work with invalid objects, then very little has a wide contract.
 
@@ -665,7 +658,7 @@ If part of a system is written with a throws nothing policy, then the system as 
 
 Systems built with libc++, libstdc++, and the Microsoft Visual Studio standard library generally do not have the narrow `noexcept` property.
 
-Other libraries can get many of the benefits of the narrow `noexcept`, even if the system as a whole doesn't have the narrow `noexcept` property.
+Other libraries can get many of the benefits of narrow `noexcept`, even if the system as a whole doesn't have the narrow `noexcept` property.
 Negative testing can be performed on narrow `noexcept` libraries, as exceptions usually don't need to travel far.
 Preconditions can be checked in production for all the code between entry points and the first non-narrow `noexcept` code.
 Non-narrow `noexcept` libraries that interact heavily with callbacks can get in the way of both precondition checking and negative testing.
