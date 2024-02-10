@@ -1,9 +1,9 @@
 <pre class='metadata'>
-Title: `noexcept` policy for SD-9 (throws nothing) TODO
-Shortname: D3085
-Revision: 0.3
+Title: `noexcept` policy for SD-9 (throws nothing)
+Shortname: P3085
+Revision: 0
 Audience: LEWG
-Status: D
+Status: P
 Group: WG21
 URL: https://wg21.link/P3085
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/library/throws_nothing_policy.bs">github.com/ben-craig/freestanding_proposal/blob/master/library/throws_nothing_policy.bs</a>
@@ -73,7 +73,7 @@ Instructions to the editor: Please add the following to the "List of Standard Li
 Rationale reference: <a href="https://wg21.link/P3085">P3085</a>
 <ol type="a">
     <li>No library destructor should throw. They shall use the implicitly supplied (non-throwing) exception specification.</li>
-    <li><i>See below</i></li>
+    <li><i>EDITOR'S NOTE: Fill in this option with the selected policy.  See below.</i></li>
     <li>If a library swap function, move-constructor, or move-assignment operator is conditionally-wide (i.e. can be proven to not throw by applying the `noexcept` operator) then it should be marked as conditionally `noexcept`.</li>
     <li>If a library type has wrapping semantics to transparently provide the same behavior as the underlying type, then default constructor, copy constructor, and copy-assignment operator should be marked as conditionally `noexcept` the underlying exception specification still holds.</li>
     <li>No other function should use a conditional `noexcept` specification.</li>
@@ -99,6 +99,25 @@ This wording matches the wording in [[Josuttis0884]].
 
 > b. Each library function having a <em>wide</em> contract (i.e., does not specify undefined behavior due to a precondition) that the LWG agree cannot throw, should be marked as unconditionally `noexcept`.
 
+Status Quo {#status_quo}
+==========
+Currently, there is no policy on `noexcept`.
+Between 2011 and 2020, `noexcept` was applied to the standard library in line with the narrow `noexcept` rule [[MeredithN3279]] [[Josuttis0884]].
+In 2020, the throws nothing rule was proposed [[Bergé1656]].
+The designs that LEWG has forwarded to LWG between 2020 and the present day have been following the narrow `noexcept` rule.
+
+There are 78 occurrences of "Throws: Nothing." in the standard [[Cpp2023-12]], but this number is misleading as many of the usages are in blanket wording that gets applied to multiple classes.
+The Microsoft Visual Studio 2022 Preview implementation (version 14.38.32919) annotates each `noexcept` they strengthen with a `/* strengthened */` comment.
+There are 633 hits of the "noexcept /* strengthened */" string in the headers for this implementation.
+All of these are either definitions of functions, or macros that make stamping out `<cmath>` overload definitions easier.
+In other words, these hits aren't counting both forward declarations plus definitions, they are only counting definitions.
+This search omits any conditionally `noexcept` functions.
+
+There are roughly 3,600 instances of the string "noexcept;" in the standard.
+A few of these are in examples.
+For most `noexcept` functions, "noexcept;" will show up twice in the standard [[Cpp2023-12]], once in a synopsis and once in the detailed specification.
+This means there are approximately 1,800 unconditionally `noexcept` functions in the standard.
+This search omits any conditionally `noexcept` functions.
 
 Why should we establish any `noexcept` policy? {#why_bother}
 ==========
@@ -807,6 +826,11 @@ Thanks to David Sankel for providing wording suggestions.
         "authors": ["Herb Sutter"],
         "title": "Exception Safety and Exception Specifications: Are They Worth It?",
         "href": "http://www.gotw.ca/gotw/082.htm"
+    },
+    "Cpp2023-12": {
+        "authors": ["Thomas Köppe"],
+        "title": "N4971: Working Draft, Programming Languages -- C++",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4971.pdf"
     }
 }
 </pre>
