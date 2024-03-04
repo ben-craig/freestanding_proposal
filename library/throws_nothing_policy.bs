@@ -1,9 +1,9 @@
 <pre class='metadata'>
-Title: `noexcept` policy for SD-9 (throws nothing)
-Shortname: P3085
-Revision: 0
+Title: `noexcept` policy for SD-9 (throws nothing) TODO
+Shortname: D3085
+Revision: 1
 Audience: LEWG
-Status: P
+Status: D
 Group: WG21
 URL: https://wg21.link/P3085
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/library/throws_nothing_policy.bs">github.com/ben-craig/freestanding_proposal/blob/master/library/throws_nothing_policy.bs</a>
@@ -57,6 +57,7 @@ Both {#combined_papers}
 -----
 * [P2858R0, Noexcept vs contract violations](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2858r0.html), [[Krzemieński2858]]
 * This paper, P3085, `noexcept` policy for SD-9 (throws nothing)
+* [P3005R0, Memorializing Principled-Design Policies for WG21](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p3005r0.pdf), [[Lakos3005]]
 
 
 Policies in question {#wording}
@@ -682,6 +683,120 @@ Negative testing can be performed on narrow `noexcept` libraries, as exceptions 
 Preconditions can be checked in production for all the code between entry points and the first non-narrow `noexcept` code.
 Non-narrow `noexcept` libraries that interact heavily with callbacks can get in the way of both precondition checking and negative testing.
 
+Notable Omissions {#notable_omissions}
+=================
+This paper's discussions focus almost entirely on rule "b" in the `noexcept` policy.
+The rationale for the other rules haven't been explored nearly as much.
+Given that, I will list some known issues that should be considered unaddressed, should someone decide to challenge the other rules.
+
+Asynchronous callbacks {#async_callbacks}
+----------------
+[[StdExec2300]] uses the `noexcept` operator in conjunction with concepts to make compile-time decisions.
+The proposed policies do not place any requirements on concepts or user facilities, but the policies do place restrictions on functions.
+Many [[StdExec2300]] functions are marked `noexcept`, but it is unclear to the author of this paper whether any of those functions have preconditions.
+
+This paper does not attempt to craft policy regarding `noexcept` and asynchronous callbacks.
+
+Throwing destructors {#throwing_destructors}
+-------
+Destructors that `throw` exceptions are uncommon, and usually a bad idea.
+However, there are some categories of objects where doing so is useful, like `scope_success` in the library fundamentals v3 TS [[LFTS4948]].
+
+This paper does not attempt to craft policy that distinguishes when having a throwing destructor is acceptable.
+
+Pervasive conditional `noexcept` {#pervasive_conditional}
+-----------
+Some library authors have expressed desires to standardize conditional `noexcept` operations for facilities like duration math in `chrono`.
+`chrono::duration` instantiations involving built in integers have many non-throwing wide contract operations that become throwing when using "BigNum" types.
+
+The proposed policies prohibit standardizing conditional `noexcept` for functions other than some special member functions.
+This paper provides no rationale for this choice.
+
+C compatibility {#c_compat}
+-----------
+The proposed policy permits C compatibility facilities to be marked unconditionally noexcept.
+This paper provides no rationale for this choice.
+
+
+Principled design {#principled_design}
+==========
+[[Lakos3004]] describes a process of enumerating, ranking, and scoring design principles as a way to aid decision making and communication.  The associated paper [[Lakos3005]] includes a worked version discussing `noexcept` policy variations.  This paper will present an alternative compliance table, as well as discuss some of the big differences between the [[Lakos3005]] table, and the one presented here.
+
+Principle descriptions {#principle_descriptions}
+--------------------
+
+The following principles are shared between [[Lakos3005] and this paper, though the wording may be slightly modified.
+* AlgoOpt: Maximize algorithmic runtime optimizations. [[#algorithmic_optimizations]]
+* MinExeSize: Minimize executable and shared library size. [[#size_bloat]]
+* MinObjSize: Minimize object-code size. [[#size_bloat]]
+* MaxExpressInCode: Maximize expressing defined behavior directly in code and the standard. [[#noexcept_accuracy]]
+* MinUnintendedExit: Minimize the chance that a propagated exception will cause unintended termination. [[#termination_risk]]
+* MaxNegUnitTest: Maximize the return on investment for negative unit testing of standard functions. [[#library_testing]]
+* MinCostToImpls: Minimize effort for implementations to remain conformant while satisfying their client base.
+* MaxImplFlexHand: Maximize implementations’ ability to support throwing contract-violation handlers.
+* MinCostToFixStd: Minimize effort to align the current Standard Library with this policy statement.
+* MinPermDiverge: Minimize likely persistent discrepancies between the Standard and this policy statement.
+* MaxUserPortabilty: Maximize portability for user code written using the Standard Library.
+
+The following principles are new in this paper.
+* TableBasedPerf: Maximize runtime performance on table based implementations. [[#modern_impls]]
+* NonTablePerf: Maximize runtime performance on non-table based implementations. [[#other_impls]]
+* MinUnsafe: Minimize utility of unsafe, insecure, and misleading patterns. [[#throwing_security]], [[#more_ub_and_noexcept]]
+* FutureWidening: Maximize committee's ability to widen function contracts in the future [[#backwards_compat]]
+
+The following principles from [[Lakos3005]] are not scored or ranked in this paper.
+* ArgRestrict: Maximize use of noexcept to qualify function parameters.
+* AllowOnAsyncFrame: Allow noexcept on customization-point functions used in asynchronous contexts.
+
+These principles seem to be related to questions involving asynchronous callbacks.
+This paper is choosing to not address asynchronous callback noexcept questions at this time. [[#async_callbacks]]
+
+* MaxUserSafeShut: Maximize implementations’ ability to enable users to achieve safe shutdown in production.
+* MaxUserSafeRecov: Maximize implementations’ ability to enable users to handle and continuing in production.
+These principles are largely duplicates of MaxImplFlexHand.
+In addition, they conflate safety, shutting down cleanly, and recovery with throwing contract-violation handlers.
+
+If future revisions of this paper are needed, then more detailed arguments about safe shutdown and safe continuation can be provided.  [[#precondition_exception_in_production]] contains some discussion.
+
+* MaxBestPracExamp: Maximize a desirable best-practices model (safety/performance) for typical retail users.
+[[#stdlib_vs_user_lib_policies]] discusses the topic.
+Scoring this topic is challenging, as what constitutes the best practice is up for debate.
+This means that the scoring for such a policy is circular, in that we need to know the solution outcome to know a proper score for the principle.
+As a result, I chose not to score this policy.
+
+* MaxUseForAlgoNeed: Maximize ability to use noexcept for narrow contracts having algorithmic need.
+This seems like a duplicate of AlgoOpt "Maximize algorithmic runtime optimizations".
+
+* MinDivergMeaning: Minimize divergence in meaning of standard functions across conforming implementations.
+This seems to be a duplicate of MaxUserPortabilty "Maximize portability for user code written using the Standard Library".
+Divergence in behavior causes portability issues.
+
+* MaxMultiverse: Minimize the likelihood of disenfranchising a member of the multiverse.
+[[#narrow_above_throws_nothing]]
+TODO TODO
+
+Solution descriptions {#solution_descriptions}
+--------------------
+This paper describes two solutions, but represents it as three columns in the compliance table.
+The narrow `noexcept` solution is represented twice, once for the "minority" implementations that only use `noexcept` where mandated by the standard, and once for the "majority" implementations that place `noexcept` on most functions that throw nothing (as permitted by the standard).
+This will allow readers to gauge the impact in the different implementations.
+
+* MinNar: Minority narrow `noexcept`.  The minority implementations place `noexcept` only where required.
+* MajNar: Majority narrow `noexcept`.  These implementations place `noexcept` on most "throws nothing" functions.  Closest to status quo.
+* TN: Throws nothing rule
+
+The actual status quo is not represented in the table, as it is very difficult to reason about the properties of an "anything goes" approach.
+
+The author did not have the time to apply the principled design approach to the large variety of options explored in [[Lakos3005]].  There's only so much between the February 2024 mailing and the 2024 March Tokyo meeting.
+
+Compliance table {#compliance_table}
+----------------
+
+
+Comparison with [[Lakos3005]] {#differences_with_lakos}
+-------------------------------
+
+
 
 Suggested polls {#suggested_polls}
 ==========
@@ -792,6 +907,16 @@ Thanks to David Sankel for providing wording suggestions.
         "title": "P2949R0, Slides for P2861R0: Narrow Contracts and noexcept are Inherently Incompatable",
         "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2949r0.pdf"
     },
+    "Lakos3004": {
+        "authors": ["John Lakos, Harold Bott, Mungo Gill, Lori Hughes, Alisdair Meredith, Bill Chapman, Mike Giroux, Oleg Subbotin"],
+        "title": "P3004R0, Principled Design for WG21",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p3004r0.pdf"
+    },
+    "Lakos3005": {
+        "authors": ["John Lakos, Joshua Berne, Harold Bott, Mungo Gill, Alisdair Meredith, Bill Chapman, Mike Giroux, Oleg Subbotin"],
+        "title": "P3005R0, Memorializing Principled-Design Policies for WG21",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p3005r0.pdf"
+    },
     "Halpern2946": {
         "authors": ["Pablo Halpern"],
         "title": "P2946R0, A flexible solution to the problems of noexcept",
@@ -826,6 +951,11 @@ Thanks to David Sankel for providing wording suggestions.
         "authors": ["Herb Sutter"],
         "title": "Exception Safety and Exception Specifications: Are They Worth It?",
         "href": "http://www.gotw.ca/gotw/082.htm"
+    },
+    "LFTS4948": {
+        "authors": ["Thomas Köppe"],
+        "title": "N4948: Working Draft, C++ Extensions for Library Fundamentals, Version 3",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4948.html"
     },
     "Cpp2023-12": {
         "authors": ["Thomas Köppe"],
