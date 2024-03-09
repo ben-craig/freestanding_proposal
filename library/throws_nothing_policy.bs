@@ -14,6 +14,14 @@ Markup Shorthands: markdown yes
 
 Revision history {#rev}
 =====================
+
+R1 {#rev-r1}
+----
+* Added principled design and notable omissions sections.
+* Removed reference to undefined term "pass-through" function.
+
+R0 {#rev-r0}
+----
 First revision!
 
 Introduction {#intro}
@@ -290,7 +298,7 @@ However, to the author's knowledge, no GPU currently supports C++ exceptions.
 
 The "tables" backing table-based exception handling, and the code implementing non-table-based bookkeeping all consume space.
 Adding `noexcept` can reduce code bloat, as this can reduce the amount of information that needs to go into tables or bookkeeping.
-Adding `noexcept` can also cause bloat if the `noexcept` function calls potentially throwing functions, as a formerly "pass-through" function may need to introduce table entries or bookkeeping to ensure that `std::terminate` gets called.
+Adding `noexcept` can also cause bloat if the `noexcept` function calls potentially throwing functions, as this transformation may need to introduce table entries or bookkeeping to ensure that `std::terminate` gets called.
 
 In Compiler Explorer, bloat is best examined by disabling debug information (`-g0` for Clang and GCC), enabling optimizations (`-O2`), and leaving directives in the output (uncheck the box in "Filter...").
 As a (very rough) estimate of bloat, we can use lines of assembly output as a proxy.
@@ -725,6 +733,7 @@ Principled design {#principled_design}
 Principle descriptions {#principle_descriptions}
 --------------------
 
+### Shared principles ### {#shared_principle_descriptions}
 The following principles are shared between [[Lakos3005] and this paper, though the wording may be slightly modified.
 * AlgoOpt: Maximize algorithmic runtime optimizations. [[#algorithmic_optimizations]]
 * MinExeSize: Minimize executable and shared library size. [[#size_bloat]]
@@ -733,16 +742,20 @@ The following principles are shared between [[Lakos3005] and this paper, though 
 * MinUnintendedExit: Minimize the chance that a propagated exception will cause unintended termination. [[#termination_risk]]
 * MaxNegUnitTest: Maximize the return on investment for negative unit testing of standard functions. [[#library_testing]]
 * MinCostToImpls: Minimize effort for implementations to remain conformant while satisfying their client base.
-* MaxImplFlexHand: Maximize implementations’ ability to support throwing contract-violation handlers.
 * MinCostToFixStd: Minimize effort to align the current Standard Library with this policy statement.
 * MinPermDiverge: Minimize likely persistent discrepancies between the Standard and this policy statement.
-* MaxUserPortabilty: Maximize portability for user code written using the Standard Library.
+* MaxUserPortability: Maximize portability for user code written using the Standard Library.
+
+### New principles ### {#new_principle_descriptions}
 
 The following principles are new in this paper.
 * TableBasedPerf: Maximize runtime performance on table based implementations. [[#modern_impls]]
 * NonTablePerf: Maximize runtime performance on non-table based implementations. [[#other_impls]]
 * MinUnsafe: Minimize utility of unsafe, insecure, and misleading patterns. [[#throwing_security]], [[#more_ub_and_noexcept]]
 * FutureWidening: Maximize committee's ability to widen function contracts in the future [[#backwards_compat]]
+* MaxContractRecovery: Maximize user's ability to recover from a contract violation without terminating [[#temporary_continuation]], [[#termination_risk]]
+
+### Omitted principles ### {#omitted_principle_descriptions}
 
 The following principles from [[Lakos3005]] are not scored or ranked in this paper.
 * ArgRestrict: Maximize use of noexcept to qualify function parameters.
@@ -753,27 +766,41 @@ This paper is choosing to not address asynchronous callback noexcept questions a
 
 * MaxUserSafeShut: Maximize implementations’ ability to enable users to achieve safe shutdown in production.
 * MaxUserSafeRecov: Maximize implementations’ ability to enable users to handle and continuing in production.
-These principles are largely duplicates of MaxImplFlexHand.
-In addition, they conflate safety, shutting down cleanly, and recovery with throwing contract-violation handlers.
+
+These principles are replaced by MaxContractRecovery.
+
+In addition, these principles conflate safety, shutting down cleanly, and recovery with throwing contract-violation handlers.
 
 If future revisions of this paper are needed, then more detailed arguments about safe shutdown and safe continuation can be provided.  [[#precondition_exception_in_production]] contains some discussion.
 
+* MaxImplFlexHand: Maximize implementations’ ability to support throwing contract-violation handlers.
+
+This principle is replaced by MaxContractRecovery.
+
+MaxImplFlexHand isn't directly useful.
+If a contract-violation handler throws, and almost immediately terminates due to it hitting a `noexcept`, then that is operating as specified, and therefore easy to support.
+MaxContractRecovery attempts to capture the use case of contract failures being recoverable.
+
 * MaxBestPracExamp: Maximize a desirable best-practices model (safety/performance) for typical retail users.
+
 [[#stdlib_vs_user_lib_policies]] discusses the topic.
 Scoring this topic is challenging, as what constitutes the best practice is up for debate.
 This means that the scoring for such a policy is circular, in that we need to know the solution outcome to know a proper score for the principle.
 As a result, I chose not to score this policy.
 
 * MaxUseForAlgoNeed: Maximize ability to use noexcept for narrow contracts having algorithmic need.
+
 This seems like a duplicate of AlgoOpt "Maximize algorithmic runtime optimizations".
 
 * MinDivergMeaning: Minimize divergence in meaning of standard functions across conforming implementations.
+
 This seems to be a duplicate of MaxUserPortabilty "Maximize portability for user code written using the Standard Library".
 Divergence in behavior causes portability issues.
 
-* MaxMultiverse: Minimize the likelihood of disenfranchising a member of the multiverse.
-[[#narrow_above_throws_nothing]]
-TODO TODO
+* MaxMultiverse: Minimize the likelihood of disenfranchising a member of the multiverse. [[#narrow_above_throws_nothing]]
+
+This is more of a meta-principle.
+This meta-principle encourages prioritizing cutting solutions with low principle scores, even when a given solution may win out on more important principles.
 
 Solution descriptions {#solution_descriptions}
 --------------------
@@ -785,18 +812,185 @@ This will allow readers to gauge the impact in the different implementations.
 * MajNar: Majority narrow `noexcept`.  These implementations place `noexcept` on most "throws nothing" functions.  Closest to status quo.
 * TN: Throws nothing rule
 
-The actual status quo is not represented in the table, as it is very difficult to reason about the properties of an "anything goes" approach.
+Most of the standard library is specified using the narrow `noexcept` design principle.
+It _almost_ counts as the status quo policy.
+However,  we currently don't have a formal policy.
+This no-policy status quo is not represented in the table, as it is very difficult to reason about the properties of an "anything goes" approach.
+This is one of the reasons the author would prefer _a_ policy, even if it is not the author's preferred policy.
 
-The author did not have the time to apply the principled design approach to the large variety of options explored in [[Lakos3005]].  There's only so much between the February 2024 mailing and the 2024 March Tokyo meeting.
+MinNar and MajNar correspond to solution C (MAX+LAK+NLC) in [[Lakos3005]].
+TN corresponds to solution B (MAX) in [[Lakos3005]].
+
+The author did not have the time to apply the principled design approach to the large variety of options explored in [[Lakos3005]].  There's only so much time between the February 2024 mailing and the 2024 March Tokyo meeting.
 
 Compliance table {#compliance_table}
 ----------------
-
+<table>
+    <tr>
+        <th>Rank</th>
+        <th>Importance</th>
+        <th>Objectivity</th>
+        <th>Principle ID</th>
+        <th>MinNar</th>
+        <th>MajNar</th>
+        <th>TN</th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>9</td>
+        <td>@</td>
+        <td>AlgoOpt</td>
+        <td>9</td>
+        <td>9</td>
+        <td>9</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>9</td>
+        <td>9</td>
+        <td>TableBasedPerf</td>
+        <td>9</td>
+        <td>9</td>
+        <td>9</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>5</td>
+        <td>9</td>
+        <td>NonTablePerf</td>
+        <td>5</td>
+        <td>9</td>
+        <td>9</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>5</td>
+        <td>9</td>
+        <td>MinExeSize</td>
+        <td>5</td>
+        <td>9</td>
+        <td>9</td>
+    </tr>
+    <tr>
+        <td>5</td>
+        <td>5</td>
+        <td>5</td>
+        <td>MaxExpressInCode</td>
+        <td>3</td>
+        <td>5</td>
+        <td>7</td>
+    </tr>
+    <tr>
+        <td>6</td>
+        <td>5</td>
+        <td>5</td>
+        <td>MaxUserPortability</td>
+        <td>7</td>
+        <td>7</td>
+        <td>9</td>
+    </tr>
+    <tr>
+        <td>7</td>
+        <td>5</td>
+        <td>5</td>
+        <td>MinUnintendedExit</td>
+        <td>7</td>
+        <td>5</td>
+        <td>5</td>
+    </tr>
+    <tr>
+        <td>8</td>
+        <td>5</td>
+        <td>5</td>
+        <td>MaxNegUnitTest</td>
+        <td>7</td>
+        <td>3</td>
+        <td>3</td>
+    </tr>
+    <tr>
+        <td>9</td>
+        <td>5</td>
+        <td>5</td>
+        <td>MinUnsafe</td>
+        <td>3</td>
+        <td>7</td>
+        <td>7</td>
+    </tr>
+    <tr>
+        <td>10</td>
+        <td>5</td>
+        <td>-</td>
+        <td>MinCostToImpls</td>
+        <td>9</td>
+        <td>9</td>
+        <td>7</td>
+    </tr>
+    <tr>
+        <td>11</td>
+        <td>1</td>
+        <td>5</td>
+        <td>FutureWidening</td>
+        <td>5</td>
+        <td>5</td>
+        <td>3</td>
+    </tr>
+    <tr>
+        <td>12</td>
+        <td>1</td>
+        <td>5</td>
+        <td>MaxContractRecovery</td>
+        <td>7</td>
+        <td>3</td>
+        <td>3</td>
+    </tr>
+    <tr>
+        <td>13</td>
+        <td>1</td>
+        <td>-</td>
+        <td>MinCostToFixStd</td>
+        <td>7</td>
+        <td>3</td>
+        <td>3</td>
+    </tr>
+    <tr>
+        <td>14</td>
+        <td>1</td>
+        <td>-</td>
+        <td>MinPermDiverge</td>
+        <td>7</td>
+        <td>3</td>
+        <td>3</td>
+    </tr>
+    <tr>
+        <td>15</td>
+        <td>-</td>
+        <td>9</td>
+        <td>MinObjSize</td>
+        <td>5</td>
+        <td>9</td>
+        <td>9</td>
+    </tr>
+</table>
 
 Comparison with [[Lakos3005]] {#differences_with_lakos}
 -------------------------------
+Many of the scores for the solutions differed by small amounts in the papers.
+Small, 2 point changes won't be elaborated on here except where it moves a score away from 1.
 
+[[Lakos3005]] places an importance of 9 on the MaxImplFlexHand, MaxUserSafeShut, and MaxUserSafeRecov policies.
+This paper gives MaxContractRecovery an importance of 1.
 
+This paper places a higher importance on MinExeSize than [[Lakos3005]] (importance 5 vs. 1).
+Time and space efficiency have always been key concerns of C++, even in the Design & Evolution [[StroustrupDE]] days.
+
+This paper scores MinUnintenedExit much higher for both policies.
+Very little standard library code that invokes user code would be marked `noexcept` with either policy, so the [[Lakos3005]] scores of 1 and 3 seem unwarranted.
+`noexcept` on destructors and `std::thread` are going to be very common causes of unintended exits, and their behaviors are the same in this paper and [[Lakos3005]].
+
+MaxNegUnitTest is higher in importance here (5 vs. 1).
+The scores are also closer together.
+Negative testing is possible with the throws nothing policy, though they are more expensive.
+The return on investment for negative testing with narrow noexcept isn't ideal, as it requires using the very slow exception sad path.
 
 Suggested polls {#suggested_polls}
 ==========
@@ -956,6 +1150,26 @@ Thanks to David Sankel for providing wording suggestions.
         "authors": ["Thomas Köppe"],
         "title": "N4948: Working Draft, C++ Extensions for Library Fundamentals, Version 3",
         "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4948.html"
+    },
+    "StdExec2300": {
+        "authors": [
+            "Michał Dominiak",
+            "Georgy Evtushenko",
+            "Lewis Baker",
+            "Lucian Radu Teodorescu",
+            "Lee Howes",
+            "Kirk Shoop",
+            "Michael Garland",
+            "Eric Niebler",
+            "Bryce Adelstein Lelbach"
+        ],
+        "title": "P2300R7: std::execution",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2300r7.html"
+    },
+    "StroustrupDE": {
+        "authors": ["Bjarne Stroustrup"],
+        "title": "The Design and Evolution of C++",
+        "href": "https://www.stroustrup.com/dne.html"
     },
     "Cpp2023-12": {
         "authors": ["Thomas Köppe"],
