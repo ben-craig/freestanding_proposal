@@ -17,13 +17,15 @@ Revision history {#rev}
 
 R2 {#rev-r2}
 ----
-* TODO updated principled design section
-* TODO updated design choices to include minimal noexcept policy
-* TODO added discussion on vectorization
-* TODO added discussion on not discarding useful information
-* TODO added link to configurable noexcept paper and Lewis's exception paper
-* TODO discussed making noexcept entirely QoI, similar to `[[nodiscard]]`
-* TODO show what it would take to correctly handle throws from no-throw functions
+* TODO updated principled design section.
+* Updated design choices to include Minimal `noexcept` policy [[#wording_minimal_noexcept]].
+* TODO added discussion on vectorization.
+* TODO added discussion on not discarding useful information.
+* Discuss [[Baker3166]] in [[#other_impls]].
+* Discuss [[Ažman3205]] in [[#contracts_change_noexcept]].
+* Discuss making `noexcept` entirely QoI, similar to [[Wakely3201]], in [[#noexcept_as_qoi]].
+* TODO show what it would take to correctly handle throws from no-throw functions.
+* Discuss DejaGnu in [[#death_tests]].
 
 R1 {#rev-r1}
 ----
@@ -42,9 +44,9 @@ The second priority is to establish the author's preferred policy.
 
 This paper currently recommends the policy that functions that LEWG and LWG agree cannot throw should be marked unconditionally `noexcept`.
 
-This paper discusses an alternative policy that library functions that could exhibit undefined behavior due to precondition violations should not be marked `noexcept` (AKA the "Lakos rule", AKA the narrow `noexcept` policy).
+This paper discusses alternative policies as well, including the old "Lakos rule", and a newer "minimal noexcept" rule.
 
-With luck, one of these two policies can gain consensus.
+With luck, one of these policies can gain consensus.
 
 Prior `noexcept` Discussions {#prior}
 ===========
@@ -80,19 +82,24 @@ Both {#combined_papers}
 
 Policies in question {#wording}
 ===============
-These two policies only differ on point b.
 
-Common parts (proposed) {#wording_common}
+Throws Nothing Rule (proposed)  {#wording_throws_nothing}
 -----
-This wording matches the shared wording from [[Bergé1656]] and [[Josuttis0884]].
+This wording does not match [[Bergé1656]], but it has the same intent.
+
+The changed wording from [[Bergé1656]] is as follows:
+> b. Each library function that LEWG and LWG agree cannot throw, should be marked as unconditionally `noexcept`.
+
+The [[Bergé1656]] wording could be interpreted as disallowing narrow contract functions, since a function that is called without meeting preconditions could do anything, including throw.
+That interpretation isn't the intent of [[Bergé1656]].
 
 Instructions to the editor: Please add the following to the "List of Standard Library Policies" in SD-9.
 <blockquote>
-### `noexcept` policy {#wording_heading}
+### `noexcept` policy {#wording_throws_nothing_heading}
 Rationale reference: <a href="https://wg21.link/P3085">P3085</a>
 <ol type="a">
     <li>No library destructor should throw. They shall use the implicitly supplied (non-throwing) exception specification.</li>
-    <li><i>EDITOR'S NOTE: Fill in this option with the selected policy.  See below.</i></li>
+    <li><ins>Each library function that will not throw when called with all preconditions satisfied should be marked as unconditionally `noexcept`.</ins></li>
     <li>If a library swap function, move-constructor, or move-assignment operator is conditionally-wide (i.e. can be proven to not throw by applying the `noexcept` operator) then it should be marked as conditionally `noexcept`.</li>
     <li>If a library type has wrapping semantics to transparently provide the same behavior as the underlying type, then default constructor, copy constructor, and copy-assignment operator should be marked as conditionally `noexcept` the underlying exception specification still holds.</li>
     <li>No other function should use a conditional `noexcept` specification.</li>
@@ -100,23 +107,36 @@ Rationale reference: <a href="https://wg21.link/P3085">P3085</a>
 </ol>
 </blockquote>
 
-Throws Nothing Rule (proposed)  {#wording_throws_nothing}
------
-This wording does not match [[Bergé1656]], but it has the same intent.
-> b. Each library function that will not throw when called with all preconditions satisfied should be marked as unconditionally `noexcept`.
-
-
-The wording in [[Bergé1656]] is as follows:
-> b. Each library function that LEWG and LWG agree cannot throw, should be marked as unconditionally `noexcept`.
-
-The [[Bergé1656]] wording could be interpreted as disallowing narrow contract functions, since a function that is called without meeting preconditions could do anything, including throw.
-That interpretation isn't the intent of [[Bergé1656]].
-
 Narrow `noexcept` / Lakos Rule (not proposed in this revision)  {#wording_lakos}
 -----
 This wording matches the wording in [[Josuttis0884]].
 
-> b. Each library function having a <em>wide</em> contract (i.e., does not specify undefined behavior due to a precondition) that the LWG agree cannot throw, should be marked as unconditionally `noexcept`.
+<blockquote>
+### `noexcept` policy {#wording_lakos_heading}
+Rationale reference: <a href="https://wg21.link/P3085">P3085</a>
+<ol type="a">
+    <li>No library destructor should throw. They shall use the implicitly supplied (non-throwing) exception specification.</li>
+    <li><ins>Each library function having a <em>wide</em> contract (i.e., does not specify undefined behavior due to a precondition) that the LWG agree cannot throw, should be marked as unconditionally `noexcept`.</ins></li>
+    <li>If a library swap function, move-constructor, or move-assignment operator is conditionally-wide (i.e. can be proven to not throw by applying the `noexcept` operator) then it should be marked as conditionally `noexcept`.</li>
+    <li>If a library type has wrapping semantics to transparently provide the same behavior as the underlying type, then default constructor, copy constructor, and copy-assignment operator should be marked as conditionally `noexcept` the underlying exception specification still holds.</li>
+    <li>No other function should use a conditional `noexcept` specification.</li>
+    <li>Library functions designed for compatibility with “C” code (such as the atomics facility), may be marked as unconditionally `noexcept`.</li>
+</ol>
+</blockquote>
+
+Minimal `noexcept`  {#wording_minimal_noexcept}
+-----
+Note: this policy is intentionally only two items long.
+Items c. through f. are intentionally not present.
+
+<blockquote>
+### `noexcept` policy {#wording_minimal_heading}
+Rationale reference: <a href="https://wg21.link/P3085">P3085</a>
+<ol type="a">
+    <li>No library destructor should throw. They shall use the implicitly supplied (non-throwing) exception specification.</li>
+    <li><ins>If the result of the `noexcept` operator on a library function can conditionally be used to select a more efficient algorithm due to the exception safety requirements (e.g. move and swap operations), then the library function should be marked as conditionally noexcept.</ins></li>
+</ol>
+</blockquote>
 
 Status Quo {#status_quo}
 ==========
@@ -299,6 +319,11 @@ This implementation also needs to manipulate bookkeeping information in each new
 The bookkeeping information is passed along to potentially throwing functions through a hidden parameter.
 `noexcept` can remove the cost of the hidden parameter, but can introduce a new cleanup context.
 
+[[Baker3166]] proposes "Static Exception Specifications".
+This proposal aims to make exceptional code path execution times similar in speed to non-exceptional code paths.
+The proposal would also statically check that the exception specifications of callees is compatible with the caller's exception specification.
+This would place a heightened need for more `noexcept` functions in the standard library, both for well-formedness reasons and for performance reasons.
+
 On GPUs, there is a large cost to having additional control flow edges.
 Using `noexcept` can remove control flow edges.
 However, to the author's knowledge, no GPU currently supports C++ exceptions.
@@ -430,17 +455,19 @@ This reflection utility has applications beyond testing, such as automatically g
 This strawman proposal doesn't address core-language asserts.
 
 #### Allow contract build modes to change the behavior of `noexcept` #### {#contracts_change_noexcept}
-Perhaps we consider `noexcept` the first core-language contract, with a default violation handler of `std::terminate`.
-The `Eval_and_throw` mode could change the behavior of `noexcept` to observe exceptions instead of `terminate`.
+Perhaps we consider `noexcept` the first core-language contract, with a default behavior of `std::terminate`.
+Applying the `observe` semantic in combination with a throwing violation handler could change the behavior of `noexcept` to allow exceptions to escape a `noexcept` boundary.
 
 This may even be something that should be extended to a general sad-path post-condition checking facility.
 It would be nice if we could express that, on failure, `std::vector`'s single element insert should leave the container with the same `size()`, and the same `data()` pointer.
 Making such sad-path post-condition checks throw on failure would also lead to early termination.
 
 Allowing contract build modes to change the behavior of `noexcept` could be a concise way to unify `noexcept` and core-language contracts, but it could come at a substantial compatibility cost for those using core-language contracts.
-If their code was relying on `noexcept` terminating, then enabling `Eval_and_throw` will break their program.
+If code was relying on `noexcept` terminating, then enabling `observe` semantics on `noexcept` will break their program.
 
 This approach may be able to be combined with [[#magic_ub_exception]] to avoid major compatibility breaks.
+
+This general approach is discussed in much greater depth in [[Ažman3205]].
 
 ### Extract contract predicates to a function ### {#extract_contracts_to_function}
 A user could emulate the precondition reflection by following a good naming convention.
@@ -551,6 +578,7 @@ The performance penalty is particularly large on Microsoft Windows.
 Traditionally, death tests can communicate a very limited amount of information from the child process to the parent process, typically one integer or less.
 This makes it difficult to know whether the child process's abnormal termination was from the intended contract check failure, or some other reason.
 In theory, the failing checks could communicate through some other out-of-band channel (a file on disk, standard out / error, shared memory), but this isn't currently common practice.
+DejaGnu, the testing framework used by libstdc++, permits users to check the process-under-test's return code, as well as run regex's on standard out and standard error, though libstdc++ currently only looks at the return code.
 
 Launching child processes has other hazards as well.
 Using the POSIX `fork()` call while code under test is running in another thread introduces substantial testing risks and uncertainty.
@@ -563,7 +591,7 @@ A mitigation for this is to have a test launcher that is entirely distinct from 
 Death tests have portability issues.
 C++ can run in a variety of environments, and death tests are mostly suited to desktop and server environments.
 Implementing death tests in browsers and embedded / microcontroller environments would be very challenging, as they typically don't support multiple processes.
-In addition, most testing frameworks don't support death tests, with GoogleTest being the main test framework with that support.
+In addition, most testing frameworks don't support death tests, with GoogleTest and DejaGnu being the main test frameworks with that support.
 GoogleTest mixes the code under test and the test infrastructure in the same process(es).
 
 Using exceptions to diagnose precondition violations in production {#precondition_exception_in_production}
@@ -700,6 +728,21 @@ Other libraries can get many of the benefits of narrow `noexcept`, even if the s
 Negative testing can be performed on narrow `noexcept` libraries, as exceptions usually don't need to travel far.
 Preconditions can be checked in production for all the code between entry points and the first non-narrow `noexcept` code.
 Non-narrow `noexcept` libraries that interact heavily with callbacks can get in the way of both precondition checking and negative testing.
+
+`noexcept` as Quality of Implementation {#noexcept_as_qoi}
+-------
+[[Wakely3201]] sets the policy that library wording should not use `[[nodiscard]]`.
+Its rationale is that warnings are non-normative, and that implementers are better qualified to determine when and where warnings should be emitted.
+
+Perhaps such an approach could be taken with `noexcept`, where the standard does not mention (or rarely mentions) `noexcept`, and implementers decide where `noexcept` should go.
+Arguably, this is close to the status quo, as the standard gives permission for implementations to strengthen their `noexcept` guarantees.
+
+Following such a principle leads to the minimal `noexcept` policy [[#wording_minimal_noexcept]].
+
+A notable difference between `[[nodiscard]]` and `noexcept` is that the result of the `noexcept` operator is normative, where warnings are not.
+This makes `noexcept` observable and normative.
+
+In practice, changing `noexcept` won't affect the semantics of most programs so long as it isn't changed on a move operation. [[#backwards_compat]].
 
 Notable Omissions {#notable_omissions}
 =================
@@ -1175,6 +1218,30 @@ Thanks to David Sankel for providing wording suggestions.
         ],
         "title": "P2300R7: std::execution",
         "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2300r7.html"
+    },
+    "Baker3166": {
+        "authors": ["Lewis Baker"],
+        "title": "Static Exception Specifications",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p3166r0.html"
+    },
+    "Ažman3205": {
+        "authors": [
+            "Gašper Ažman",
+            "Jeff Snyder",
+            "Andrei Zissu",
+            "Ben Craig"
+        ],
+        "title": "Throwing from a `noexcept` function should be a contract violation.",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p3205r0.pdf"
+    },
+    "Wakely3201": {
+        "authors": [
+            "Jonathan Wakely",
+            "David Sankel",
+            "Darius Neațu",
+        ],
+        "title": "LEWG [[nodiscard]] policy",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p3201r1.html"
     },
     "StroustrupDE": {
         "authors": ["Bjarne Stroustrup"],
