@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: `noexcept` policy for SD-9 (throws nothing) TODO
 Shortname: D3085
-Revision: 1
+Revision: 2
 Audience: LEWG
 Status: D
 Group: WG21
@@ -14,6 +14,16 @@ Markup Shorthands: markdown yes
 
 Revision history {#rev}
 =====================
+
+R2 {#rev-r2}
+----
+* TODO updated principled design section
+* TODO updated design choices to include minimal noexcept policy
+* TODO added discussion on vectorization
+* TODO added discussion on not discarding useful information
+* TODO added link to configurable noexcept paper and Lewis's exception paper
+* TODO discussed making noexcept entirely QoI, similar to `[[nodiscard]]`
+* TODO show what it would take to correctly handle throws from no-throw functions
 
 R1 {#rev-r1}
 ----
