@@ -19,10 +19,11 @@ R2 {#rev-r2}
 ----
 * TODO updated principled design section.
 * Updated design choices to include Minimal `noexcept` policy [[#wording_minimal_noexcept]].
-* TODO added discussion on vectorization.
-* TODO added discussion on not discarding useful information.
+* Discuss `noexcept`s affects on vectorization in [[#vectorization]].
+* Discuss not throwing away useful info in [[#dont_discard_useful_info]].
 * Discuss [[Baker3166]] in [[#other_impls]].
 * Discuss [[Ažman3205]] in [[#contracts_change_noexcept]].
+* Discuss [[Gustafsson3183]] in [[#reflection_for_contracts]]
 * Discuss making `noexcept` entirely QoI, similar to [[Wakely3201]], in [[#noexcept_as_qoi]].
 * TODO show what it would take to correctly handle throws from no-throw functions.
 * Discuss DejaGnu in [[#death_tests]].
@@ -399,6 +400,15 @@ For many platforms and applications, this bloat is inconsequential.
 For many platforms and applications that are size constrained, exceptions are already disabled.
 When exceptions are disabled, the "`noexcept(true)` calls `noexcept(true)`" code and the exception disabled code take the same number of lines of assembly.
 
+### Vectorization ### {#vectorization}
+`noexcept(false)` functions have an additional control flow edge compared to `noexcept(true)` functions.
+In theory, this additional control flow edge could impact optimizations like vectorization.
+
+The x86-64 versions of Clang 18.1.0, GCC 13.2, and ICX 2024.0.0 are not able to vectorize around opaque function calls.
+The optimizer can ignore the control flow edge when called function bodies are visible to the compiler, and can often optimize accordingly.
+
+As of the writing of this paper, the author does not have any examples where changing `noexcept` on a function changes vectorization decisions.
+
 Library Testing {#library_testing}
 -----
 [[MeredithN3248]], [[Doumler2831]]
@@ -450,9 +460,7 @@ EXPECT_FALSE( $evaluate_post(f, 1, 0) ); // x = 0, returns 1
 This would allow directly testing contracts without violating those contracts.
 The tests would be very fast (no throws or terminates involved), and low maintenance.
 
-To the author's knowledge, no such facility is currently proposed.
-This reflection utility has applications beyond testing, such as automatically generating "wide" wrapper functions from "narrow" functions.
-This strawman proposal doesn't address core-language asserts.
+A facility similar to this is proposed in [[#Gustafsson3183]].
 
 #### Allow contract build modes to change the behavior of `noexcept` #### {#contracts_change_noexcept}
 Perhaps we consider `noexcept` the first core-language contract, with a default behavior of `std::terminate`.
@@ -715,6 +723,10 @@ Take `std::string::c_str()` as an example.
 However, if the bytes composing the `std::string` are corrupted in some way, then `c_str()` is likely to dereference an invalid pointer.
 This means that `c_str()` (and most functions) have a precondition of basic object validity.
 If wide contracts are expanded to encompass functions that work with invalid objects, then very little has a wide contract.
+
+### Don't discard useful information ### {#dont_discard_useful_info}
+The "no-throw" guarantee is useful information to the compiler, to developers, for making algorithmic decisions, and for generic transformations.
+Expressing this through `noexcept` can satisfy each of these use cases.
 
 Can't write narrow `noexcept` on top of throws nothing {#narrow_above_throws_nothing}
 -----
@@ -1242,6 +1254,11 @@ Thanks to David Sankel for providing wording suggestions.
         ],
         "title": "LEWG [[nodiscard]] policy",
         "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p3201r1.html"
+    },
+    "Gustafsson3183": {
+        "authors": ["Bengt Gustafsson"],
+        "title": "Contract testing support",
+        "href": "bengt.gustafsson@beamways.com"
     },
     "StroustrupDE": {
         "authors": ["Bjarne Stroustrup"],
