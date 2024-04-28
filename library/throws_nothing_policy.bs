@@ -17,16 +17,16 @@ Revision history {#rev}
 
 R2 {#rev-r2}
 ----
-* TODO updated principled design section.
-* Updated design choices to include Minimal `noexcept` policy [[#wording_minimal_noexcept]].
+* Include worked principled design example from the Tokyo 2024 WG21 meeting in [[#appendix_principled_design]].
+* Updated design choices to include Minimal `noexcept` policy in [[#wording_minimal_noexcept]].
 * Discuss `noexcept`s affects on vectorization in [[#vectorization]].
 * Discuss not throwing away useful info in [[#dont_discard_useful_info]].
 * Discuss [[Baker3166]] in [[#other_impls]].
 * Discuss [[Ažman3205]] in [[#contracts_change_noexcept]].
 * Discuss [[Gustafsson3183]] in [[#reflection_for_contracts]]
 * Discuss making `noexcept` entirely QoI, similar to [[Wakely3201]], in [[#noexcept_as_qoi]].
-* TODO show what it would take to correctly handle throws from no-throw functions.
 * Discuss DejaGnu in [[#death_tests]].
+* Discuss "Can't write it better yourself" in [[#size_bloat]]
 
 R1 {#rev-r1}
 ----
@@ -399,6 +399,9 @@ Measuring the results on actual binaries is substantially more difficult, due to
 For many platforms and applications, this bloat is inconsequential.
 For many platforms and applications that are size constrained, exceptions are already disabled.
 When exceptions are disabled, the "`noexcept(true)` calls `noexcept(true)`" code and the exception disabled code take the same number of lines of assembly.
+
+If standard library "Throws: nothing" functions are left as `noexcept(false)`, then users can write those functions better themselves in terms of code bloat.
+This demonstrates a violation of the zero-overhead rule [[StroustrupDE]].
 
 ### Vectorization ### {#vectorization}
 `noexcept(false)` functions have an additional control flow edge compared to `noexcept(true)` functions.
@@ -793,7 +796,11 @@ This paper provides no rationale for this choice.
 
 Principled design {#principled_design}
 ==========
-[[Lakos3004]] describes a process of enumerating, ranking, and scoring design principles as a way to aid decision making and communication.  The associated paper [[Lakos3005]] includes a worked version discussing `noexcept` policy variations.  This paper will present an alternative compliance table, as well as discuss some of the big differences between the [[Lakos3005]] table, and the one presented here.
+[[Lakos3004]] describes a process of enumerating, ranking, and scoring design principles as a way to aid decision making and communication.
+The associated paper [[Lakos3005]] includes a worked version discussing `noexcept` policy variations.
+This paper will present an alternative compliance table, as well as discuss some of the big differences between the [[Lakos3005]] table, and the one presented here.
+
+[[#appendix_principled_design]] includes a (mostly) worked version where John Lakos and Ben Craig worked through the example together.
 
 Principle descriptions {#principle_descriptions}
 --------------------
@@ -1100,6 +1107,209 @@ Adopt the "Throws nothing rule" `noexcept` policy {#throws_nothing_poll}
 >
 > 5-way poll (SF/WF/N/WA/SA)<br/>
 
+Appendix: Principled design exercise {#appendix_principled_design}
+========================
+During the Tokyo 2024 WG21, John Lakos and Ben Craig worked through a quick, slightly modified, principled design exercise in the spirit of [[Lakos3004]].
+Due to the abbreviated nature of the exercise, not all solution / principle scores were populated.
+In places where Lakos and Craig disagreed on the scoring of principle importance, both scores are shown with a `/` separating them.
+The `^` symbol indicates places where the relative rank of a principle was boosted above the location that the importance and objective would otherwise suggest.
+
+<pre>
+Preamble;: 
+----------
+
+We think that the root of our possible disagreement will be around what 
+happens when a throwing violation handler meets a noexcept(true) exception 
+speciation.
+
+
+Requirements:
+-------------
+Ben: 
+
+Maximize performance for typical practical use cases.
+  - runtime performance
+    - minimize time
+    - executable size 
+  - Performance applied to 
+    - table based (zero overhead) exception implementations
+    - non-table based (non-zero overhead) exception implementations
+
+
+
+John: 
+o Avoiding forced termination when a (e.g., throwing) contract violation occurs,
+
+
+
+Solutions
+=========
+
+MAX = if the contract states that it cannot throw in contract, make it noexcept
+MIN = if we can demonstrate ANY plausible (e.g., algorithmic) use ok, else not.
+      - note that type limitations for platform reasons might be another.
+
+YLR
+NLR
+
+A = No Consensus on any policy -- Chaos
+B = MAX + NLR
+C = MAX + YLR
+D = MIN + YLR
+E = MIG + NLR
+
+        MIN    MAX 
+        ---    ---
+NLR      E      B
+
+YLR      D      C 
+
+
+B: MAX + NLR
+Description: Ben's solution where the in-contract noexcept behavior is 
+            reflected. Note that if the plain-language contract doesn't 
+            ensure that the function doesn't throw, we do not add no except.
+            E.g., says explicitly throws nothing.
+
+Motivating principles:
+   - Max runtime performance on non-table noexcept
+   - Min executable size on all implementations.
+   - Max consistency across platforms (same noexcept everywhere)
+   - Max saying what you mean in code
+   - Max following popular (e.g., GCC, CLANG, MSVC) implemenations
+   - Min encouragement for people to throw in production
+
+Concerns 
+   - It makes vegetative more expensive 
+     - directly for the standard library and clones
+     - indirectly through mimicking and such
+   - Not concerned about others who want to recover (even temporarily) 
+     - using throwing exceptions or contracts. 
+
+
+C: MAX + YLR
+   We allow throwing contract violation handlers exactly where they are needed.
+   
+   
+Motivating principles:
+   - Max negative testing
+   - Max recovery trough noexept in produciton
+   - Max use of throwing contract-violation handlers
+   - Min unexpected termination.
+
+Concerns
+   - fails to achieve minimum exe size
+   - fails to achieve minimum runtime performance on non-table exceptions
+   - slightly less consistent due to strengthening 
+
+
+D: MIN + YLR
+   Here we use noexcept ONLY where there is an algorithmic need for 
+   wide contracts ONLY.
+
+Motivating principles:
+   - minimize chance that we will terminate due to any thrown exception.
+   - maximizes use of throwing handlers
+   - Future widening of contracts.
+   
+Concerns
+   - makes bad decisions for narrow contracts that would/should be 
+     no except if correct, but has corner P recondition that ruins it 
+     for regular use.
+   - much less consistent due to strengthening 
+
+E: MIN + NLR
+   Here we use noexcept ONLY where there is an algorithmic need BUT 
+   narrow contracts with such a need should be noexcept. E.g, swap.
+
+   - maximizes algorithmic runtime performance 
+
+Concerns:
+   - Allows variation across platforms due to strengthening rules.
+   - much less consistent due to strengthening 
+
+
+  
+General Principles
+------------------
+minimize disenfranchising the multiverse
+Minimize risky choices that preclude backward completable changes.
+mimimize ability to write it better yourself.
+
+============================= Rank Compare   =========================
+
+Rank  i  o Principle ID     Statement
+----  -  - ---------------  -------------------------------------------------
+      @  @ MaxAlogOpt       Max algorithmic runtime performance 
+
+      9  5 TablePerf        Max runtime performance on table noexcept
+      9  5 MaxExceptionUse  Max use of throwing exceptions in general
+
+  *  9/5 - MinUseRestrict   Min disenfranchising the multiverse
+
+  *  9/1 @ MaxLogicRecover  Max use of throwing contract-violation handlers
+
+    ^5/1 5 NonTablePerf     Max runtime performance on non-table noexcept
+    ^ 5  5 MinExeSize       Min executable size on all implementations
+
+      5  @ MinUnintAbort    Min unexpected termination due to thrown exception
+      5  @ MaxNegUnitTest   Max negative testing
+      5  @ MaxUserPort      Max noexcept spec. Consistency across platforms
+
+     5/1 5 MaxExprInCode    Max saying what you mean in code
+     5/1 - MinDoItYourself  Min ability to write it better yourself
+
+     5/- - MinThrowProd     Min encouragement for people to throw in production
+
+      1  @ MaxFutWidening   Max Future widening of contracts.
+      1  5 MaxStdPractice   Max following popular imps (e.g., GCC, CLANG, MSVC)
+      1  5 MinControversy   Min controversial choices that preclude each other
+      1  5 MinCostImpls     Min cost to existing implementations
+      1  - MinPermDiverge   Min permanent divergence standard versus policy
+
+
+============================= Score compliance ==========================
+
+
+A = No Consensus on any policy -- Chaos
+B = MAX + NLR  Ben's throw's nothing policy.
+C = MAX + YLR  Old Lakos Rule
+D = MIN + YLR  Min - Lakos over alog
+E = MIG + NLR  John's pref of alge over Lako
+F = B' + not allow strengthening (almost the same)
+G = E' + not allow strengthening (OMFG)
+
+                                  *           *       *
+Rank  i  o Principle ID       A   B   C   D   E   F   G
+----  -  - ---------------   --- --- --- --- --- --- --- 
+      @  @ MaxAlogOpt             @           @
+
+      9  5 TablePerf              9           9   
+      9  5 MaxExceptionUse        9           9   @   @
+
+  *  9/5 - MinUseRestrict         2           9   3   @
+
+  *  9/1 @ MaxLogicRecover        1        9  8   2   9
+
+    ^5/1 5 NonTablePerf           9           5
+    ^ 5  5 MinExeSize             7           3
+       
+      5  @ MinUnintAbort          7       9   8        9
+      5  @ MaxNegUnitTest         3       @   8        9
+      5  @ MaxUserPort            8       2   3   @    @
+
+     5/1 5 MaxExprInCode          7           3
+     5/1 - MinDoItYourself  
+
+     5/- - MinThrowProd           8           1   9    -
+
+      1  @ MaxFutWidening   
+      1  5 MaxStdPractice   
+      1  5 MinControversy   
+      1  5 MinCostImpls     
+      1  - MinPermDiverge   
+      
+</pre>
 
 Acknowledgments {#ack}
 ======================
