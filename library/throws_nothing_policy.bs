@@ -460,7 +460,7 @@ EXPECT_FALSE( $evaluate_post(f, 1, 0) ); // x = 0, returns 1
 This would allow directly testing contracts without violating those contracts.
 The tests would be very fast (no throws or terminates involved), and low maintenance.
 
-A facility similar to this is proposed in [[#Gustafsson3183]].
+A facility similar to this is proposed in [[Gustafsson3183]].
 
 #### Allow contract build modes to change the behavior of `noexcept` #### {#contracts_change_noexcept}
 Perhaps we consider `noexcept` the first core-language contract, with a default behavior of `std::terminate`.
@@ -1256,7 +1256,7 @@ Thanks to David Sankel for providing wording suggestions.
         "authors": [
             "Jonathan Wakely",
             "David Sankel",
-            "Darius Neațu",
+            "Darius Neațu"
         ],
         "title": "LEWG [[nodiscard]] policy",
         "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p3201r1.html"
