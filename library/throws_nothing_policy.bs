@@ -1061,26 +1061,32 @@ Suggested polls {#suggested_polls}
 ==========
 Either policy is better than no policy {#better_than_nothing_poll}
 -----
-> <b>Poll:</b> Having one of the two proposed `noexcept` policies in place is more important than having my preferred policy, so a head-to-head poll between the two presented alternatives is an acceptable way to select the policy.<br/>
+> <b>Poll:</b> Having one of the proposed `noexcept` policies in place is more important than having my preferred policy, so a head-to-head poll between the "Minimal `noexcept`" and "Throws nothing rule" is an acceptable way to select the policy.<br/>
 >
 > 5-way poll (SF/WF/N/WA/SA)<br/>
 
 
 If the "any policy" poll gains consensus, then we do a head-to-head poll on the policies.
 
-If the "any policy" poll does not gain consensus, then we do two 5 way polls.
+If the "any policy" poll does not gain consensus, then we do five-way polls.
 Whichever poll has consensus in general, and has more consensus than the other, wins.
-It is possible that neither has consensus.
-If LEWG is a little crazy, then both may have consensus.
+It is possible that none have consensus.
+If LEWG is a little crazy, then multiple may have consensus.
 
-If we do these as electronic polls (and we should), then all four polls should run.
+If we do these as electronic polls (and we should), then all the polls should run.
 
 
 Head-to-head policy poll {#head_to_head_poll}
 -----
 > <b>Poll:</b> Which policy do we adopt?<br/>
 >
-> 3-way poll (narrow `noexcept`/"Lakos rule")/Neutral/"Throws nothing rule"<br/>
+> 3-way poll "Minimal `noexcept`"/Neutral/"Throws nothing rule"<br/>
+
+Adopt the "minimal `noexcept`" policy {#minimal_noexcept_poll}
+-----
+> <b>Poll:</b> Add the "minimal `noexcept`" policy to SD-9<br/>
+>
+> 5-way poll (SF/WF/N/WA/SA)<br/>
 
 Adopt the narrow `noexcept`/"Lakos rule" `noexcept` policy {#narrow_lakos_poll}
 -----
