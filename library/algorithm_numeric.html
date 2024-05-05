@@ -358,15 +358,25 @@ span.indented {
 }
 </style>
 
-<title>P2976R0: Freestanding Library: algorithm, numeric, and random</title>
+<title>P2976R1: Freestanding Library: algorithm, numeric, and random</title>
 <body>
 <h1>Freestanding Library: algorithm, numeric, and random</h1>
-Document number: P2976R0<br/>
-Date: 2023-09-17<br/>
+Document number: P2976R1<br/>
+Date: 2024-05-05<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
-Audience: Library Evolution Working Group
+Audience: Library Working Group
 
 <h1>Changes from previous revisions</h1>
+<h2>R1</h2>
+<ul>
+<li>Rebased to N4981</li>
+<li>Update <code>__cpp_lib_freestanding_numeric</code> instead of adding it.</li>
+<li>Tweaked [freestanding.item] wording.</li>
+<li>Added <code>is_execution_policy</code> in <code>&lt;execution&gt;</code> to freestanding.</li>
+<li>Marking parallel algorithms in <code>&lt;memory&gt;</code>, <code>&lt;algorithm&gt;</code>, and <code>&lt;numeric&gt;</code> as freestanding-deleted.</li>
+<li>Drive by improvement of the <code>&lt;random&gt;</code> streaming operator specification to make "Returns" explicit.</li>
+</ul>
+<h2>R0</h2>
 First revision!
 
 <h1>Introduction</h1>
@@ -389,13 +399,9 @@ This combination keeps the burden low for standard library implementations to si
 
 <h2>Parallel Algorithms</h2>
 <p>
-The execution policy overloads in <code>&lt;algorithm&gt;</code> and <code>&lt;numeric&gt;</code> are not required to be present in freestanding implementations.
+The execution policy overloads in <code>&lt;memory&gt;</code>, <code>&lt;algorithm&gt;</code>, and <code>&lt;numeric&gt;</code> are marked as freestanding-deleted.
+That means that either the functions are <code>=deleted</code>, or they have the same semantics as they would have on a hosted implementation.
 An argument could be made to support sequential execution, but that provides very little value.
-This matches precedent in <code>&lt;memory&gt;</code>, as the execution policy overloads in that header are not require to be present in freestanding implementations either.
-</p><p>
-The execution policy overloads are not marked as <code>// freestanding-deleted</code>.
-<code>// freestanding-deleted</code> is typically useful for ensuring that overload resolution doesn't change when moving between freestanding and hosted environments.
-The execution policy overloads are already constrained such that accidental selection of these overloads is highly unlikely, so an additional <code>= delete</code> would not provide much benefit.
 </p>
 
 <h2>Allocating algorithms</h2>
@@ -456,19 +462,19 @@ Paul Bendixen has implemented <a href="https://wg21.link/P0829">P0829</a> in a <
 </p>
 
 <h1>Wording</h1>
-This paper’s wording is based on the current working draft, [N4928], and it assumes that [P2407R5] has been applied.
+This paper’s wording is based on the current working draft N4981.
 
 <h2>Changes in <a href="https://eel.is/c++draft/freestanding.item">[freestanding.item]</a></h2>
 <blockquote class="std">
 <div class="para">
     <div class="marginalizedparent"><a class="marginalized">5</a></div>
-    <div class="sentence">An entity, deduction guide, or <i>typedef-name</i> is a freestanding item if it is:
+    <div class="sentence">An entity, deduction guide, or <i>typedef-name</i> is a freestanding item if <del>it is</del><ins>its introducing declaration is not followed by a comment that includes <i>hosted</i>, and is</ins>:
         <ul class="itemize">
             <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.1)</a></div>
                 introduced by a declaration that is a freestanding item,
             </li>
             <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.2)</a></div>
-                a member of a freestanding item other than a namespace<ins> where the introducing declaration is not followed by a comment that includes <i>hosted</i></ins>,
+                a member of a freestanding item other than a namespace,
             </li>
             <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.3)</a></div>
                 an enumerator of a freestanding item,
@@ -480,7 +486,7 @@ This paper’s wording is based on the current working draft, [N4928], and it as
                 an enclosing namespace of a freestanding item,
             </li>
             <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.6)</a></div>
-                a friend of a freestanding item<ins> where the introducing declaration is not followed by a comment that includes <i>hosted</i></ins>,
+                a friend of a freestanding item,
             </li>
             <li><div class="marginalizedparent" style="left:-27mm"><a class="marginalized">(5.7)</a></div>
                 denoted by a <i>typedef-name</i> that is a freestanding item, or
@@ -494,7 +500,7 @@ This paper’s wording is based on the current working draft, [N4928], and it as
 </blockquote>
 
 <h2>Changes in <a href="https://eel.is/c++draft/compliance">[compliance]</a></h2>
-Drafting note: <code>&lt;algorithm&gt;</code> and <code>&lt;numeric&gt;</code> are already freestanding headers.<br/>
+Drafting note: <code>&lt;algorithm&gt;</code>, <code>&lt;memory&gt;</code>, and <code>&lt;numeric&gt;</code> are already freestanding headers.<br/>
 
 Add new rows to the "C++ headers for freestanding implementations" table:
 <table style="border: 1px solid black">
@@ -504,6 +510,16 @@ Add new rows to the "C++ headers for freestanding implementations" table:
 </tr>
 </thead>
 <tbody>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+</tr>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://eel.is/c++draft/execpol">[execpol]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>Execution policies</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;execution&gt;</tt></ins></td>
+</tr>
 <tr style="border: 1px solid black">
 <td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
 <td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
@@ -527,22 +543,65 @@ Instructions to the editor:<br/>
 Add the following macros to <a href="https://eel.is/c++draft/version.syn">[version.syn]</a>:
 <blockquote class="stdins">
 <pre class='codeblock'>
-#define __cpp_lib_freestanding_numeric 20XXXXL // freestanding, also in &lt;numeric&gt;
+#define __cpp_lib_freestanding_execution 20XXXXL // freestanding, also in &lt;execution&gt;
 #define __cpp_lib_freestanding_random 20XXXXL // freestanding, also in &lt;random&gt;
 </pre>
 </blockquote>
 
-Update the integer literal for the following macro:
+Update the integer literal for the following macros:
 <ul>
   <li><code>__cpp_lib_freestanding_algorithm</code></li>
+  <li><code>__cpp_lib_freestanding_memory</code></li>
+  <li><code>__cpp_lib_freestanding_numeric</code></li>
 </ul>
+
+<h2>Changes in <a href="https://eel.is/c++draft/memory.syn">[memory.syn]</a></h2>
+Instructions to the editor:<br/>
+Please make the following edit to the comments after each of the following parallel algorithms (i.e. function templates with <code>ExecutionPolicy</code> overloads):
+<blockquote class="std">
+<pre class='codeblock'>
+<i>// <ins>freestanding-deleted, </ins>see [algorithms.parallel.overloads]</i>
+</pre>
+</blockquote>
+
+<ul>
+  <li><code>uninitialized_default_construct</code></li>
+  <li><code>uninitialized_default_construct_n</code></li>
+  <li><code>uninitialized_value_construct</code></li>
+  <li><code>uninitialized_value_construct_n</code></li>
+  <li><code>uninitialized_copy</code></li>
+  <li><code>uninitialized_copy_n</code></li>
+  <li><code>uninitialized_move</code></li>
+  <li><code>uninitialized_move_n</code></li>
+  <li><code>uninitialized_fill</code></li>
+  <li><code>uninitialized_fill_n</code></li>
+  <li><code>destroy</code></li>
+  <li><code>destroy_n</code></li>
+</ul>
+
+
+<h2>Changes in <a href="https://eel.is/c++draft/execution.syn">[execution.syn]</a></h2>
+Instructions to the editor:<br/>
+Please append a <code><i>// freestanding</i></code> comment to <code>is_execution_policy</code> and <code>is_execution_policy_v</code>.
 
 <h2>Changes in <a href="https://eel.is/c++draft/algorithm.syn">[algorithm.syn]</a></h2>
 Instructions to the editor:<br/>
 <p>
 Please insert a <code><i>// mostly freestanding</i></code> comment at the beginning of the <a href="https://eel.is/c++draft/algorithm.syn">[algorithm.syn]</a> synopsis.<br/>
 </p><p>
-Please append a <code><i>// hosted</i></code> comment to each function template with an <code>ExecutionPolicy</code> parameter.
+
+Please make the following edit to the comments after all of the parallel algorithms (i.e. function templates with <code>ExecutionPolicy</code> overloads), other than the three allocating algorithms:
+<blockquote class="std">
+<pre class='codeblock'>
+<i>// <ins>freestanding-deleted, </ins>see [algorithms.parallel.overloads]</i>
+</pre>
+</blockquote>
+<ul>
+  <li><code>stable_sort</code></li>
+  <li><code>stable_partition</code></li>
+  <li><code>inplace_merge</code></li>
+</ul>
+
 </p><p>
 Please append a <code><i>// hosted</i></code> comment to all overloads of the following function templates:
 <ul>
@@ -564,7 +623,14 @@ Instructions to the editor:<br/>
 <p>
 Please insert a <code><i>// mostly freestanding</i></code> comment at the beginning of the <a href="https://eel.is/c++draft/numeric.ops.overview">[numeric.ops.overview]</a> synopsis.<br/>
 </p><p>
-Please append a <code><i>// hosted</i></code> comment to each function template with an <code>ExecutionPolicy</code> parameter.
+
+Please make the following edit to the comment after each of the parallel algorithms (i.e. function templates with <code>ExecutionPolicy</code> overloads):
+<blockquote class="std">
+<pre class='codeblock'>
+<i>// <ins>freestanding-deleted, </ins>see [algorithms.parallel.overloads]</i>
+</pre>
+</blockquote>
+
 </p><p>
 Please <b>remove</b> the <code><i>// freestanding</i></code> comment from the following functions.
 The markings are now redundant given the <code><i>// mostly freestanding</i></code> comment at the beginning of the synopsis.
@@ -661,11 +727,6 @@ Drafting note: The omission of <code>shuffle_order_engine</code> is intentional.
 <div class="para" id="#7">
     <div class="marginalizedparent"><a class="marginalized" href="#7">7</a></div>
     <div class="itemdescr"><div class="texpara"><div class="sentence">
-    <i>Result</i>: reference to the type of <span class="texttt">os</span>.</div></div></div>
-</div>
-<div class="para" id="#8">
-    <div class="marginalizedparent"><a class="marginalized" href="#8">8</a></div>
-    <div class="itemdescr"><div class="texpara"><div class="sentence">
     <i>Effects</i>: <div id="tab:rand.req.eng-row-13-column-3-sentence-1" class="sentence">With <span class="texttt">os.</span><i>fmtflags</i> set to
     <span class="texttt">ios_base::dec|ios_base::left</span>
     and the fill character set to the space character,
@@ -676,13 +737,23 @@ Drafting note: The omission of <code>shuffle_order_engine</code> is intentional.
     by one or more space characters<a class="hidden_link" href="#tab:rand.req.eng-row-13-column-3-sentence-2">.</a></div>
     </div></div></div>
 </div>
-<div class="para" id="#9">
-    <div class="marginalizedparent"><a class="marginalized" href="#9">9</a></div>
+<div class="para" id="#8">
+    <div class="marginalizedparent"><a class="marginalized" href="#8">8</a></div>
     <div class="itemdescr"><div class="texpara"><div class="sentence">
     <i>Postconditions</i>: The <span class="texttt">os.</span><i>fmtflags</i> and fill character are unchanged.</div></div></div>
 </div>
+<div class="para" id="#9">
+    <div class="marginalizedparent"><a class="marginalized" href="#9">9</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Result</i>: reference to the type of <span class="texttt">os</span>.</div></div></div>
+</div>
 <div class="para" id="#10">
     <div class="marginalizedparent"><a class="marginalized" href="#10">10</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Returns</i>: <span class="texttt">os</span>.</div></div></div>
+</div>
+<div class="para" id="#11">
+    <div class="marginalizedparent"><a class="marginalized" href="#11">11</a></div>
     <div class="itemdescr"><div class="texpara"><div class="sentence">
     <i>Complexity</i>: <span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-script-R" style="padding-top: 0.519em; padding-bottom: 0.225em; padding-right: 0.067em;">O</span></span></span></span><span class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.446em; padding-bottom: 0.593em;">(</span></span><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.446em; padding-bottom: 0.372em;">size of state</span></span><span class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.446em; padding-bottom: 0.593em;">)</span></span></span></span></span>
     
@@ -693,13 +764,19 @@ Drafting note: The omission of <code>shuffle_order_engine</code> is intentional.
 
 <div class="texpara"><span class="texttt">is &gt;&gt; v</span></div>
 
-<div class="para" id="#11">
-    <div class="marginalizedparent"><a class="marginalized" href="#11">11</a></div>
-    <div class="itemdescr"><div class="texpara"><div class="sentence">
-    <i>Result</i>: reference to the type of <span class="texttt">is</span>.</div></div></div>
-</div>
 <div class="para" id="#12">
     <div class="marginalizedparent"><a class="marginalized" href="#12">12</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Preconditions</i>: 
+    <span class="texttt">is</span> provides a textual representation
+    that was previously written using an output stream whose imbued locale
+    was the same as that of <span class="texttt">is</span>, and whose type's template specialization arguments
+    <span class="texttt">charT</span> and <span class="texttt">traits</span>
+    were respectively the same as those of <span class="texttt">is</span><a class="hidden_link" href="#tab:rand.req.eng-row-14-column-3-sentence-4">.</a>
+    </div></div></div>
+</div>
+<div class="para" id="#13">
+    <div class="marginalizedparent"><a class="marginalized" href="#13">13</a></div>
     <div class="itemdescr"><div class="texpara"><div class="sentence">
     <i>Effects</i>: 
     <div id="tab:rand.req.eng-row-14-column-3-sentence-1" class="sentence">With <span class="texttt">is.<i>fmtflags</i></span>
@@ -716,17 +793,6 @@ Drafting note: The omission of <code>shuffle_order_engine</code> is intentional.
     of <span class="texttt">x</span> or of <span class="texttt">v</span><a class="hidden_link" href="#tab:rand.req.eng-row-14-column-3-sentence-3">.</a></div>
     </div></div></div>
 </div>
-<div class="para" id="#13">
-    <div class="marginalizedparent"><a class="marginalized" href="#13">13</a></div>
-    <div class="itemdescr"><div class="texpara"><div class="sentence">
-    <i>Preconditions</i>: 
-    <span class="texttt">is</span> provides a textual representation
-    that was previously written using an output stream whose imbued locale
-    was the same as that of <span class="texttt">is</span>, and whose type's template specialization arguments
-    <span class="texttt">charT</span> and <span class="texttt">traits</span>
-    were respectively the same as those of <span class="texttt">is</span><a class="hidden_link" href="#tab:rand.req.eng-row-14-column-3-sentence-4">.</a>
-    </div></div></div>
-</div>
 <div class="para" id="#14">
     <div class="marginalizedparent"><a class="marginalized" href="#14">14</a></div>
     <div class="itemdescr"><div class="texpara"><div class="sentence">
@@ -734,6 +800,16 @@ Drafting note: The omission of <code>shuffle_order_engine</code> is intentional.
 </div>
 <div class="para" id="#15">
     <div class="marginalizedparent"><a class="marginalized" href="#15">15</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Result</i>: reference to the type of <span class="texttt">is</span>.</div></div></div>
+</div>
+<div class="para" id="#16">
+    <div class="marginalizedparent"><a class="marginalized" href="#16">16</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Returns</i>: <span class="texttt">is</span>.</div></div></div>
+</div>
+<div class="para" id="#17">
+    <div class="marginalizedparent"><a class="marginalized" href="#17">17</a></div>
     <div class="itemdescr"><div class="texpara"><div class="sentence">
     <i>Complexity</i>: <span class="mjx-chtml"><span class="mjx-math"><span class="mjx-mrow" aria-hidden="true"><span class="mjx-texatom"><span class="mjx-mrow"><span class="mjx-mi"><span class="mjx-char MJXc-TeX-script-R" style="padding-top: 0.519em; padding-bottom: 0.225em; padding-right: 0.067em;">O</span></span></span></span><span class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.446em; padding-bottom: 0.593em;">(</span></span><span class="mjx-mtext"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.446em; padding-bottom: 0.372em;">size of state</span></span><span class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.446em; padding-bottom: 0.593em;">)</span></span></span></span></span>
     
@@ -786,42 +862,31 @@ Drafting note: The omission of <code>shuffle_order_engine</code> is intentional.
 <div class="para" id="#12">
     <div class="marginalizedparent"><a class="marginalized" href="#12">12</a></div>
     <div class="itemdescr"><div class="texpara"><div class="sentence">
-    <i>Result</i>: reference to the type of <span class="texttt">os</span>.</div></div></div>
-</div>
-<div class="para" id="#13">
-    <div class="marginalizedparent"><a class="marginalized" href="#13">13</a></div>
-    <div class="itemdescr"><div class="texpara"><div class="sentence">
     <i>Effects</i>: <div id="tab:rand.req.dist-row-15-column-3-sentence-1" class="sentence">Writes to <span class="texttt">os</span> a textual representation
     for the parameters and the additional internal data of <span class="texttt">x</span>.</div>
     </div></div></div>
 </div>
+<div class="para" id="#13">
+    <div class="marginalizedparent"><a class="marginalized" href="#13">13</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Postconditions</i>: The <span class="texttt">os.</span><i>fmtflags</i> and fill character are unchanged.</div></div></div>
+</div>
 <div class="para" id="#14">
     <div class="marginalizedparent"><a class="marginalized" href="#14">14</a></div>
     <div class="itemdescr"><div class="texpara"><div class="sentence">
-    <i>Postconditions</i>: The <span class="texttt">os.</span><i>fmtflags</i> and fill character are unchanged.</div></div></div>
+    <i>Result</i>: reference to the type of <span class="texttt">os</span>.</div></div></div>
+</div>
+<div class="para" id="#15">
+    <div class="marginalizedparent"><a class="marginalized" href="#15">15</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Returns</i>: <span class="texttt">os</span>.</div></div></div>
 </div>
 
 <div class="texpara"><span class="texttt">is &gt;&gt; d</span></div>
 
-<div class="para" id="#15">
-    <div class="marginalizedparent"><a class="marginalized" href="#15">15</a></div>
-    <div class="itemdescr"><div class="texpara"><div class="sentence">
-    <i>Result</i>: reference to the type of <span class="texttt">is</span>.</div></div></div>
-</div>
+
 <div class="para" id="#16">
     <div class="marginalizedparent"><a class="marginalized" href="#16">16</a></div>
-    <div class="itemdescr"><div class="texpara"><div class="sentence">
-    <i>Effects</i>: 
-    <div id="tab:rand.req.dist-row-16-column-3-sentence-1" class="sentence">Restores from <span class="texttt">is</span>
-    the parameters and additional internal data of the lvalue <span class="texttt">d</span><a class="hidden_link" href="#tab:rand.req.dist-row-16-column-3-sentence-1">.</a></div> <div id="tab:rand.req.dist-row-16-column-3-sentence-2" class="sentence">If bad input is encountered,
-    ensures that <span class="texttt">d</span> is unchanged by the operation
-    and
-    calls <span class="texttt">is.setstate(ios_base::failbit)</span>
-    (which may throw <span class="texttt">ios_base::failure</span> (<a href="iostate.flags" title="31.5.4.4 Flags functions">[iostate.flags]</a>))<a class="hidden_link" href="#tab:rand.req.dist-row-16-column-3-sentence-2">.</a></div>
-    </div></div></div>
-</div>
-<div class="para" id="#17">
-    <div class="marginalizedparent"><a class="marginalized" href="#17">17</a></div>
     <div class="itemdescr"><div class="texpara"><div class="sentence">
     <i>Preconditions</i>: 
     <span class="texttt">is</span> provides a textual representation
@@ -832,10 +897,32 @@ Drafting note: The omission of <code>shuffle_order_engine</code> is intentional.
     were the same as those of <span class="texttt">is</span>.
     </div></div></div>
 </div>
+<div class="para" id="#17">
+    <div class="marginalizedparent"><a class="marginalized" href="#17">17</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Effects</i>: 
+    <div id="tab:rand.req.dist-row-16-column-3-sentence-1" class="sentence">Restores from <span class="texttt">is</span>
+    the parameters and additional internal data of the lvalue <span class="texttt">d</span><a class="hidden_link" href="#tab:rand.req.dist-row-16-column-3-sentence-1">.</a></div> <div id="tab:rand.req.dist-row-16-column-3-sentence-2" class="sentence">If bad input is encountered,
+    ensures that <span class="texttt">d</span> is unchanged by the operation
+    and
+    calls <span class="texttt">is.setstate(ios_base::failbit)</span>
+    (which may throw <span class="texttt">ios_base::failure</span> (<a href="iostate.flags" title="31.5.4.4 Flags functions">[iostate.flags]</a>))<a class="hidden_link" href="#tab:rand.req.dist-row-16-column-3-sentence-2">.</a></div>
+    </div></div></div>
+</div>
 <div class="para" id="#18">
     <div class="marginalizedparent"><a class="marginalized" href="#18">18</a></div>
     <div class="itemdescr"><div class="texpara"><div class="sentence">
     <i>Postconditions</i>: The <span class="texttt">is.<i>fmtflags</i></span> are unchanged.</div></div></div>
+</div>
+<div class="para" id="#19">
+    <div class="marginalizedparent"><a class="marginalized" href="#19">19</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Result</i>: reference to the type of <span class="texttt">is</span>.</div></div></div>
+</div>
+<div class="para" id="#20">
+    <div class="marginalizedparent"><a class="marginalized" href="#20">20</a></div>
+    <div class="itemdescr"><div class="texpara"><div class="sentence">
+    <i>Returns</i>: <span class="texttt">is</span>.</div></div></div>
 </div>
 </ins>
 
