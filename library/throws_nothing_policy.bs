@@ -1,9 +1,9 @@
 <pre class='metadata'>
-Title: `noexcept` policy for SD-9 (throws nothing) TODO
-Shortname: D3085
+Title: `noexcept` policy for SD-9 (throws nothing)
+Shortname: P3085
 Revision: 2
 Audience: LEWG
-Status: D
+Status: P
 Group: WG21
 URL: https://wg21.link/P3085
 !Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/library/throws_nothing_policy.bs">github.com/ben-craig/freestanding_proposal/blob/master/library/throws_nothing_policy.bs</a>
