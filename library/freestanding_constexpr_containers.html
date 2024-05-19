@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<html>
+<style type="text/css">
+  ins, ins * { text-decoration:none; font-weight:bold; background-color:#A0FFA0 }
+  del, del * { text-decoration:line-through; background-color:#FFA0A0 }
+  #hidedel:checked ~ * del, #hidedel:checked ~ * del * { display:none; visibility:hidden }
+
+blockquote {
+  padding: .5em;
+  border: .5em;
+  border-color: silver;
+  border-left-style: solid;
+}
+
+blockquote.std { color: #000000; background-color: #F1F1F1;
+  border: 1px solid #D1D1D1;
+  padding-left: 0.5em; padding-right: 0.5em; }
+blockquote.stdins { text-decoration: underline;
+  color: #000000; background-color: #C8FFC8;
+  border: 1px solid #B3EBB3; padding: 0.5em; }
+blockquote.stddel { text-decoration: line-through;
+  color: #000000; background-color: #FFEBFF;
+  border: 1px solid #ECD7EC;
+  padding-left: 0.5em; padding-right: 0.5em; }
+
+p.grammarlhs { margin-bottom: 0 }
+p.grammarrhs { margin-left:8em; margin-top:0; margin-bottom:0; text-indent:-4em }
+
+div.wrapper {
+    max-width: 60em;
+    margin: auto;
+}
+
+a { text-decoration: none; }
+
+a.hidden_link {
+    text-decoration: none;
+    color: inherit;
+}
+
+li {
+    margin-top: 0.0em;
+    margin-bottom: 0.0em;
+}
+
+h1 { line-height: 1; }
+h2 { line-height: 1; }
+h3 { line-height: 1; }
+h4 { line-height: 1; }
+
+:target { background-color: #C9FBC9; }
+:target .codeblock { background-color: #C9FBC9; }
+:target ul { background-color: #C9FBC9; }
+
+.abbr_ref { float: right; }
+
+.folded_abbr_ref { float: right; }
+:target .folded_abbr_ref { display: none; }
+
+:target .unfolded_abbr_ref { float: right; display: inherit; }
+.unfolded_abbr_ref { display: none; }
+
+.secnum { display: inline-block; min-width: 35pt; }
+.annexnum { display: block; }
+
+div.sourceLinkParent {
+    float: right;
+}
+
+a.sourceLink {
+    position: absolute;
+    opacity: 0;
+    margin-left: 10pt;
+}
+
+a.sourceLink:hover {
+    opacity: 1;
+}
+
+div.marginalizedparent {
+    position: relative;
+    left: -5em;
+}
+
+div.footnoteNumberParent {
+    position: relative;
+    left: -4.7em;
+}
+
+a.marginalized {
+    position: absolute;
+    font-size: 75%;
+    text-align: right;
+    width: 5em;
+}
+
+a.enumerated_item_num {
+    position: relative;
+    left: -3.5em;
+    display: inline-block;
+    margin-right: -3em;
+    text-align: right;
+    width: 3em;
+}
+
+div.para { margin-bottom: 0.6em; margin-top: 0.6em; text-align: justify; }
+div.section { text-align: justify; }
+div.sentence { display: inline; }
+
+span.indexparent {
+    display: inline;
+    position: relative;
+    float: right;
+    right: -1em;
+}
+
+a.index {
+    position: absolute;
+    display: none;
+}
+
+a.index:before { content: "Ã¢Å¸Âµ"; }
+    /* this way the content is not selectable */
+
+a.index:target {
+    display: inline;
+}
+
+.indexitems {
+    margin-left: 2em;
+    text-indent: -2em;
+}
+
+div.itemdescr {
+    margin-left: 3em;
+}
+
+.bnf {
+    font-family: serif;
+    margin-left: 40pt;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.ncbnf {
+    font-family: serif;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+.bnftab {
+    font-family: serif;
+    font-style: italic;
+    margin-left: 40pt;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.ncsimplebnf {
+    font-family: serif;
+    font-style: italic;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+.ncbnftab {
+    font-family: serif;
+    font-style: italic;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+.bnfkeywordtab {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 40pt;
+}
+
+span.textnormal {
+    font-style: normal;
+    font-family: serif;
+    white-space: normal;
+    display: inline-block;
+}
+
+span.descr { font-style: normal; font-family: serif; }
+span.grammarterm { font-style: italic; }
+span.term { font-style: italic; }
+span.terminal { font-family: monospace; font-style: normal; }
+span.nonterminal { font-style: italic; }
+span.tcode { font-family: monospace; font-style: normal; }
+span.textbf { font-weight: bold; }
+span.textsc { font-variant: small-caps; }
+a.nontermdef { font-style: italic; font-family: serif; }
+span.emph { font-style: italic; }
+span.techterm { font-style: italic; }
+span.mathit { font-style: italic; }
+span.mathsf { font-family: sans-serif; }
+span.mathrm { font-family: serif; font-style: normal; }
+span.textrm { font-family: serif; }
+span.textsl { font-style: italic; }
+span.mathtt { font-family: monospace; font-style: normal; }
+span.mbox { font-family: serif; font-style: normal; }
+span.ungap { display: inline-block; width: 2pt; }
+span.textit { font-style: italic; }
+span.texttt { font-family: monospace; }
+span.tcode_in_codeblock { font-family: monospace; font-style: normal; }
+
+span.phantom { color: white; }
+span.math { }
+
+span.mathblock {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1.2em;
+    margin-bottom: 1.2em;
+    text-align: center;
+}
+
+span.mathalpha {
+    font-style: italic;
+}
+
+span.synopsis {
+    font-weight: bold;
+    margin-top: 0.5em;
+    display: block;
+}
+
+span.definition {
+    font-weight: bold;
+    display: block;
+}
+
+.codeblock {
+    margin-left: 1.2em;
+    line-height: 127%;
+}
+
+code {
+    font-family: monospace;
+    font-style: normal;
+}
+
+code.itemdecl {
+    margin-top: 2ex;
+    white-space: pre;
+    display: block;
+}
+
+.comment {
+    font-style: italic;
+    font-family: serif;
+}
+
+span.textsuperscript {
+    vertical-align: super;
+    font-size: smaller;
+    line-height: 0;
+}
+
+.footnotenum { vertical-align: super; font-size: smaller; line-height: 0; }
+
+.footnote {
+    font-size: small;
+    margin-left: 2em;
+    margin-right: 2em;
+    margin-top: 0.6em;
+    margin-bottom: 0.6em;
+}
+
+div.minipage {
+    display: inline-block;
+    margin-right: 3em;
+}
+
+div.numberedTable {
+    text-align: center;
+    margin: 2em;
+}
+
+div.figure {
+    text-align: center;
+    margin: 2em;
+}
+
+table {
+    border: 1px solid black;
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0.8em;
+    text-align: left;
+    hyphens: none; /* otherwise some columns get very narrow, e.g. [tab:hash] */
+}
+
+td, th {
+    padding-left: 1em;
+    padding-right: 1em;
+    vertical-align: top;
+}
+
+td.left {
+    text-align: left;
+}
+
+td.right {
+    text-align: right;
+}
+
+td.center {
+    text-align: center;
+}
+
+td.justify {
+    text-align: justify;
+}
+
+td.border {
+    border-left: 1px solid black;
+}
+
+tr.rowsep, td.cline {
+    border-top: 1px solid black;
+}
+
+tr.capsep {
+    border-top: 3px solid black;
+    border-top-style: double;
+}
+
+th {
+    border-bottom: 1px solid black;
+}
+
+span.centry {
+    font-weight: bold;
+}
+
+div.table {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    width: 90%;
+}
+
+span.indented {
+    display: block;
+    margin-left: 2em;
+    margin-bottom: 1em;
+    margin-top: 1em;
+}
+</style>
+
+<title>P3295R0: Freestanding constexpr containers and constexpr exception types</title>
+<body>
+<h1>Freestanding constexpr containers and constexpr exception types</h1>
+Document number: P3295R0<br/>
+Date: 2024-05-18<br/>
+Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
+Audience: SG7 Compile Time Programming, Library Evolution Working Group
+
+<h1>Changes from previous revisions</h1>
+<h2>R0</h2>
+First revision!
+
+<h1>Introduction</h1>
+<p>
+This proposal helps enable <a href="https://wg21.link/P2996">P2996 reflection</a> and more advanced metaprogramming for freestanding environments.
+Specifically, this allows <code>std::vector</code>, <code>std::string</code>, and <code>std::allocator</code> to be used in constant evaluated contexts in freestanding.
+</p><p>
+As a first approximation, this makes the <code>vector</code> and <code>string</code> facilities <code>consteval</code> in freestanding.
+Freestanding implementations that know more about their targets are permitted to provide the full <code>constexpr</code> facilities if they wish.
+</p><p>
+This paper is attempting to modify the minimum set of facilities possible to freestanding in order to enable reflection.
+</p>
+
+<h1>Motivation and Scope</h1>
+<p>
+Freestanding applications are often unable to allocate memory or throw exceptions at runtime.
+No such restriction exists while building the application though.
+</p><p>
+<a href="https://wg21.link/P2996R2">Reflection in P2996R2</a> contains many <code>consteval</code> functions that return <code>vector&lt;meta::info&gt;</code>, such as <code>members_of</code>.
+Those facilities are valuable in freestanding and hosted alike.
+</p><p>
+This paper would "only" make <code>vector</code> and <code>allocator</code> consteval on freestanding if it reasonably could as a means to limit scope, but <code>vector</code> has functions that throw <code>length_error</code> and <code>out_of_range</code>.
+<code>length_error</code> and <code>out_of_range</code> are not in freestanding prior to this paper, so mentioning them renders the program ill-formed, even in a constant evaluation context.
+This paper therefore makes those exception types <code>constexpr</code> on hosted, and <code>consteval</code> on freestanding.
+Making these exception types <code>constexpr</code> is likely to be a benefit for long-term reflection error handling plans (e.g. <a href="https://wg21.link/P3068">P3068 Allowing exception throwing in constant-evaluation</a>).
+</p><p>
+Similarly, <code>length_error</code> and <code>out_of_range</code> mention <code>string</code>, which is also not yet in freestanding.
+Therefore the scope expands to <code>string</code>.
+Fortunately, <code>char_traits</code> and most of <code>string_view</code> are already freestanding.
+</p><p>
+The <i>freestanding-deleted</i> methods of <code>string_view</code> will need to be made <code>consteval</code> on freestanding in order to support <code>string</code>s use cases.
+</p><p>
+Hosted <code>constexpr</code> additions:
+<ul>
+<li><code>exception</code></li>
+<li><code>logic_error</code></li>
+<li><code>length_error</code></li>
+<li><code>out_of_range</code></li>
+</ul>
+freestanding-consteval additions:
+<ul>
+<li><code>logic_error</code></li>
+<li><code>length_error</code></li>
+<li><code>out_of_range</code></li>
+<li><code>allocator</code></li>
+<li><code>string_view</code> freestanding-deleted members</li>
+<li><code>string</code></li>
+<li><code>vector</code></li>
+</ul>
+</p>
+
+<h1>Design Considerations</h1>
+
+<h2>Freestanding all the <code>constexpr</code> things?</h2>
+<p>
+In <a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p2268r0.html#constexpr_to_consteval">P2268 Freestanding Roadmap</a>, a strategy is discussed of making everything that is <code>constexpr</code> in the standard library available at compile time via <code>consteval</code>, and those facilities that are also suitable at runtime to be marked <code>constexpr</code> and <code>// freestanding</code>.
+That is still the desired goal.
+Reaching that goal requires a lot of research and testing.
+There are likely other, non-<code>constexpr</code> facilities that the <code>constexpr</code> facilities rely on that would need to be audited as well.
+</p><p>
+This paper has chosen to prioritize the reflection subset of that work, rather than block progress on freestanding reflection.
+</p>
+
+<h2>Performance regression when porting from freestanding to hosted</h2>
+<p>
+<code>consteval</code> functions are never evaluated during compile time, but <code>constexpr</code> functions are sometime evaluated during runtime.
+A freestanding library using a <code>consteval</code> facility may end up "downgrading" some code from compile time to runtime during a port to a hosted environment due to the change to <code>constexpr</code>.
+This can result in worse performance due to the runtime function calls and allocations that were previously compile time function calls and allocations.
+</p><p>
+In <a href="https://godbolt.org/z/9EGG6r63E">this unoptimized example</a>, we get runtime calls to an allocating constructor and deallocating destructor in the <code>constexpr</code> version compared to the <code>consteval</code> version.
+For this example, the difference disappears when optimizations are enabled, but that won't always be the case.
+</p>
+
+<h2>Non-transient <code>constexpr</code> allocations</h2>
+<p>
+There is a desire from some in the committee to allow constant evaluated <code>vector</code>s and <code>string</code>s persist into runtime.
+This is referred to as non-transient <code>constexpr</code> allocations.
+This paper doesn't propose such facilities, but the paper is trying to avoid causing issues for those future papers.
+</p><p>
+If we get non-transient <code>constexpr</code> allocations in the future, then we can still make that work for freestanding.
+Constructors and mutating methods could remain <code>consteval</code>, with non-mutating methods made <code>constexpr</code>.
+This would avoid allocations and deallocations at runtime, while allowing the constant compile time object to be observed.
+</p>
+
+<h2><code>constexpr</code> <code>logic_error</code>s</h2>
+<h3>Philosophy</h3>
+<p>
+Various methods (<code>vector::at</code>, <code>vector::reserve</code>, <code>string::compare</code>, etc) throw exceptions in the <code>logic_error</code> hierarchy.
+For short term freestanding purposes, we could choose not to add the <code>logic_error</code> hierarchy, and instead have implementations <code>#if</code> that code out, and put something else in that spot that would cause the code to fail constant evaluation.
+However, there are proposals to permit throws during constant evaluation (<a href="https://wg21.link/P3068">P3068 Allowing exception throwing in constant-evaluation</a>), and there is a desire to use this facility as part of post-C++26 P2996 reflection.
+So rather than have implementers add a hack only to remove it in the near future, we'll add the <code>logic_error</code>s we need to <code>consteval</code> freestanding, and mark them as <code>constexpr</code> in hosted.
+</p><p>
+There are some other reasons to make the <code>logic_error</code> hierarchy <code>constexpr</code>.
+There's the general "<code>constexpr</code> all the things" motivation.
+Some developers are also interested in having <code>variant</code> and <code>expected</code> objects with <code>logic_error</code> alternatives as a way to manage errors in <code>constexpr</code> contexts.
+</p><p>
+We could also choose to make the entirety of <code>&lt;stdexcept&gt;</code> <code>consteval</code> in freestanding.
+The different classes are mostly identical in terms of functionality.
+</p>
+<h3>Technical challenges</h3>
+<p>
+There are some reasons why making <code>logic_error</code> <code>constexpr</code> could be challenging.
+</p><p>
+The libc++ implementation of <code>logic_error</code> includes a reference counted string.
+The reference counting currently uses atomic operations, though it doesn't use <code>std::atomic</code> specifically.
+That implementation would need to conditionally use non-atomic operations during constant evaluation.
+</p><p>
+The libstdc++ implementation uses a copy-on-write (COW) string.
+Portions of the implementation of the <code>logic_error</code> hierarchy are in the library rather than headers.
+One of the COW string implementations use atomic operations for the reference counting implementation, but not specifically <code>std::atomic</code>
+</p><p>
+MSSTL appears to perform a deep copy of the strings in <code>logic_error</code>.
+It does not appear to involve atomics.
+Some of its implementation appears to be in the library, and not in headers.
+</p><p>
+<a href="https://wg21.link/P3037R1">P3037R1 <code>constexpr std::shared_ptr</code></a> also discusses reference counting in <code>constexpr</code>.
+SG7 Compile-time programming was fine with reference counting at compile time in the Tokyo 2024 meeting.
+</p>
+
+
+<h1>Experience</h1>
+<p>
+No implementation experience yet.
+</p>
+
+<h1>Wording</h1>
+This paper’s wording is based on the current working draft N4981.
+
+<h2>Changes in <a href="https://eel.is/c++draft/freestanding.item">[freestanding.item]</a></h2>
+TODO: define what "freestanding-consteval" means.
+It is implementation defined whether "freestanding-consteval" functions are <code>constexpr</code> or <code>consteval</code> on freestanding implementations.
+Destructors, and maybe all virtual functions will need to remain <code>constexpr</code>, even on a freestanding-consteval class.
+
+<h2>Changes in <a href="https://eel.is/c++draft/compliance">[compliance]</a></h2>
+Drafting note: <code>&lt;string&gt;</code> and <code>&lt;memory&gt;</code> are already freestanding headers.<br/>
+
+Add new rows to the "C++ headers for freestanding implementations" table:
+<table style="border: 1px solid black">
+<thead>
+<tr style="border: 1px solid black">
+<th colspan="2" style="text-align: center">Subclause</th><th style="text-align: center">Header(s)</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+</tr>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://eel.is/c++draft/std.exceptions">[std.exceptions]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>Exception classes</ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;stdexcept&gt;</tt></ins></td>
+</tr>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+</tr>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>?.? <a href="https://eel.is/c++draft/vector.syn">[vector.syn]</a></ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins>Header &lt;vector&gt; synopsis </ins></td>
+<td style="padding: 0ex 1ex 0ex 1ex"><ins><tt>&lt;vector&gt;</tt></ins></td>
+</tr>
+<tr style="border: 1px solid black">
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+<td style="padding: 0ex 1ex 0ex 1ex">[&hellip;]</td>
+</tr>
+</tbody>
+</table>
+
+<h2>Changes in <a href="https://eel.is/c++draft/version.syn">[version.syn]</a></h2>
+Instructions to the editor:<br/>
+Add the following macros to <a href="https://eel.is/c++draft/version.syn">[version.syn]</a>:
+<blockquote class="stdins">
+<pre class='codeblock'>
+#define __cpp_lib_constexpr_exception 20XXXXL // freestanding, also in &lt;exception&gt;, &lt;stdexcept&gt;
+#define __cpp_lib_freestanding_consteval_allocator 20XXXXL // freestanding, also in &lt;memory&gt;
+#define __cpp_lib_freestanding_consteval_string 20XXXXL // freestanding, also in &lt;string&gt;
+#define __cpp_lib_freestanding_stdexcept 20XXXXL // freestanding, also in &lt;stdexcept&gt;
+#define __cpp_lib_freestanding_vector 20XXXXL // freestanding, also in &lt;vector&gt;
+</pre>
+</blockquote>
+
+<h2>Changes in <a href="https://eel.is/c++draft/exception">[exception]</a></h2>
+Instructions to the editor:<br/>
+Please make the following edits to <a href="https://eel.is/c++draft/exception">[exception]</a>:
+<blockquote class="std">
+<pre class='codeblock'>
+<span class="keyword">namespace</span> std <span class="curlybracket">{</span>
+  <span class="keyword">class</span> exception <span class="curlybracket">{</span>
+  <span class="keyword">public</span><span class="operator">:</span>
+    <ins>constexpr </ins>exception<span class="parenthesis">(</span><span class="parenthesis">)</span> <span class="keyword">noexcept</span>;
+    <ins>constexpr </ins>exception<span class="parenthesis">(</span><span class="keyword">const</span> exception<span class="operator">&amp;</span><span class="parenthesis">)</span> <span class="keyword">noexcept</span>;
+    <ins>constexpr </ins>exception<span class="operator">&amp;</span> <span class="keyword">operator</span><span class="operator">=</span><span class="parenthesis">(</span><span class="keyword">const</span> exception<span class="operator">&amp;</span><span class="parenthesis">)</span> <span class="keyword">noexcept</span>;
+    <ins>constexpr </ins><span class="keyword">virtual</span> <span class="operator">~</span>exception<span class="parenthesis">(</span><span class="parenthesis">)</span>;
+    <ins>constexpr </ins><span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keyword">char</span><span class="operator">*</span> what<span class="parenthesis">(</span><span class="parenthesis">)</span> <span class="keyword">const</span> <span class="keyword">noexcept</span>;
+  <span class="curlybracket">}</span>;
+<span class="curlybracket">}</span>
+/* ... */
+<code class="itemdeclcode"><ins>constexpr </ins>exception<span class="parenthesis">(</span><span class="keyword">const</span> exception<span class="operator">&amp;</span> rhs<span class="parenthesis">)</span> <span class="keyword">noexcept</span>;
+<ins>constexpr </ins>exception<span class="operator">&amp;</span> <span class="keyword">operator</span><span class="operator">=</span><span class="parenthesis">(</span><span class="keyword">const</span> exception<span class="operator">&amp;</span> rhs<span class="parenthesis">)</span> <span class="keyword">noexcept</span>;
+</code>
+/* ... */
+<code class="itemdeclcode"><ins>constexpr </ins><span class="keyword">virtual</span> <span class="operator">~</span>exception<span class="parenthesis">(</span><span class="parenthesis">)</span>;
+</code>
+/* ... */
+<ins>constexpr </ins><span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keyword">char</span><span class="operator">*</span> what<span class="parenthesis">(</span><span class="parenthesis">)</span> <span class="keyword">const</span> <span class="keyword">noexcept</span>;
+</pre>
+</blockquote>
+
+<h2>Changes in <a href="https://eel.is/c++draft/stdexcept.syn">[stdexcept.syn]</a></h2>
+Instructions to the editor:<br/>
+Please make the following edits to <a href="https://eel.is/c++draft/stdexcept.syn">[stdexcept.syn]</a>:
+<blockquote class="std"><pre class='codeblock'>
+namespace std <span class="curlybracket">{</span>
+  <span class="keyword">class</span> logic_error;<ins> <i>// freestanding-consteval</i></ins>
+    <span class="keyword">class</span> domain_error;
+    <span class="keyword">class</span> invalid_argument;
+    <span class="keyword">class</span> length_error;<ins> <i>// freestanding-consteval</i></ins>
+    <span class="keyword">class</span> out_of_range;<ins> <i>// freestanding-consteval</i></ins>
+  <span class="keyword">class</span> runtime_error;
+    <span class="keyword">class</span> range_error;
+    <span class="keyword">class</span> overflow_error;
+    <span class="keyword">class</span> underflow_error;
+<span class="curlybracket">}</span>
+</pre></blockquote>
+
+<h2>Changes in <a href="https://eel.is/c++draft/logic.error">[logic.error]</a></h2>
+Instructions to the editor:<br/>
+Please make the following edits to <a href="https://eel.is/c++draft/logic.error">[logic.error]</a>:
+<blockquote class="std"><pre class='codeblock'>
+<span class="keyword">namespace</span> std <span class="curlybracket">{</span>
+  <span class="keyword">class</span> logic_error <span class="operator">:</span> <span class="keyword">public</span> exception <span class="curlybracket">{</span>
+  <span class="keyword">public</span><span class="operator">:</span>
+    <ins>constexpr </ins><span class="keyword">explicit</span> logic_error<span class="parenthesis">(</span><span class="keyword">const</span> string<span class="operator">&amp;</span> what_arg<span class="parenthesis">)</span>;
+    <ins>constexpr </ins><span class="keyword">explicit</span> logic_error<span class="parenthesis">(</span><span class="keyword">const</span> <span class="keyword">char</span><span class="operator">*</span> what_arg<span class="parenthesis">)</span>;
+    <ins>constexpr logic_error<span class="operator">&amp;</span> <span class="keyword">operator</span><span class="operator">=</span><span class="parenthesis">(</span><span class="keyword">const</span> logic_error<span class="operator">&amp;</span><span class="parenthesis">)</span> <span class="keyword">noexcept</span>;
+    constexpr <span class="keyword">virtual</span> <span class="operator">~</span>logic_error<span class="parenthesis">(</span><span class="parenthesis">)</span>;
+    constexpr <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keyword">char</span><span class="operator">*</span> what<span class="parenthesis">(</span><span class="parenthesis">)</span> <span class="keyword">const</span> <span class="keyword">noexcept</span>;</ins>
+  <span class="curlybracket">}</span>;
+<span class="curlybracket">}</span>
+/*...*/
+<ins>constexpr </ins>logic_error<span class="parenthesis">(</span><span class="keyword">const</span> string<span class="operator">&amp;</span> what_arg<span class="parenthesis">)</span>;
+/*...*/
+<ins>constexpr </ins>logic_error<span class="parenthesis">(</span><span class="keyword">const</span> <span class="keyword">char</span><span class="operator">*</span> what_arg<span class="parenthesis">)</span>;
+</pre></blockquote>
+
+
+<h2>Changes in <a href="https://eel.is/c++draft/length.error">[length.error]</a></h2>
+Instructions to the editor:<br/>
+Please make the following edits to <a href="https://eel.is/c++draft/length.error">[length.error]</a>:
+<blockquote class="std"><pre class='codeblock'>
+<span class="keyword">namespace</span> std <span class="curlybracket">{</span>
+  <span class="keyword">class</span> length_error <span class="operator">:</span> <span class="keyword">public</span> logic_error <span class="curlybracket">{</span>
+  <span class="keyword">public</span><span class="operator">:</span>
+    <ins>constexpr </ins><span class="keyword">explicit</span> length_error<span class="parenthesis">(</span><span class="keyword">const</span> string<span class="operator">&amp;</span> what_arg<span class="parenthesis">)</span>;
+    <ins>constexpr </ins><span class="keyword">explicit</span> length_error<span class="parenthesis">(</span><span class="keyword">const</span> <span class="keyword">char</span><span class="operator">*</span> what_arg<span class="parenthesis">)</span>;
+    <ins>constexpr length_error<span class="operator">&amp;</span> <span class="keyword">operator</span><span class="operator">=</span><span class="parenthesis">(</span><span class="keyword">const</span> length_error<span class="operator">&amp;</span><span class="parenthesis">)</span> <span class="keyword">noexcept</span>;
+    constexpr <span class="keyword">virtual</span> <span class="operator">~</span>length_error<span class="parenthesis">(</span><span class="parenthesis">)</span>;
+    constexpr <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keyword">char</span><span class="operator">*</span> what<span class="parenthesis">(</span><span class="parenthesis">)</span> <span class="keyword">const</span> <span class="keyword">noexcept</span>;</ins>
+  <span class="curlybracket">}</span>;
+<span class="curlybracket">}</span>
+/*...*/
+<ins>constexpr </ins>length_error<span class="parenthesis">(</span><span class="keyword">const</span> string<span class="operator">&amp;</span> what_arg<span class="parenthesis">)</span>;
+/*...*/
+<ins>constexpr </ins>length_error<span class="parenthesis">(</span><span class="keyword">const</span> <span class="keyword">char</span><span class="operator">*</span> what_arg<span class="parenthesis">)</span>;</pre></blockquote>
+
+
+
+<h2>Changes in <a href="https://eel.is/c++draft/out.of.range">[out.of.range]</a></h2>
+Instructions to the editor:<br/>
+Please make the following edits to <a href="https://eel.is/c++draft/out.of.range">[out.of.range]</a>:
+<blockquote class="std"><pre class='codeblock'>
+<span class="keyword">namespace</span> std <span class="curlybracket">{</span>
+  <span class="keyword">class</span> out_of_range <span class="operator">:</span> <span class="keyword">public</span> logic_error <span class="curlybracket">{</span>
+  <span class="keyword">public</span><span class="operator">:</span>
+    <ins>constexpr </ins><span class="keyword">explicit</span> out_of_range<span class="parenthesis">(</span><span class="keyword">const</span> string<span class="operator">&amp;</span> what_arg<span class="parenthesis">)</span>;
+    <ins>constexpr </ins><span class="keyword">explicit</span> out_of_range<span class="parenthesis">(</span><span class="keyword">const</span> <span class="keyword">char</span><span class="operator">*</span> what_arg<span class="parenthesis">)</span>;
+    <ins>constexpr out_of_range<span class="operator">&amp;</span> <span class="keyword">operator</span><span class="operator">=</span><span class="parenthesis">(</span><span class="keyword">const</span> out_of_range<span class="operator">&amp;</span><span class="parenthesis">)</span> <span class="keyword">noexcept</span>;
+    constexpr <span class="keyword">virtual</span> <span class="operator">~</span>out_of_range<span class="parenthesis">(</span><span class="parenthesis">)</span>;
+    constexpr <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keyword">char</span><span class="operator">*</span> what<span class="parenthesis">(</span><span class="parenthesis">)</span> <span class="keyword">const</span> <span class="keyword">noexcept</span>;</ins>
+  <span class="curlybracket">}</span>;
+<span class="curlybracket">}</span>
+/*...*/
+<ins>constexpr </ins>out_of_range<span class="parenthesis">(</span><span class="keyword">const</span> string<span class="operator">&amp;</span> what_arg<span class="parenthesis">)</span>;
+/*...*/
+<ins>constexpr </ins>out_of_range<span class="parenthesis">(</span><span class="keyword">const</span> <span class="keyword">char</span><span class="operator">*</span> what_arg<span class="parenthesis">)</span>;</pre></blockquote>
+
+
+<h2>Changes in <a href="https://eel.is/c++draft/memory.syn">[memory.syn]</a></h2>
+Instructions to the editor:<br/>
+Please make the following edit to <a href="https://eel.is/c++draft/memory.syn">[memory.syn]</a>:
+<blockquote class="std">
+<pre class='codeblock'>
+  <span class="comment">// <a href="https://wg21.link/default.allocator" title="20.2.10 The default allocator">[default.<span class="shy"></span>allocator]</a>, the default allocator</span>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> T<span class="anglebracket">&gt;</span> <span class="keyword">class</span> allocator;<ins> <i>// freestanding-consteval</i></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> T, <span class="keyword">class</span> U<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> <span class="keyword">bool</span> <span class="keyword">operator</span><span class="operator">=</span><span class="operator">=</span><span class="parenthesis">(</span><span class="keyword">const</span> allocator<span class="anglebracket">&lt;</span>T<span class="anglebracket">&gt;</span><span class="operator">&amp;</span>, <span class="keyword">const</span> allocator<span class="anglebracket">&lt;</span>U<span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="parenthesis">)</span> <span class="keyword">noexcept</span>;<ins> <i>// freestanding-consteval</i></ins>
+</pre>
+</blockquote>
+
+<h2>Changes in <a href="https://eel.is/c++draft/string.view.template.general">[string.view.template.general]</a></h2>
+Instructions to the editor:<br/>
+Please make the following edit to <a href="https://eel.is/c++draft/string.view.template.general">[string.view.template.general]</a>:
+<blockquote class="std">
+<pre class='codeblock'>
+    <span class="comment">// <a href="#string.view.access" title="23.3.3.6 Element access">[string.<span class="shy"></span>view.<span class="shy"></span>access]</a>, element access</span>
+    <span class="keyword">constexpr</span> const_reference <span class="keyword">operator</span><span class="squarebracket">[</span><span class="squarebracket">]</span><span class="parenthesis">(</span>size_type pos<span class="parenthesis">)</span> <span class="keyword">const</span>;
+    <span class="keyword">constexpr</span> const_reference at<span class="parenthesis">(</span>size_type pos<span class="parenthesis">)</span> <span class="keyword">const</span>;                  <span class="comment">// freestanding-<del>deleted</del><ins>consteval</ins></span>
+    <span class="keyword">constexpr</span> const_reference front<span class="parenthesis">(</span><span class="parenthesis">)</span> <span class="keyword">const</span>;
+    <span class="keyword">constexpr</span> const_reference back<span class="parenthesis">(</span><span class="parenthesis">)</span> <span class="keyword">const</span>;
+    <span class="keyword">constexpr</span> const_pointer data<span class="parenthesis">(</span><span class="parenthesis">)</span> <span class="keyword">const</span> <span class="keyword">noexcept</span>;
+
+    <span class="comment">// <a href="#string.view.modifiers" title="23.3.3.7 Modifiers">[string.<span class="shy"></span>view.<span class="shy"></span>modifiers]</a>, modifiers</span>
+    <span class="keyword">constexpr</span> <span class="keyword">void</span> remove_prefix<span class="parenthesis">(</span>size_type n<span class="parenthesis">)</span>;
+    <span class="keyword">constexpr</span> <span class="keyword">void</span> remove_suffix<span class="parenthesis">(</span>size_type n<span class="parenthesis">)</span>;
+    <span class="keyword">constexpr</span> <span class="keyword">void</span> swap<span class="parenthesis">(</span>basic_string_view<span class="operator">&amp;</span> s<span class="parenthesis">)</span> <span class="keyword">noexcept</span>;
+
+    <span class="comment">// <a href="#string.view.ops" title="23.3.3.8 String operations">[string.<span class="shy"></span>view.<span class="shy"></span>ops]</a>, string operations</span>
+    <span class="keyword">constexpr</span> size_type copy<span class="parenthesis">(</span>charT<span class="operator">*</span> s, size_type n,
+                             size_type pos <span class="operator">=</span> <span class="literal">0</span><span class="parenthesis">)</span> <span class="keyword">const</span>;                  <span class="comment">// freestanding-<del>deleted</del><ins>consteval</ins></span>
+
+    <span class="keyword">constexpr</span> basic_string_view substr<span class="parenthesis">(</span>size_type pos <span class="operator">=</span> <span class="literal">0</span>,
+                                       size_type n <span class="operator">=</span> npos<span class="parenthesis">)</span> <span class="keyword">const</span>;       <span class="comment">// freestanding-<del>deleted</del><ins>consteval</ins></span>
+
+    <span class="keyword">constexpr</span> <span class="keyword">int</span> compare<span class="parenthesis">(</span>basic_string_view s<span class="parenthesis">)</span> <span class="keyword">const</span> <span class="keyword">noexcept</span>;
+    <span class="keyword">constexpr</span> <span class="keyword">int</span> compare<span class="parenthesis">(</span>size_type pos1, size_type n1,
+                          basic_string_view s<span class="parenthesis">)</span> <span class="keyword">const</span>;                   <span class="comment">// freestanding-<del>deleted</del><ins>consteval</ins></span>
+    <span class="keyword">constexpr</span> <span class="keyword">int</span> compare<span class="parenthesis">(</span>size_type pos1, size_type n1, basic_string_view s,
+                          size_type pos2, size_type n2<span class="parenthesis">)</span> <span class="keyword">const</span>;          <span class="comment">// freestanding-<del>deleted</del><ins>consteval</ins></span>
+    <span class="keyword">constexpr</span> <span class="keyword">int</span> compare<span class="parenthesis">(</span><span class="keyword">const</span> charT<span class="operator">*</span> s<span class="parenthesis">)</span> <span class="keyword">const</span>;
+    <span class="keyword">constexpr</span> <span class="keyword">int</span> compare<span class="parenthesis">(</span>size_type pos1, size_type n1,
+                          <span class="keyword">const</span> charT<span class="operator">*</span> s<span class="parenthesis">)</span> <span class="keyword">const</span>;                        <span class="comment">// freestanding-<del>deleted</del><ins>consteval</ins></span>
+    <span class="keyword">constexpr</span> <span class="keyword">int</span> compare<span class="parenthesis">(</span>size_type pos1, size_type n1, <span class="keyword">const</span> charT<span class="operator">*</span> s,
+                          size_type n2<span class="parenthesis">)</span> <span class="keyword">const</span>;                          <span class="comment">// freestanding-<del>deleted</del><ins>consteval</ins></span>
+</pre>
+</blockquote>
+
+<h2>Changes in <a href="https://eel.is/c++draft/string.syn">[string.syn]</a></h2>
+Instructions to the editor:<br/>
+Please make the following edits to <a href="https://eel.is/c++draft/string.syn">[string.syn]</a>:
+<blockquote class="std">
+<pre class='codeblock'>
+
+  <span class="comment">// <a href="basic.string" title="23.4.3 Class template basic_­string">[basic.<span class="shy"></span>string]</a>, <span class="tcode_in_codeblock">basic_<span class="shy"></span>string</span></span>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits <span class="operator">=</span> char_traits<span class="anglebracket">&lt;</span>charT<span class="anglebracket">&gt;</span>, <span class="keyword">class</span> Allocator <span class="operator">=</span> allocator<span class="anglebracket">&lt;</span>charT<span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span>
+    <span class="keyword">class</span> basic_string;<ins> <span class="comment">// freestanding-consteval</span></ins>
+
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span>
+      <span class="keyword">operator</span><span class="operator">+</span><span class="parenthesis">(</span><span class="keyword">const</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> lhs,
+                <span class="keyword">const</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> rhs<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span>
+      <span class="keyword">operator</span><span class="operator">+</span><span class="parenthesis">(</span>basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> lhs,
+                <span class="keyword">const</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> rhs<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span>
+      <span class="keyword">operator</span><span class="operator">+</span><span class="parenthesis">(</span><span class="keyword">const</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> lhs,
+                basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> rhs<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span>
+      <span class="keyword">operator</span><span class="operator">+</span><span class="parenthesis">(</span>basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> lhs,
+                basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> rhs<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span>
+      <span class="keyword">operator</span><span class="operator">+</span><span class="parenthesis">(</span><span class="keyword">const</span> charT<span class="operator">*</span> lhs,
+                <span class="keyword">const</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> rhs<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span>
+      <span class="keyword">operator</span><span class="operator">+</span><span class="parenthesis">(</span><span class="keyword">const</span> charT<span class="operator">*</span> lhs,
+                basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> rhs<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span>
+      <span class="keyword">operator</span><span class="operator">+</span><span class="parenthesis">(</span>charT lhs,
+                <span class="keyword">const</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> rhs<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span>
+      <span class="keyword">operator</span><span class="operator">+</span><span class="parenthesis">(</span>charT lhs,
+                basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> rhs<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span>
+      <span class="keyword">operator</span><span class="operator">+</span><span class="parenthesis">(</span><span class="keyword">const</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> lhs,
+                <span class="keyword">const</span> charT<span class="operator">*</span> rhs<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span>
+      <span class="keyword">operator</span><span class="operator">+</span><span class="parenthesis">(</span>basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> lhs,
+                <span class="keyword">const</span> charT<span class="operator">*</span> rhs<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span>
+      <span class="keyword">operator</span><span class="operator">+</span><span class="parenthesis">(</span><span class="keyword">const</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> lhs,
+                charT rhs<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span>
+      <span class="keyword">operator</span><span class="operator">+</span><span class="parenthesis">(</span>basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> lhs,
+                charT rhs<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span>
+      <span class="keyword">operator</span><span class="operator">+</span><span class="parenthesis">(</span><span class="keyword">const</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> lhs,
+                type_identity_t<span class="anglebracket">&lt;</span>basic_string_view<span class="anglebracket">&lt;</span>charT, traits<span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span> rhs<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span>
+      <span class="keyword">operator</span><span class="operator">+</span><span class="parenthesis">(</span>basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> lhs,
+                type_identity_t<span class="anglebracket">&lt;</span>basic_string_view<span class="anglebracket">&lt;</span>charT, traits<span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span> rhs<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span>
+      <span class="keyword">operator</span><span class="operator">+</span><span class="parenthesis">(</span>type_identity_t<span class="anglebracket">&lt;</span>basic_string_view<span class="anglebracket">&lt;</span>charT, traits<span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span> lhs,
+                <span class="keyword">const</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> rhs<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span>
+      <span class="keyword">operator</span><span class="operator">+</span><span class="parenthesis">(</span>type_identity_t<span class="anglebracket">&lt;</span>basic_string_view<span class="anglebracket">&lt;</span>charT, traits<span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span> lhs,
+                basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> rhs<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> <span class="keyword">bool</span>
+      <span class="keyword">operator</span><span class="operator">=</span><span class="operator">=</span><span class="parenthesis">(</span><span class="keyword">const</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> lhs,
+                 <span class="keyword">const</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> rhs<span class="parenthesis">)</span> <span class="keyword">noexcept</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> <span class="keyword">bool</span> <span class="keyword">operator</span><span class="operator">=</span><span class="operator">=</span><span class="parenthesis">(</span><span class="keyword">const</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> lhs,
+                              <span class="keyword">const</span> charT<span class="operator">*</span> rhs<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> <i><span class="texttt">see below</span></i> <span class="keyword">operator</span><span class="anglebracket">&lt;</span><span class="operator">=</span><span class="anglebracket">&gt;</span><span class="parenthesis">(</span><span class="keyword">const</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> lhs,
+                                    <span class="keyword">const</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> rhs<span class="parenthesis">)</span> <span class="keyword">noexcept</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> <i><span class="texttt">see below</span></i> <span class="keyword">operator</span><span class="anglebracket">&lt;</span><span class="operator">=</span><span class="anglebracket">&gt;</span><span class="parenthesis">(</span><span class="keyword">const</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> lhs,
+                                    <span class="keyword">const</span> charT<span class="operator">*</span> rhs<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+
+  <span class="comment">// <a href="string.special" title="23.4.4.3 swap">[string.<span class="shy"></span>special]</a>, swap</span>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> <span class="keyword">void</span>
+      swap<span class="parenthesis">(</span>basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> lhs,
+           basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> rhs<span class="parenthesis">)</span>
+        <span class="keyword">noexcept</span><span class="parenthesis">(</span><span class="keyword">noexcept</span><span class="parenthesis">(</span>lhs<span class="operator">.</span>swap<span class="parenthesis">(</span>rhs<span class="parenthesis">)</span><span class="parenthesis">)</span><span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+
+  <span class="comment">// <a href="string.io" title="23.4.4.4 Inserters and extractors">[string.<span class="shy"></span>io]</a>, inserters and extractors</span>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    basic_istream<span class="anglebracket">&lt;</span>charT, traits<span class="anglebracket">&gt;</span><span class="operator">&amp;</span>
+      <span class="keyword">operator</span><span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span><span class="parenthesis">(</span>basic_istream<span class="anglebracket">&lt;</span>charT, traits<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> is,
+                 basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> str<span class="parenthesis">)</span>;
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    basic_ostream<span class="anglebracket">&lt;</span>charT, traits<span class="anglebracket">&gt;</span><span class="operator">&amp;</span>
+      <span class="keyword">operator</span><span class="anglebracket">&lt;</span><span class="anglebracket">&lt;</span><span class="parenthesis">(</span>basic_ostream<span class="anglebracket">&lt;</span>charT, traits<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> os,
+                 <span class="keyword">const</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> str<span class="parenthesis">)</span>;
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    basic_istream<span class="anglebracket">&lt;</span>charT, traits<span class="anglebracket">&gt;</span><span class="operator">&amp;</span>
+      getline<span class="parenthesis">(</span>basic_istream<span class="anglebracket">&lt;</span>charT, traits<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> is,
+              basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> str,
+              charT delim<span class="parenthesis">)</span>;
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    basic_istream<span class="anglebracket">&lt;</span>charT, traits<span class="anglebracket">&gt;</span><span class="operator">&amp;</span>
+      getline<span class="parenthesis">(</span>basic_istream<span class="anglebracket">&lt;</span>charT, traits<span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> is,
+              basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> str,
+              charT delim<span class="parenthesis">)</span>;
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    basic_istream<span class="anglebracket">&lt;</span>charT, traits<span class="anglebracket">&gt;</span><span class="operator">&amp;</span>
+      getline<span class="parenthesis">(</span>basic_istream<span class="anglebracket">&lt;</span>charT, traits<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> is,
+              basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> str<span class="parenthesis">)</span>;
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    basic_istream<span class="anglebracket">&lt;</span>charT, traits<span class="anglebracket">&gt;</span><span class="operator">&amp;</span>
+      getline<span class="parenthesis">(</span>basic_istream<span class="anglebracket">&lt;</span>charT, traits<span class="anglebracket">&gt;</span><span class="operator">&amp;</span><span class="operator">&amp;</span> is,
+              basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> str<span class="parenthesis">)</span>;
+
+  <span class="comment">// <a href="string.erasure" title="23.4.4.5 Erasure">[string.<span class="shy"></span>erasure]</a>, erasure</span>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator, <span class="keyword">class</span> U <span class="operator">=</span> charT<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> <span class="keyword">typename</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">::</span>size_type
+      erase<span class="parenthesis">(</span>basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> c, <span class="keyword">const</span> U<span class="operator">&amp;</span> value<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> charT, <span class="keyword">class</span> traits, <span class="keyword">class</span> Allocator, <span class="keyword">class</span> Predicate<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> <span class="keyword">typename</span> basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">::</span>size_type
+      erase_if<span class="parenthesis">(</span>basic_string<span class="anglebracket">&lt;</span>charT, traits, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> c, Predicate pred<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+
+  <span class="comment">// <span class="tcode_in_codeblock">basic_<span class="shy"></span>string</span> <a href="dcl.typedef#nt:typedef-name" title="9.2.4 The typedef specifier [dcl.typedef]"><span id="ntref:typedef-name"><span class="textsf"><i>typedef-name</i></span></span></a><i>s</i></span>
+  <span class="keyword">using</span> <span id="lib:string"><a class="hidden_link" href="#lib:string" title="23.4.2 Header <string> synopsis [string.syn]">string</a></span>    <span class="operator">=</span> basic_string<span class="anglebracket">&lt;</span><span class="keyword">char</span><span class="anglebracket">&gt;</span>;<ins> <span class="comment">// freestanding</span></ins>
+  <span class="keyword">using</span> <span id="lib:u8string"><a class="hidden_link" href="#lib:u8string" title="23.4.2 Header <string> synopsis [string.syn]">u8string</a></span>  <span class="operator">=</span> basic_string<span class="anglebracket">&lt;</span><span class="keyword">char8_t</span><span class="anglebracket">&gt;</span>;<ins> <span class="comment">// freestanding</span></ins>
+  <span class="keyword">using</span> <span id="lib:u16string"><a class="hidden_link" href="#lib:u16string" title="23.4.2 Header <string> synopsis [string.syn]">u16string</a></span> <span class="operator">=</span> basic_string<span class="anglebracket">&lt;</span><span class="keyword">char16_t</span><span class="anglebracket">&gt;</span>;<ins> <span class="comment">// freestanding</span></ins>
+  <span class="keyword">using</span> <span id="lib:u32string"><a class="hidden_link" href="#lib:u32string" title="23.4.2 Header <string> synopsis [string.syn]">u32string</a></span> <span class="operator">=</span> basic_string<span class="anglebracket">&lt;</span><span class="keyword">char32_t</span><span class="anglebracket">&gt;</span>;<ins> <span class="comment">// freestanding</span></ins>
+  <span class="keyword">using</span> <span id="lib:wstring"><a class="hidden_link" href="#lib:wstring" title="23.4.2 Header <string> synopsis [string.syn]">wstring</a></span>   <span class="operator">=</span> basic_string<span class="anglebracket">&lt;</span><span class="keyword">wchar_t</span><span class="anglebracket">&gt;</span>;<ins> <span class="comment">// freestanding</span></ins>
+/* ... */
+  <span class="keyword">inline</span> <span class="keyword">namespace</span> literals <span class="curlybracket">{</span>
+    <span class="keyword">inline</span> <span class="keyword">namespace</span> string_literals <span class="curlybracket">{</span>
+      <span class="comment">// <a href="basic.string.literals" title="23.4.7 Suffix for basic_­string literals">[basic.<span class="shy"></span>string.<span class="shy"></span>literals]</a>, suffix for <span class="tcode_in_codeblock">basic_<span class="shy"></span>string</span> literals</span>
+      <span class="keyword">constexpr</span> string    <span class="keyword">operator</span><span class="literal">""s</span><span class="parenthesis">(</span><span class="keyword">const</span> <span class="keyword">char</span><span class="operator">*</span> str, size_t len<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+      <span class="keyword">constexpr</span> u8string  <span class="keyword">operator</span><span class="literal">""s</span><span class="parenthesis">(</span><span class="keyword">const</span> <span class="keyword">char8_t</span><span class="operator">*</span> str, size_t len<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+      <span class="keyword">constexpr</span> u16string <span class="keyword">operator</span><span class="literal">""s</span><span class="parenthesis">(</span><span class="keyword">const</span> <span class="keyword">char16_t</span><span class="operator">*</span> str, size_t len<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+      <span class="keyword">constexpr</span> u32string <span class="keyword">operator</span><span class="literal">""s</span><span class="parenthesis">(</span><span class="keyword">const</span> <span class="keyword">char32_t</span><span class="operator">*</span> str, size_t len<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+      <span class="keyword">constexpr</span> wstring   <span class="keyword">operator</span><span class="literal">""s</span><span class="parenthesis">(</span><span class="keyword">const</span> <span class="keyword">wchar_t</span><span class="operator">*</span> str, size_t len<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+    <span class="curlybracket">}</span>
+  <span class="curlybracket">}</span>
+</pre>
+</blockquote>
+
+<h2>Changes in <a href="https://eel.is/c++draft/vector.syn">[vector.syn]</a></h2>
+Instructions to the editor:<br/>
+Please make the following edits to <a href="https://eel.is/c++draft/vector.syn">[vector.syn]</a>:
+<blockquote class="std">
+<pre class='codeblock'>
+
+  <span class="comment">// <a href="vector" title="24.3.11 Class template vector">[vector]</a>, class template <span class="tcode_in_codeblock">vector</span></span><ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> T, <span class="keyword">class</span> Allocator <span class="operator">=</span> allocator<span class="anglebracket">&lt;</span>T<span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span> <span class="keyword">class</span> vector;<ins> <span class="comment">// freestanding-consteval</span></ins>
+
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> T, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> <span class="keyword">bool</span> <span class="keyword">operator</span><span class="operator">=</span><span class="operator">=</span><span class="parenthesis">(</span><span class="keyword">const</span> vector<span class="anglebracket">&lt;</span>T, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> x, <span class="keyword">const</span> vector<span class="anglebracket">&lt;</span>T, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> y<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> T, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> <i>synth-three-way-result</i><span class="anglebracket">&lt;</span>T<span class="anglebracket">&gt;</span> <span class="keyword">operator</span><span class="anglebracket">&lt;</span><span class="operator">=</span><span class="anglebracket">&gt;</span><span class="parenthesis">(</span><span class="keyword">const</span> vector<span class="anglebracket">&lt;</span>T, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> x,
+                                                    <span class="keyword">const</span> vector<span class="anglebracket">&lt;</span>T, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> y<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> T, <span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> <span class="keyword">void</span> swap<span class="parenthesis">(</span>vector<span class="anglebracket">&lt;</span>T, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> x, vector<span class="anglebracket">&lt;</span>T, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> y<span class="parenthesis">)</span>
+      <span class="keyword">noexcept</span><span class="parenthesis">(</span><span class="keyword">noexcept</span><span class="parenthesis">(</span>x<span class="operator">.</span>swap<span class="parenthesis">(</span>y<span class="parenthesis">)</span><span class="parenthesis">)</span><span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+
+  <span class="comment">// <a href="vector.erasure" title="24.3.11.6 Erasure">[vector.<span class="shy"></span>erasure]</a>, erasure</span>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> T, <span class="keyword">class</span> Allocator, <span class="keyword">class</span> U <span class="operator">=</span> T<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> <span class="keyword">typename</span> vector<span class="anglebracket">&lt;</span>T, Allocator<span class="anglebracket">&gt;</span><span class="operator">::</span>size_type
+      erase<span class="parenthesis">(</span>vector<span class="anglebracket">&lt;</span>T, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> c, <span class="keyword">const</span> U<span class="operator">&amp;</span> value<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> T, <span class="keyword">class</span> Allocator, <span class="keyword">class</span> Predicate<span class="anglebracket">&gt;</span>
+    <span class="keyword">constexpr</span> <span class="keyword">typename</span> vector<span class="anglebracket">&lt;</span>T, Allocator<span class="anglebracket">&gt;</span><span class="operator">::</span>size_type
+      erase_if<span class="parenthesis">(</span>vector<span class="anglebracket">&lt;</span>T, Allocator<span class="anglebracket">&gt;</span><span class="operator">&amp;</span> c, Predicate pred<span class="parenthesis">)</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+
+  <span class="keyword">namespace</span> pmr <span class="curlybracket">{</span>
+    <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> T<span class="anglebracket">&gt;</span>
+      <span class="keyword">using</span> vector <span class="operator">=</span> std<span class="operator">::</span>vector<span class="anglebracket">&lt;</span>T, polymorphic_allocator<span class="anglebracket">&lt;</span>T<span class="anglebracket">&gt;</span><span class="anglebracket">&gt;</span>;
+  <span class="curlybracket">}</span>
+
+  <span class="comment">// <a href="vector.bool" title="24.3.12 Specialization of vector for bool">[vector.<span class="shy"></span>bool]</a>, specialization of <span class="tcode_in_codeblock">vector</span> for <span class="tcode_in_codeblock">bool</span></span>
+  <span class="comment">// <a href="vector.bool.pspc" title="24.3.12.1 Partial class template specialization vector<bool, Allocator>">[vector.<span class="shy"></span>bool.<span class="shy"></span>pspc]</a>, partial class template specialization <span class="tcode_in_codeblock">vector&lt;bool, Allocator&gt;</span></span>
+  <span class="keyword">template</span><span class="anglebracket">&lt;</span><span class="keyword">class</span> Allocator<span class="anglebracket">&gt;</span>
+    <span class="keyword">class</span> vector<span class="anglebracket">&lt;</span><span class="keyword">bool</span>, Allocator<span class="anglebracket">&gt;</span>;<ins> <span class="comment">// freestanding-consteval</span></ins>
+</pre>
+</blockquote>
+
+</body>
+</html>
