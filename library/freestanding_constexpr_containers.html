@@ -433,7 +433,7 @@ This paper has chosen to prioritize the reflection subset of that work, rather t
 
 <h2>Performance regression when porting from freestanding to hosted</h2>
 <p>
-<code>consteval</code> functions are never evaluated during compile time, but <code>constexpr</code> functions are sometime evaluated during runtime.
+<code>consteval</code> functions are never evaluated during runtime, but <code>constexpr</code> functions are sometime evaluated during runtime.
 A freestanding library using a <code>consteval</code> facility may end up "downgrading" some code from compile time to runtime during a port to a hosted environment due to the change to <code>constexpr</code>.
 This can result in worse performance due to the runtime function calls and allocations that were previously compile time function calls and allocations.
 </p><p>
