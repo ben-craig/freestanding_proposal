@@ -1,0 +1,163 @@
+<pre class='metadata'>
+Title: C++ borrow checking is possible
+Shortname: D3085
+Revision: 0
+Audience: WG21
+Status: D
+Group: WG21
+URL: https://wg21.link/TODO
+!Source: <a href="https://github.com/ben-craig/freestanding_proposal/blob/master/borrow_checking_is_possible.bs">github.com/ben-craig/freestanding_proposal/blob/master/borrow_checking_is_possible.bs</a>
+Editor:
+    Sean Baxter, seanbax.circle@gmail.com
+    Ben Craig, ben.craig@gmail.com
+Abstract:
+    Until recently, it was an open question whether a Rust-like borrow checking facility could be made to work in C++ without breaking compatibility.
+    We now present a prototype demonstrating that such a facility is possible.
+
+Markup Shorthands: markdown yes
+</pre>
+
+Revision history {#rev}
+=====================
+First revision!
+
+Introduction {#introduction}
+=====================
+This paper seeks to demonstrate that there is a path forward in C++ to achieve memory safety through borrow-checking, as well as request further engagement from WG21 in making progress on this approach.
+The prototype implementation can be found on compiler explorer (TODO: add link).
+
+The US government (TODO: Cite various government papers pushing people to memory safety) [[NSA_CIS]] is encouraging the industry to move towards memory safe languages.
+
+X% of PROJECT's security vulnerabilities in C++ code are the result of memory unsafety.
+
+Memory-safety does not attempt to solve all security problems.
+SQL and command injection attacks are not addressed.
+Denial of service attacks due to performance or logic errors are not addressed.
+
+There are two major categories of ways to gain memory safety that have seen wide deployment.
+Garbage collection is one approach used by most managed languages.
+The overhead of garbage-collection-by-default is generally considered too high for C++.
+The other approach is borrow-checking as implemented by Rust (TODO: cite various Rust references and RFCs)[[Rustnomicon]].
+With borrow-checking, most memory safety checks are handled at build time.
+With borrow-checking, not all resources are required to be on the heap.
+This paper recommends a borrow-checking approach.
+
+Memory-safety means ???. TODO: is there a good informal definition of memory-safety that can be inserted here?
+// a monad is a monoid in the category of endofunctors, what's the problem?
+
+Users will need to write different code (or change their existing code) to gain memory-safety.
+Why would a user choose to write safe C++ rather than use Rust directly?
+Because it is easier and more convenient to use fewer tools and fewer language boundaries, rather than more.
+Crossing language boundaries is tedious and error-prone, so it is better if we can provide guarantees within the language rather than delegating those responsibilities to another language.
+
+If a user isn't able to make their entire program safe, then what improvements do they get from making parts of their program safe?
+The portions of the program that are marked as safe won't be the cause of undefined behavior, reducing the portion of the application that the developer needs to worry about.
+
+Prior Art {#prior_art}
+==========================
+TODO: Discuss MiraclePtr
+
+TODO: Discuss how the new approach avoids and/or resolves the problems discussed in [[BorrowingTrouble]]
+
+Feature set {#feature_set}
+==========================
+
+`safe` functions {#safe_functions}
+--------------------------
+Functions can be marked as `safe`.
+`safe` functions that would exhibit undefined behavior are instead either ill-formed or abort at runtime.
+
+```c++
+void safe_div(int n, int d) safe {
+    return n / d; // aborts on zero division
+}
+void ill_formed_incr(int* n) safe {
+    ++ *n; // can't dereference a pointer in a safe function
+}
+void safe_incr(int^ n) safe { // mutable borrow
+    ++ *n;
+}
+```
+
+Borrow types {#borrow_types}
+----------------------------
+```c++
+void safe_fn() safe {
+    int^ p; // declare a mutable borrowed int
+    {
+        int x = 100;
+        p = ^x; // borrow x
+    }
+    int value = *p; // ill-formed due to dangling
+    unsafe printf("%d\n", value);
+}
+```
+
+Relocation {#relocation}
+------------------------
+// Hoping that in-flight efforts will largely resolve this.  Hoping that extra needs can be extracted into an early paper
+
+Pattern matching {#pattern_matching}
+------------------------
+// Hoping that in-flight efforts will largely resolve this.
+// Do-expressions can hopefully also make it worthwhile.
+
+Lifetime type annotations {#lifetime_type_annotations}
+----------------------------------------
+
+Iterator model {#iterator_model}
+--------------------
+// Hoping we can figure out a way to add to existing types for this, rather than make new types
+
+Trait interfaces {#trait_interfaces}
+--------------------
+// Hoping we can figure out a way to narrow the scope to avoid this feature while still fitting its use case
+
+Thread safety {#thread_safety}
+--------------------
+
+Per-file feature opt-ins {#opt_ins}
+--------------------------------
+
+Range checking {#range_checking}
+---------------------------------
+
+Opting out of checking {#checking_opt_outs}
+--------------------------------------
+unsafe, unchecked
+
+Future steps {#future_steps}
+==============
+
+Componetize work {#componentize_work}
+--------------------------------------
+The work described in the previous sections is too much to reasonable specify in a single paper.
+
+Mutable globals {#mutable_globals}
+--------------------------------------
+
+Minimize standard library additions {#minimize_stdlib_additions}
+--------------------------------------
+In the prototype, many vocabulary types like `unique_ptr`, `variant`, and `vector` were duplicated into the `std2` namespace in order to make those types work with borrow-checking.
+It may be possible to modify the existing types to avoid this duplication, but research is needed to determine how to do so.
+
+<pre class=biblio>
+{
+    "NSA_CIS": {
+        "authors": ["United States National Security Agency"],
+        "title": "Cybersecurity Information Sheet",
+        "href": "https://media.defense.gov/2022/Nov/10/2003112742/-1/-1/0/CSI_SOFTWARE_MEMORY_SAFETY.PDF"
+    },
+    "BorrowingTrouble": {
+        "authors": [
+            "danakj@chromium.org", "lukasza@chromium.org", "palmer@chromium.org"
+        ],
+        "title": "Borrowing Trouble: The Difficulties Of A C++ Borrow-Checker",
+        "href": "https://docs.google.com/document/u/1/d/e/2PACX-1vSt2VB1zQAJ6JDMaIA9PlmEgBxz2K5Tx6w2JqJNeYCy0gU4aoubdTxlENSKNSrQ2TXqPWcuwtXe6PlO/pub?urp=gmail_link"
+    },
+    "Rustnomicon": {
+        "title": "The Rustonomicon",
+        "href": "https://doc.rust-lang.org/nomicon/"
+    }
+}
+</pre>
