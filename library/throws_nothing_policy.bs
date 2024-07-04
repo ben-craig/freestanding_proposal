@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: `noexcept` policy for SD-9 (throws nothing)
 Shortname: P3085
-Revision: 2
+Revision: 3
 Audience: LEWG
 Status: P
 Group: WG21
@@ -14,6 +14,11 @@ Markup Shorthands: markdown yes
 
 Revision history {#rev}
 =====================
+
+R3 {#rev-r3}
+-----
+* Discuss [[Estell3313]] in [[#size_bloat]].
+* Discuss [[Voutilainen3318]] in [[#throwing_security]].
 
 R2 {#rev-r2}
 ----
@@ -403,6 +408,10 @@ When exceptions are disabled, the "`noexcept(true)` calls `noexcept(true)`" code
 If standard library "Throws: nothing" functions are left as `noexcept(false)`, then users can write those functions better themselves in terms of code bloat.
 This demonstrates a violation of the zero-overhead rule [[StroustrupDE]].
 
+[[Estell3313]] discusses `noexcept` code bloat on the ARM architecture.
+The paper finds that `noexcept` generally reduces generated code, though it doubts that doing so is is worth the cost.
+The paper suggests toolchain improvements that could bring many of the code size benefits of `noexcept` without the compatibility cost.
+
 ### Vectorization ### {#vectorization}
 `noexcept(false)` functions have an additional control flow edge compared to `noexcept(true)` functions.
 In theory, this additional control flow edge could impact optimizations like vectorization.
@@ -619,6 +628,12 @@ This is typically done by exiting the program as quickly as possible.
 Throwing an exception runs a lot of instructions.
 Many of those instructions are indirect code branches, which are particularly dangerous.
 The Microsoft Visual Studio 32-bit x86 implementation has a build flag (`/SAFESEH`) to harden their exception handling implementation against attacks attempting to leverage those indirect code branches, but the number of instructions run is still very high.
+
+[[Voutilainen3318]] argues against this position.
+The author states that end developers with domain appropriate knowledge are in the best position to make the choice about throwing exceptions from contract violation handlers, and that they can make good decisions about which parts of a system are security sensitive.
+The parts of the application that are security sensitive would either have alternative mitigations, or they would choose to not throw exceptions from their violation handler.
+
+In addition [[Voutilainen3318]] argues that, depending on the application, you may not be in an unknown and/or unrecoverable state when a contract is violated.
 
 ### Temporary continuation ### {#temporary_continuation}
 [[Lakos2861]]
@@ -1474,7 +1489,17 @@ Thanks to David Sankel for providing wording suggestions.
     "Gustafsson3183": {
         "authors": ["Bengt Gustafsson"],
         "title": "Contract testing support",
-        "href": "bengt.gustafsson@beamways.com"
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p3183r1.pdf"
+    },
+    "Estell3313": {
+        "authors": ["Khalil Estell"],
+        "title": "Impacts of noexcept on ARM table based exception metadata",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p3313r0.html"
+    },
+    "Voutilainen3318": {
+        "authors": ["Ville Voutilainen"],
+        "title": "Throwing violation handlers, from an application programming perspective",
+        "href": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p3318r0.html"
     },
     "StroustrupDE": {
         "authors": ["Bjarne Stroustrup"],
