@@ -797,15 +797,20 @@ table.enumerate td:first-child {
 </style>
 <link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css2?family=Noto+Serif'/><link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css2?family=Noto+Sans'/><link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css2?family=Noto+Sans+Mono'/>
 
-<title>P3295R1: Freestanding constexpr containers and constexpr exception types</title>
+<title>P3295R2: Freestanding constexpr containers and constexpr exception types</title>
 <body>
 <h1>Freestanding constexpr containers and constexpr exception types</h1>
-Document number: P3295R1<br/>
-Date: 2024-09-15<br/>
+Document number: P3295R2<br/>
+Date: 2024-10-12<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: Library Evolution Working Group
 
 <h1>Changes from previous revisions</h1>
+<h2>R2</h2>
+<ul>
+  <li>Better aligning with P3160 and P3418's allocator design.</li>
+  <li>Mentioning P3421: Consteval Destructors</li>
+</ul>
 <h2>R1</h2>
 <ul>
   <li>Discussing implementation experience.</li>
@@ -936,7 +941,7 @@ That means that it is acceptable (though unfortunate) that an <code>operator del
 In practice, I don't think this will be a big problem, as there isn't much that can be done with a default constructed runtime container where all the mutating operations are <code>consteval</code>.
 </p><p>
 Ideally, this scenario would be ill-formed.
-The author is working on a paper to permit <code>consteval</code> destructors, which would improve this situation.
+The author has proposed <a href="https://wg21.link/P3421">P3421: Consteval Destructors</a> which would improve this situation.
 <code>consteval</code> destructors aren't a requirement for this paper though.
 </p>
 
@@ -945,9 +950,10 @@ The author is working on a paper to permit <code>consteval</code> destructors, w
 Is <code>std::allocator</code> still an allocator if it can only <code>allocate</code> and <code>deallocate</code> at compile time?
 </p><p>
 In practice, this seems to work fine in code.
-It's challenging to specify this with the system of named requirements in combination with the layers of indirection imposed with <code>allocator_traits</code>.
+So I'm leaving the requirements alone.
+This paper doesn't make any changes to the named requirements for allocators or allocator_traits.
 </p><p>
-This paper weakens the requirements for allocators, but only on freestanding implementations.
+Maybe in the future the standard will be more explicit about when library facilities need to be available at compile time vs. run time.
 </p>
 
 <h2><code>constexpr</code> <code>logic_error</code>s</h2>
@@ -1012,13 +1018,14 @@ Whichever paper makes it through LWG first can mark the various exceptions as <c
 
 <h2>Allocators</h2>
 <p>
-<a href="wg21.link/P3160R2">P3160R2 "An Allocator-Aware inplace_vector"</a> needs to make allocators freestanding, since <code>inplace_vector</code> is already freestanding.
+<a href="wg21.link/P3160R2">P3160R2 "An Allocator-Aware inplace_vector"</a> and <a href="https://wg21.link/P3418R0">P3418R0 Wording for P3160R2 inplace_vector's "construct/destroy" alternative</a>
+needd to make allocators freestanding, since <code>inplace_vector</code> is already freestanding.
 </p><p>
 <code>inplace_vector</code> doesn't directly need the <code>allocate</code> and <code>deallocate</code> methods in the allocator.
 This paper needs those methods, but only during constant evaluation.
 </p><p>
 For allocator wording ([allocator.requirements.general] and [allocator.traits.memgers]), this paper's wording matches draft versions of P3160.
-This paper's freestanding-consteval changes in [default.allocator] are likely to supercede the freestanding-deleted changes from P3160.
+This paper's freestanding-consteval changes in [default.allocator] use a different wording technique than the <code>inplace_vector</code> papers, but the intent is the same.
 </p>
 
 <h1>Wording</h1>
@@ -1429,88 +1436,6 @@ Please make the following edit to <a href="https://eel.is/c++draft/default.alloc
       <span class="keyword">constexpr</span> <span class="keyword">void</span> deallocate<span class="parenthesis">(</span>T<span class="operator">*</span> p, size_t n<span class="parenthesis">)</span>;<ins> <i>// freestanding-consteval</i></ins>
     <span class="curlybracket">}</span>;
   <span class="curlybracket">}</span></span></blockquote>
-
-
-
-<h2>Changes in <a href="https://eel.is/c++draft/allocator.requirements.general">[allocator.requirements.general]</a></h2>
-  Instructions to the editor:<br/>
-  Please make the following edit to <a href="https://eel.is/c++draft/allocator.requirements.general">[allocator.requirements.general]</a>:
-
-<blockquote class = "std">
-  <div class="texpara">
-    <div class="itemdecl" id="itemdecl:16"><code class="itemdeclcode">a<span class="operator">.</span>allocate<span class="parenthesis">(</span>n<span class="parenthesis">)</span>
-  </code></div>
-  </div>
-  <div class="para" id="35"><div class="marginalizedparent"><a class="marginalized" href="#35">35</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/0bfdc5feca1e4a216d212dad2ef108eee637a949/source/lib-intro.tex#L2373">#</a></div><div class="texpara"><div id="35.sentence-1" class="sentence"><i>Result</i>: <span class="texttt">XX<span class="operator">​::​</span>pointer</span></div></div></div></div>
-  <div class="para" id="36"><div class="marginalizedparent"><a class="marginalized" href="#36">36</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/0bfdc5feca1e4a216d212dad2ef108eee637a949/source/lib-intro.tex#L2377">#</a></div><div class="texpara"><div id="36.sentence-1" class="sentence"><i>Effects</i>: Memory is allocated for an array of <span class="texttt">n</span> <span class="texttt">T</span>
-  and such an object is created
-  but array elements are not constructed<a class="hidden_link" href="#36.sentence-1">.</a></div> <div id="example-1" class="example"><div class="texpara">[<i>Example&nbsp;<a href="#example-1">1</a></i>: <div id="36.sentence-2" class="sentence">When reusing storage denoted by some pointer value <span class="texttt">p</span>,
-  <span class="texttt">launder<span class="parenthesis">(</span><span class="keyword">reinterpret_<span class="shy"></span>cast</span><span class="anglebracket">&lt;</span>T<span class="operator">*</span><span class="anglebracket">&gt;</span><span class="parenthesis">(</span><span class="keyword">new</span> <span class="parenthesis">(</span>p<span class="parenthesis">)</span> byte<span class="squarebracket">[</span>n <span class="operator">*</span> <span class="keyword">sizeof</span><span class="parenthesis">(</span>T<span class="parenthesis">)</span><span class="squarebracket">]</span><span class="parenthesis">)</span><span class="parenthesis">)</span></span>
-  can be used to implicitly create a suitable array object
-  and obtain a pointer to it<a class="hidden_link" href="#36.sentence-2">.</a></div> —&nbsp;<i>end example</i>]</div></div></div></div></div>
-  <div class="para" id="37"><div class="marginalizedparent"><a class="marginalized" href="#37">37</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/0bfdc5feca1e4a216d212dad2ef108eee637a949/source/lib-intro.tex#L2389">#</a></div><div class="texpara"><div id="37.sentence-1" class="sentence"><i>Throws</i>: <span class="texttt">allocate</span> may throw an appropriate exception<a class="hidden_link" href="#37.sentence-1">.</a></div></div></div></div>
-  <div class="para nonNormativeOnly" id="38"><div class="marginalizedparent"><a class="marginalized" href="#38">38</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/0bfdc5feca1e4a216d212dad2ef108eee637a949/source/lib-intro.tex#L2393">#</a></div><div class="texpara"><div id="note-3" class="note"><div class="texpara">[<i>Note&nbsp;<a href="#note-3">3</a></i>: <div id="38.sentence-1" class="sentence">It is intended that <span class="texttt">a<span class="operator">.</span>allocate</span> be an efficient means
-  of allocating a single object of type <span class="texttt">T</span>, even when <span class="texttt"><span class="keyword">sizeof</span><span class="parenthesis">(</span>T<span class="parenthesis">)</span></span>
-  is small<a class="hidden_link" href="#38.sentence-1">.</a></div> <div id="38.sentence-2" class="sentence">That is, there is no need for a container to maintain its own
-  free list<a class="hidden_link" href="#38.sentence-2">.</a></div> —&nbsp;<i>end note</i>]</div></div></div></div></div>
-  <div class="para" id="39"><div class="marginalizedparent"><a class="marginalized" href="#39">39</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/0bfdc5feca1e4a216d212dad2ef108eee637a949/source/lib-intro.tex#L2401">#</a></div><div class="texpara"><div id="39.sentence-1" class="sentence"><i>Remarks</i>: If <span class="texttt">n <span class="operator">=</span><span class="operator">=</span> <span class="literal">0</span></span>, the return value is unspecified<a class="hidden_link" href="#39.sentence-1">.</a></div></div></div></div>
-  <ins>
-  <div class="para"><div class="marginalizedparent"><a class="marginalized" href="#39">???</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/0bfdc5feca1e4a216d212dad2ef108eee637a949/source/lib-intro.tex#L2401">#</a></div>
-    <div class="texpara">
-      <div class="sentence"><i>Remarks</i>: Default: On freestanding implementations, <code>XX::pointer()</code>. </div>
-      <div class="note">[<i>Note ???</i> : This default is never used by <code>allocator_traits</code>, but it ensures that <code>allocator&lt;T&gt;</code> always meets the <code>allocator</code> requirements even though <code>allocate</code> is a freestanding deleted function ([freestanding.item]). — <i>end note</i>]</div>
-    </div>
-  </div></div>
-  </ins>
-[...]
-<div class="texpara"><div class="itemdecl" id="itemdecl:19"><div class="marginalizedparent"><a class="itemDeclLink" href="#itemdecl:19">🔗</a></div><code class="itemdeclcode">a<span class="operator">.</span>deallocate<span class="parenthesis">(</span>p, n<span class="parenthesis">)</span>
-</code></div></div><div class="para" id="47"><div class="marginalizedparent"><a class="marginalized" href="#47">47</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/0bfdc5feca1e4a216d212dad2ef108eee637a949/source/lib-intro.tex#L2456">#</a></div><div class="texpara"><div id="47.sentence-1" class="sentence"><i>Result</i>: (not used)</div></div></div></div><div class="para" id="48"><div class="marginalizedparent"><a class="marginalized" href="#48">48</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/0bfdc5feca1e4a216d212dad2ef108eee637a949/source/lib-intro.tex#L2460">#</a></div><div class="texpara"><div id="48.sentence-1" class="sentence"><i>Preconditions</i>: <ul class="itemize"><li id="48.1"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#48.1">(48.1)</a></div><div class="texpara"><div id="48.1.sentence-1" class="sentence">If <span class="texttt">p</span> is memory
-that was obtained by a call to <span class="texttt">a<span class="operator">.</span>allocate_<span class="shy"></span>at_<span class="shy"></span>least</span>,
-let <span class="texttt">ret</span> be the value returned and
-<span class="texttt">req</span> be the value passed as the first argument of that call<a class="hidden_link" href="#48.1.sentence-1">.</a></div> <div id="48.1.sentence-2" class="sentence"><span class="texttt">p</span> is equal to <span class="texttt">ret<span class="operator">.</span>ptr</span> and
-<span class="texttt">n</span> is a value such that
-<span class="math"><span class="texttt">req</span>  ≤ <span class="texttt">n</span>  ≤ <span class="texttt">ret<span class="operator">.</span>count</span></span><a class="hidden_link" href="#48.1.sentence-2">.</a></div></div></li><li id="48.2"><div class="marginalizedparent" style="left:-39mm"><a class="marginalized" href="#48.2">(48.2)</a></div><div class="texpara"><div id="48.2.sentence-1" class="sentence">Otherwise, <span class="texttt">p</span> is a pointer value obtained from <span class="texttt">allocate</span><a class="hidden_link" href="#48.2.sentence-1">.</a></div> <div id="48.2.sentence-2" class="sentence"><span class="texttt">n</span> equals the value passed as the first argument
-to the invocation of <span class="texttt">allocate</span> which returned <span class="texttt">p</span><a class="hidden_link" href="#48.2.sentence-2">.</a></div></div></li></ul></div> <div id="48.sentence-2" class="sentence"><span class="texttt">p</span> has not been invalidated by
-an intervening call to <span class="texttt">deallocate</span><a class="hidden_link" href="#48.sentence-2">.</a></div></div></div></div><div class="para" id="49"><div class="marginalizedparent"><a class="marginalized" href="#49">49</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/0bfdc5feca1e4a216d212dad2ef108eee637a949/source/lib-intro.tex#L2479">#</a></div><div class="texpara"><div id="49.sentence-1" class="sentence"><i>Throws</i>: Nothing<a class="hidden_link" href="#49.sentence-1">.</a></div></div></div></div>
-<ins>
-  <div class="para"><div class="marginalizedparent"><a class="marginalized" href="#39">???</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/0bfdc5feca1e4a216d212dad2ef108eee637a949/source/lib-intro.tex#L2401">#</a></div>
-    <div class="texpara">
-      <div class="sentence"><i>Remarks</i>: Default: On freestanding implementations, <code>void()</code>. </div>
-      <div class="note">[<i>Note ???</i> : This default is never used by <code>allocator_traits</code>, but it ensures that <code>allocator&lt;T&gt;</code> always meets the <code>allocator</code> requirements even though <code>deallocate</code> is a freestanding deleted function ([freestanding.item]). — <i>end note</i>]</div>
-    </div>
-  </div></div>
-</ins>
-</blockquote>
-
-
-
-
-
-<h2>Changes in <a href="https://eel.is/c++draft/allocator.traits.members">[allocator.traits.members]</a></h2>
-Instructions to the editor:<br/>
-Please make the following edit to <a href="https://eel.is/c++draft/allocator.traits.members">[allocator.traits.members]</a>:
-<blockquote class="std">
-<span class="keyword">static</span> <span class="keyword">constexpr</span> pointer allocate<span class="parenthesis">(</span>Alloc<span class="operator">&amp;</span> a, size_type n<span class="parenthesis">)</span>;
-</code>
-<ins><div class="para"><div class="marginalizedparent"><a class="marginalized" href="#members-1">???</a></div><div class="itemdescr"><div class="texpara"><div id="members-1.sentence-1" class="sentence"><i>Mandates</i>: <span class="texttt">a<span class="operator">.</span>allocate<span class="parenthesis">(</span>n<span class="parenthesis">)</span></span> is well-formed<a class="hidden_link" href="#members-1.sentence-1">.</a></div></div></div></div></ins>
-<div class="para" id="members-1"><div class="marginalizedparent"><a class="marginalized" href="#members-1">1</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/0bfdc5feca1e4a216d212dad2ef108eee637a949/source/memory.tex#L1555">#</a></div><div class="texpara"><div id="members-1.sentence-1" class="sentence"><i>Returns</i>: <span class="texttt">a<span class="operator">.</span>allocate<span class="parenthesis">(</span>n<span class="parenthesis">)</span></span><a class="hidden_link" href="#members-1.sentence-1">.</a></div></div></div></div>
-
-<code class="itemdeclcode"><span class="keyword">static</span> <span class="keyword">constexpr</span> pointer allocate<span class="parenthesis">(</span>Alloc<span class="operator">&amp;</span> a, size_type n, const_void_pointer hint<span class="parenthesis">)</span>;
-</code>
-<div class="para" id="members-2"><div class="marginalizedparent"><a class="marginalized" href="#members-2">2</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/0bfdc5feca1e4a216d212dad2ef108eee637a949/source/memory.tex#L1566">#</a></div><div class="texpara"><div id="members-2.sentence-1" class="sentence"><i>Returns</i>: <span class="texttt">a<span class="operator">.</span>allocate<span class="parenthesis">(</span>n, hint<span class="parenthesis">)</span></span> if that expression is well-formed; otherwise, <span class="texttt">a<span class="operator">.</span>allocate<span class="parenthesis">(</span>n<span class="parenthesis">)</span></span><a class="hidden_link" href="#members-2.sentence-1">.</a></div></div></div></div>
-
-<code class="itemdeclcode"><span class="keyword">static</span> <span class="keyword">constexpr</span> allocation_result<span class="anglebracket">&lt;</span>pointer, size_type<span class="anglebracket">&gt;</span> allocate_at_least<span class="parenthesis">(</span>Alloc<span class="operator">&amp;</span> a, size_type n<span class="parenthesis">)</span>;
-</code>
-<div class="para" id="members-3"><div class="marginalizedparent"><a class="marginalized" href="#members-3">3</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/0bfdc5feca1e4a216d212dad2ef108eee637a949/source/memory.tex#L1577">#</a></div><div class="texpara"><div id="members-3.sentence-1" class="sentence"><i>Returns</i>: <span class="texttt">a<span class="operator">.</span>allocate_<span class="shy"></span>at_<span class="shy"></span>least<span class="parenthesis">(</span>n<span class="parenthesis">)</span></span> if that expression is well-formed;
-otherwise, <span class="texttt"><span class="curlybracket">{</span>a<span class="operator">.</span>allocate<span class="parenthesis">(</span>n<span class="parenthesis">)</span>, n<span class="curlybracket">}</span></span><a class="hidden_link" href="#members-3.sentence-1">.</a></div></div></div></div>
-
-<code class="itemdeclcode"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">void</span> deallocate<span class="parenthesis">(</span>Alloc<span class="operator">&amp;</span> a, pointer p, size_type n<span class="parenthesis">)</span>;
-</code>
-<ins><div class="para"><div class="marginalizedparent"><a class="marginalized" href="#members-1">???</a></div><div class="itemdescr"><div class="texpara"><div id="members-1.sentence-1" class="sentence"><i>Mandates</i>: <span class="texttt">a<span class="operator">.</span>deallocate<span class="parenthesis">(</span>n<span class="parenthesis">)</span></span> is well-formed<a class="hidden_link" href="#members-1.sentence-1">.</a></div></div></div></div></ins>
-<div class="para" id="members-4"><div class="marginalizedparent"><a class="marginalized" href="#members-4">4</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/0bfdc5feca1e4a216d212dad2ef108eee637a949/source/memory.tex#L1589">#</a></div>
-<div class="texpara"><div id="members-4.sentence-1" class="sentence"><i>Effects</i>: Calls <span class="texttt">a<span class="operator">.</span>deallocate<span class="parenthesis">(</span>p, n<span class="parenthesis">)</span></span><a class="hidden_link" href="#members-4.sentence-1">.</a></div></div></div></div>
-<div class="para" id="members-5"><div class="marginalizedparent"><a class="marginalized" href="#members-5">5</a></div><div class="itemdescr"><div class="sourceLinkParent"><a class="sourceLink" href="http://github.com/Eelis/draft/tree/0bfdc5feca1e4a216d212dad2ef108eee637a949/source/memory.tex#L1593">#</a></div><div class="texpara"><div id="members-5.sentence-1" class="sentence"><i>Throws</i>: Nothing<a class="hidden_link" href="#members-5.sentence-1">.</a></div></div></div></div>
-</blockquote>
 
 <h2>Changes in <a href="https://eel.is/c++draft/string.view.template.general">[string.view.template.general]</a></h2>
 Instructions to the editor:<br/>
@@ -2309,6 +2234,9 @@ Please make the following edits to <a href="https://eel.is/c++draft/vector.bool"
 <span class="curlybracket">}</span>
 </span>
 </blockquote>
+
+<h1>Disclaimer</h1>
+The opinions in this paper are my own and do not reflect the views or positions of my employer, CrowdStrike, Inc.
 
 </body>
 </html>
