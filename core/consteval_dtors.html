@@ -797,15 +797,22 @@ table.enumerate td:first-child {
 </style>
 <link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css2?family=Noto+Serif'/><link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css2?family=Noto+Sans'/><link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css2?family=Noto+Sans+Mono'/>
 
-<title>TODO D3421R0: Consteval destructors</title>
+<title>TODO: D3421R1.0: Consteval destructors</title>
 <body>
 <h1>Consteval destructors</h1>
-Document number: D3421R0 TODO<br/>
-Date: 2024-09-15 TODO<br/>
+Document number: D3421R1.0 TODO<br/>
+Date: 2024-10-12 TODO<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
-Audience: Evolution Working Group, SG7 Compile-time programming
+Audience: Core Working Group
 
 <h1>Changes from previous revisions</h1>
+<h2>R1</h2>
+<ul>
+    <li>Wording tweaks</li>
+    <li>Added links to relevant constant destruction wording</li>
+    <li>Noted implementer concerns</li>
+</ul>
+
 <h2>R0</h2>
 First revision!
 
@@ -916,10 +923,18 @@ I would expect future non-transient <code>constexpr</code> papers to extend this
 <h1>Implementation Experience</h1>
 <p>
     This paper was prototyped on clang.
-    The implementation mainly needed to remove the old diagnostic that prevented <code>consteval</code> from being placed on destructors, then adding a check in the CodeGen portion of clang to error if a <code>consteval</code> destructor would be emitted.
+    The implementation mainly needed to remove the old diagnostic that prevented <code>consteval</code> from being placed on destructors, then adding a check in the CodeGen portion of clang to error if a <code>consteval</code> destructor would be emitted.  CodeGen is not the ideal place to put such a change, as the diagnostic quality can suffer.  A non-prototype implementation would want to find a better place to put the diagnostic, or improve the diagnostic capabilities of the CodeGen portion of the compiler.
 </p><p>
     In addition, the change was used in the MSSTL (compiled with the prototype clang) to ensure that making <code>vector</code>'s and <code>string</code>'s destructors <code>consteval</code> in freestanding would produce the desired results and diagnostics.
+</p><p>
+    Implementers have expressed concerns that the <code>consteval</code> portions of their compilers have substantial technical debt.  I counter that this is largely adding new ways to make a program ill-formed, as the capabilities to perform constant destruction already exist in today's compilers.
 </p>
+
+<h1>Useful standards citations</h1>
+<ul>
+    <li><a href="https://eel.is/c++draft/expr.const#18">Constant destruction</a></li>
+	<li><a href="https://eel.is/c++draft/dcl.constexpr#6"><code>constexpr</code> object declarations</a></li>
+</ul>
 
 <h1>Wording</h1>
 This paper's wording is based on the current working draft N4988.
@@ -933,7 +948,7 @@ Modify <a href="https://eel.is/c++draft/expr.const#19">[expr.const]#19</a>
 <blockquote class="std">
     <div class="para" id="19">
         <div class="marginalizedparent"><a class="marginalized" href="#19">19</a></div>
-        <div class="texpara"><div id="19.sentence-1" class="sentence">An <a class="hidden_link" href="#def:function,immediate" title="7.7 Constant expressions [expr.const]"><span id="def:function,immediate"><i>immediate function</i></span></a> is a function<ins>, destructor,</ins> or constructor that is
+        <div class="texpara"><div id="19.sentence-1" class="sentence">An <a class="hidden_link" href="#def:function,immediate" title="7.7 Constant expressions [expr.const]"><span id="def:function,immediate"><i>immediate function</i></span></a> is a function<del> or constructor</del><ins> (including a constructor or destructor)</ins> that is
     
             <ul class="itemize">
                 <li id="19.1"><div class="marginalizedparent" style="left:-27mm"><a class="marginalized" href="#19.1">(19.1)</a></div>declared with the <span id=":consteval__"><span class="texttt"><span class="keyword">consteval</span></span></span> specifier, or</li>
@@ -958,7 +973,7 @@ Modify <a href="https://eel.is/c++draft/dcl.constexpr#2">[dcl.constexpr]#2</a>
     declares that function to be
     a <a class="hidden_link" href="#def:specifier,constexpr,function" title="9.2.6 The constexpr and consteval specifiers [dcl.constexpr]"><span id="def:specifier,constexpr,function"><i>constexpr function</i></span></a><a class="hidden_link" href="#2.sentence-1">.</a></div>
     
-    <div id="note-3" class="note"><div class="texpara">[<i>Note&nbsp;<a href="#note-3">3</a></i>: <div id="2.sentence-2" class="sentence">A function<ins>, destructor,</ins> or constructor declared with the <span id=":consteval_____"><span class="texttt"><span class="keyword">consteval</span></span></span> specifier
+    <div id="note-3" class="note"><div class="texpara">[<i>Note&nbsp;<a href="#note-3">3</a></i>: <div id="2.sentence-2" class="sentence">A function<del> or constructor</del> declared with the <span id=":consteval_____"><span class="texttt"><span class="keyword">consteval</span></span></span> specifier
     is an immediate function (<a href="expr.const" title="7.7 Constant expressions">[expr.<span class="shy"></span>const]</a>)<a class="hidden_link" href="#2.sentence-2">.</a></div> —&nbsp;<i>end note</i>]</div></div>
     
     <div id="2.sentence-3" class="sentence">
