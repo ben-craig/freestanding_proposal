@@ -800,7 +800,7 @@ table.enumerate td:first-child {
 <title>TODO: D3421R1.0: Consteval destructors</title>
 <body>
 <h1>Consteval destructors</h1>
-Document number: D3421R1.0 TODO<br/>
+Document number: D3421R1.1 TODO<br/>
 Date: 2024-10-12 TODO<br/>
 Reply-to: Ben Craig &lt;ben dot craig at gmail dot com&gt;<br/>
 Audience: Core Working Group
@@ -809,6 +809,7 @@ Audience: Core Working Group
 <h2>R1</h2>
 <ul>
     <li>Wording tweaks</li>
+    <li>[class.dtor] change to mention the extra decl-specifier and default destructors</li>
     <li>Added links to relevant constant destruction wording</li>
     <li>Noted implementer concerns</li>
 </ul>
@@ -829,7 +830,7 @@ Programs that attempt to invoke a <code>consteval</code> destructor outside of c
     This proposal is largely motivated by <a href="https://wg21.link/P3295R1">P3295 Freestanding constexpr containers and constexpr exception types</a>, which is in turn motivated by <a href="https://wg21.link/P2996">P2996 reflection</a> in freestanding environments.
     A <code>consteval std::vector</code> used during reflection computations would be much better if the destructor were <code>consteval</code> rather than <code>constexpr</code>.
     When the destructor is <code>constexpr</code>, a default constructed (i.e. empty) <code>constexpr std::vector</code>'s destructor will still execute at runtime, eventually invoking <code>operator delete</code>.
-    If the destructor is <code>constevel</code>, then such a case will be ill-formed, which will properly encourage the developer to refactor the code, likely into a <code>consteval</code> function.
+    If the destructor is <code>consteval</code>, then such a case will be ill-formed, which will properly encourage the developer to refactor the code, likely into a <code>consteval</code> function.
 </p><br/><p>
     When this proposal is accepted, <a href="https://wg21.link/P3295R1">P3295 Freestanding constexpr containers and constexpr exception types</a> will be updated to make <code>string</code>, <code>vector</code>, and the <code>&lt;stdexcept&gt;</code> exceptions' destructors freestanding-consteval.
 </p>
@@ -979,6 +980,31 @@ Modify <a href="https://eel.is/c++draft/dcl.constexpr#2">[dcl.constexpr]#2</a>
     <div id="2.sentence-3" class="sentence">
     <del>A destructor, a</del><ins>A</ins>n allocation function<del>,</del> or a deallocation function
     shall not be declared with the <span id=":consteval______"><span class="texttt"><span class="keyword">consteval</span></span></span> specifier<a class="hidden_link" href="#2.sentence-3">.</a></div></div></div>
+</blockquote>
+
+<h2>Changes in <a href="https://eel.is/c++draft/class.dtor">[class.dtor]</a></h2>
+Modify the last sentence of <a href="https://eel.is/c++draft/class.dtor#1.sentence-3">[class.dtor]#1</a>
+
+<blockquote class="std">
+<div id="1.sentence-3" class="sentence">Each <a href="dcl.spec.general#nt:decl-specifier" title="9.2.1 General [dcl.spec.general]"><span id="ntref:decl-specifier"><span class="textsf"><i>decl-specifier</i></span></span></a> of the <a href="dcl.spec.general#nt:decl-specifier-seq" title="9.2.1 General [dcl.spec.general]"><span id="ntref:decl-specifier-seq"><span class="textsf"><i>decl-specifier-seq</i></span></span></a>
+	of a prospective destructor declaration (if any)
+	shall be
+	<span id=":friend"><span class="texttt"><span class="keyword">friend</span></span></span>,
+	<span id=":inline"><span class="texttt"><span class="keyword">inline</span></span></span>,
+	<span id=":virtual"><span class="texttt"><span class="keyword">virtual</span></span></span>, <del>or</del>
+	<span id=":constexpr"><span class="texttt"><span class="keyword">constexpr</span></span></span><ins>, or <span class="texttt"><span class="keyword">consteval</span></span></ins>.</div></div></div>
+</blockquote>
+
+Modify <a href="https://eel.is/c++draft/class.dtor#9">[class.dtor]#9</a>.
+
+<blockquote class="std">
+<div class="para" id="9">
+	<div class="marginalizedparent">
+		<a class="marginalized" href="#9">9</a>
+	</div>
+	<div class="sourceLinkParent"></div>
+	<div class="texpara"><div id="9.sentence-1" class="sentence"><ins>A defaulted destructor is a consteval destructor if any potentially constructed subobject has class type M (or array thereof) and M has a consteval destructor.  Otherwise, a</ins><del>A</del> defaulted destructor is a constexpr destructor
+	if it is constexpr-suitable (<a href="dcl.constexpr" title="9.2.6 The constexpr and consteval specifiers">[dcl.<span class="shy"></span>constexpr]</a>).</div></div></div>
 </blockquote>
 
 <h1>Disclaimer</h1>
